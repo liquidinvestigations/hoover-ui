@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+COMMAND=$1
+shift
+
+case $COMMAND in
+
+  build)
+    set -x
+    exec ./node_modules/.bin/webpack "$@"
+    ;;
+
+  *)
+    echo "Unknown command $COMMAND"
+    ;;
+
+esac
