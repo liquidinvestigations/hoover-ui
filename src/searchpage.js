@@ -88,9 +88,6 @@ class SearchPage extends React.Component {
                 <Dropdown values={sizeOptions}/>
               </div>
               <button type="submit" className="btn btn-primary btn-sm">search</button>
-              <p className="pull-sm-right">
-                <a href="/batch.html">batch search</a>
-              </p>
             </div>
           </div>
           <div className="col-sm-1">
