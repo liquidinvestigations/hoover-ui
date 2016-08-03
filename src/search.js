@@ -13,7 +13,6 @@ class Search extends React.Component {
   }
 
   buildQuery(q) {
-    console.log("q = " + q)
     return {
       query_string: {
         query: q,
