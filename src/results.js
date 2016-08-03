@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 /**
  * Props:
@@ -16,31 +16,31 @@ import React from 'react';
 class Results extends React.Component {
 
     viewUrl(item) {
-        return 'doc/' + item._collection + '/' + item._id;
+        return 'doc/' + item._collection + '/' + item._id
     }
 
     collectionTitle(name) {
         var col = this.props.collections.find(function (c) {
-            return c.name == name;
-        });
+            return c.name == name
+        })
         if (col) {
-            return col.title;
+            return col.title
         }
-        return name;
+        return name
     }
 
     renderPageController() {
-        var prevUrl = null;
+        var prevUrl = null
         if (this.props.prev_url) {
-            prevUrl = <a className="btn btn-secondary-outline btn-sm" href={this.props.prev_url}>&laquo;</a>;
+            prevUrl = <a className="btn btn-secondary-outline btn-sm" href={this.props.prev_url}>&laquo;</a>
         }
 
-        var nextUrl = null;
+        var nextUrl = null
         if (this.props.next_url) {
             nextUrl = <a className="btn btn-secondary-outline btn-sm" href={this.props.next_url}>&raquo;</a>
         }
 
-        var countByIndex = null;
+        var countByIndex = null
         if (this.props.collections && this.props.counts) {
             var indexCounts = this.props.collections.map((col) => {
                     if (this.props.counts.hasOwnProperty(col)) {
@@ -50,19 +50,19 @@ class Results extends React.Component {
                                 {this.props.counts[col]}
                                 <span className="comma">, </span>
                             </span>
-                        );
+                        )
                     } else {
-                        return null;
+                        return null
                     }
                 }
-            );
+            )
 
             countByIndex = (
                 <span className="count_by_index">
                     {indexCounts}
                     (page {this.props.page}/{this.props.page_count})
                 </span>
-            );
+            )
         }
 
         return (
@@ -72,27 +72,27 @@ class Results extends React.Component {
                 {countByIndex}
                 {nextUrl}
             </p>
-        );
+        )
     }
 
     renderSearchHit(hit) {
 
-        var url = this.viewUrl(hit);
+        var url = this.viewUrl(hit)
 
-        var attachIcon = null;
+        var attachIcon = null
         if (hit.fields.hasOwnProperty('attachments') && hit.fields.attachments[0]) {
-            attachIcon = <i className="fa fa-lg fa-paperclip" aria-hidden="true"></i>;
+            attachIcon = <i className="fa fa-lg fa-paperclip" aria-hidden="true"></i>
         }
 
-        var title = hit.fields.title;
-        var text = null;
+        var title = hit.fields.title
+        var text = null
         if (hit.highlight) {
             if (hit.highlight.text) {
                 text = hit.highlight.text.map((hi) =>
                     <li>
                         <span dangerouslySetInnerHTML={{__html: hi}}/>
                     </li>
-                );
+                )
             }
         }
 
@@ -113,14 +113,14 @@ class Results extends React.Component {
 
 
     render() {
-        var resultList = this.props.hits.map((hit) => this.renderSearchHit(hit));
+        var resultList = this.props.hits.map((hit) => this.renderSearchHit(hit))
 
-        var results = null;
+        var results = null
         if (this.props.hits.length > 0) {
-            var start = 1 + (this.props.page - 1) * this.props.pagesize;
-            results = <ol id="results" start={start}> {resultList} </ol>;
+            var start = 1 + (this.props.page - 1) * this.props.pagesize
+            results = <ol id="results" start={start}> {resultList} </ol>
         } else {
-            results = <p>-- no results --=</p>;
+            results = <p>-- no results --=</p>
         }
 
         return (
@@ -133,4 +133,4 @@ class Results extends React.Component {
 
 }
 
-export default Results;
+export default Results

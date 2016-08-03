@@ -1,11 +1,11 @@
-import React from 'react';
-import Dropdown from './dropdown.js';
-import Navbar from './navbar.js';
-import CollectionsBox from './collections-box.js';
-import Search from './search.js';
+import React from 'react'
+import Dropdown from './dropdown.js'
+import Navbar from './navbar.js'
+import CollectionsBox from './collections-box.js'
+import Search from './search.js'
 
 
-const sizeOptions = [10, 50, 200, 1000];
+const sizeOptions = [10, 50, 200, 1000]
 
 class SearchPage extends React.Component {
 
@@ -25,8 +25,8 @@ class SearchPage extends React.Component {
     }
     
     constructor(props) {
-        super(props);
-        var args = this.parseQuery(window.location.href);
+        super(props)
+        var args = this.parseQuery(window.location.href)
         this.state = {
             q: args.q ? ("" + args.q).replace(/\+/g, ' ') : "",
             size: args.size ? +args.size : 10,
@@ -40,18 +40,18 @@ class SearchPage extends React.Component {
 
     componentDidMount() {
         $.get('/collections', function (resp) {
-            var collections = resp;
-            var selectedCollections = null;
-            var query = null;
-            var args = this.state.args;
+            var collections = resp
+            var selectedCollections = null
+            var query = null
+            var args = this.state.args
             if (args.collections) {
-                var sel = '' + args.collections;
-                selectedCollections = sel ? sel.split('+') : [];
+                var sel = '' + args.collections
+                selectedCollections = sel ? sel.split('+') : []
             }
             else {
                 selectedCollections = resp.map(function (c) {
                     return c.name
-                });
+                })
             }
 
             if (this.state.q) {
@@ -67,8 +67,8 @@ class SearchPage extends React.Component {
                 collections,
                 selectedCollections,
                 query,
-            });
-        }.bind(this));
+            })
+        }.bind(this))
     }
 
     render() {
@@ -112,4 +112,4 @@ class SearchPage extends React.Component {
     }
 }
 
-export default SearchPage;
+export default SearchPage

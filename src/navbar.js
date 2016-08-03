@@ -4,12 +4,12 @@ import React from 'react'
 class Navbar extends React.Component {
 
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             username: '',
             admin: false,
             urls: {},
-        };
+        }
     }
 
     links() {
@@ -46,26 +46,26 @@ class Navbar extends React.Component {
                 url: this.state.urls.admin,
                 type: 'admin'
             }
-        ];
+        ]
     }
 
     shouldShow(link) {
         if (link.type == 'admin') {
-            return this.state.admin;
+            return this.state.admin
         }
         if (link.type == 'logged-in') {
-            return this.state.username;
+            return this.state.username
         }
         if (link.type == 'not-logged-in') {
-            return !this.state.username;
+            return !this.state.username
         }
-        return true;
+        return true
     }
 
     componentDidMount() {
         $.get('/whoami', function (me) {
-            this.setState(me);
-        }.bind(this));
+            this.setState(me)
+        }.bind(this))
     }
 
     render() {
@@ -73,7 +73,7 @@ class Navbar extends React.Component {
             <a className="dropdown-item" href={l.url} key={l.name}>
                 {l.name}
             </a>
-        );
+        )
 
         return (
             <span className="btn-group" role="group">
@@ -91,4 +91,4 @@ class Navbar extends React.Component {
     }
 }
 
-export default Navbar;
+export default Navbar

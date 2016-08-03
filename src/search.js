@@ -1,10 +1,10 @@
-import React from 'react';
-import Results from './results.js';
+import React from 'react'
+import Results from './results.js'
 
 
 class Search extends React.Component {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             searching: false,
             error: null,
@@ -14,7 +14,7 @@ class Search extends React.Component {
     }
 
     buildQuery(q) {
-        console.log("q = " + q);
+        console.log("q = " + q)
         return {
             query_string: {
                 query: q,
@@ -45,13 +45,13 @@ class Search extends React.Component {
             }),
             success: success,
             error: error,
-        });
+        })
     }
 
     onResults(resp) {
         this.setState({
             searching: false
-        });
+        })
 
         var url = function (p) {
             var u = "?q=" + encodeURIComponent(this.state.query.q)
@@ -80,49 +80,49 @@ class Search extends React.Component {
         this.setState({
             results: results,
             error: null
-        });
+        })
     }
 
 
     onError(err) {
-        console.error(err.responseText);
+        console.error(err.responseText)
         this.setState({
             searching: false,
             results: null,
             error: "Server error while searching"
-        });
+        })
     }
 
     performSearch(query) {
         if(!query) {
-            return;
+            return
         }
         if (this.state.query === query) {
-            return;
+            return
         }
 
         this.setState({
             searching: true,
             query: query
-        });
+        })
 
         this.search(
             query,
             this.onResults.bind(this),
-            this.onError.bind(this));
+            this.onError.bind(this))
     }
 
     componentDidMount() {
-        this.performSearch(this.props.query);
+        this.performSearch(this.props.query)
     }
 
     componentWillReceiveProps(props) {
-        this.performSearch(props.query);
+        this.performSearch(props.query)
     }
 
     render() {
-        var rv = null;
-        var results = this.state.results;
+        var rv = null
+        var results = this.state.results
         if (results) {
             rv = <Results
                 hits={results.hits}
@@ -134,7 +134,7 @@ class Search extends React.Component {
                 prev_url={results.prev_url}
                 next_url={results.next_url}
                 collections={this.props.collections}
-            ></Results>;
+            ></Results>
         }
         return (
             <div className="col-sm-9">
@@ -146,5 +146,5 @@ class Search extends React.Component {
     }
 }
 
-export default Search;
+export default Search
 

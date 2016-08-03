@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 class Preview extends React.Component {
     render() {
@@ -18,4 +18,4 @@ class Preview extends React.Component {
     }
 }
 
-export default Preview;
+export default Preview
