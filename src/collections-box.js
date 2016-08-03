@@ -25,6 +25,7 @@ class Checkbox extends React.Component {
             id={id}
             checked={this.state.checked}
             onChange={this.handleChange.bind(this)}></input>
+          {' '}
           {this.props.title}
         </label>
       </div>
