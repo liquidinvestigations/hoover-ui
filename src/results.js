@@ -101,7 +101,12 @@ class Results extends React.Component {
         <a href={ url } target="_blank">
           <h3>
             { attachIcon }{' '}
-            { title } (#{hit._id})
+            { title } (#{hit._id}){' '}
+            {hit.fields.rev && (
+              <span>
+              ({hit.fields.rev})
+              </span>
+            )}
           </h3>
           <ul className="results-highlight">
             { text }
