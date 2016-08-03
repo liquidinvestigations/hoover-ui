@@ -11,7 +11,7 @@ class Dropdown extends React.Component {
           className="form-control"
           id={id}
           name={this.props.name}
-          defaultValue={defaultValue}>
+          defaultValue={this.props.value}>
           {this.props.values.map((value) =>
             <option value={value} key={value}>{value}</option>
           )}

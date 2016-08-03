@@ -85,7 +85,11 @@ class SearchPage extends React.Component {
             </div>
             <div className="form-inline">
               <div className="form-group">
-                <Dropdown values={sizeOptions}/>
+                <Dropdown
+                  name="size"
+                  values={sizeOptions}
+                  value={this.state.size}
+                  />
               </div>{' '}
               <button type="submit" className="btn btn-primary btn-sm">search</button>
             </div>
