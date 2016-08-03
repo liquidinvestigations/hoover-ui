@@ -46,7 +46,7 @@ class Results extends React.Component {
           if (this.props.counts.hasOwnProperty(col)) {
             return (
               <span>
-                <b>{this.collectionTitle(col)}</b>
+                <b>{this.collectionTitle(col)}</b>{' '}
                 {this.props.counts[col]}
                 <span className="comma">, </span>
               </span>
@@ -59,7 +59,7 @@ class Results extends React.Component {
 
       countByIndex = (
         <span className="count_by_index">
-          {indexCounts}
+          {indexCounts}{' '}
           (page {this.props.page}/{this.props.page_count})
         </span>
       )
@@ -67,9 +67,9 @@ class Results extends React.Component {
 
     return (
       <p>
-        {prevUrl}
-        {this.props.total} hits
-        {countByIndex}
+        {prevUrl}{' '}
+        {this.props.total} hits{' '}
+        {countByIndex}{' '}
         {nextUrl}
       </p>
     )
