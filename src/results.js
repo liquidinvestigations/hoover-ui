@@ -84,7 +84,7 @@ class Results extends React.Component {
       attachIcon = <i className="fa fa-lg fa-paperclip" aria-hidden="true"></i>
     }
 
-    var title = hit.fields.title
+    var title = (hit.fields.path||[])[0] || hit.fields.title
     var text = null
     if (hit.highlight) {
       if (hit.highlight.text) {
@@ -100,7 +100,7 @@ class Results extends React.Component {
       <li className="results-item" key={hit._id}>
         <a href={ url } target="_blank">
           <h3>
-            { attachIcon }
+            { attachIcon }{' '}
             { title } (#{hit._id})
           </h3>
           <ul className="results-highlight">

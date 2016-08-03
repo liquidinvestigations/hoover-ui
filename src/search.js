@@ -31,7 +31,7 @@ class Search extends React.Component {
         size: query.size,
         query: this.buildQuery(query.q),
         collections: query.collections,
-        fields: ['title', 'url', 'mime_type', 'attachments'],
+        fields: ['path', 'title', 'url', 'mime_type', 'attachments'],
         highlight: {
           fields: {
             '*': {
