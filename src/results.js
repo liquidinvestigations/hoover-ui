@@ -59,7 +59,7 @@ class Results extends React.Component {
 
       countByIndex = (
         <span className="count_by_index">
-          {indexCounts}{' '}
+          ({indexCounts}){' '}
           (page {this.props.page}/{this.props.page_count})
         </span>
       )
