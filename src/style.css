@@ -2,6 +2,10 @@
   display: none;
 }
 
+#search-guide {
+  font-size: 80%;
+}
+
 #results, .results-highlight {
   padding: 0;
 }

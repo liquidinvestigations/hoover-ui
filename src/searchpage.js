@@ -5,6 +5,7 @@ import CollectionsBox from './collections-box.js'
 import Search from './search.js'
 
 const sizeOptions = [10, 50, 200, 1000]
+const SEARCH_GUIDE = 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.3/js/bootstrap.min.js'
 
 class SearchPage extends React.Component {
 
@@ -82,6 +83,10 @@ class SearchPage extends React.Component {
               <input name="q" defaultValue={this.state.q}
                    className="form-control"
                    placeholder="query ..."/>
+              <p id="search-guide" className="form-text text-muted">
+                Refine your search using this handy{' '}
+                <a href={SEARCH_GUIDE}>guide</a>.
+              </p>
             </div>
             <div className="form-inline">
               <div className="form-group">
