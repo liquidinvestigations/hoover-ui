@@ -10,6 +10,19 @@ body {
   font-size: 80%;
 }
 
+#search-input-box { position: relative; }
+#search-input-box .fa-search {
+  position: absolute;
+  top: 11px;
+  right: 10px;
+  font-size: 15px;
+  color: rgba(0, 0, 0, 0.40);
+}
+
+#search-form button {
+  display: none;
+}
+
 #results, .results-highlight {
   padding: 0;
 }

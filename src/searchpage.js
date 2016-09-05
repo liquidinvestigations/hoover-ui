@@ -73,16 +73,18 @@ class SearchPage extends React.Component {
 
   render() {
     return (
-      <form>
+      <form id="search-form">
         <div className="row">
           <div className="col-sm-3">
             <h1>Hoover</h1>
           </div>
           <div className="col-sm-8">
-            <div className="form-group">
+            <div id="search-input-box" className="form-group">
+              <i className="fa fa-search" />
               <input name="q" defaultValue={this.state.q}
+                   type="search"
                    className="form-control"
-                   placeholder="query ..."/>
+                   placeholder="Search..."/>
               <p id="search-guide" className="form-text text-muted">
                 Refine your search using this handy{' '}
                 <a href={SEARCH_GUIDE}>guide</a>.
@@ -96,7 +98,7 @@ class SearchPage extends React.Component {
                   value={this.state.size}
                   />
               </div>{' '}
-              <button type="submit" className="btn btn-primary btn-sm">search</button>
+              <button type="submit">search</button>
             </div>
           </div>
           <div className="col-sm-1">
