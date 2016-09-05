@@ -75,17 +75,19 @@ class Navbar extends React.Component {
     )
 
     return (
-      <span className="btn-group" role="group">
-        <button id="loggedin-btngroup" type="button"
-            className="btn btn-secondary dropdown-toggle"
-            data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false"
-          >☰</button>
-        <div
-          className="dropdown-menu dropdown-menu-right"
-          aria-labelledby="loggedin-btngroup"
-          >{links}</div>
-      </span>
+      <div id="menu">
+        <span className="btn-group" role="group">
+          <button id="loggedin-btngroup" type="button"
+              className="btn btn-secondary dropdown-toggle"
+              data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false"
+            >☰</button>
+          <div
+            className="dropdown-menu dropdown-menu-right"
+            aria-labelledby="loggedin-btngroup"
+            >{links}</div>
+        </span>
+      </div>
     )
   }
 }

@@ -19,8 +19,16 @@ body {
   color: rgba(0, 0, 0, 0.40);
 }
 
+#search-input-box input {
+  border: 1px solid rgb(204, 204, 204);
+}
+
 #search-form button[type=submit] {
   display: none;
+}
+
+#menu button {
+  color: rgba(0, 0, 0, 0.40);
 }
 
 #results, .results-highlight {
