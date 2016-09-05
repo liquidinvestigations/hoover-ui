@@ -131,6 +131,7 @@ class Results extends React.Component {
       <div>
         { this.renderPageController() }
         { results }
+        { this.renderPageController() }
       </div>
     )
   }
