@@ -81,7 +81,7 @@ class Results extends React.Component {
 
     var attachIcon = null
     if (hit.fields.hasOwnProperty('attachments') && hit.fields.attachments[0]) {
-      attachIcon = <i className="fa fa-lg fa-paperclip" aria-hidden="true"></i>
+      attachIcon = <i className="fa fa-paperclip" aria-hidden="true"></i>
     }
 
     var title = (hit.fields.path||[])[0] || hit.fields.title
