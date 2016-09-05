@@ -5,7 +5,7 @@ import CollectionsBox from './collections-box.js'
 import Search from './search.js'
 
 const sizeOptions = [10, 50, 200, 1000]
-const SEARCH_GUIDE = 'https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.3/js/bootstrap.min.js'
+const SEARCH_GUIDE = 'https://github.com/hoover/search/wiki/Guide-to-search-terms'
 
 class SearchPage extends React.Component {
 
