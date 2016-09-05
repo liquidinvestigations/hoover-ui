@@ -19,7 +19,7 @@ body {
   color: rgba(0, 0, 0, 0.40);
 }
 
-#search-form button {
+#search-form button[type=submit] {
   display: none;
 }
 
