@@ -10,6 +10,11 @@ case $COMMAND in
     exec ./node_modules/.bin/webpack "$@"
     ;;
 
+  remotedev)
+    set -x
+    exec node remotedev.js "$@"
+    ;;
+
   *)
     echo "Unknown command $COMMAND"
     ;;
