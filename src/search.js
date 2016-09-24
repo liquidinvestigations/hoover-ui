@@ -25,6 +25,7 @@ class Search extends React.Component {
     $.ajax({
       url: '/search',
       method: 'POST',
+      contentType: 'application/json',
       data: JSON.stringify({
         from: (query.page - 1) * query.size,
         size: query.size,
