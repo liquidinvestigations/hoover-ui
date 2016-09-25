@@ -98,8 +98,8 @@ class Results extends React.Component {
 
     return (
       <li className="results-item" key={hit._id}>
-        <a href={ url } target="_blank">
-          <h3>
+        <h3>
+          <a href={ url } target="_blank">
             { attachIcon }{' '}
             { title } (#{hit._id}){' '}
             {hit.fields.rev && (
@@ -107,11 +107,11 @@ class Results extends React.Component {
               ({hit.fields.rev})
               </span>
             )}
-          </h3>
-          <ul className="results-highlight">
-            { text }
-          </ul>
-        </a>
+          </a>
+        </h3>
+        <ul className="results-highlight">
+          { text }
+        </ul>
       </li>
     )
   }
