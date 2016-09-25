@@ -1,5 +1,6 @@
 import React from 'react'
 import Results from './results.js'
+import { SORT_RELEVANCE, SORT_OLDEST, SORT_NEWEST } from './searchpage.js'
 
 class Search extends React.Component {
   constructor(props) {
@@ -24,10 +25,10 @@ class Search extends React.Component {
   buildSortQuery(order) {
     var sort = ['_score']
     switch (order) {
-      case "Newest":
+      case SORT_NEWEST:
         sort = [{"date": {"order": "desc"}}, ... sort]
         break
-      case "Oldest":
+      case SORT_OLDEST:
         sort = [{"date": {"order": "asc"}}, ... sort]
         break
     }
@@ -72,7 +73,7 @@ class Search extends React.Component {
       if (this.state.query.size > 10) {
         u += "&size=" + encodeURIComponent(this.state.query.size)
       }
-      if (this.state.query.order != "Relevance") {
+      if (this.state.query.order != SORT_RELEVANCE) {
         u += "&order=" + encodeURIComponent(this.state.query.order)
       }
       return u
