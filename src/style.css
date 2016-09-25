@@ -50,8 +50,9 @@ body {
   color: blueviolet;
 }
 
-.results-item > a:hover {
+.results-item:hover {
   background: #eee;
+  cursor: pointer;
 }
 
 i.fa {
@@ -67,6 +68,10 @@ i.fa {
 .results-highlight, .results-highlight > li {
   display: inline;
   color: #555;
+}
+
+.results-highlight > li {
+  cursor: text;
 }
 
 .results-highlight em {

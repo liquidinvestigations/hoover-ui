@@ -39,6 +39,10 @@ class SearchPage extends React.Component {
   }
 
   componentDidMount() {
+    this.getCollections()
+  }
+
+  getCollections() {
     $.get('/collections', function (resp) {
       var collections = resp
       var selectedCollections = null

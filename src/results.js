@@ -45,7 +45,7 @@ class Results extends React.Component {
       var indexCounts = this.props.collections.map((col) => {
           if (this.props.counts.hasOwnProperty(col)) {
             return (
-              <span>
+              <span key={col}>
                 <b>{this.collectionTitle(col)}</b>{' '}
                 {this.props.counts[col]}
                 <span className="comma">, </span>
@@ -89,7 +89,7 @@ class Results extends React.Component {
     if (hit.highlight) {
       if (hit.highlight.text) {
         text = hit.highlight.text.map((hi) =>
-          <li>
+          <li key={hit._id}>
             <span dangerouslySetInnerHTML={{__html: hi}}/>
           </li>
         )
@@ -98,8 +98,8 @@ class Results extends React.Component {
 
     return (
       <li className="results-item" key={hit._id}>
-        <a href={ url } target="_blank">
-          <h3>
+        <h3>
+          <a href={ url } target="_blank">
             { attachIcon }{' '}
             { title } (#{hit._id}){' '}
             {hit.fields.rev && (
@@ -107,11 +107,11 @@ class Results extends React.Component {
               ({hit.fields.rev})
               </span>
             )}
-          </h3>
-          <ul className="results-highlight">
-            { text }
-          </ul>
-        </a>
+          </a>
+        </h3>
+        <ul className="results-highlight">
+          { text }
+        </ul>
       </li>
     )
   }
