@@ -7,6 +7,11 @@ import Search from './search.js'
 const sizeOptions = [10, 50, 200, 1000]
 const SEARCH_GUIDE = 'https://github.com/hoover/search/wiki/Guide-to-search-terms'
 
+export const SORT_RELEVANCE = 'Relevance'
+export const SORT_NEWEST = 'Newest'
+export const SORT_OLDEST = 'Oldest'
+export const SORT_OPTIONS = [SORT_RELEVANCE, SORT_NEWEST, SORT_OLDEST]
+
 class SearchPage extends React.Component {
 
   parseQuery(url) {
@@ -30,6 +35,7 @@ class SearchPage extends React.Component {
     this.state = {
       q: args.q ? ("" + args.q).replace(/\+/g, ' ') : "",
       size: args.size ? +args.size : 10,
+      order: args.order ? args.order[0] : SORT_OPTIONS[0],
       args: args,
       collections: [],
       selectedCollections: [],
@@ -64,6 +70,7 @@ class SearchPage extends React.Component {
           collections: selectedCollections,
           page: args.p ? +args.p : 1,
           size: this.state.size,
+          order: this.state.order,
         }
       }
 
@@ -76,6 +83,7 @@ class SearchPage extends React.Component {
   }
 
   render() {
+    let refreshForm = () => { this.refs.form.submit() }
     return (
       <form id="search-form" ref="form">
         <div className="row">
@@ -100,8 +108,16 @@ class SearchPage extends React.Component {
                   name="size"
                   values={sizeOptions}
                   value={this.state.size}
-                  onChanged={() => { this.refs.form.submit() }}
+                  onChanged={refreshForm}
                   />
+                </div>
+              <div className="form-group">
+                <Dropdown
+                  name="order"
+                  values={SORT_OPTIONS}
+                  value={this.state.order}
+                  onChanged={refreshForm}
+                />
               </div>{' '}
               <button type="submit">search</button>
             </div>

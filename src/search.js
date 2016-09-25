@@ -1,5 +1,6 @@
 import React from 'react'
 import Results from './results.js'
+import { SORT_RELEVANCE, SORT_OLDEST, SORT_NEWEST } from './searchpage.js'
 
 class Search extends React.Component {
   constructor(props) {
@@ -21,6 +22,19 @@ class Search extends React.Component {
     }
   }
 
+  buildSortQuery(order) {
+    var sort = ['_score']
+    switch (order) {
+      case SORT_NEWEST:
+        sort = [{"date": {"order": "desc"}}, ... sort]
+        break
+      case SORT_OLDEST:
+        sort = [{"date": {"order": "asc"}}, ... sort]
+        break
+    }
+    return sort
+  }
+
   search(query, success, error) {
     $.ajax({
       url: '/search',
@@ -30,6 +44,7 @@ class Search extends React.Component {
         from: (query.page - 1) * query.size,
         size: query.size,
         query: this.buildQuery(query.q),
+        sort: this.buildSortQuery(query.order),
         collections: query.collections,
         fields: ['path', 'title', 'url', 'mime_type', 'attachments', 'rev'],
         highlight: {
@@ -57,6 +72,9 @@ class Search extends React.Component {
       if (p > 1) u += "&p=" + p
       if (this.state.query.size > 10) {
         u += "&size=" + encodeURIComponent(this.state.query.size)
+      }
+      if (this.state.query.order != SORT_RELEVANCE) {
+        u += "&order=" + encodeURIComponent(this.state.query.order)
       }
       return u
     }.bind(this)
