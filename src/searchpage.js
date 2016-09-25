@@ -75,13 +75,9 @@ class SearchPage extends React.Component {
     }.bind(this))
   }
 
-  handleFormChange() {
-    document.getElementById("search-form").submit()
-  }
-
   render() {
     return (
-      <form id="search-form">
+      <form id="search-form" ref="form">
         <div className="row">
           <div className="col-sm-3">
             <h1>Hoover</h1>
@@ -104,7 +100,7 @@ class SearchPage extends React.Component {
                   name="size"
                   values={sizeOptions}
                   value={this.state.size}
-                  onChanged={this.handleFormChange}
+                  onChanged={() => { this.refs.form.submit() }}
                   />
               </div>{' '}
               <button type="submit">search</button>
