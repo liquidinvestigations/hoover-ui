@@ -111,6 +111,7 @@ class SearchPage extends React.Component {
                   name="order"
                   values={orderOptions}
                   value={this.state.order}
+                  onChanged={() => { this.refs.form.submit() }}
                 />
               </div>{' '}
               <button type="submit">search</button>
