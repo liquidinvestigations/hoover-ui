@@ -45,7 +45,7 @@ class Results extends React.Component {
       var indexCounts = this.props.collections.map((col) => {
           if (this.props.counts.hasOwnProperty(col)) {
             return (
-              <span>
+              <span key={Math.random().toString(36).substring(3)}>
                 <b>{this.collectionTitle(col)}</b>{' '}
                 {this.props.counts[col]}
                 <span className="comma">, </span>
@@ -89,7 +89,7 @@ class Results extends React.Component {
     if (hit.highlight) {
       if (hit.highlight.text) {
         text = hit.highlight.text.map((hi) =>
-          <li>
+          <li key={hit._id}>
             <span dangerouslySetInnerHTML={{__html: hi}}/>
           </li>
         )
