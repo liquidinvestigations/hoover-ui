@@ -25,10 +25,10 @@ class Search extends React.Component {
     var sort = ['_score']
     switch (order) {
       case "Newest":
-        sort.unshift({"date": {"order": "desc"}})
+        sort = [{"date": {"order": "desc"}}, ... sort]
         break
       case "Oldest":
-        sort.unshift({"date": {"order": "asc"}})
+        sort = [{"date": {"order": "asc"}}, ... sort]
         break
     }
     return sort
