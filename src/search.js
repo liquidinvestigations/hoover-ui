@@ -21,6 +21,19 @@ class Search extends React.Component {
     }
   }
 
+  buildSortQuery(order) {
+    var sort = ['_score']
+    switch (order) {
+      case "Newest":
+        sort.unshift({"date": {"order": "desc"}})
+        break
+      case "Oldest":
+        sort.unshift({"date": {"order": "asc"}})
+        break
+    }
+    return sort
+  }
+
   search(query, success, error) {
     $.ajax({
       url: '/search',
@@ -30,6 +43,7 @@ class Search extends React.Component {
         from: (query.page - 1) * query.size,
         size: query.size,
         query: this.buildQuery(query.q),
+        sort: this.buildSortQuery(query.order),
         collections: query.collections,
         fields: ['path', 'title', 'url', 'mime_type', 'attachments', 'rev'],
         highlight: {

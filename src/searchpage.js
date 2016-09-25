@@ -5,6 +5,7 @@ import CollectionsBox from './collections-box.js'
 import Search from './search.js'
 
 const sizeOptions = [10, 50, 200, 1000]
+const orderOptions = ['Relevance', 'Newest', 'Oldest']
 const SEARCH_GUIDE = 'https://github.com/hoover/search/wiki/Guide-to-search-terms'
 
 class SearchPage extends React.Component {
@@ -30,6 +31,7 @@ class SearchPage extends React.Component {
     this.state = {
       q: args.q ? ("" + args.q).replace(/\+/g, ' ') : "",
       size: args.size ? +args.size : 10,
+      order: args.order ? args.order[0] : orderOptions[0],
       args: args,
       collections: [],
       selectedCollections: [],
@@ -64,6 +66,7 @@ class SearchPage extends React.Component {
           collections: selectedCollections,
           page: args.p ? +args.p : 1,
           size: this.state.size,
+          order: this.state.order,
         }
       }
 
@@ -102,6 +105,13 @@ class SearchPage extends React.Component {
                   value={this.state.size}
                   onChanged={() => { this.refs.form.submit() }}
                   />
+                </div>
+              <div className="form-group">
+                <Dropdown
+                  name="order"
+                  values={orderOptions}
+                  value={this.state.order}
+                />
               </div>{' '}
               <button type="submit">search</button>
             </div>
