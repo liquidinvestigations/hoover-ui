@@ -72,6 +72,9 @@ class Search extends React.Component {
       if (this.state.query.size > 10) {
         u += "&size=" + encodeURIComponent(this.state.query.size)
       }
+      if (this.state.query.order != "Relevance") {
+        u += "&order=" + encodeURIComponent(this.state.query.order)
+      }
       return u
     }.bind(this)
 
