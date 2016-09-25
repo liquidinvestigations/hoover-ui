@@ -83,6 +83,7 @@ class SearchPage extends React.Component {
   }
 
   render() {
+    let refreshForm = () => { this.refs.form.submit() }
     return (
       <form id="search-form" ref="form">
         <div className="row">
@@ -107,7 +108,7 @@ class SearchPage extends React.Component {
                   name="size"
                   values={sizeOptions}
                   value={this.state.size}
-                  onChanged={() => { this.refs.form.submit() }}
+                  onChanged={refreshForm}
                   />
                 </div>
               <div className="form-group">
@@ -115,7 +116,7 @@ class SearchPage extends React.Component {
                   name="order"
                   values={SORT_OPTIONS}
                   value={this.state.order}
-                  onChanged={() => { this.refs.form.submit() }}
+                  onChanged={refreshForm}
                 />
               </div>{' '}
               <button type="submit">search</button>
