@@ -45,7 +45,7 @@ class Results extends React.Component {
       var indexCounts = this.props.collections.map((col) => {
           if (this.props.counts.hasOwnProperty(col)) {
             return (
-              <span key={Math.random().toString(36).substring(3)}>
+              <span key={col}>
                 <b>{this.collectionTitle(col)}</b>{' '}
                 {this.props.counts[col]}
                 <span className="comma">, </span>
