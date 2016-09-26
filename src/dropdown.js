@@ -6,7 +6,7 @@ class Dropdown extends React.Component {
     var defaultValue = this.props.default || this.props.values[0]
     return (
       <div>
-        <label htmlFor={id}>Results per page</label>{' '}
+        <label htmlFor={id}>{this.props.label}</label>{' '}
         <select
           className="form-control"
           id={id}

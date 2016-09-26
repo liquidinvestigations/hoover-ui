@@ -102,18 +102,20 @@ class SearchPage extends React.Component {
                 <a href={SEARCH_GUIDE}>guide</a>.
               </p>
             </div>
-            <div className="form-inline">
-              <div className="form-group">
+            <div className="form-inline row">
+              <div className="form-group col-sm-4">
                 <Dropdown
                   name="size"
+                  label="Results per page"
                   values={sizeOptions}
                   value={this.state.size}
                   onChanged={refreshForm}
                   />
-                </div>
-              <div className="form-group">
+              </div>{' '}
+              <div className="form-group col-sm-4">
                 <Dropdown
                   name="order"
+                  label="Sort by"
                   values={SORT_OPTIONS}
                   value={this.state.order}
                   onChanged={refreshForm}
