@@ -108,6 +108,16 @@ i.fa {
   cursor: pointer;
 }
 
-.charts-pie-legend {
+.charts-pie-slice.hover {
+  stroke-width: 2px;
+  stroke: #888;
+}
+
+.charts-pie-legend > div {
   font-size: 12px;
+  cursor: pointer;
+}
+
+.charts-pie-legend > div.hover {
+  text-decoration: underline;
 }

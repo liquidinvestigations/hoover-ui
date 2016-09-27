@@ -47,8 +47,21 @@ class PieChart extends React.Component {
     return FILETYPE_COLOR[filetype] || '#eee'
   }
 
+  mouseOverHandler(value) {
+    return () => {
+      this.setState({hover: value})
+    }
+  }
+
+  mouseOutHandler(value) {
+    return () => {
+      this.setState({hover: null})
+    }
+  }
+
   renderSvg(slices) {
     let {onSelect} = this.props
+    let {hover} = this.state || {}
     const OFFSET = RADIUS + PADDING
 
     return (
@@ -58,10 +71,12 @@ class PieChart extends React.Component {
             <path
               d={arc(geometry)}
               key={filetype}
-              className='charts-pie-slice'
+              className={`charts-pie-slice ${hover == filetype ? 'hover' : ''}`}
               style={{
                 fill: this.color(filetype),
               }}
+              onMouseOver={this.mouseOverHandler(filetype)}
+              onMouseOut={this.mouseOutHandler(filetype)}
               onClick={() => {
                 onSelect({filetype})
               }}
@@ -76,6 +91,7 @@ class PieChart extends React.Component {
 
   renderLegend(slices) {
     const OFFSET = RADIUS + PADDING
+    let {hover} = this.state || {}
 
     return (
       <div
@@ -91,6 +107,9 @@ class PieChart extends React.Component {
             style={{
               color: this.color(filetype),
             }}
+            className={hover == filetype ? 'hover' : ''}
+            onMouseOver={this.mouseOverHandler(filetype)}
+            onMouseOut={this.mouseOutHandler(filetype)}
             >{count} {filetype}</div>
         )}
       </div>
