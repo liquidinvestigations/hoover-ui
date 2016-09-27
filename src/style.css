@@ -92,3 +92,13 @@ i.fa {
 .count_by_index > :last-child .comma {
   display: none;
 }
+
+.charts svg {
+  width: 100%;
+}
+
+.charts-slice {
+  fill: #eee;
+  stroke-width: 1px;
+  stroke: #bbb;
+}

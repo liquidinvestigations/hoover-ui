@@ -85,6 +85,7 @@ class Search extends React.Component {
     var next_url = page < page_count ? url(page + 1) : null
 
     var results = {
+      resp: resp,
       hits: resp.hits.hits,
       total: resp.hits.total,
       counts: resp.count_by_index,
@@ -141,6 +142,7 @@ class Search extends React.Component {
     var results = this.state.results
     if (results) {
       rv = <Results
+        resp={results.resp}
         hits={results.hits}
         total={results.total}
         counts={results.counts}

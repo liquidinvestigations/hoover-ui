@@ -1,4 +1,5 @@
 import React from 'react'
+import Charts from './charts.js'
 
 /**
  * Props:
@@ -129,6 +130,7 @@ class Results extends React.Component {
 
     return (
       <div>
+        <Charts {... this.props} />
         { this.renderPageController() }
         { results }
         { this.renderPageController() }
