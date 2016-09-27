@@ -59,8 +59,13 @@ class PieChart extends React.Component {
     }
   }
 
+  clickHandler(filters) {
+    return () => {
+      this.props.onSelect(filters)
+    }
+  }
+
   renderSvg(slices) {
-    let {onSelect} = this.props
     let {hover} = this.state || {}
     const OFFSET = RADIUS + PADDING
 
@@ -77,9 +82,7 @@ class PieChart extends React.Component {
               }}
               onMouseOver={this.mouseOverHandler(filetype)}
               onMouseOut={this.mouseOutHandler(filetype)}
-              onClick={() => {
-                onSelect({filetype})
-              }}
+              onClick={this.clickHandler({filetype})}
               >
               <title>{filetype}</title>
             </path>
