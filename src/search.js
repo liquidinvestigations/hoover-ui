@@ -46,7 +46,7 @@ class Search extends React.Component {
         query: this.buildQuery(query.q),
         sort: this.buildSortQuery(query.order),
         collections: query.collections,
-        fields: ['path', 'title', 'url', 'mime_type', 'attachments', 'rev'],
+        fields: ['path', 'url', 'mime_type', 'attachments', 'filename'],
         highlight: {
           fields: {
             '*': {

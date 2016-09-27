@@ -16,7 +16,7 @@ class ResultItem extends React.Component {
       attachIcon = <i className="fa fa-paperclip" aria-hidden="true"></i>
     }
 
-    var title = (hit.fields.path||[])[0] || hit.fields.title
+    var title = hit.fields.filename
     var text = null
     if (hit.highlight) {
       if (hit.highlight.text) {
@@ -31,14 +31,8 @@ class ResultItem extends React.Component {
     return (
       <li className="results-item" key={hit._id}>
         <h3>
-          <a href={ url } target="_blank">
-            { attachIcon }{' '}
-            { title } (#{hit._id}){' '}
-            {hit.fields.rev && (
-              <span>
-              ({hit.fields.rev})
-              </span>
-            )}
+          <a href={url} target="_blank">
+            {attachIcon} {title}
           </a>
         </h3>
         <ul className="results-highlight">
