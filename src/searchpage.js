@@ -93,10 +93,13 @@ class SearchPage extends React.Component {
           <div className="col-sm-8">
             <div id="search-input-box" className="form-group">
               <i className="fa fa-search" />
-              <input name="q" defaultValue={this.state.q}
-                   type="search"
-                   className="form-control"
-                   placeholder="Search..."/>
+              <input
+                name="q"
+                defaultValue={this.state.q}
+                type="search"
+                className="form-control"
+                placeholder="Search..."
+                />
               <p id="search-guide" className="form-text text-muted">
                 Refine your search using this handy{' '}
                 <a href={SEARCH_GUIDE}>guide</a>.
