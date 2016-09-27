@@ -113,6 +113,7 @@ class PieChart extends React.Component {
             className={hover == filetype ? 'hover' : ''}
             onMouseOver={this.mouseOverHandler(filetype)}
             onMouseOut={this.mouseOutHandler(filetype)}
+            onClick={this.clickHandler({filetype})}
             >{count} {filetype}</div>
         )}
       </div>
