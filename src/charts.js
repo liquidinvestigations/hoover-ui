@@ -5,6 +5,15 @@ const shape = require('d3-shape')
 const π = Math.PI
 const RADIUS = 50
 const PADDING = 10
+const FILETYPE_COLOR = {
+  email: 'orange',
+  pdf: 'red',
+  doc: 'blue',
+  xls: 'green',
+  text: 'brown',
+  folder: 'lightblue',
+  archive: 'yellow',
+}
 
 const arc = shape.arc()
   .startAngle((d) => d.x)
@@ -38,6 +47,9 @@ export default function Charts({ resp }) {
               d={arc(slice)}
               key={slice.filetype}
               className='charts-slice'
+              style={{
+                fill: FILETYPE_COLOR[slice.filetype] || '#eee',
+              }}
               >
               <title>{slice.filetype}</title>
             </path>
