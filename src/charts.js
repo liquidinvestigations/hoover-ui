@@ -33,7 +33,7 @@ export default function Charts({ resp }) {
 
   for(let bucket of buckets) {
     let dx = bucket.doc_count * scale
-    slices.push({x, dx, filetype: bucket.key})
+    slices.push({geometry: {x, dx}, filetype: bucket.key})
     x += dx
   }
 
@@ -42,16 +42,16 @@ export default function Charts({ resp }) {
     <div className='charts'>
       <svg height={2 * offset}>
         <g transform={`translate(${offset},${offset})`}>
-          {slices.map((slice) =>
+          {slices.map(({geometry, filetype}) =>
             <path
-              d={arc(slice)}
-              key={slice.filetype}
+              d={arc(geometry)}
+              key={filetype}
               className='charts-slice'
               style={{
-                fill: FILETYPE_COLOR[slice.filetype] || '#eee',
+                fill: FILETYPE_COLOR[filetype] || '#eee',
               }}
               >
-              <title>{slice.filetype}</title>
+              <title>{filetype}</title>
             </path>
           )}
         </g>
