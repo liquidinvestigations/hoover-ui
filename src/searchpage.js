@@ -102,8 +102,8 @@ class SearchPage extends React.Component {
                 placeholder="Search..."
                 />
               <p id="search-guide" className="form-text text-muted">
-                Refine your search using this handy{' '}
-                <a href={SEARCH_GUIDE}>guide</a>.
+                Refine your search using{' '}
+                <a href={SEARCH_GUIDE}>this handy guide</a>.
               </p>
             </div>
             <div className="form-inline row">
