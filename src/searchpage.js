@@ -94,6 +94,7 @@ class SearchPage extends React.Component {
             <div id="search-input-box" className="form-group">
               <i className="fa fa-search" />
               <input
+                ref='q'
                 name="q"
                 defaultValue={this.state.q}
                 type="search"
@@ -138,7 +139,14 @@ class SearchPage extends React.Component {
             onChanged={(selected) => this.setState({selectedCollections: selected})} />
           <Search
             query={this.state.query}
-            collections={this.state.selectedCollections} />
+            collections={this.state.selectedCollections}
+            onSelect={(data) => {
+              for(let key of Object.keys(data)) {
+                this.refs.q.value += ` ${key}:${data[key]}`
+              }
+              refreshForm()
+            }}
+            />
         </div>
       </form>
     )

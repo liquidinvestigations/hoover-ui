@@ -23,7 +23,7 @@ const arc = shape.arc()
   .innerRadius(0)
   .outerRadius(RADIUS)
 
-export default function Charts({ resp }) {
+export default function Charts({ resp, onSelect }) {
   let aggregations = resp.aggregations || {}
   if(! aggregations.count_by_filetype) return <div/>
   let buckets = aggregations.count_by_filetype.buckets
@@ -49,6 +49,9 @@ export default function Charts({ resp }) {
               className='charts-slice'
               style={{
                 fill: FILETYPE_COLOR[filetype] || '#eee',
+              }}
+              onClick={() => {
+                onSelect({filetype})
               }}
               >
               <title>{filetype}</title>

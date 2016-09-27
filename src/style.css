@@ -101,4 +101,5 @@ i.fa {
   fill: #eee;
   stroke-width: 1px;
   stroke: #bbb;
+  cursor: pointer;
 }

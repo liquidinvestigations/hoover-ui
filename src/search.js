@@ -152,6 +152,7 @@ class Search extends React.Component {
         prev_url={results.prev_url}
         next_url={results.next_url}
         collections={this.props.collections}
+        onSelect={this.props.onSelect}
       ></Results>
     }
     return (
