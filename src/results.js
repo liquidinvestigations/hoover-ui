@@ -1,6 +1,55 @@
 import React from 'react'
 import Charts from './charts.js'
 
+class ResultItem extends React.Component {
+
+  viewUrl(item) {
+    return 'doc/' + item._collection + '/' + item._id
+  }
+
+  render() {
+    let {hit} = this.props
+    var url = this.viewUrl(hit)
+
+    var attachIcon = null
+    if (hit.fields.hasOwnProperty('attachments') && hit.fields.attachments[0]) {
+      attachIcon = <i className="fa fa-paperclip" aria-hidden="true"></i>
+    }
+
+    var title = (hit.fields.path||[])[0] || hit.fields.title
+    var text = null
+    if (hit.highlight) {
+      if (hit.highlight.text) {
+        text = hit.highlight.text.map((hi) =>
+          <li key={hit._id}>
+            <span dangerouslySetInnerHTML={{__html: hi}}/>
+          </li>
+        )
+      }
+    }
+
+    return (
+      <li className="results-item" key={hit._id}>
+        <h3>
+          <a href={ url } target="_blank">
+            { attachIcon }{' '}
+            { title } (#{hit._id}){' '}
+            {hit.fields.rev && (
+              <span>
+              ({hit.fields.rev})
+              </span>
+            )}
+          </a>
+        </h3>
+        <ul className="results-highlight">
+          { text }
+        </ul>
+      </li>
+    )
+  }
+
+}
+
 /**
  * Props:
  *
@@ -15,10 +64,6 @@ import Charts from './charts.js'
  * pagesize
  */
 class Results extends React.Component {
-
-  viewUrl(item) {
-    return 'doc/' + item._collection + '/' + item._id
-  }
 
   collectionTitle(name) {
     var col = this.props.collections.find(function (c) {
@@ -76,49 +121,8 @@ class Results extends React.Component {
     )
   }
 
-  renderSearchHit(hit) {
-
-    var url = this.viewUrl(hit)
-
-    var attachIcon = null
-    if (hit.fields.hasOwnProperty('attachments') && hit.fields.attachments[0]) {
-      attachIcon = <i className="fa fa-paperclip" aria-hidden="true"></i>
-    }
-
-    var title = (hit.fields.path||[])[0] || hit.fields.title
-    var text = null
-    if (hit.highlight) {
-      if (hit.highlight.text) {
-        text = hit.highlight.text.map((hi) =>
-          <li key={hit._id}>
-            <span dangerouslySetInnerHTML={{__html: hi}}/>
-          </li>
-        )
-      }
-    }
-
-    return (
-      <li className="results-item" key={hit._id}>
-        <h3>
-          <a href={ url } target="_blank">
-            { attachIcon }{' '}
-            { title } (#{hit._id}){' '}
-            {hit.fields.rev && (
-              <span>
-              ({hit.fields.rev})
-              </span>
-            )}
-          </a>
-        </h3>
-        <ul className="results-highlight">
-          { text }
-        </ul>
-      </li>
-    )
-  }
-
   render() {
-    var resultList = this.props.hits.map((hit) => this.renderSearchHit(hit))
+    var resultList = this.props.hits.map((hit) => <ResultItem hit={hit} />)
 
     var results = null
     if (this.props.hits.length > 0) {
