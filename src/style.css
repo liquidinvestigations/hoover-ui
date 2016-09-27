@@ -93,13 +93,21 @@ i.fa {
   display: none;
 }
 
-.charts svg {
-  width: 100%;
+.charts {
+  overflow: hidden;
 }
 
-.charts-slice {
+.charts-pie > * {
+  float: left;
+}
+
+.charts-pie-slice {
   fill: #eee;
   stroke-width: 1px;
   stroke: #bbb;
   cursor: pointer;
+}
+
+.charts-pie-legend {
+  font-size: 12px;
 }

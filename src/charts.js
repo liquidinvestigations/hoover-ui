@@ -32,12 +32,19 @@ class PieChart extends React.Component {
     let x = 0
 
     for(let bucket of buckets) {
-      let dx = bucket.doc_count * scale
-      slices.push({geometry: {x, dx}, filetype: bucket.key})
+      let count = bucket.doc_count
+      let dx = count * scale
+      let geometry = {x, dx}
+      let filetype = bucket.key
+      slices.push({count, geometry, filetype})
       x += dx
     }
 
     return slices
+  }
+
+  color(filetype) {
+    return FILETYPE_COLOR[filetype] || '#eee'
   }
 
   renderSvg(slices) {
@@ -45,15 +52,15 @@ class PieChart extends React.Component {
     const OFFSET = RADIUS + PADDING
 
     return (
-      <svg height={2 * OFFSET}>
+      <svg height={2 * OFFSET} width={2 * OFFSET}>
         <g transform={`translate(${OFFSET},${OFFSET})`}>
           {slices.map(({geometry, filetype}) =>
             <path
               d={arc(geometry)}
               key={filetype}
-              className='charts-slice'
+              className='charts-pie-slice'
               style={{
-                fill: FILETYPE_COLOR[filetype] || '#eee',
+                fill: this.color(filetype),
               }}
               onClick={() => {
                 onSelect({filetype})
@@ -67,11 +74,35 @@ class PieChart extends React.Component {
     )
   }
 
+  renderLegend(slices) {
+    const OFFSET = RADIUS + PADDING
+
+    return (
+      <div
+        style={{
+          width: 2 * OFFSET,
+          marginTop: PADDING,
+        }}
+        className='charts-pie-legend'
+        >
+        {slices.map(({count, filetype}) =>
+          <div
+            key={filetype}
+            style={{
+              color: this.color(filetype),
+            }}
+            >{count} {filetype}</div>
+        )}
+      </div>
+    )
+  }
+
   render() {
     let slices = this.slices()
     return (
-      <div>
+      <div className='charts-pie'>
         {this.renderSvg(slices)}
+        {this.renderLegend(slices)}
       </div>
     )
   }
