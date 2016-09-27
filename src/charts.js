@@ -6,19 +6,20 @@ const π = Math.PI
 const RADIUS = 50
 const PADDING = 10
 const FILETYPE_COLOR = {
-  email: 'orange',
-  pdf: 'red',
-  doc: 'blue',
+  email: '#b648ff',
+  pdf: '#2fe4b0',
+  doc: '#5151e4',
   xls: 'green',
-  text: 'brown',
-  folder: 'lightblue',
-  archive: 'yellow',
+  text: '#a0a0a0',
+  folder: '#4bc0e6',
+  archive: '#ffd132',
+  html: '#ef8585',
 }
 
 const arc = shape.arc()
   .startAngle((d) => d.x)
   .endAngle((d) => d.x + d.dx)
-  .padAngle(.01)
+  .padAngle(0)
   .padRadius(0)
   .innerRadius(0)
   .outerRadius(RADIUS)

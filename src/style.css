@@ -103,14 +103,11 @@ i.fa {
 
 .charts-pie-slice {
   fill: #eee;
-  stroke-width: 1px;
-  stroke: #bbb;
   cursor: pointer;
 }
 
 .charts-pie-slice.hover {
-  stroke-width: 2px;
-  stroke: #888;
+  opacity: .6;
 }
 
 .charts-pie-legend > div {
