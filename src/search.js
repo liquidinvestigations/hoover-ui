@@ -156,7 +156,7 @@ class Search extends React.Component {
       ></Results>
     }
     return (
-      <div className="col-sm-9">
+      <div className="col-sm-10">
         {rv}
         {this.state.searching ? <p>searching ...</p> : null }
         {this.state.error ? <p className="alert alert-danger">{ this.state.error }</p> : null }

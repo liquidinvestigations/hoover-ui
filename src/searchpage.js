@@ -87,10 +87,10 @@ class SearchPage extends React.Component {
     return (
       <form id="search-form" ref="form">
         <div className="row">
-          <div className="col-sm-3">
+          <div className="col-sm-2">
             <h1>Hoover</h1>
           </div>
-          <div className="col-sm-8">
+          <div className="col-sm-9">
             <div id="search-input-box" className="form-group">
               <i className="fa fa-search" />
               <input
