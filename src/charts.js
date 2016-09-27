@@ -23,25 +23,30 @@ const arc = shape.arc()
   .innerRadius(0)
   .outerRadius(RADIUS)
 
-export default function Charts({ resp, onSelect }) {
-  let aggregations = resp.aggregations || {}
-  if(! aggregations.count_by_filetype) return <div/>
-  let buckets = aggregations.count_by_filetype.buckets
-  let scale = 2 * π / d3.sum(buckets, (d) => d.doc_count)
-  let slices = []
-  let x = 0
+class PieChart extends React.Component {
 
-  for(let bucket of buckets) {
-    let dx = bucket.doc_count * scale
-    slices.push({geometry: {x, dx}, filetype: bucket.key})
-    x += dx
+  slices() {
+    let {buckets} = this.props
+    let scale = 2 * π / d3.sum(buckets, (d) => d.doc_count)
+    let slices = []
+    let x = 0
+
+    for(let bucket of buckets) {
+      let dx = bucket.doc_count * scale
+      slices.push({geometry: {x, dx}, filetype: bucket.key})
+      x += dx
+    }
+
+    return slices
   }
 
-  const offset = RADIUS + PADDING
-  return (
-    <div className='charts'>
-      <svg height={2 * offset}>
-        <g transform={`translate(${offset},${offset})`}>
+  renderSvg(slices) {
+    let {onSelect} = this.props
+    const OFFSET = RADIUS + PADDING
+
+    return (
+      <svg height={2 * OFFSET}>
+        <g transform={`translate(${OFFSET},${OFFSET})`}>
           {slices.map(({geometry, filetype}) =>
             <path
               d={arc(geometry)}
@@ -59,6 +64,29 @@ export default function Charts({ resp, onSelect }) {
           )}
         </g>
       </svg>
+    )
+  }
+
+  render() {
+    let slices = this.slices()
+    return (
+      <div>
+        {this.renderSvg(slices)}
+      </div>
+    )
+  }
+
+}
+
+export default function Charts({ resp, onSelect }) {
+  let aggregations = resp.aggregations || {}
+  if(! aggregations.count_by_filetype) return <div/>
+  return (
+    <div className='charts'>
+      <PieChart
+        buckets={aggregations.count_by_filetype.buckets}
+        onSelect={onSelect}
+        />
     </div>
   )
 }
