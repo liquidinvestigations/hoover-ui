@@ -7,8 +7,9 @@ function timeMs() {
 }
 
 function Preview({url}) {
+  let embedUrl = `${url}?embed=on`
   return (
-    <iframe className='results-item-preview' src={url} />
+    <iframe className='results-item-preview' src={embedUrl} />
   )
 }
 
