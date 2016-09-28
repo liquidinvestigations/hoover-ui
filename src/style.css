@@ -77,11 +77,8 @@ i.fa {
 
 .results-item-path {
   color: #07a077;
-  font-size: 85%;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  width: 100%;
+  font-size: 70%;
+  word-break:break-all;
 }
 
 .results-item-preview {
