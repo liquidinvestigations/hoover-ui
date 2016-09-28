@@ -2,6 +2,10 @@ import url from 'url'
 import React from 'react'
 import Charts from './charts.js'
 
+function timeMs() {
+  return new Date().getTime()
+}
+
 function Preview({url}) {
   return (
     <iframe className='results-item-preview' src={url} />
@@ -36,7 +40,20 @@ class ResultItem extends React.Component {
     }
 
     return (
-      <li className="results-item" key={hit._url}>
+      <li className="results-item" key={hit._url}
+        onMouseDown={() => {
+          this.willFocus = ! (this.tUp && timeMs() - this.tUp < 300)
+        }}
+        onMouseMove={() => {
+          this.willFocus = false
+        }}
+        onMouseUp={() => {
+          if(this.willFocus) {
+            this.tUp = timeMs()
+            this.props.onPreview(url)
+          }
+        }}
+        >
         <h3>
           <a href={url} target="_blank"
             onClick={(e) => {
