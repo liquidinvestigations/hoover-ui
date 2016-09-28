@@ -10,6 +10,8 @@ const FILETYPE_COLOR = {
   pdf: '#2fe4b0',
   doc: '#5151e4',
   xls: 'green',
+  ppt: '#e63263',
+  image: '#9ae665',
   text: '#a0a0a0',
   folder: '#4bc0e6',
   archive: '#ffd132',
