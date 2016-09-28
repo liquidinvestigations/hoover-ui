@@ -45,6 +45,7 @@ class ResultItem extends React.Component {
             }}
             >{attachIcon} {title}</a>
         </h3>
+        <p className='results-item-path'>{hit.fields.path}</p>
         <ul className="results-highlight">
           { text }
         </ul>

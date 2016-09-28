@@ -68,6 +68,16 @@ i.fa {
   white-space: nowrap;
   width: 100%;
   overflow: hidden;
+  font-weight: normal;
+}
+
+.results-item-path {
+  color: #07a077;
+  font-size: 85%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 100%;
 }
 
 .results-item-preview {
