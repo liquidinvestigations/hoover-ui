@@ -45,6 +45,9 @@ class Search extends React.Component {
         size: query.size,
         query: this.buildQuery(query.q),
         sort: this.buildSortQuery(query.order),
+        aggs: {
+          count_by_filetype: {terms: {field: 'filetype'}},
+        },
         collections: query.collections,
         fields: ['path', 'url', 'mime_type', 'attachments', 'filename'],
         highlight: {
