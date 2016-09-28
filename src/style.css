@@ -37,6 +37,7 @@ body {
 
 .results-item {
   margin-bottom: 10px;
+  position: relative;
 }
 
 .results-item > a {
@@ -67,6 +68,13 @@ i.fa {
   white-space: nowrap;
   width: 100%;
   overflow: hidden;
+}
+
+.results-item-preview {
+  width: 100%;
+  height: 2000px;
+  background: white;
+  border: none;
 }
 
 .results-highlight, .results-highlight > li {

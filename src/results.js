@@ -1,5 +1,12 @@
+import url from 'url'
 import React from 'react'
 import Charts from './charts.js'
+
+function Preview({url}) {
+  return (
+    <iframe className='results-item-preview' src={url} />
+  )
+}
 
 class ResultItem extends React.Component {
 
@@ -20,8 +27,8 @@ class ResultItem extends React.Component {
     var text = null
     if (hit.highlight) {
       if (hit.highlight.text) {
-        text = hit.highlight.text.map((hi) =>
-          <li key={hit._id}>
+        text = hit.highlight.text.map((hi, n) =>
+          <li key={`${hit._url}${n}`}>
             <span dangerouslySetInnerHTML={{__html: hi}}/>
           </li>
         )
@@ -29,11 +36,14 @@ class ResultItem extends React.Component {
     }
 
     return (
-      <li className="results-item" key={hit._id}>
+      <li className="results-item" key={hit._url}>
         <h3>
-          <a href={url} target="_blank">
-            {attachIcon} {title}
-          </a>
+          <a href={url} target="_blank"
+            onClick={(e) => {
+              e.preventDefault()
+              this.props.onPreview(url)
+            }}
+            >{attachIcon} {title}</a>
         </h3>
         <ul className="results-highlight">
           { text }
@@ -116,7 +126,15 @@ class Results extends React.Component {
   }
 
   render() {
-    var resultList = this.props.hits.map((hit) => <ResultItem hit={hit} />)
+    var resultList = this.props.hits.map((hit) =>
+      <ResultItem
+        key={hit._url}
+        hit={hit}
+        onPreview={(url) => {
+          this.setState({preview: url})
+        }}
+        />
+    )
 
     var results = null
     if (this.props.hits.length > 0) {
@@ -126,12 +144,23 @@ class Results extends React.Component {
       results = <p>-- no results --=</p>
     }
 
+    let preview = (this.state || {}).preview
+
     return (
       <div>
         <Charts {... this.props} />
-        { this.renderPageController() }
-        { results }
-        { this.renderPageController() }
+        <div className='row'>
+          <div className='col-sm-4'>
+            { this.renderPageController() }
+            { results }
+            { this.renderPageController() }
+          </div>
+          {preview &&
+            <div className='col-sm-8'>
+              <Preview url={url.resolve(window.location.href, preview)} />
+            </div>
+          }
+        </div>
       </div>
     )
   }
