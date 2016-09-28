@@ -38,6 +38,7 @@ body {
 .results-item {
   margin-bottom: 10px;
   position: relative;
+  cursor: pointer;
 }
 
 .results-item > a {
@@ -51,9 +52,12 @@ body {
   color: blueviolet;
 }
 
+.results-item p, .results-item ul {
+  cursor: text;
+}
+
 .results-item:hover {
   background: #eee;
-  cursor: pointer;
 }
 
 i.fa {
