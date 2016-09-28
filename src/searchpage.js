@@ -87,19 +87,23 @@ class SearchPage extends React.Component {
     return (
       <form id="search-form" ref="form">
         <div className="row">
-          <div className="col-sm-3">
+          <div className="col-sm-2">
             <h1>Hoover</h1>
           </div>
-          <div className="col-sm-8">
+          <div className="col-sm-9">
             <div id="search-input-box" className="form-group">
               <i className="fa fa-search" />
-              <input name="q" defaultValue={this.state.q}
-                   type="search"
-                   className="form-control"
-                   placeholder="Search..."/>
+              <input
+                ref='q'
+                name="q"
+                defaultValue={this.state.q}
+                type="search"
+                className="form-control"
+                placeholder="Search..."
+                />
               <p id="search-guide" className="form-text text-muted">
-                Refine your search using this handy{' '}
-                <a href={SEARCH_GUIDE}>guide</a>.
+                Refine your search using{' '}
+                <a href={SEARCH_GUIDE}>this handy guide</a>.
               </p>
             </div>
             <div className="form-inline row">
@@ -135,7 +139,14 @@ class SearchPage extends React.Component {
             onChanged={(selected) => this.setState({selectedCollections: selected})} />
           <Search
             query={this.state.query}
-            collections={this.state.selectedCollections} />
+            collections={this.state.selectedCollections}
+            onSelect={(data) => {
+              for(let key of Object.keys(data)) {
+                this.refs.q.value += ` ${key}:${data[key]}`
+              }
+              refreshForm()
+            }}
+            />
         </div>
       </form>
     )

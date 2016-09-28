@@ -45,8 +45,11 @@ class Search extends React.Component {
         size: query.size,
         query: this.buildQuery(query.q),
         sort: this.buildSortQuery(query.order),
+        aggs: {
+          count_by_filetype: {terms: {field: 'filetype'}},
+        },
         collections: query.collections,
-        fields: ['path', 'title', 'url', 'mime_type', 'attachments', 'rev'],
+        fields: ['path', 'url', 'mime_type', 'attachments', 'filename'],
         highlight: {
           fields: {
             '*': {
@@ -85,6 +88,7 @@ class Search extends React.Component {
     var next_url = page < page_count ? url(page + 1) : null
 
     var results = {
+      resp: resp,
       hits: resp.hits.hits,
       total: resp.hits.total,
       counts: resp.count_by_index,
@@ -141,6 +145,7 @@ class Search extends React.Component {
     var results = this.state.results
     if (results) {
       rv = <Results
+        resp={results.resp}
         hits={results.hits}
         total={results.total}
         counts={results.counts}
@@ -150,10 +155,11 @@ class Search extends React.Component {
         prev_url={results.prev_url}
         next_url={results.next_url}
         collections={this.props.collections}
+        onSelect={this.props.onSelect}
       ></Results>
     }
     return (
-      <div className="col-sm-9">
+      <div className="col-sm-10">
         {rv}
         {this.state.searching ? <p>searching ...</p> : null }
         {this.state.error ? <p className="alert alert-danger">{ this.state.error }</p> : null }
