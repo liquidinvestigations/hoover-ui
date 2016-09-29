@@ -7,8 +7,9 @@ function timeMs() {
 }
 
 function Preview({url}) {
+  let embedUrl = `${url}?embed=on`
   return (
-    <iframe className='results-item-preview' src={url} />
+    <iframe className='results-item-preview' src={embedUrl} />
   )
 }
 
@@ -57,8 +58,11 @@ class ResultItem extends React.Component {
         <h3>
           <a href={url} target="_blank"
             onClick={(e) => {
-              e.preventDefault()
-              this.props.onPreview(url)
+              let modifier = e.metaKey || e.ctrlKey || e.shiftKey || e.altKey
+              if(! modifier) {
+                e.preventDefault()
+                this.props.onPreview(url)
+              }
             }}
             >{attachIcon} {title}</a>
         </h3>
