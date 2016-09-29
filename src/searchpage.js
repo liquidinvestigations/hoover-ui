@@ -83,7 +83,10 @@ class SearchPage extends React.Component {
   }
 
   render() {
-    let refreshForm = () => { this.refs.form.submit() }
+    let refreshForm = () => {
+      if(this.refs.q.value)
+        this.refs.form.submit()
+    }
     return (
       <form id="search-form" ref="form">
         <div className="row">
