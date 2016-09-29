@@ -79,6 +79,12 @@ i.fa {
   color: #07a077;
   font-size: 70%;
   word-break:break-all;
+  margin-bottom: 0.3rem;
+}
+
+.results-item-word-count {
+  font-size: 0.7em;
+  color: gray;
 }
 
 .results-item-preview {

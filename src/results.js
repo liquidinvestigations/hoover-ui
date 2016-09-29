@@ -40,6 +40,11 @@ class ResultItem extends React.Component {
       }
     }
 
+    var word_count = null;
+    if (hit.fields["word-count"] && hit.fields["word-count"].length == 1) {
+      word_count = hit.fields["word-count"][0] + " words";
+    }
+
     return (
       <li className="results-item" key={hit._url}
         onMouseDown={() => {
@@ -67,6 +72,7 @@ class ResultItem extends React.Component {
             >{attachIcon} {title}</a>
         </h3>
         <p className='results-item-path'>{hit.fields.path}</p>
+        <p className='results-item-word-count'>{word_count}</p>
         <ul className="results-highlight">
           { text }
         </ul>
