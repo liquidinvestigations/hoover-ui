@@ -15,7 +15,7 @@ let proxyResponse = (res) => {
 
 let proxyGet = (endpoint) => {
   app.get(endpoint, (req, res) => {
-    let url = `${remote}${endpoint}`
+    let url = `${remote}${req.originalUrl}`
     request.get(url, {json: true}, proxyResponse(res))
   })
 }
@@ -30,6 +30,7 @@ let proxyPost = (endpoint) => {
 proxyGet('/whoami')
 proxyGet('/collections')
 proxyPost('/search')
+proxyGet('/doc/\*')
 
 app.use(express.static(`${__dirname}/build`))
 
