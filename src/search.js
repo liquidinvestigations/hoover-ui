@@ -49,7 +49,7 @@ class Search extends React.Component {
           count_by_filetype: {terms: {field: 'filetype'}},
         },
         collections: query.collections,
-        fields: ['path', 'url', 'mime_type', 'attachments', 'filename'],
+        fields: ['path', 'url', 'mime_type', 'attachments', 'filename', 'word-count'],
         highlight: {
           fields: {
             '*': {
