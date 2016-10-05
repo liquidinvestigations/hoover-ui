@@ -12,26 +12,26 @@ export const SORT_NEWEST = 'Newest'
 export const SORT_OLDEST = 'Oldest'
 export const SORT_OPTIONS = [SORT_RELEVANCE, SORT_NEWEST, SORT_OLDEST]
 
-class SearchPage extends React.Component {
-
-  parseQuery(url) {
-    var rv = {}
-    if (url.indexOf('?') > -1) {
-      url.match(/\?(.*)/)[1].split('&').forEach(function (pair) {
-        var kv = pair.split('=').map(decodeURIComponent)
-        var k = kv[0], v = kv[1]
-        if (!rv[k]) {
-          rv[k] = []
-        }
-        rv[k].push(v)
-      })
-    }
-    return rv
+function parseQuery(url) {
+  var rv = {}
+  if (url.indexOf('?') > -1) {
+    url.match(/\?(.*)/)[1].split('&').forEach(function (pair) {
+      var kv = pair.split('=').map(decodeURIComponent)
+      var k = kv[0], v = kv[1]
+      if (!rv[k]) {
+        rv[k] = []
+      }
+      rv[k].push(v)
+    })
   }
+  return rv
+}
+
+class SearchPage extends React.Component {
 
   constructor(props) {
     super(props)
-    var args = this.parseQuery(window.location.href)
+    var args = parseQuery(window.location.href)
     this.state = {
       q: args.q ? ("" + args.q).replace(/\+/g, ' ') : "",
       size: args.size ? +args.size : 10,
