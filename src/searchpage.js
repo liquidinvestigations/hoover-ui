@@ -59,9 +59,7 @@ class SearchPage extends React.Component {
         selectedCollections = sel ? sel.split('+') : []
       }
       else {
-        selectedCollections = resp.map(function (c) {
-          return c.name
-        })
+        selectedCollections = resp.map((c) => c.name)
       }
 
       if (this.state.q) {

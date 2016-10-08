@@ -32,15 +32,11 @@ class Checkbox extends React.Component {
 class CollectionsBox extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {
-      selected: props.selected,
-    }
+    this.state = {selected: props.selected}
   }
 
-  componentWillReceiveProps(props) {
-    this.setState({
-      selected: props.selected,
-    })
+  componentWillReceiveProps({selected}) {
+    this.setState({selected})
   }
 
   handleChange(name, checked) {
@@ -58,9 +54,10 @@ class CollectionsBox extends React.Component {
 
   render() {
     var result = null
-    if (this.props.collections) {
-      if (this.props.collections.length) {
-        result = this.props.collections.map((col) =>
+    let {collections} = this.props
+    if(collections) {
+      if(collections.length) {
+        result = collections.map((col) =>
           <Checkbox
             name={col.name}
             title={col.title}
