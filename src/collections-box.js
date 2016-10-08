@@ -43,7 +43,7 @@ class CollectionsBox extends React.Component {
     var all = this.props.collections.map((c) => c.name)
     var selected = this.state.selected.splice(0)
     if (checked) {
-      selected.push(name)
+      selected = [].concat(selected, [name])
     } else {
       selected = selected.filter((c) => c != name)
     }
