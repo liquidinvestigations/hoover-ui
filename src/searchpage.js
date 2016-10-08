@@ -85,8 +85,17 @@ class SearchPage extends React.Component {
       if(this.refs.q.value)
         this.refs.form.submit()
     }
+
+    let onChangeCollections = (selected) => {
+      this.setState({selectedCollections: selected})
+      setTimeout(refreshForm, 0)
+    }
+
+    let collectionsValue = this.state.selectedCollections.join(' ')
+
     return (
       <form id="search-form" ref="form">
+        <input type="hidden" name="collections" value={collectionsValue} />
         <div className="row">
           <div className="col-sm-2">
             <h1>Hoover</h1>
@@ -137,7 +146,7 @@ class SearchPage extends React.Component {
           <CollectionsBox
             collections={this.state.collections}
             selected={this.state.selectedCollections}
-            onChange={(selected) => this.setState({selectedCollections: selected})} />
+            onChange={onChangeCollections} />
           <Search
             query={this.state.query}
             collections={this.state.selectedCollections}
