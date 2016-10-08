@@ -3,30 +3,26 @@ import React from 'react'
 class Checkbox extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {
-      checked: props.default
-    }
-  }
-
-  handleChange(e) {
-    this.setState({
-      checked: e.target.checked
-    })
-    this.props.onChange(this.props.name, e.target.checked)
+    this.state = {checked: props.checked}
   }
 
   render() {
-    var id = "checkbox-" + this.props.name
+    let {name, title, onChange} = this.props
+    let {checked} = this.state
+    var id = "checkbox-" + name
     return (
       <div className="checkbox">
         <label>
           <input
             type="checkbox"
             id={id}
-            checked={this.state.checked}
-            onChange={this.handleChange.bind(this)}></input>
+            checked={checked}
+            onChange={(e) => {
+              this.setState({checked: e.target.checked})
+              onChange(name, e.target.checked)
+            }}></input>
           {' '}
-          {this.props.title}
+          {title}
         </label>
       </div>
     )
@@ -69,7 +65,7 @@ class CollectionsBox extends React.Component {
             name={col.name}
             title={col.title}
             key={col.name}
-            default={true}
+            checked={true}
             onChange={this.handleChange.bind(this)}/>
         )
       } else {
