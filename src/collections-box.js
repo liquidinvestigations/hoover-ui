@@ -1,14 +1,8 @@
 import React from 'react'
 
 class Checkbox extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {checked: props.checked}
-  }
-
   render() {
-    let {name, title, onChange} = this.props
-    let {checked} = this.state
+    let {name, checked, title, onChange} = this.props
     var id = "checkbox-" + name
     return (
       <div className="checkbox">
@@ -18,7 +12,6 @@ class Checkbox extends React.Component {
             id={id}
             checked={checked}
             onChange={(e) => {
-              this.setState({checked: e.target.checked})
               onChange(name, e.target.checked)
             }}></input>
           {' '}
@@ -54,7 +47,7 @@ class CollectionsBox extends React.Component {
 
   render() {
     var result = null
-    let {collections} = this.props
+    let {selected, collections} = this.props
     if(collections) {
       if(collections.length) {
         result = collections.map((col) =>
@@ -62,7 +55,7 @@ class CollectionsBox extends React.Component {
             name={col.name}
             title={col.title}
             key={col.name}
-            checked={true}
+            checked={selected.indexOf(col.name) > -1}
             onChange={this.handleChange.bind(this)}/>
         )
       } else {
