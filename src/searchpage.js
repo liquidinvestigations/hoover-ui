@@ -116,7 +116,7 @@ class SearchPage extends React.Component {
                   label="Results per page"
                   values={sizeOptions}
                   value={this.state.size}
-                  onChanged={refreshForm}
+                  onChange={refreshForm}
                   />
               </div>{' '}
               <div className="form-group col-sm-4">
@@ -125,7 +125,7 @@ class SearchPage extends React.Component {
                   label="Sort by"
                   values={SORT_OPTIONS}
                   value={this.state.order}
-                  onChanged={refreshForm}
+                  onChange={refreshForm}
                 />
               </div>{' '}
               <button type="submit">search</button>
@@ -139,7 +139,7 @@ class SearchPage extends React.Component {
           <CollectionsBox
             collections={this.state.collections}
             selected={this.state.selectedCollections}
-            onChanged={(selected) => this.setState({selectedCollections: selected})} />
+            onChange={(selected) => this.setState({selectedCollections: selected})} />
           <Search
             query={this.state.query}
             collections={this.state.selectedCollections}

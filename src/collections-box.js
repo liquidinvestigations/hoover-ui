@@ -57,7 +57,7 @@ class CollectionsBox extends React.Component {
     }
 
     this.setState({selected})
-    this.props.onChanged(selected)
+    this.props.onChange(selected)
   }
 
   render() {
