@@ -23,6 +23,7 @@ var config = {
     plugins: [
         new CopyWebpackPlugin([
             { from: 'src/index.html' },
+            { from: 'src/doc.html' },
             { from: 'src/terms.html' },
             { from: 'src/style.css' },
             { from: 'assets' }
