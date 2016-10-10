@@ -2,6 +2,8 @@ let express = require('express')
 let bodyParser = require('body-parser')
 let request = require('request')
 
+let BUILD = `${__dirname}/build`
+
 let remote = process.argv[2]
 let app = express()
 app.use(bodyParser.json())
@@ -29,9 +31,13 @@ let proxyPost = (endpoint) => {
 
 proxyGet('/whoami')
 proxyGet('/collections')
-proxyPost('/search')
-proxyGet('/doc/\*')
 
-app.use(express.static(`${__dirname}/build`))
+proxyPost('/search')
+app.get(/^\/doc\/[^/]+\/[^/]+$/, (req, res) => {
+  res.sendFile(`${BUILD}/doc.html`)
+})
+proxyGet('/doc/*')
+
+app.use(express.static(BUILD))
 
 app.listen(+(process.env.PORT || 8000), 'localhost')
