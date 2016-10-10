@@ -3,7 +3,8 @@ import React from 'react'
 export default class DocPage extends React.Component {
 
   componentWillMount() {
-    let dataUrl = `${window.location.href}/json`
+    let docUrl = window.location.href.split('?')[0]
+    let dataUrl = `${docUrl}/json`
     $.get(dataUrl, (doc) => {
       this.setState({doc})
     })
