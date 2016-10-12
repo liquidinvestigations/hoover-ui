@@ -6,11 +6,27 @@ function timeMs() {
   return new Date().getTime()
 }
 
-function Preview({url}) {
-  let embedUrl = `${url}?embed=on`
-  return (
-    <iframe className='results-item-preview' src={embedUrl} />
-  )
+class Preview extends React.Component {
+
+  render() {
+    let embedUrl = `${this.props.url}?embed=on`
+    let loaded = (this.state || {}).loaded
+
+    let iframeStyle = (!loaded && {display: 'none'}) || {}
+    let loadingStyle = (loaded && {display: 'none'}) || {}
+
+    return (
+      <div key={this.props.url}>
+        <iframe className='results-item-preview'
+                onLoad={() => { this.setState({loaded: true}) }}
+                src={embedUrl} style={iframeStyle} />
+        <div className="iframe-loading" style={loadingStyle}>
+          <i className="fa fa-spinner loading-animate" aria-hidden="true"></i>
+          <p><small>Loading</small></p>
+        </div>
+      </div>
+    )
+  }
 }
 
 class ResultItem extends React.Component {
@@ -171,8 +187,8 @@ class Results extends React.Component {
     } else {
       results = <p>-- no results --=</p>
     }
-
     let preview = (this.state || {}).preview
+    let previewUrl = preview && url.resolve(window.location.href, preview)
 
     return (
       <div>
@@ -184,8 +200,8 @@ class Results extends React.Component {
             { this.renderPageController() }
           </div>
           {preview &&
-            <div className='col-sm-8'>
-              <Preview url={url.resolve(window.location.href, preview)} />
+            <div className='col-sm-8' key={previewUrl}>
+              <Preview url={previewUrl} />
             </div>
           }
         </div>
