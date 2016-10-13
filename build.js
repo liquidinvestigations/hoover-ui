@@ -1,6 +1,7 @@
+var fs = require('fs')
 var path = require('path')
 var webpack = require('webpack')
-var CopyWebpackPlugin = require('copy-webpack-plugin')
+var child_process = require('child_process')
 
 var BUILD_DIR = path.resolve(__dirname, 'build')
 var SRC_DIR = path.resolve(__dirname, 'src')
@@ -15,20 +16,26 @@ var WEBPACK_OPTIONS = {
       {test: /\.js$/, include: SRC_DIR, loader: 'babel'},
     ],
   },
-  plugins: [
-    new CopyWebpackPlugin([
-        {from: 'src/index.html'},
-        {from: 'src/doc.html'},
-        {from: 'src/terms.html'},
-        {from: 'src/style.css'},
-        {from: 'assets'},
-      ],
-      {copyUnmodified: false})
-  ],
   watch: useWatch,
+}
+
+function render(template, options) {
+  return template.replace(/{{\s*([^\s{]+)\s*}}/g,
+    function(_, name) { return options[name] })
 }
 
 webpack(WEBPACK_OPTIONS, function(err, stats) {
   if(err) { return console.error(err) }
   console.log(stats.toString("normal"))
+
+  var t = '' + new Date().getTime()
+  for(let name of ['/index.html', '/doc.html', '/terms.html']) {
+    var data = render(fs.readFileSync(SRC_DIR + name, 'utf8'), {t: t})
+    fs.writeFileSync(BUILD_DIR + name, data, 'utf8')
+  }
+
+  fs.writeFileSync(BUILD_DIR + '/style.css',
+    fs.readFileSync(SRC_DIR + '/style.css'))
+
+  child_process.execSync('cp -r assets/* build/')
 })
