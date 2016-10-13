@@ -3,16 +3,16 @@ var webpack = require('webpack')
 var CopyWebpackPlugin = require('copy-webpack-plugin')
 
 var BUILD_DIR = path.resolve(__dirname, 'build')
-var APP_DIR = path.resolve(__dirname, 'src')
+var SRC_DIR = path.resolve(__dirname, 'src')
 
 var useWatch = process.argv.indexOf('--watch') > -1
 
 var WEBPACK_OPTIONS = {
-  entry: APP_DIR + '/index.js',
+  entry: SRC_DIR + '/index.js',
   output: {path: BUILD_DIR, filename: 'app.js'},
   module: {
     loaders: [
-      {test: /\.js$/, include: APP_DIR, loader: 'babel'},
+      {test: /\.js$/, include: SRC_DIR, loader: 'babel'},
     ],
   },
   plugins: [
