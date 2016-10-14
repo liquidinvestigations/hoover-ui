@@ -79,6 +79,9 @@ class Search extends React.Component {
       if (this.state.query.order != SORT_RELEVANCE) {
         u += "&order=" + encodeURIComponent(this.state.query.order)
       }
+      if (this.props.collections) {
+        u += "&collections=" + this.props.collections.map(encodeURIComponent).join('+');
+      }
       return u
     }.bind(this)
 

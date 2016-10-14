@@ -12,26 +12,26 @@ export const SORT_NEWEST = 'Newest'
 export const SORT_OLDEST = 'Oldest'
 export const SORT_OPTIONS = [SORT_RELEVANCE, SORT_NEWEST, SORT_OLDEST]
 
-class SearchPage extends React.Component {
-
-  parseQuery(url) {
-    var rv = {}
-    if (url.indexOf('?') > -1) {
-      url.match(/\?(.*)/)[1].split('&').forEach(function (pair) {
-        var kv = pair.split('=').map(decodeURIComponent)
-        var k = kv[0], v = kv[1]
-        if (!rv[k]) {
-          rv[k] = []
-        }
-        rv[k].push(v)
-      })
-    }
-    return rv
+function parseQuery(url) {
+  var rv = {}
+  if (url.indexOf('?') > -1) {
+    url.match(/\?(.*)/)[1].split('&').forEach(function (pair) {
+      var kv = pair.split('=').map(decodeURIComponent)
+      var k = kv[0], v = kv[1]
+      if (!rv[k]) {
+        rv[k] = []
+      }
+      rv[k].push(v)
+    })
   }
+  return rv
+}
+
+class SearchPage extends React.Component {
 
   constructor(props) {
     super(props)
-    var args = this.parseQuery(window.location.href)
+    var args = parseQuery(window.location.href)
     this.state = {
       q: args.q ? ("" + args.q).replace(/\+/g, ' ') : "",
       size: args.size ? +args.size : 10,
@@ -59,9 +59,7 @@ class SearchPage extends React.Component {
         selectedCollections = sel ? sel.split('+') : []
       }
       else {
-        selectedCollections = resp.map(function (c) {
-          return c.name
-        })
+        selectedCollections = resp.map((c) => c.name)
       }
 
       if (this.state.q) {
@@ -87,8 +85,17 @@ class SearchPage extends React.Component {
       if(this.refs.q.value)
         this.refs.form.submit()
     }
+
+    let onChangeCollections = (selected) => {
+      this.setState({selectedCollections: selected})
+      setTimeout(refreshForm, 0)
+    }
+
+    let collectionsValue = this.state.selectedCollections.join(' ')
+
     return (
       <form id="search-form" ref="form">
+        <input type="hidden" name="collections" value={collectionsValue} />
         <div className="row">
           <div className="col-sm-2">
             <h1>Hoover</h1>
@@ -116,7 +123,7 @@ class SearchPage extends React.Component {
                   label="Results per page"
                   values={sizeOptions}
                   value={this.state.size}
-                  onChanged={refreshForm}
+                  onChange={refreshForm}
                   />
               </div>{' '}
               <div className="form-group col-sm-4">
@@ -125,7 +132,7 @@ class SearchPage extends React.Component {
                   label="Sort by"
                   values={SORT_OPTIONS}
                   value={this.state.order}
-                  onChanged={refreshForm}
+                  onChange={refreshForm}
                 />
               </div>{' '}
               <button type="submit">search</button>
@@ -139,7 +146,7 @@ class SearchPage extends React.Component {
           <CollectionsBox
             collections={this.state.collections}
             selected={this.state.selectedCollections}
-            onChanged={(selected) => this.setState({selectedCollections: selected})} />
+            onChange={onChangeCollections} />
           <Search
             query={this.state.query}
             collections={this.state.selectedCollections}
