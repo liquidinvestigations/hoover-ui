@@ -28,10 +28,11 @@ webpack(WEBPACK_OPTIONS, function(err, stats) {
   if(err) { return console.error(err) }
   console.log(stats.toString("normal"))
 
-  var t = '' + new Date().getTime()
+  var timestamp = '' + new Date().getTime()
   for(let name of ['/index.html', '/doc.html', '/terms.html']) {
-    var data = render(fs.readFileSync(SRC_DIR + name, 'utf8'), {t: t})
-    fs.writeFileSync(BUILD_DIR + name, data, 'utf8')
+    var src = fs.readFileSync(SRC_DIR + name, 'utf8')
+    var output = render(src, {timestamp: timestamp})
+    fs.writeFileSync(BUILD_DIR + name, output, 'utf8')
   }
 
   fs.writeFileSync(BUILD_DIR + '/style.css',
