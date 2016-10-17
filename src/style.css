@@ -87,6 +87,11 @@ i.fa {
   color: gray;
 }
 
+.results-item-entities {
+  color: gray;
+  font-size: 0.7em;
+}
+
 .results-item-preview {
   width: 100%;
   height: 2000px;

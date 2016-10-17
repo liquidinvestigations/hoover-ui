@@ -2,6 +2,9 @@ import url from 'url'
 import React from 'react'
 import Charts from './charts.js'
 
+const nlp = require('nlp_compromise');
+var _ = require('underscore');
+
 function timeMs() {
   return new Date().getTime()
 }
@@ -35,6 +38,44 @@ class ResultItem extends React.Component {
     return 'doc/' + item._collection + '/' + item._id
   }
 
+  _getEntities(text) {
+    text = text.substring(0,3000);
+    // if (!text) return;
+    // // keep only 1000 characters from the text
+    // text = text.split('').splice(0, 3000).join('');
+    var entities = [];
+    var processedText = nlp.text(text);
+    var peopleEntities = processedText.people();
+    var orgEntities = processedText.organizations();
+
+
+    // TODO : rewrite with _.map
+    for (var i = 0 ; i < peopleEntities.length ; i++) {
+      var person = peopleEntities[i];
+      var name = '';
+
+      // TODO : rewrite with _.map and join(' ');
+      if (person.firstName || person.lastName) {
+        if (person.firstName) name += person.firstName + ' ';
+        if (person.lastName) name += person.lastName;
+        entities.push({name: name, type: 'people'});
+      }
+
+    }
+
+    for (var i = 0 ; i < orgEntities.length ; i++) {
+      var org = orgEntities[i];
+      entities.push({name: this._cleanName(org.text), type: 'org'});
+    }
+
+    return _.uniq(entities, function(t) { return t.name });
+
+  }
+
+  _cleanName(str) {
+    return str.replace(/[.\d,]/,'');
+  }
+
   render() {
     let {hit} = this.props
     var url = this.viewUrl(hit)
@@ -59,6 +100,24 @@ class ResultItem extends React.Component {
     var word_count = null;
     if (hit.fields["word-count"] && hit.fields["word-count"].length == 1) {
       word_count = hit.fields["word-count"][0] + " words";
+    }
+    // Named Entities Recognition with NLP
+    // var entitiesText = null;
+    // if (hit.fields.text && hit.fields.text.length > 0) {
+    //   entitiesText = hit.fields.text.map((txt, n) =>
+    //     var entities = this._getEntities(txt)
+    //     <span >
+    //   )
+    // }
+    var entitiesText = [];
+    if (hit.fields.text && hit.fields.text.length > 0) {
+      //var entities = this._getEntities("The Nasa Inc. told Bob Marley it was okay");
+      var entities = this._getEntities(hit.fields.text[0]);
+      for (var i = 0; i<entities.length; i++) {
+        var entity = entities[i];
+        //entitiesText.push("<span class='results-item-" + entity.type + "'>" + entity.name + "</span>");
+        entitiesText.push(entity.name);
+      }
     }
 
     return (
@@ -89,6 +148,7 @@ class ResultItem extends React.Component {
         </h3>
         <p className='results-item-path'>{hit.fields.path}</p>
         <p className='results-item-word-count'>{word_count}</p>
+        <p className='results-item-entities'>{entitiesText.join(', ')}</p>
         <ul className="results-highlight">
           { text }
         </ul>
