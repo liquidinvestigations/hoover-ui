@@ -7,7 +7,7 @@ case $COMMAND in
 
   build)
     set -x
-    exec ./node_modules/.bin/webpack "$@"
+    exec node build.js "$@"
     ;;
 
   remotedev)

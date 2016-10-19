@@ -5,7 +5,7 @@
 
   <link rel="stylesheet" href="/bootstrap.css">
   <link rel="stylesheet" href="/font-awesome.min.css">
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/style.css?t={{ timestamp }}">
 </head>
 <body>
 
@@ -16,8 +16,7 @@
 <script src="/bootstrap.js"></script>
 <script>
 window.HOOVER_UI_CONFIG = {page: 'doc'}
-document.write('<script type="text/javascript" src="/app.js?t='
-  +new Date().getTime()+'"><'+'/script>\n')
 </script>
+<script type="text/javascript" src="/app.js?t={{ timestamp }}"></script>
 </body>
 </html>
