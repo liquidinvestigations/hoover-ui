@@ -2,6 +2,12 @@ body {
   margin-top: 10px;
 }
 
+code {
+  background: none;
+  padding: 0;
+  color: #4223DB;
+}
+
 #loggedin-btngroup::after {
   display: none;
 }
@@ -168,4 +174,17 @@ i.fa {
 @keyframes spin {
     from { transform: scale(1) rotate(0deg);}
     to { transform: scale(1) rotate(360deg);}
+}
+
+
+.doc-page .card-block {
+  padding-bottom: 0;
+}
+.doc-page .doc-section-title {
+  padding: 5px 20px;
+  margin: 0;
+  font-size: 14px;
+}
+.doc-page td {
+  font-size: 14px;
 }
