@@ -10,31 +10,9 @@ export default class DocPage extends React.Component {
     })
   }
 
-
   render() {
     let doc = (this.state || {}).doc
     if(! doc) return <p>loading...</p>
-
-    let files = doc.data.files && doc.data.files.map((item, index) => {
-      return (
-        <tr key={index}>
-          <td>
-            {item.id ?
-              <a href={`./${item.id}`}>{item.filename}</a> :
-              <span>{item.filename}</span>
-            }
-          </td>
-          <td className="text-muted">{item.content_type}</td>
-          <td>
-            {item.id ?
-              <a href={`./${item.id}/raw/`} title="Original file">
-                <i className="fa fa-file-o"></i>
-              </a> :
-              <code>-- broken link --</code>}
-          </td>
-        </tr>
-      )
-    })
 
 
     return (
@@ -95,46 +73,85 @@ export default class DocPage extends React.Component {
             </tbody>
           </table>
 
-          {doc.data.type == 'email' && (
-            <table className="table table-sm">
-              <tbody>
-                <tr>
-                  <td>From</td>
-                  <td>{doc.data.from}</td>
-                </tr>
-                <tr>
-                  <td>To</td>
-                  <td>{doc.data.to.join(', ')}</td>
-                </tr>
-                <tr>
-                  <td>Date</td>
-                  <td>{doc.data.date}</td>
-                </tr>
-                <tr>
-                  <td>Subject</td>
-                  <td>{doc.data.subject}</td>
-                </tr>
-              </tbody>
-            </table>
-          )
-         }
         </div>
 
-        {doc.data.files &&
-          <div>
-            <p className="bg-faded text-uppercase doc-section-title">
-              Files</p>
-            <div className="card-block">
-              <table className="table table-sm">
-                <tbody>{files}</tbody>
-              </table>
-            </div>
-          </div>
-        }
+        <DocEmailSection doc={doc} />
+        <DocFilesSection title="Files" data={doc.data.files || []} />
 
       </div>
     )
 
   }
 
+}
+
+class DocEmailSection extends React.Component {
+
+  render() {
+    let doc = this.props.doc
+    let files = []
+
+    for(let item in doc.data.attachments || []) {
+      let data = doc.data.attachments[item]
+      data.id = item
+      files.push(data)
+    }
+
+    return doc.data.type == 'email' && (
+      <div>
+        <p className="bg-faded text-uppercase doc-section-title">Email</p>
+        <div className="card-block">
+          <table className="table table-sm">
+            <tbody>
+              <tr><td>From</td> <td>{doc.data.from}</td></tr>
+              <tr><td>To</td> <td>{doc.data.to.join(', ')}</td></tr>
+              <tr><td>Date</td> <td>{doc.data.date}</td></tr>
+              <tr><td>Subject</td> <td>{doc.data.subject || '---'}</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <DocFilesSection title="Attachments" data={files} />
+      </div>
+    )
+  }
+
+}
+
+class DocFilesSection extends React.Component {
+
+  render() {
+    let files = this.props.data.map((item, index) => {
+      return (
+        <tr key={index}>
+          <td>
+            {item.id ?
+              <a href={`./${item.id}`}>{item.filename}</a> :
+              <span>{item.filename}</span>
+            }
+          </td>
+          <td className="text-muted">{item.content_type}</td>
+          <td className="text-muted">{item.size}</td>
+          <td>
+            {item.id ?
+              <a href={`./${item.id}/raw/`} title="Original file">
+                <i className="fa fa-file-o"></i>
+              </a> :
+              <code>-- broken link --</code>}
+          </td>
+        </tr>
+      )
+    })
+
+    return files.length > 0 && (
+      <div>
+        <p className="bg-faded text-uppercase doc-section-title">
+          {this.props.title}</p>
+        <div className="card-block">
+          <table className="table table-sm">
+            <tbody>{files}</tbody>
+          </table>
+        </div>
+      </div>
+    )
+  }
 }
