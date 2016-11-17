@@ -176,15 +176,49 @@ i.fa {
     to { transform: scale(1) rotate(360deg);}
 }
 
-
-.doc-page .card-block {
-  padding-bottom: 0;
+.doc-page {
+  padding-bottom: 15px;
 }
-.doc-page .doc-section-title {
-  padding: 5px 20px;
-  margin: 0;
-  font-size: 14px;
+.doc-page table {
+  margin-top: 10px;
 }
 .doc-page td {
+  padding-right: 20px;
+  padding-left: 20px;
+  padding-top: 5px;
+  font-size: 13px;
+}
+.doc-page tr:first-child td {
+  padding-top: 0;
+  border: none;
+}
+.doc-page .lead {
+  margin: 15px 20px;
+  font-size: 20px;
+}
+.doc-page .doc-section-title {
+  text-transform: uppercase;
+  padding: 5px 20px;
   font-size: 14px;
+}
+.doc-page .content {
+  overflow-wrap: break-word;
+  position: relative;
+  padding: 5px 20px;
+  background: #fff;
+  font-size: 13px;
+}
+.doc-page .content-wrap {
+  max-height: 150px;
+  overflow: hidden;
+  cursor: pointer;
+}
+.doc-page .content-wrap:before {
+  background: linear-gradient(rgba(255, 255, 255, 0), 80.67%, white);
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  content: '';
+  left: 0;
+  top: 0;
 }
