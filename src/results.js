@@ -174,13 +174,13 @@ class Results extends React.Component {
       <div>
         <Charts {... this.props} />
         <div className='row'>
-          <div className='col-sm-4'>
+          <div className='col-sm-4 results'>
             { this.renderPageController() }
             { results }
             { this.renderPageController() }
           </div>
           {preview &&
-            <div className='col-sm-8' key={previewUrl}>
+            <div className='col-sm-8 preview' key={previewUrl}>
               <Document
                 docUrl={previewUrl}
                 collectionBaseUrl={url.resolve(previewUrl, './')}
