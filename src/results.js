@@ -1,32 +1,10 @@
 import url from 'url'
 import React from 'react'
 import Charts from './charts.js'
+import DocPage from './DocPage'
 
 function timeMs() {
   return new Date().getTime()
-}
-
-class Preview extends React.Component {
-
-  render() {
-    let embedUrl = `${this.props.url}?embed=on`
-    let loaded = (this.state || {}).loaded
-
-    let iframeStyle = (!loaded && {display: 'none'}) || {}
-    let loadingStyle = (loaded && {display: 'none'}) || {}
-
-    return (
-      <div key={this.props.url}>
-        <iframe className='results-item-preview'
-                onLoad={() => { this.setState({loaded: true}) }}
-                src={embedUrl} style={iframeStyle} />
-        <div className="iframe-loading" style={loadingStyle}>
-          <i className="fa fa-spinner loading-animate" aria-hidden="true"></i>
-          <p><small>Loading</small></p>
-        </div>
-      </div>
-    )
-  }
 }
 
 class ResultItem extends React.Component {
@@ -201,7 +179,7 @@ class Results extends React.Component {
           </div>
           {preview &&
             <div className='col-sm-8' key={previewUrl}>
-              <Preview url={previewUrl} />
+              <DocPage docUrl={previewUrl} />
             </div>
           }
         </div>

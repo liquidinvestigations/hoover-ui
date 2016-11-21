@@ -187,6 +187,7 @@ i.fa {
   padding-left: 20px;
   padding-top: 5px;
   font-size: 13px;
+  border: none;
 }
 .doc-page tr:first-child td {
   padding-top: 0;

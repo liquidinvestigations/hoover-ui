@@ -3,21 +3,30 @@ import React from 'react'
 export default class DocPage extends React.Component {
 
   componentWillMount() {
-    let docUrl = window.location.href.split('?')[0]
-    let dataUrl = `${docUrl}/json`
-    $.get(dataUrl, (doc) => {
-      this.setState({doc})
+    let docUrl = this.props.docUrl || window.location.href.split('?')[0]
+    let split = docUrl.split('/'),
+        docId = split.pop(),
+        baseUrl = split.join('/')
+    this.baseUrl = baseUrl
+
+    $.get(`${docUrl}/json`, (doc) => {
+      this.setState({doc: doc, loaded: true})
     })
   }
 
   render() {
-    let doc = (this.state || {}).doc
-    if(!doc) return <p></p>
+    let state = this.state || {},
+        doc = state.doc || {},
+        loaded = state.loaded
+    let data = doc.content,
+        files = doc.children || []
+
+    if(!loaded) return <DocLoading />
 
     return (
       <div className="card doc-page">
 
-        <div className="lead">#{doc.id}: {doc.data.filename}</div>
+        <div className="lead">#{doc.id}: {data.filename}</div>
 
         <div className="bg-faded doc-section-title">Meta</div>
 
@@ -25,61 +34,61 @@ export default class DocPage extends React.Component {
           <tbody>
             <tr>
               <td style={{width: 110}}>Path</td>
-              <td><code>{doc.data.path}</code></td>
+              <td><code>{data.path}</code></td>
             </tr>
             <tr>
               <td>Filename</td>
-              <td><code>{doc.data.filename}</code></td>
+              <td><code>{data.filename}</code></td>
             </tr>
-            {doc.data.type &&
+            {data.type &&
               <tr>
                 <td>Type</td>
-                <td><code>{doc.data.type}</code></td>
+                <td><code>{data.type}</code></td>
               </tr>
             }
-            {doc.data.type != 'folder' && doc.data.md5 &&
+            {data.type != 'folder' && data.md5 &&
               <tr>
                 <td>MD5</td>
-                <td><code>{doc.data.md5}</code></td>
+                <td><code>{data.md5}</code></td>
               </tr>
             }
-            {doc.data.type != 'folder' && doc.data.sha1 &&
+            {data.type != 'folder' && data.sha1 &&
               <tr>
                 <td>SHA1</td>
-                <td><code>{doc.data.sha1}</code></td>
+                <td><code>{data.sha1}</code></td>
               </tr>
             }
-            {doc.data.lang &&
+            {data.lang &&
               <tr>
                 <td>Language</td>
-                <td><code>{doc.data.lang}</code></td>
+                <td><code>{data.lang}</code></td>
               </tr>
             }
-            {doc.data['date-created'] &&
+            {data['date-created'] &&
               <tr>
                 <td>Created</td>
-                <td>{doc.data['date-created']}</td>
+                <td>{data['date-created']}</td>
               </tr>
             }
-            {doc.data.date &&
+            {data.date &&
               <tr>
                 <td>Modified</td>
-                <td>{doc.data.date}</td>
+                <td>{data.date}</td>
               </tr>
             }
-            {doc.data.pgp &&
+            {data.pgp &&
               <tr>
                 <td>PGP</td>
-                <td>{doc.data.pgp}</td>
+                <td>{data.pgp}</td>
               </tr>
             }
           </tbody>
         </table>
 
         <DocEmailSection doc={doc} />
-        <DocFilesSection title="Files" data={doc.data.files || []} />
-        <DocTextSection doc={doc} />
-
+        <DocFilesSection title="Files" data={files} baseUrl={this.baseUrl} />
+        <DocTextSection data={doc.content.text} title="Text" />
+        <DocTextSection data={doc.content.tree} title="Headers &amp Parts"/>
       </div>
     )
 
@@ -90,27 +99,21 @@ export default class DocPage extends React.Component {
 class DocEmailSection extends React.Component {
 
   render() {
-    let doc = this.props.doc
-    let files = []
+    let doc = this.props.doc || {},
+        data = doc.content,
+        files = doc.children || []
 
-    for(let item in doc.data.attachments || []) {
-      let data = doc.data.attachments[item]
-      data.id = item
-      files.push(data)
-    }
-
-    return doc.data.type == 'email' && (
+    return data.type == 'email' && (
       <div>
         <p className="bg-faded doc-section-title">Email</p>
         <table className="table table-sm">
           <tbody>
-            <tr><td>From</td> <td>{doc.data.from}</td></tr>
-            <tr><td>To</td> <td>{doc.data.to.join(', ')}</td></tr>
-            <tr><td>Date</td> <td>{doc.data.date}</td></tr>
-            <tr><td>Subject</td> <td>{doc.data.subject || '---'}</td></tr>
+            <tr><td>From</td> <td>{data.from}</td></tr>
+            <tr><td>To</td> <td>{data.to.join(', ')}</td></tr>
+            <tr><td>Date</td> <td>{data.date}</td></tr>
+            <tr><td>Subject</td> <td>{data.subject || '---'}</td></tr>
           </tbody>
         </table>
-        <DocFilesSection title="Attachments" data={files} />
       </div>
     )
   }
@@ -125,7 +128,7 @@ class DocFilesSection extends React.Component {
         <tr key={index}>
           <td>
             {item.id ?
-              <a href={`./${item.id}`}>{item.filename}</a> :
+              <a href={`${this.props.baseUrl}/${item.id}`}>{item.filename}</a> :
               <span>{item.filename}</span>
             }
           </td>
@@ -133,7 +136,8 @@ class DocFilesSection extends React.Component {
           <td className="text-muted">{item.size}</td>
           <td>
             {item.id ?
-              <a href={`./${item.id}/raw/`} title="Original file">
+              <a href={`${this.props.baseUrl}/${item.id}/raw/`}
+                  title="Original file">
                 <i className="fa fa-file-o"></i>
               </a> :
               <code>-- broken link --</code>}
@@ -144,40 +148,57 @@ class DocFilesSection extends React.Component {
 
     return files.length > 0 && (
       <div>
-        <p className="bg-faded doc-section-title">
-          {this.props.title}</p>
+        <p className="bg-faded doc-section-title">{this.props.title}</p>
         <table className="table table-sm">
           <tbody>{files}</tbody>
         </table>
       </div>
     )
   }
+
 }
 
 
 class DocTextSection extends React.Component {
 
   render() {
-    let doc = this.props.doc
-    if(!doc.data.text) return
-    let expanded = (this.state || {}).expanded
-    let data = doc.data.text.replace(/ /g,'');
-    if(data.length <= 700) {
+    let data = this.props.data
+    if(!data) return <div></div>
+
+    let expanded = (this.state || {}).expanded,
+        text = data.replace(/ /g,''),
+        title = this.props.title
+
+    if(text.length <= 700) {
       expanded = true
     }
 
     return (
       <div>
-        <div className="bg-faded doc-section-title">Text</div>
+        <div className="bg-faded doc-section-title">{title}</div>
         <div className="content">
-          {expanded ? <pre>{data}</pre> :
+          {expanded ? <pre>{text}</pre> :
            <pre className="content-wrap"
                 onClick={() => {this.setState({expanded: true})}}>
-              {data}
+              {text}
             </pre>
           }
         </div>
       </div>
     )
   }
+
+}
+
+class DocLoading extends React.Component {
+
+  render() {
+    return (
+      <div className="iframe-loading">
+        <i className="fa fa-spinner loading-animate" aria-hidden="true"></i>
+        <p><small>Loading</small></p>
+      </div>
+    )
+  }
+
 }
