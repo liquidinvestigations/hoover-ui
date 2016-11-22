@@ -20,13 +20,34 @@ export default class Document extends React.Component {
     let loaded = state.loaded
     let data = doc.content
     let files = doc.children || []
+    let headerLinks = []
 
     if(!loaded) return <DocumentLoading />
+
+    if(data.type != 'folder') {
+      headerLinks.push({
+        href: `${this.props.docUrl}/raw/`,
+        text: `Original file`,
+        icon: 'fa fa-cloud-download'
+      })
+    }
+
+    let ocrData = Object.keys((data.ocr || {})).map((tag, index) => {
+      return {tag: tag, text: data.ocr[tag]}
+    })
+    headerLinks.push(...ocrData.map(({tag}) => {
+      return {
+        href: `${this.props.docUrl}/ocr/${tag}/`,
+        text: `OCR  ${tag}`,
+        icon: 'fa fa-cloud-download'
+      }
+    }))
 
     return (
       <div className="card doc-page">
 
         <div className="lead">#{doc.id}: {data.filename}</div>
+        <DocumentHeaderLinks data={headerLinks} />
 
         <div className="bg-faded doc-section-title">Meta</div>
 
@@ -88,10 +109,13 @@ export default class Document extends React.Component {
         <DocumentEmailSection doc={doc} />
         <DocumentFilesSection title="Files"
                               data={files} baseUrl={this.baseUrl} />
-        <DocumentTextSection text={doc.content.text}
-                             title="Text" />
-        <DocumentTextSection text={doc.content.tree}
-                              title="Headers &amp; Parts"/>
+        <DocumentTextSection title="Text"
+                             text={doc.content.text} />
+        <DocumentTextSection title="Headers &amp; Parts"
+                             text={doc.content.tree} />
+        {ocrData.map(({tag, text}) =>
+          <DocumentTextSection title={tag} text={text} />
+        )}
       </div>
     )
   }
@@ -120,6 +144,7 @@ class DocumentEmailSection extends React.Component {
         </div>
       )
     }
+    return null
   }
 
 }
@@ -167,7 +192,7 @@ class DocumentTextSection extends React.Component {
 
   render() {
     let text = this.props.text
-    if(!text) return <div></div>
+    if(!text) return null
 
     let expanded = (this.state || {}).expanded
     let title = this.props.title
@@ -205,4 +230,25 @@ class DocumentLoading extends React.Component {
     )
   }
 
+}
+
+
+class DocumentHeaderLinks extends React.Component {
+
+  render() {
+    let data = this.props.data
+    if(data) {
+      return(
+        <ul className="nav nav-inline">
+          {data.map(({href, text, icon}, index) =>
+            <li className="nav-item" key={index}>
+              {icon && <i className={icon}></i>}
+              <a href={href} className="nav-link">{text}</a>
+            </li>
+          )}
+        </ul>
+      )
+    }
+    return null
+  }
 }

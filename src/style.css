@@ -205,6 +205,14 @@ i.fa {
   padding: 5px 20px;
   font-size: 14px;
 }
+.doc-page .nav {
+  margin: 15px 20px;
+  font-size: 13px;
+}
+.doc-page .nav .fa {
+  color: rgb(57, 83, 194);
+  padding-right: 5px;
+}
 .doc-page .content {
   overflow-wrap: break-word;
   position: relative;
