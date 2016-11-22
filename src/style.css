@@ -193,6 +193,9 @@ i.fa {
   padding-top: 0;
   border: none;
 }
+.doc-page td.col {
+  width: 110px;
+}
 .doc-page .lead {
   margin: 15px 20px;
   font-size: 20px;

@@ -1,7 +1,9 @@
-import url from 'url'
 import React from 'react'
+import url from 'url'
+
 import Charts from './charts.js'
-import DocPage from './DocPage'
+import Document from './document.js'
+
 
 function timeMs() {
   return new Date().getTime()
@@ -179,7 +181,7 @@ class Results extends React.Component {
           </div>
           {preview &&
             <div className='col-sm-8' key={previewUrl}>
-              <DocPage docUrl={previewUrl} />
+              <Document docUrl={previewUrl} />
             </div>
           }
         </div>
