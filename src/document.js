@@ -130,7 +130,9 @@ export default class Document extends React.Component {
 
         <DocumentEmailSection doc={doc} />
         <DocumentFilesSection title="Files"
-                              data={files} baseUrl={this.baseUrl} />
+                              data={files} baseUrl={this.baseUrl}
+                              fullPage={this.props.fullPage}
+                              />
         <DocumentTextSection title="Text"
                              text={doc.content.text} />
         <DocumentTextSection title="Headers &amp; Parts"
@@ -174,13 +176,17 @@ class DocumentEmailSection extends React.Component {
 class DocumentFilesSection extends React.Component {
 
   render() {
-    let {data, baseUrl, title} = this.props
+    let {data, baseUrl, title, fullPage} = this.props
     let files = data.map(({id, filename, content_type, size}, index) => {
       return (
         <tr key={index}>
           <td>
             {id
-              ? <a href={`${baseUrl}/${id}`}>{filename}</a>
+              ? (
+                <a href={`${baseUrl}/${id}`}
+                  target={fullPage ? null : '_blank'}
+                  >{filename}</a>
+              )
               : <span>{filename}</span>
             }
           </td>
@@ -188,10 +194,13 @@ class DocumentFilesSection extends React.Component {
           <td className="text-muted">{size}</td>
           <td>
             {id
-              ? <a href={`${baseUrl}/${id}/raw/${filename}`}
+              ? (
+                <a href={`${baseUrl}/${id}/raw/${filename}`}
+                  target={fullPage ? null : '_blank'}
                   title="Original file">
-                <i className="fa fa-file-o"></i>
-              </a>
+                  <i className="fa fa-file-o"></i>
+                </a>
+              )
               : <code>-- broken link --</code>}
           </td>
         </tr>
