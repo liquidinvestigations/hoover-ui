@@ -157,10 +157,10 @@ class DocumentEmailSection extends React.Component {
           <p className="bg-faded doc-section-title">Email</p>
           <table className="table table-sm">
             <tbody>
-              <tr><td>From</td> <td>{data.from}</td></tr>
-              <tr><td>To</td> <td>{data.to.join(', ')}</td></tr>
-              <tr><td>Date</td> <td>{data.date}</td></tr>
-              <tr><td>Subject</td> <td>{data.subject || '---'}</td></tr>
+              <tr><td>From</td><td>{data.from}</td></tr>
+              <tr><td>To</td><td>{data.to.join(', ')}</td></tr>
+              <tr><td>Date</td><td>{data.date}</td></tr>
+              <tr><td>Subject</td><td>{data.subject || '---'}</td></tr>
             </tbody>
           </table>
         </div>
