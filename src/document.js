@@ -24,6 +24,15 @@ export default class Document extends React.Component {
 
     if(!loaded) return <DocumentLoading />
 
+    if(! this.props.fullPage) {
+      headerLinks.push({
+        href: `${this.props.docUrl}`,
+        text: "Open in new tab",
+        icon: 'fa fa-external-link-square',
+        target: '_blank',
+      })
+    }
+
     if(data.type != 'folder') {
       headerLinks.push({
         href: `${this.props.docUrl}/raw/`,

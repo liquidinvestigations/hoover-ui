@@ -6,7 +6,7 @@ export default class DocPage extends React.Component {
 
     render() {
         let docUrl = window.location.href.split('?')[0]
-        return <Document docUrl={docUrl} />
+        return <Document docUrl={docUrl} fullPage={true} />
     }
 
 }
