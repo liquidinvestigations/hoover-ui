@@ -134,11 +134,14 @@ export default class Document extends React.Component {
                               fullPage={this.props.fullPage}
                               />
         <DocumentTextSection title="Text"
-                             text={doc.content.text} />
+                             text={doc.content.text}
+                             fullPage={this.props.fullPage} />
         <DocumentTextSection title="Headers &amp; Parts"
-                             text={doc.content.tree} />
+                             text={doc.content.tree}
+                             fullPage={this.props.fullPage} />
         {ocrData.map(({tag, text}) =>
-          <DocumentTextSection title={tag} text={text} />
+          <DocumentTextSection title={tag} text={text}
+                               fullPage={this.props.fullPage} />
         )}
       </div>
     )
@@ -225,11 +228,16 @@ class DocumentTextSection extends React.Component {
     let text = this.props.text
     if(!text) return null
 
-    let expanded = (this.state || {}).expanded
+    let expanded = this.props.fullPage || (this.state || {}).expanded
     let title = this.props.title
 
     if(text.length <= 700) {
       expanded = true
+    }
+
+    let expand = (e) => {
+      e.preventDefault()
+      this.setState({expanded: true})
     }
 
     return (
@@ -238,12 +246,18 @@ class DocumentTextSection extends React.Component {
         <div className="content">
           {expanded
            ? <pre>{text}</pre>
-           : <pre className="content-wrap"
-                  onClick={() => {this.setState({expanded: true})}}>
+           : <pre className="content-wrap" onClick={expand}>
               {text}
             </pre>
           }
         </div>
+        {(! expanded) && (
+          <div className="content">
+            <a className='expand' onClick={expand} href='#'>
+              ... more
+            </a>
+          </div>
+        )}
       </div>
     )
   }
