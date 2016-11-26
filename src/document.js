@@ -44,7 +44,7 @@ export default class Document extends React.Component {
 
     if(data.type != 'folder') {
       headerLinks.push({
-        href: `${this.props.docUrl}/raw/`,
+        href: `${this.props.docUrl}/raw/${data.filename}`,
         text: `Original file`,
         icon: 'fa fa-cloud-download'
       })
@@ -188,7 +188,7 @@ class DocumentFilesSection extends React.Component {
           <td className="text-muted">{size}</td>
           <td>
             {id
-              ? <a href={`${baseUrl}/${id}/raw/`}
+              ? <a href={`${baseUrl}/${id}/raw/${filename}`}
                   title="Original file">
                 <i className="fa fa-file-o"></i>
               </a>
