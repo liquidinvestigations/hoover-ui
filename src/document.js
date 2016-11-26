@@ -266,8 +266,10 @@ class DocumentLoading extends React.Component {
 function HeaderLink({text, icon, ... props}) {
   return (
     <li className="nav-item">
-      <i className={icon}></i>
-      <a className="nav-link" {... props}>{text}</a>
+      <a className="nav-link" {... props}>
+        <i className={icon}></i>
+        {text}
+      </a>
     </li>
   )
 }
