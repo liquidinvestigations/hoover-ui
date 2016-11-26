@@ -47,7 +47,11 @@ export default class Document extends React.Component {
       <div className="card doc-page">
 
         <div className="lead">#{doc.id}: {data.filename}</div>
-        <DocumentHeaderLinks data={headerLinks} />
+        <ul className="nav nav-inline">
+          {headerLinks.map((props, index) =>
+            <HeaderLink key={index} {... props} />
+          )}
+        </ul>
 
         <div className="bg-faded doc-section-title">Meta</div>
 
@@ -232,23 +236,11 @@ class DocumentLoading extends React.Component {
 
 }
 
-
-class DocumentHeaderLinks extends React.Component {
-
-  render() {
-    let data = this.props.data
-    if(data) {
-      return(
-        <ul className="nav nav-inline">
-          {data.map(({href, text, icon}, index) =>
-            <li className="nav-item" key={index}>
-              {icon && <i className={icon}></i>}
-              <a href={href} className="nav-link">{text}</a>
-            </li>
-          )}
-        </ul>
-      )
-    }
-    return null
-  }
+function HeaderLink({text, icon, ... props}) {
+  return (
+    <li className="nav-item">
+      <i className={icon}></i>
+      <a className="nav-link" {... props}>{text}</a>
+    </li>
+  )
 }
