@@ -13,7 +13,8 @@ var WEBPACK_OPTIONS = {
   output: {path: BUILD_DIR, filename: 'app.js'},
   module: {
     loaders: [
-      {test: /\.js$/, include: SRC_DIR, loader: 'babel'},
+      {test: /\.js$/, include: SRC_DIR,
+        loader: 'babel', query: {presets: 'latest,stage-3,react'}},
     ],
   },
   watch: useWatch,
