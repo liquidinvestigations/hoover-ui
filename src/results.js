@@ -181,7 +181,10 @@ class Results extends React.Component {
           </div>
           {preview &&
             <div className='col-sm-8' key={previewUrl}>
-              <Document docUrl={previewUrl} />
+              <Document
+                docUrl={previewUrl}
+                collectionBaseUrl={url.resolve(previewUrl, './')}
+                />
             </div>
           }
         </div>

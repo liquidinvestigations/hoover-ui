@@ -24,7 +24,16 @@ export default class Document extends React.Component {
 
     if(!loaded) return <DocumentLoading />
 
-    if(! this.props.fullPage) {
+    if(this.props.fullPage) {
+      if(doc.parent_id) {
+        headerLinks.push({
+          href: `${this.props.collectionBaseUrl}${doc.parent_id}`,
+          text: "Up",
+          icon: 'fa fa-level-up',
+        })
+      }
+    }
+    else {
       headerLinks.push({
         href: `${this.props.docUrl}`,
         text: "Open in new tab",
