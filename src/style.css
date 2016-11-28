@@ -5,6 +5,10 @@ body {
   margin: 0;
 }
 
+body {
+  overflow-y: none;
+}
+
 .wrapper {
   position: absolute;
   padding-top: 130px;
@@ -21,10 +25,12 @@ body {
   height: 120px;
 }
 .wrapper .results-content {
+  padding-top: 35px;
   height: 100%;
 }
 .wrapper .results,
-.wrapper .preview {
+.wrapper .preview,
+.wrapper .collections-box {
   overflow-y: scroll;
   max-height: 100%
 }
