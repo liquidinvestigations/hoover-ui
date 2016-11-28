@@ -9,9 +9,14 @@ export default class Document extends React.Component {
 
     this.baseUrl = split.join('/')
 
-    $.get(`${docUrl}/json`, (doc) => {
-      this.setState({doc: doc, loaded: true})
-    })
+    if(window.HOOVER_HYDRATE_DOC) {
+      this.setState({doc: window.HOOVER_HYDRATE_DOC, loaded: true})
+    }
+    else {
+      $.get(`${docUrl}/json`, (doc) => {
+        this.setState({doc: doc, loaded: true})
+      })
+    }
   }
 
   render() {
