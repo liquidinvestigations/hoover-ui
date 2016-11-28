@@ -172,9 +172,9 @@ class Results extends React.Component {
 
     return (
       <div>
-        <Charts {... this.props} />
         <div className='row'>
           <div className='col-sm-4 results'>
+            <Charts {... this.props} />
             { this.renderPageController() }
             { results }
             { this.renderPageController() }
