@@ -55,8 +55,8 @@ export default class Document extends React.Component {
       })
     }
 
-    let ocrData = Object.keys((data.ocr || {})).map((tag, index) => {
-      return {tag: tag, text: data.ocr[tag]}
+    let ocrData = Object.keys((data.ocrtext || {})).map((tag, index) => {
+      return {tag: tag, text: data.ocrtext[tag]}
     })
     headerLinks.push(...ocrData.map(({tag}) => {
       return {
