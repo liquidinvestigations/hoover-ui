@@ -47,7 +47,7 @@ export default class Document extends React.Component {
       })
     }
 
-    if(data.type != 'folder') {
+    if(data.filetype != 'folder') {
       headerLinks.push({
         href: `${this.props.docUrl}/raw/${data.filename}`,
         text: `Original file`,
@@ -55,8 +55,8 @@ export default class Document extends React.Component {
       })
     }
 
-    let ocrData = Object.keys((data.ocr || {})).map((tag, index) => {
-      return {tag: tag, text: data.ocr[tag]}
+    let ocrData = Object.keys((data.ocrtext || {})).map((tag, index) => {
+      return {tag: tag, text: data.ocrtext[tag]}
     })
     headerLinks.push(...ocrData.map(({tag}) => {
       return {
@@ -88,19 +88,19 @@ export default class Document extends React.Component {
               <td>Filename</td>
               <td><code>{data.filename}</code></td>
             </tr>
-            {data.type &&
+            {data.filetype &&
               <tr>
                 <td>Type</td>
-                <td><code>{data.type}</code></td>
+                <td><code>{data.filetype}</code></td>
               </tr>
             }
-            {data.type != 'folder' && data.md5 &&
+            {data.filetype != 'folder' && data.md5 &&
               <tr>
                 <td>MD5</td>
                 <td><code>{data.md5}</code></td>
               </tr>
             }
-            {data.type != 'folder' && data.sha1 &&
+            {data.filetype != 'folder' && data.sha1 &&
               <tr>
                 <td>SHA1</td>
                 <td><code>{data.sha1}</code></td>
@@ -161,7 +161,7 @@ class DocumentEmailSection extends React.Component {
     let data = doc.content
     let files = doc.children || []
 
-    if(data.type == 'email') {
+    if(data.filetype == 'email') {
       return (
         <div>
           <p className="bg-faded doc-section-title">Email</p>
