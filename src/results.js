@@ -17,18 +17,20 @@ class ResultItem extends React.Component {
 
   render() {
     let {hit} = this.props
+    let fields = hit.fields || {}
+    let highlight = hit.highlight || {}
     var url = this.viewUrl(hit)
 
     var attachIcon = null
-    if (hit.fields.hasOwnProperty('attachments') && hit.fields.attachments[0]) {
+    if (fields.hasOwnProperty('attachments') && fields.attachments[0]) {
       attachIcon = <i className="fa fa-paperclip" aria-hidden="true"></i>
     }
 
-    var title = hit.fields.filename
+    var title = fields.filename
     var text = null
-    if (hit.highlight) {
-      if (hit.highlight.text) {
-        text = hit.highlight.text.map((hi, n) =>
+    if (highlight) {
+      if (highlight.text) {
+        text = highlight.text.map((hi, n) =>
           <li key={`${hit._url}${n}`}>
             <span dangerouslySetInnerHTML={{__html: hi}}/>
           </li>
@@ -37,8 +39,8 @@ class ResultItem extends React.Component {
     }
 
     var word_count = null;
-    if (hit.fields["word-count"] && hit.fields["word-count"].length == 1) {
-      word_count = hit.fields["word-count"][0] + " words";
+    if (fields["word-count"] && fields["word-count"].length == 1) {
+      word_count = fields["word-count"][0] + " words";
     }
 
     return (
@@ -67,7 +69,7 @@ class ResultItem extends React.Component {
             }}
             >{attachIcon} {title}</a>
         </h3>
-        <p className='results-item-path'>{hit.fields.path}</p>
+        <p className='results-item-path'>{fields.path}</p>
         <p className='results-item-word-count'>{word_count}</p>
         <ul className="results-highlight">
           { text }
