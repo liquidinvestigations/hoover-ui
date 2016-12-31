@@ -52,6 +52,7 @@ export default class Document extends React.Component {
         href: `${this.props.docUrl}/raw/${data.filename}`,
         text: `Original file`,
         icon: 'fa fa-cloud-download',
+        target: this.props.fullPage ? null : '_blank',
       })
     }
 
