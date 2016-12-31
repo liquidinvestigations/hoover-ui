@@ -51,7 +51,7 @@ export default class Document extends React.Component {
       headerLinks.push({
         href: `${this.props.docUrl}/raw/${data.filename}`,
         text: `Original file`,
-        icon: 'fa fa-cloud-download'
+        icon: 'fa fa-cloud-download',
       })
     }
 
@@ -62,7 +62,7 @@ export default class Document extends React.Component {
       return {
         href: `${this.props.docUrl}/ocr/${tag}/`,
         text: `OCR  ${tag}`,
-        icon: 'fa fa-cloud-download'
+        icon: 'fa fa-cloud-download',
       }
     }))
 
