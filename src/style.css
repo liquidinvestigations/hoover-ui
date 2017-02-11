@@ -237,3 +237,6 @@ i.fa {
 .doc-page .expand {
   font-size: 13px;
 }
+.doc-page .content pre {
+  white-space: pre-wrap;
+}
