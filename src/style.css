@@ -37,6 +37,25 @@ code {
   color: rgba(0, 0, 0, 0.40);
 }
 
+.results-wrapper {
+  position: fixed;
+  top: 130px;
+  bottom: 0;
+  left: 18%;
+  right: 1%;
+}
+
+.results-search {
+  overflow-x: visible;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.results-preview {
+  overflow-y: auto;
+  height: 100%;
+}
+
 #results, .results-highlight {
   padding: 0;
 }

@@ -173,16 +173,16 @@ class Results extends React.Component {
     let previewUrl = preview && url.resolve(window.location.href, preview)
 
     return (
-      <div>
-        <Charts {... this.props} />
+      <div className='results-wrapper'>
         <div className='row'>
-          <div className='col-sm-4'>
+          <div className='col-sm-4 results-search'>
+            <Charts {... this.props} />
             { this.renderPageController() }
             { results }
             { this.renderPageController() }
           </div>
           {preview &&
-            <div className='col-sm-8' key={previewUrl}>
+            <div className='col-sm-8 results-preview' key={previewUrl}>
               <Document
                 docUrl={previewUrl}
                 collectionBaseUrl={url.resolve(previewUrl, './')}
