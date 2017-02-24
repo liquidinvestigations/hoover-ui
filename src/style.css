@@ -46,7 +46,6 @@ code {
 }
 
 .results-search {
-  overflow-x: visible;
   overflow-y: auto;
   height: 100%;
 }
@@ -58,6 +57,7 @@ code {
 
 #results, .results-highlight {
   padding: 0;
+  list-style: none;
 }
 
 .results-item {
@@ -92,7 +92,6 @@ i.fa {
 .results-item h3 {
   font-size: 16px;
   margin: 0;
-  color: #0275d8;
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 100%;

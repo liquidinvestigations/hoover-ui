@@ -59,6 +59,7 @@ class ResultItem extends React.Component {
         }}
         >
         <h3>
+          {this.props.n}.
           <a href={url} target="_blank"
             onClick={(e) => {
               let modifier = e.metaKey || e.ctrlKey || e.shiftKey || e.altKey
@@ -152,10 +153,12 @@ class Results extends React.Component {
   }
 
   render() {
-    var resultList = this.props.hits.map((hit) =>
+    var start = 1 + (this.props.page - 1) * this.props.pagesize
+    var resultList = this.props.hits.map((hit, i) =>
       <ResultItem
         key={hit._url}
         hit={hit}
+        n={start + i}
         onPreview={(url) => {
           this.setState({preview: url})
         }}
@@ -164,8 +167,7 @@ class Results extends React.Component {
 
     var results = null
     if (this.props.hits.length > 0) {
-      var start = 1 + (this.props.page - 1) * this.props.pagesize
-      results = <ol id="results" start={start}> {resultList} </ol>
+      results = <ul id="results"> {resultList} </ul>
     } else {
       results = <p>-- no results --=</p>
     }
