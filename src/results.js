@@ -177,18 +177,22 @@ class Results extends React.Component {
     return (
       <div className='results-wrapper'>
         <div className='row'>
-          <div className='col-sm-4 results-search'>
-            <Charts {... this.props} />
-            { this.renderPageController() }
-            { results }
-            { this.renderPageController() }
+          <div className='col-sm-4'>
+            <div className='results-search'>
+              <Charts {... this.props} />
+              { this.renderPageController() }
+              { results }
+              { this.renderPageController() }
+            </div>
           </div>
           {preview &&
-            <div className='col-sm-8 results-preview' key={previewUrl}>
-              <Document
-                docUrl={previewUrl}
-                collectionBaseUrl={url.resolve(previewUrl, './')}
-                />
+            <div className='col-sm-8' key={previewUrl}>
+              <div className='results-preview'>
+                <Document
+                  docUrl={previewUrl}
+                  collectionBaseUrl={url.resolve(previewUrl, './')}
+                  />
+              </div>
             </div>
           }
         </div>
