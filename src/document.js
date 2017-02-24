@@ -234,36 +234,14 @@ class DocumentTextSection extends React.Component {
     let text = this.props.text
     if(!text) return null
 
-    let expanded = this.props.fullPage || (this.state || {}).expanded
     let title = this.props.title
-
-    if(text.length <= 700) {
-      expanded = true
-    }
-
-    let expand = (e) => {
-      e.preventDefault()
-      this.setState({expanded: true})
-    }
 
     return (
       <div>
         <div className="bg-faded doc-section-title">{title}</div>
         <div className="content">
-          {expanded
-           ? <pre>{text}</pre>
-           : <pre className="content-wrap" onClick={expand}>
-              {text}
-            </pre>
-          }
+          <pre>{text}</pre>
         </div>
-        {(! expanded) && (
-          <div className="content">
-            <a className='expand' onClick={expand} href='#'>
-              ... more
-            </a>
-          </div>
-        )}
       </div>
     )
   }
