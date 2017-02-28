@@ -1,32 +1,12 @@
-import url from 'url'
 import React from 'react'
+import url from 'url'
+
 import Charts from './charts.js'
+import Document from './document.js'
+
 
 function timeMs() {
   return new Date().getTime()
-}
-
-class Preview extends React.Component {
-
-  render() {
-    let embedUrl = `${this.props.url}?embed=on`
-    let loaded = (this.state || {}).loaded
-
-    let iframeStyle = (!loaded && {display: 'none'}) || {}
-    let loadingStyle = (loaded && {display: 'none'}) || {}
-
-    return (
-      <div key={this.props.url}>
-        <iframe className='results-item-preview'
-                onLoad={() => { this.setState({loaded: true}) }}
-                src={embedUrl} style={iframeStyle} />
-        <div className="iframe-loading" style={loadingStyle}>
-          <i className="fa fa-spinner loading-animate" aria-hidden="true"></i>
-          <p><small>Loading</small></p>
-        </div>
-      </div>
-    )
-  }
 }
 
 class ResultItem extends React.Component {
@@ -37,18 +17,20 @@ class ResultItem extends React.Component {
 
   render() {
     let {hit} = this.props
+    let fields = hit.fields || {}
+    let highlight = hit.highlight || {}
     var url = this.viewUrl(hit)
 
     var attachIcon = null
-    if (hit.fields.hasOwnProperty('attachments') && hit.fields.attachments[0]) {
+    if (fields.hasOwnProperty('attachments') && fields.attachments[0]) {
       attachIcon = <i className="fa fa-paperclip" aria-hidden="true"></i>
     }
 
-    var title = hit.fields.filename
+    var title = fields.filename
     var text = null
-    if (hit.highlight) {
-      if (hit.highlight.text) {
-        text = hit.highlight.text.map((hi, n) =>
+    if (highlight) {
+      if (highlight.text) {
+        text = highlight.text.map((hi, n) =>
           <li key={`${hit._url}${n}`}>
             <span dangerouslySetInnerHTML={{__html: hi}}/>
           </li>
@@ -57,8 +39,8 @@ class ResultItem extends React.Component {
     }
 
     var word_count = null;
-    if (hit.fields["word-count"] && hit.fields["word-count"].length == 1) {
-      word_count = hit.fields["word-count"][0] + " words";
+    if (fields["word-count"] && fields["word-count"].length == 1) {
+      word_count = fields["word-count"][0] + " words";
     }
 
     return (
@@ -77,6 +59,7 @@ class ResultItem extends React.Component {
         }}
         >
         <h3>
+          {this.props.n}.
           <a href={url} target="_blank"
             onClick={(e) => {
               let modifier = e.metaKey || e.ctrlKey || e.shiftKey || e.altKey
@@ -87,7 +70,7 @@ class ResultItem extends React.Component {
             }}
             >{attachIcon} {title}</a>
         </h3>
-        <p className='results-item-path'>{hit.fields.path}</p>
+        <p className='results-item-path'>{fields.path}</p>
         <p className='results-item-word-count'>{word_count}</p>
         <ul className="results-highlight">
           { text }
@@ -170,10 +153,12 @@ class Results extends React.Component {
   }
 
   render() {
-    var resultList = this.props.hits.map((hit) =>
+    var start = 1 + (this.props.page - 1) * this.props.pagesize
+    var resultList = this.props.hits.map((hit, i) =>
       <ResultItem
         key={hit._url}
         hit={hit}
+        n={start + i}
         onPreview={(url) => {
           this.setState({preview: url})
         }}
@@ -182,8 +167,7 @@ class Results extends React.Component {
 
     var results = null
     if (this.props.hits.length > 0) {
-      var start = 1 + (this.props.page - 1) * this.props.pagesize
-      results = <ol id="results" start={start}> {resultList} </ol>
+      results = <ul id="results"> {resultList} </ul>
     } else {
       results = <p>-- no results --=</p>
     }
@@ -191,17 +175,24 @@ class Results extends React.Component {
     let previewUrl = preview && url.resolve(window.location.href, preview)
 
     return (
-      <div>
-        <Charts {... this.props} />
+      <div className='results-wrapper'>
         <div className='row'>
           <div className='col-sm-4'>
-            { this.renderPageController() }
-            { results }
-            { this.renderPageController() }
+            <div className='results-search'>
+              <Charts {... this.props} />
+              { this.renderPageController() }
+              { results }
+              { this.renderPageController() }
+            </div>
           </div>
           {preview &&
             <div className='col-sm-8' key={previewUrl}>
-              <Preview url={previewUrl} />
+              <div className='results-preview'>
+                <Document
+                  docUrl={previewUrl}
+                  collectionBaseUrl={url.resolve(previewUrl, './')}
+                  />
+              </div>
             </div>
           }
         </div>

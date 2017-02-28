@@ -66,6 +66,9 @@ class Search extends React.Component {
   }
 
   onResults(resp) {
+    if(resp.status == 'error') {
+      return this.onError(resp)
+    }
     this.setState({
       searching: false
     })
@@ -112,7 +115,7 @@ class Search extends React.Component {
     this.setState({
       searching: false,
       results: null,
-      error: "Server error while searching"
+      error: err.reason || "Unknown server error while searching"
     })
   }
 
