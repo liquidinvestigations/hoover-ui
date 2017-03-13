@@ -29,8 +29,9 @@ class ResultItem extends React.Component {
     var title = fields.title
     var text = fields.description[0] || fields.title[0]
     if (highlight) {
-      if (highlight.text) {
-        text = highlight.text.map((hi, n) =>
+      let hiData = highlight.title || highlight.description
+      if (hiData) {
+        text = hiData.map((hi, n) =>
           <li key={`${hit._url}${n}`}>
             <span dangerouslySetInnerHTML={{__html: hi}}/>
           </li>
