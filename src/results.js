@@ -69,9 +69,9 @@ class ResultItem extends React.Component {
                 this.props.onPreview(url)
               }
             }}
-            >{attachIcon} {title}</a>
+            >{attachIcon} {fields.institution}: {title}</a>
         </h3>
-        <p className='results-item-path'>{fields.path}</p>
+        <p className='results-item-path'>{fields.date} {fields.identifier}</p>
         <p className='results-item-word-count'>{word_count}</p>
         <ul className="results-highlight">
           { text }
