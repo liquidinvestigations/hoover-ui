@@ -26,8 +26,8 @@ class ResultItem extends React.Component {
       attachIcon = <i className="fa fa-paperclip" aria-hidden="true"></i>
     }
 
-    var title = fields.filename
-    var text = null
+    var title = fields.title
+    var text = fields.description[0] || fields.title[0]
     if (highlight) {
       if (highlight.text) {
         text = highlight.text.map((hi, n) =>
