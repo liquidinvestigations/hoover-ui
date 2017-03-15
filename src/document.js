@@ -139,6 +139,9 @@ export default class Document extends React.Component {
                               data={files} baseUrl={this.baseUrl}
                               fullPage={this.props.fullPage}
                               />
+        <DocumentHTMLSection html={doc.safe_html}
+                             title="HTML"
+                             />
         <DocumentTextSection title="Text"
                              text={doc.content.text}
                              fullPage={this.props.fullPage} />
@@ -245,6 +248,26 @@ class DocumentTextSection extends React.Component {
       </div>
     )
   }
+
+}
+
+class DocumentHTMLSection extends React.Component {
+
+    render() {
+        let html = this.props.html
+        if(!html) return null
+
+        let title = this.props.title
+
+        return (
+            <div>
+                <div className="bg-faded doc-section-title">{title}</div>
+                <div className="content">
+                    <span dangerouslySetInnerHTML={{__html: html}}/>
+                </div>
+            </div>
+        )
+    }
 
 }
 
