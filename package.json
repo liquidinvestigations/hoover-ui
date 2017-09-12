@@ -8,22 +8,22 @@
     "build": "webpack -p"
   },
   "dependencies": {
-    "babel-core": "^6.17.0",
-    "babel-loader": "^6.2.4",
-    "babel-preset-latest": "^6.16.0",
-    "babel-preset-react": "^6.16.0",
-    "babel-preset-stage-3": "^6.17.0",
-    "d3": "^4.2.6",
-    "d3-color": "^1.0.1",
-    "d3-shape": "^1.0.3",
-    "d3-svg": "^0.2.0",
-    "react": "^15.2.0",
-    "react-dom": "^15.2.0",
-    "webpack": "^1.13.1"
+    "babel-core": "=6.17.0",
+    "babel-loader": "=6.2.4",
+    "babel-preset-latest": "=6.16.0",
+    "babel-preset-react": "=6.16.0",
+    "babel-preset-stage-3": "=6.17.0",
+    "d3": "=4.2.6",
+    "d3-color": "=1.0.1",
+    "d3-shape": "=1.0.3",
+    "d3-svg": "=0.2.0",
+    "react": "=15.2.0",
+    "react-dom": "=15.2.0",
+    "webpack": "=1.13.1"
   },
   "devDependencies": {
-    "body-parser": "^1.15.2",
-    "express": "^4.14.0",
-    "request": "^2.75.0"
+    "body-parser": "=1.15.2",
+    "express": "=4.14.0",
+    "request": "=2.75.0"
   }
 }
