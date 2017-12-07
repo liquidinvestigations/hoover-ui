@@ -12,8 +12,18 @@ code {
   display: none;
 }
 
-#search-guide {
+#search-infotext {
   font-size: 80%;
+}
+
+#search-guide {
+  float: left;
+  margin: 0;
+}
+
+#search-batch {
+  float: right;
+  margin: 0;
 }
 
 #search-input-box { position: relative; }

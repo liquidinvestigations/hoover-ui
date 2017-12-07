@@ -97,10 +97,16 @@ class SearchPage extends React.Component {
                 className="form-control"
                 placeholder="Search..."
                 />
-              <p id="search-guide" className="form-text text-muted">
-                Refine your search using{' '}
-                <a href={SEARCH_GUIDE}>this handy guide</a>.
-              </p>
+              <div id="search-infotext" className="form-text text-muted">
+                <p id="search-guide">
+                  Refine your search using{' '}
+                  <a href={SEARCH_GUIDE}>this handy guide</a>.
+                </p>
+                <p id="search-batch">
+                  <a href="batch.html">Batch search</a>
+                </p>
+                <div className="clearfix"></div>
+              </div>
             </div>
             <div className="form-inline row">
               <div className="form-group col-sm-4">
