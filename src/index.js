@@ -1,6 +1,7 @@
 import React from 'react'
 import {render} from 'react-dom'
 import SearchPage from './searchpage.js'
+import BatchPage from './batchpage.js'
 import DocPage from './docpage.js'
 
 let rootNode = document.getElementById('app')
@@ -10,6 +11,9 @@ let page = (name) => {
 
     case 'search':
       return <SearchPage/>
+
+    case 'batch':
+      return <BatchPage/>
 
     case 'doc':
       return <DocPage/>
