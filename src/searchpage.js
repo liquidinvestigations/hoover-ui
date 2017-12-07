@@ -3,6 +3,7 @@ import Dropdown from './dropdown.js'
 import Navbar from './navbar.js'
 import CollectionsBox from './collections-box.js'
 import Search from './search.js'
+import parseQuery from './parseQuery.js'
 
 const sizeOptions = [10, 50, 200, 1000]
 const SEARCH_GUIDE = 'https://github.com/hoover/search/wiki/Guide-to-search-terms'
@@ -11,21 +12,6 @@ export const SORT_RELEVANCE = 'Relevance'
 export const SORT_NEWEST = 'Newest'
 export const SORT_OLDEST = 'Oldest'
 export const SORT_OPTIONS = [SORT_RELEVANCE, SORT_NEWEST, SORT_OLDEST]
-
-function parseQuery(url) {
-  var rv = {}
-  if (url.indexOf('?') > -1) {
-    url.match(/\?(.*)/)[1].split('&').forEach(function (pair) {
-      var kv = pair.split('=').map(decodeURIComponent)
-      var k = kv[0], v = kv[1]
-      if (!rv[k]) {
-        rv[k] = []
-      }
-      rv[k].push(v)
-    })
-  }
-  return rv
-}
 
 class SearchPage extends React.Component {
 
