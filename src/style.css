@@ -21,7 +21,7 @@ code {
   margin: 0;
 }
 
-#search-batch {
+#search-batch, #search-back {
   float: right;
   margin: 0;
 }

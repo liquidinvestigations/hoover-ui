@@ -78,6 +78,11 @@ class BatchPage extends React.Component {
                 defaultValue={terms}
                 ></textarea>
             </div>
+            <div id="search-infotext" className="form-text text-muted">
+              <p id="search-back">
+                <a href="./">Back to single search</a>
+              </p>
+            </div>
             <div className="form-inline">
               <button type="submit" className="btn btn-primary">
                 Batch search
