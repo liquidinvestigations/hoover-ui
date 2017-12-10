@@ -42,8 +42,20 @@ class BatchPage extends React.Component {
     }.bind(this))
   }
 
+  buildQuery(termsString, selectedCollections) {
+    if(! termsString.trim()) return null
+    if(! selectedCollections.length) return null
+
+    return {
+      terms: termsString.trim().split('\r\n'),
+      collections: selectedCollections,
+    }
+  }
+
   render() {
     let collectionsValue = this.state.selectedCollections.join(' ')
+    let {terms, collections, selectedCollections} = this.state
+    let query = this.buildQuery(terms, selectedCollections)
 
     return (
       <form id="batch-form" ref="form">
@@ -60,7 +72,7 @@ class BatchPage extends React.Component {
                 className="form-control"
                 rows="8"
                 placeholder="search terms, one per line"
-                defaultValue={this.state.terms}
+                defaultValue={terms}
                 ></textarea>
             </div>
             <div className="form-inline row">
@@ -75,10 +87,10 @@ class BatchPage extends React.Component {
         </div>
         <div className="row">
           <CollectionsBox
-            collections={this.state.collections}
-            selected={this.state.selectedCollections} />
+            collections={collections}
+            selected={selectedCollections} />
           <Batch
-            collections={this.state.selectedCollections}
+            query={query}
             />
         </div>
       </form>
