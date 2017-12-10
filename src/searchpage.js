@@ -135,10 +135,12 @@ class SearchPage extends React.Component {
           </div>
         </div>
         <div className="row">
-          <CollectionsBox
-            collections={this.state.collections}
-            selected={this.state.selectedCollections}
-            onChange={onChangeCollections} />
+          <div className="col-sm-2">
+            <CollectionsBox
+              collections={this.state.collections}
+              selected={this.state.selectedCollections}
+              onChange={onChangeCollections} />
+          </div>
           <Search
             query={this.state.query}
             collections={this.state.selectedCollections}

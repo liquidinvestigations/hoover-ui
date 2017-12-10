@@ -63,6 +63,9 @@ class BatchPage extends React.Component {
         <div className="row">
           <div className="col-sm-2">
             <h1>Hoover</h1>
+            <CollectionsBox
+              collections={collections}
+              selected={selectedCollections} />
           </div>
           <div className="col-sm-9">
             <div id="batch-input-box" className="form-group">
@@ -75,23 +78,16 @@ class BatchPage extends React.Component {
                 defaultValue={terms}
                 ></textarea>
             </div>
-            <div className="form-inline row">
+            <div className="form-inline">
               <button type="submit" className="btn btn-primary">
                 Batch search
               </button>
             </div>
+            <Batch query={query} />
           </div>
           <div className="col-sm-1">
             <Navbar />
           </div>
-        </div>
-        <div className="row">
-          <CollectionsBox
-            collections={collections}
-            selected={selectedCollections} />
-          <Batch
-            query={query}
-            />
         </div>
       </form>
     )
