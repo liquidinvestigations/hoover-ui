@@ -11,6 +11,7 @@ var useWatch = process.argv.indexOf('--watch') > -1
 var WEBPACK_OPTIONS = {
   entry: SRC_DIR + '/index.js',
   output: {path: BUILD_DIR, filename: 'app.js'},
+  devtool: '#source-map',
   module: {
     loaders: [
       {test: /\.js$/, include: SRC_DIR,
