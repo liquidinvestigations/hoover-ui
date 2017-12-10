@@ -1,4 +1,5 @@
 import React from 'react'
+import classNames from 'classnames'
 
 class Batch extends React.Component {
 
@@ -92,23 +93,26 @@ class Batch extends React.Component {
   }
 
   render() {
-    let resultList = null
+    let renderResult = ({url, term, count}) => {
+      return (
+        <li key={url} className={classNames({'no-hits': count == 0})}>
+          <h3>
+            <a href={url} className="batch-results-link">
+              <span className="batch-results-hits">
+                {count} hits
+              </span>
+              {term}
+            </a>
+          </h3>
+        </li>
+      )
+    }
 
+    let resultList = null
     if(this.state.results) {
       resultList = (
-        <ul id="results">
-          {(this.state.results).map((result) =>
-            <li key={result.url}>
-              <h3>
-                <a href={result.url}>
-                  {result.term}
-                </a>
-                <span className="">
-                  {result.count} hits
-                </span>
-              </h3>
-            </li>
-          )}
+        <ul id="batch-results">
+          {(this.state.results).map(renderResult)}
         </ul>
       )
     }

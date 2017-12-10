@@ -268,3 +268,24 @@ i.fa {
 .doc-page .content pre {
   white-space: pre-wrap;
 }
+
+#batch-results {
+  padding: 0;
+  list-style: none;
+  margin-top: 1em;
+}
+.batch-results-link {
+  display: block;
+  font-size: 16px;
+}
+.batch-results-hits {
+  width: 5em;
+  font-size: 80%;
+  font-weight: normal;
+  text-decoration: none;
+  display: inline-block;
+  color: #888;
+}
+.no-hits a {
+  color: #888;
+}
