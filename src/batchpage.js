@@ -53,6 +53,16 @@ class BatchPage extends React.Component {
   }
 
   render() {
+    let refreshForm = () => {
+      if(this.refs.terms.value)
+        this.refs.form.submit()
+    }
+
+    let onChangeCollections = (selected) => {
+      this.setState({selectedCollections: selected})
+      setTimeout(refreshForm, 0)
+    }
+
     let collectionsValue = this.state.selectedCollections.join(' ')
     let {terms, collections, selectedCollections} = this.state
     let query = this.buildQuery(terms, selectedCollections)
@@ -65,12 +75,14 @@ class BatchPage extends React.Component {
             <h1>Hoover</h1>
             <CollectionsBox
               collections={collections}
-              selected={selectedCollections} />
+              selected={selectedCollections}
+              onChange={onChangeCollections} />
           </div>
           <div className="col-sm-9">
             <div id="batch-input-box" className="form-group">
               <textarea
                 id="batch-input-terms"
+                ref="terms"
                 name="terms"
                 className="form-control"
                 rows="8"

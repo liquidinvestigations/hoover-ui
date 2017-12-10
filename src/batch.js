@@ -63,11 +63,20 @@ class Batch extends React.Component {
       return u
     }.bind(this)
 
-    let results = resp.responses.map((r) => ({
-      term: r._query_string,
-      count: r.hits.total,
-      url: url(r._query_string),
-    }))
+    let results = resp.responses.map((r) => {
+      let rv = {
+        term: r._query_string,
+        url: url(r._query_string),
+      }
+      if(r.error) {
+        console.error(r.error)
+        rv.error = true
+      }
+      else {
+        rv.count = r.hits.total
+      }
+      return rv
+    })
 
     this.setState({
       results: results,
@@ -93,14 +102,20 @@ class Batch extends React.Component {
   }
 
   render() {
-    let renderResult = ({url, term, count}) => {
+    let renderResult = ({url, term, error, count}) => {
+      let result
+      if(error) {
+        result = <span className="batch-results-result error-result">error</span>
+      }
+      else {
+        result = <span className="batch-results-result">{count} hits</span>
+      }
+
       return (
         <li key={url} className={classNames({'no-hits': count == 0})}>
           <h3>
             <a href={url} className="batch-results-link">
-              <span className="batch-results-hits">
-                {count} hits
-              </span>
+              {result}
               {term}
             </a>
           </h3>
