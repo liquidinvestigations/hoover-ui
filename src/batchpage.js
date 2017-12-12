@@ -15,14 +15,15 @@ class BatchPage extends React.Component {
       args: args,
       collections: null,
       selectedCollections: null,
+      limits: null,
     }
   }
 
   componentDidMount() {
-    this.getCollections()
+    this.getCollectionsAndLimits()
   }
 
-  getCollections() {
+  getCollectionsAndLimits() {
     $.get('/collections', function (resp) {
       var collections = resp
       var selectedCollections = null
@@ -40,6 +41,10 @@ class BatchPage extends React.Component {
         selectedCollections,
       })
     }.bind(this))
+
+    $.get('/limits', function(resp) {
+      this.setState({limits: resp})
+    }.bind(this))
   }
 
   buildQuery(termsString, selectedCollections) {
@@ -53,7 +58,7 @@ class BatchPage extends React.Component {
   }
 
   render() {
-    if(! this.state.collections) {
+    if(! (this.state.collections && this.state.limits)) {
       return <p>loading ...</p>
     }
 
@@ -68,7 +73,7 @@ class BatchPage extends React.Component {
     }
 
     let collectionsValue = this.state.selectedCollections.join(' ')
-    let {terms, collections, selectedCollections} = this.state
+    let {terms, collections, selectedCollections, limits} = this.state
     let query = this.buildQuery(terms, selectedCollections)
 
     return (
