@@ -13,8 +13,8 @@ class BatchPage extends React.Component {
     this.state = {
       terms: args.terms ? ("" + args.terms).replace(/\+/g, ' ') : "",
       args: args,
-      collections: [],
-      selectedCollections: [],
+      collections: null,
+      selectedCollections: null,
     }
   }
 
@@ -53,6 +53,10 @@ class BatchPage extends React.Component {
   }
 
   render() {
+    if(! this.state.collections) {
+      return <p>loading ...</p>
+    }
+
     let refreshForm = () => {
       if(this.refs.terms.value)
         this.refs.form.submit()
