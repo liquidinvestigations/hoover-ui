@@ -23,26 +23,32 @@ class Batch extends React.Component {
 
     this.setState({
       searching: true,
-      query: query
+      query: query,
+      batchOffset: 0,
+      results: [],
+      error: null,
+    }, () => {
+      this.batchSearch()
     })
 
-    this.batchSearch(
-      query,
-      this.onResults.bind(this),
-      this.onError.bind(this))
   }
 
-  batchSearch(query, success, error) {
+  batchSearch(success, error) {
+    let offset = this.state.batchOffset
+    let {terms, collections, batchSize} = this.state.query
+    let termsPage = terms.slice(offset, offset + batchSize)
     $.ajax({
       url: '/batch',
       method: 'POST',
       contentType: 'application/json',
       data: JSON.stringify({
-        query_strings: query.terms,
-        collections: query.collections,
+        query_strings: termsPage,
+        collections: collections,
       }),
       success: success,
       error: error,
+      success: this.onResults.bind(this),
+      error: this.onError.bind(this),
     })
   }
 
@@ -50,9 +56,6 @@ class Batch extends React.Component {
     if(resp.status == 'error') {
       return this.onError(resp)
     }
-    this.setState({
-      searching: false
-    })
 
     var url = function (term) {
       var u = "./?q=" + encodeURIComponent(term)
@@ -63,7 +66,7 @@ class Batch extends React.Component {
       return u
     }.bind(this)
 
-    let results = resp.responses.map((r) => {
+    let newResults = resp.responses.map((r) => {
       let rv = {
         term: r._query_string,
         url: url(r._query_string),
@@ -79,9 +82,25 @@ class Batch extends React.Component {
     })
 
     this.setState({
-      results: results,
-      error: null
+      results: [].concat(this.state.results, newResults),
     })
+
+    let offset = this.state.batchOffset
+    let size = this.state.query.batchSize
+    let nextOffset = offset + size
+
+    if(nextOffset >= this.state.query.terms.length) {
+      this.setState({
+        searching: false
+      })
+    }
+    else {
+      this.setState({
+        batchOffset: nextOffset,
+      }, () => {
+        this.batchSearch()
+      })
+    }
   }
 
   onError(err) {

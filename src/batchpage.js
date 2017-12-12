@@ -47,13 +47,14 @@ class BatchPage extends React.Component {
     }.bind(this))
   }
 
-  buildQuery(termsString, selectedCollections) {
+  buildQuery(termsString, selectedCollections, batchSize) {
     if(! termsString.trim()) return null
     if(! selectedCollections.length) return null
 
     return {
       terms: termsString.trim().split('\r\n'),
       collections: selectedCollections,
+      batchSize: batchSize,
     }
   }
 
@@ -74,7 +75,8 @@ class BatchPage extends React.Component {
 
     let collectionsValue = this.state.selectedCollections.join(' ')
     let {terms, collections, selectedCollections, limits} = this.state
-    let query = this.buildQuery(terms, selectedCollections)
+    let batchSize = limits.batch
+    let query = this.buildQuery(terms, selectedCollections, batchSize)
 
     return (
       <form id="batch-form" ref="form">
