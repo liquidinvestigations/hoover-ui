@@ -13,7 +13,7 @@ class Batch extends React.Component {
     }
   }
 
-  performSearch(query) {
+  performBatchSearch(query) {
     if(!query) {
       return
     }
@@ -26,13 +26,13 @@ class Batch extends React.Component {
       query: query
     })
 
-    this.search(
+    this.batchSearch(
       query,
       this.onResults.bind(this),
       this.onError.bind(this))
   }
 
-  search(query, success, error) {
+  batchSearch(query, success, error) {
     $.ajax({
       url: '/batch',
       method: 'POST',
@@ -94,11 +94,11 @@ class Batch extends React.Component {
   }
 
   componentDidMount() {
-    this.performSearch(this.props.query)
+    this.performBatchSearch(this.props.query)
   }
 
   componentWillReceiveProps(props) {
-    this.performSearch(props.query)
+    this.performBatchSearch(props.query)
   }
 
   render() {
