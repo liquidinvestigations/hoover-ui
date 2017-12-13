@@ -151,8 +151,19 @@ class Batch extends React.Component {
       )
     }
 
+    let progress = ""
+    if(this.state.searching) {
+      let offset = this.state.batchOffset
+      let batchSize = this.state.query.batchSize
+      let terms = this.state.query.terms
+      let page = offset / batchSize
+      let total = Math.ceil(terms.length / batchSize)
+      progress = `Loading, ${page} of ${total}`
+    }
+
     return (
       <div className="batch-results col-sm-10">
+        <p style={{float: 'right'}}>{progress}</p>
         {resultList}
       </div>
     )
