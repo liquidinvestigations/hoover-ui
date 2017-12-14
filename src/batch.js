@@ -105,10 +105,14 @@ class Batch extends React.Component {
 
   onError(err) {
     console.error(err)
+
+    let reason = err.reason
+    if(err.status == 429) reason = "Rate limit exceeded"
+    if(! reason) reason = "Unknown server error while searching"
+
     this.setState({
       searching: false,
-      results: null,
-      error: err.reason || "Unknown server error while searching"
+      error: reason,
     })
   }
 
@@ -159,6 +163,9 @@ class Batch extends React.Component {
       let page = offset / batchSize
       let total = Math.ceil(terms.length / batchSize)
       progress = `Loading, ${page} of ${total}`
+    }
+    if(this.state.error) {
+      progress = `Batch search error: ${this.state.error}`
     }
 
     return (
