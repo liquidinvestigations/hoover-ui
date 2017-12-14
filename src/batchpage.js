@@ -9,10 +9,8 @@ class BatchPage extends React.Component {
 
   constructor(props) {
     super(props)
-    var args = parseQuery(window.location.href)
     this.state = {
-      terms: args.terms ? ("" + args.terms).replace(/\+/g, ' ') : "",
-      args: args,
+      terms: "",
       collections: null,
       selectedCollections: null,
       limits: null,
@@ -25,20 +23,9 @@ class BatchPage extends React.Component {
 
   getCollectionsAndLimits() {
     $.get('/collections', function (resp) {
-      var collections = resp
-      var selectedCollections = null
-      var args = this.state.args
-      if (args.collections) {
-        var sel = '' + args.collections
-        selectedCollections = sel ? sel.split('+') : []
-      }
-      else {
-        selectedCollections = resp.map((c) => c.name)
-      }
-
       this.setState({
-        collections,
-        selectedCollections,
+        collections: resp,
+        selectedCollections: resp.map((c) => c.name),
       })
     }.bind(this))
 
@@ -52,7 +39,7 @@ class BatchPage extends React.Component {
     if(! selectedCollections.length) return null
 
     return {
-      terms: termsString.trim().split('\r\n'),
+      terms: termsString.trim().split('\n'),
       collections: selectedCollections,
       batchSize: batchSize,
     }
@@ -63,14 +50,8 @@ class BatchPage extends React.Component {
       return <p>loading ...</p>
     }
 
-    let refreshForm = () => {
-      if(this.refs.terms.value)
-        this.refs.form.submit()
-    }
-
     let onChangeCollections = (selected) => {
       this.setState({selectedCollections: selected})
-      setTimeout(refreshForm, 0)
     }
 
     let collectionsValue = this.state.selectedCollections.join(' ')
@@ -78,9 +59,16 @@ class BatchPage extends React.Component {
     let batchSize = limits.batch
     let query = this.buildQuery(terms, selectedCollections, batchSize)
 
+    let onSearch = (e) => {
+      e.preventDefault()
+      this.setState({
+        terms: (this.refs.terms || {}).value || ""
+      })
+    }
+
     return (
       <form id="batch-form" ref="form">
-        <input type="hidden" name="collections" value={collectionsValue} />
+        <input type="hidden" value={collectionsValue} />
         <div className="row">
           <div className="col-sm-2">
             <h1>Hoover</h1>
@@ -94,11 +82,9 @@ class BatchPage extends React.Component {
               <textarea
                 id="batch-input-terms"
                 ref="terms"
-                name="terms"
                 className="form-control"
                 rows="8"
                 placeholder="search terms, one per line"
-                defaultValue={terms}
                 ></textarea>
             </div>
             <div id="search-infotext" className="form-text text-muted">
@@ -107,7 +93,7 @@ class BatchPage extends React.Component {
               </p>
             </div>
             <div className="form-inline">
-              <button type="submit" className="btn btn-primary">
+              <button className="btn btn-primary" onClick={onSearch}>
                 Batch search
               </button>
             </div>
