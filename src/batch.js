@@ -149,7 +149,8 @@ class Batch extends React.Component {
     let resultList = null
     let results = this.state.results
     let inf = 1/0
-    let desc = (a, b) => ((b.count || inf) - (a.count || inf))
+    let getCount = (r) => r.count === undefined ? inf : r.count
+    let desc = (a, b) => getCount(b) - getCount(a)
     if(results) {
       resultList = (
         <ul id="batch-results">
