@@ -65,7 +65,7 @@ class CollectionsBox extends React.Component {
       result = <em>loading collections ...</em>
     }
 
-    return <div id="collections-box" className="col-sm-2">{result}</div>
+    return <div id="collections-box">{result}</div>
   }
 }
 
