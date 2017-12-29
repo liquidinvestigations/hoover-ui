@@ -147,10 +147,13 @@ class Batch extends React.Component {
     }
 
     let resultList = null
-    if(this.state.results) {
+    let results = this.state.results
+    let inf = 1/0
+    let desc = (a, b) => ((b.count || inf) - (a.count || inf))
+    if(results) {
       resultList = (
         <ul id="batch-results">
-          {(this.state.results).map(renderResult)}
+          {results.sort(desc).map(renderResult)}
         </ul>
       )
     }
