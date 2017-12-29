@@ -269,6 +269,11 @@ i.fa {
   white-space: pre-wrap;
 }
 
+.batch-rate-limit-message {
+  color: #888;
+  font-size: 14px;
+  padding: 15px;
+}
 #batch-results {
   padding: 0;
   list-style: none;

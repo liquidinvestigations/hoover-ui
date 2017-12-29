@@ -66,6 +66,17 @@ class BatchPage extends React.Component {
       })
     }
 
+    let limitsMessage = null
+    if(limits && limits.requests) {
+      let count = limits.batch * limits.requests.limit
+      let timeout = limits.requests.interval
+      limitsMessage = (
+        <span className="batch-rate-limit-message">
+          rate limit: {count} terms every {timeout} seconds
+        </span>
+      )
+    }
+
     return (
       <form id="batch-form" ref="form">
         <input type="hidden" value={collectionsValue} />
@@ -96,6 +107,7 @@ class BatchPage extends React.Component {
               <button className="btn btn-primary" onClick={onSearch}>
                 Batch search
               </button>
+              {limitsMessage}
             </div>
             <Batch query={query} />
           </div>
