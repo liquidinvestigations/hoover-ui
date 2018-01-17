@@ -9,17 +9,16 @@ function timeMs() {
   return new Date().getTime()
 }
 
+function documentViewUrl(item) {
+  return 'doc/' + item._collection + '/' + item._id
+}
+
 class ResultItem extends React.Component {
 
-  viewUrl(item) {
-    return 'doc/' + item._collection + '/' + item._id
-  }
-
   render() {
-    let {hit} = this.props
+    let {hit, url} = this.props
     let fields = hit.fields || {}
     let highlight = hit.highlight || {}
-    var url = this.viewUrl(hit)
 
     var attachIcon = null
     if (fields.hasOwnProperty('attachments') && fields.attachments[0]) {
@@ -54,7 +53,7 @@ class ResultItem extends React.Component {
         onMouseUp={() => {
           if(this.willFocus) {
             this.tUp = timeMs()
-            this.props.onPreview(url)
+            this.props.onPreview()
           }
         }}
         >
@@ -65,7 +64,7 @@ class ResultItem extends React.Component {
               let modifier = e.metaKey || e.ctrlKey || e.shiftKey || e.altKey
               if(! modifier) {
                 e.preventDefault()
-                this.props.onPreview(url)
+                this.props.onPreview()
               }
             }}
             >{attachIcon} {title}</a>
@@ -154,16 +153,20 @@ class Results extends React.Component {
 
   render() {
     var start = 1 + (this.props.page - 1) * this.props.pagesize
-    var resultList = this.props.hits.map((hit, i) =>
-      <ResultItem
-        key={hit._url}
-        hit={hit}
-        n={start + i}
-        onPreview={(url) => {
-          this.setState({preview: url})
-        }}
-        />
-    )
+    var resultList = this.props.hits.map((hit, i) => {
+      let url = documentViewUrl(hit)
+      return (
+        <ResultItem
+          key={hit._url}
+          hit={hit}
+          url={url}
+          n={start + i}
+          onPreview={() => {
+            this.setState({preview: url})
+          }}
+          />
+      )
+    })
 
     var results = null
     if (this.props.hits.length > 0) {
