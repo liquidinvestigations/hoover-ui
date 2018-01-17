@@ -76,6 +76,10 @@ code {
   cursor: pointer;
 }
 
+.results-item-selected {
+  background: #eee;
+}
+
 .results-item > a {
   color: inherit;
   text-decoration: none;

@@ -1,5 +1,6 @@
 import React from 'react'
 import url from 'url'
+import classNames from 'classnames'
 
 import Charts from './charts.js'
 import Document from './document.js'
@@ -16,7 +17,7 @@ function documentViewUrl(item) {
 class ResultItem extends React.Component {
 
   render() {
-    let {hit, url} = this.props
+    let {hit, url, isSelected} = this.props
     let fields = hit.fields || {}
     let highlight = hit.highlight || {}
 
@@ -42,8 +43,12 @@ class ResultItem extends React.Component {
       word_count = fields["word-count"][0] + " words";
     }
 
+    let className = classNames({
+      'results-item': true,
+      'results-item-selected': isSelected,
+    })
     return (
-      <li className="results-item" key={hit._url}
+      <li className={className} key={hit._url}
         onMouseDown={() => {
           this.willFocus = ! (this.tUp && timeMs() - this.tUp < 300)
         }}
@@ -152,6 +157,7 @@ class Results extends React.Component {
   }
 
   render() {
+    let state = this.state || {}
     var start = 1 + (this.props.page - 1) * this.props.pagesize
     var resultList = this.props.hits.map((hit, i) => {
       let url = documentViewUrl(hit)
@@ -164,6 +170,7 @@ class Results extends React.Component {
           onPreview={() => {
             this.setState({preview: url})
           }}
+          isSelected={url == state.preview}
           />
       )
     })
