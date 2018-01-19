@@ -243,7 +243,7 @@ class DocumentTextSection extends React.Component {
       <div>
         <div className="bg-faded doc-section-title">{title}</div>
         <div className="content">
-          <pre>{text}</pre>
+          <pre>{text.trim()}</pre>
         </div>
       </div>
     )
