@@ -31,11 +31,21 @@ export default class Document extends React.Component {
 
     if(this.props.fullPage) {
       if(doc.parent_id) {
-        headerLinks.push({
-          href: `${this.props.collectionBaseUrl}${doc.parent_id}`,
-          text: "Up",
-          icon: 'fa fa-level-up',
-        })
+        if(doc.has_locations) {
+          headerLinks.push({
+            href: `${this.props.docUrl}?locations=on`,
+            text: "Locations",
+            icon: 'fa fa-level-up',
+          })
+        }
+        else {
+          headerLinks.push({
+            href: `${this.props.collectionBaseUrl}${doc.parent_id}`,
+            text: "Up",
+            icon: 'fa fa-level-up',
+          })
+        }
+
       }
     }
     else {
