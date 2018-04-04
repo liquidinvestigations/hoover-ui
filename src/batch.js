@@ -137,7 +137,7 @@ class Batch extends React.Component {
       return (
         <li key={url} className={classNames({'no-hits': count == 0})}>
           <h3>
-            <a href={url} className="batch-results-link">
+            <a href={url} target="_blank" className="batch-results-link">
               {result}
               {term}
             </a>
