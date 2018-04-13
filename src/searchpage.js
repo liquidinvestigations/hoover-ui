@@ -3,6 +3,7 @@ import Dropdown from './dropdown.js'
 import Navbar from './navbar.js'
 import CollectionsBox from './collections-box.js'
 import Search from './search.js'
+import parseQuery from './parseQuery.js'
 
 const sizeOptions = [10, 50, 200, 1000]
 const SEARCH_GUIDE = 'https://github.com/hoover/search/wiki/Guide-to-search-terms'
@@ -11,21 +12,6 @@ export const SORT_RELEVANCE = 'Relevance'
 export const SORT_NEWEST = 'Newest'
 export const SORT_OLDEST = 'Oldest'
 export const SORT_OPTIONS = [SORT_RELEVANCE, SORT_NEWEST, SORT_OLDEST]
-
-function parseQuery(url) {
-  var rv = {}
-  if (url.indexOf('?') > -1) {
-    url.match(/\?(.*)/)[1].split('&').forEach(function (pair) {
-      var kv = pair.split('=').map(decodeURIComponent)
-      var k = kv[0], v = kv[1]
-      if (!rv[k]) {
-        rv[k] = []
-      }
-      rv[k].push(v)
-    })
-  }
-  return rv
-}
 
 class SearchPage extends React.Component {
 
@@ -111,10 +97,16 @@ class SearchPage extends React.Component {
                 className="form-control"
                 placeholder="Search..."
                 />
-              <p id="search-guide" className="form-text text-muted">
-                Refine your search using{' '}
-                <a href={SEARCH_GUIDE}>this handy guide</a>.
-              </p>
+              <div id="search-infotext" className="form-text text-muted">
+                <p id="search-guide">
+                  Refine your search using{' '}
+                  <a href={SEARCH_GUIDE}>this handy guide</a>.
+                </p>
+                <p id="search-batch">
+                  <a href="batch.html">Batch search</a>
+                </p>
+                <div className="clearfix"></div>
+              </div>
             </div>
             <div className="form-inline row">
               <div className="form-group col-sm-4">
@@ -143,10 +135,12 @@ class SearchPage extends React.Component {
           </div>
         </div>
         <div className="row">
-          <CollectionsBox
-            collections={this.state.collections}
-            selected={this.state.selectedCollections}
-            onChange={onChangeCollections} />
+          <div className="col-sm-2">
+            <CollectionsBox
+              collections={this.state.collections}
+              selected={this.state.selectedCollections}
+              onChange={onChangeCollections} />
+          </div>
           <Search
             query={this.state.query}
             collections={this.state.selectedCollections}

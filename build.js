@@ -11,6 +11,7 @@ var useWatch = process.argv.indexOf('--watch') > -1
 var WEBPACK_OPTIONS = {
   entry: SRC_DIR + '/index.js',
   output: {path: BUILD_DIR, filename: 'app.js'},
+  devtool: '#source-map',
   module: {
     loaders: [
       {test: /\.js$/, include: SRC_DIR,
@@ -30,7 +31,7 @@ webpack(WEBPACK_OPTIONS, function(err, stats) {
   console.log(stats.toString("normal"))
 
   var timestamp = '' + new Date().getTime()
-  for(let name of ['/index.html', '/doc.html', '/terms.html']) {
+  for(let name of ['/index.html', '/batch.html', '/doc.html', '/terms.html']) {
     var src = fs.readFileSync(SRC_DIR + name, 'utf8')
     var output = render(src, {timestamp: timestamp})
     fs.writeFileSync(BUILD_DIR + name, output, 'utf8')

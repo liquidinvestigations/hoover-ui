@@ -31,11 +31,21 @@ export default class Document extends React.Component {
 
     if(this.props.fullPage) {
       if(doc.parent_id) {
-        headerLinks.push({
-          href: `${this.props.collectionBaseUrl}${doc.parent_id}`,
-          text: "Up",
-          icon: 'fa fa-level-up',
-        })
+        if(doc.has_locations) {
+          headerLinks.push({
+            href: `${this.props.docUrl}?locations=on`,
+            text: "Locations",
+            icon: 'fa fa-level-up',
+          })
+        }
+        else {
+          headerLinks.push({
+            href: `${this.props.collectionBaseUrl}${doc.parent_id}`,
+            text: "Up",
+            icon: 'fa fa-level-up',
+          })
+        }
+
       }
     }
     else {
@@ -139,6 +149,9 @@ export default class Document extends React.Component {
                               data={files} baseUrl={this.baseUrl}
                               fullPage={this.props.fullPage}
                               />
+        <DocumentHTMLSection html={doc.safe_html}
+                             title="HTML"
+                             />
         <DocumentTextSection title="Text"
                              text={doc.content.text}
                              fullPage={this.props.fullPage} />
@@ -240,11 +253,31 @@ class DocumentTextSection extends React.Component {
       <div>
         <div className="bg-faded doc-section-title">{title}</div>
         <div className="content">
-          <pre>{text}</pre>
+          <pre>{text.trim()}</pre>
         </div>
       </div>
     )
   }
+
+}
+
+class DocumentHTMLSection extends React.Component {
+
+    render() {
+        let html = this.props.html
+        if(!html) return null
+
+        let title = this.props.title
+
+        return (
+            <div>
+                <div className="bg-faded doc-section-title">{title}</div>
+                <div className="content">
+                    <span dangerouslySetInnerHTML={{__html: html}}/>
+                </div>
+            </div>
+        )
+    }
 
 }
 

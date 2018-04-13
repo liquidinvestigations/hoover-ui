@@ -12,8 +12,18 @@ code {
   display: none;
 }
 
-#search-guide {
+#search-infotext {
   font-size: 80%;
+}
+
+#search-guide {
+  float: left;
+  margin: 0;
+}
+
+#search-batch, #search-back {
+  float: right;
+  margin: 0;
 }
 
 #search-input-box { position: relative; }
@@ -64,6 +74,10 @@ code {
   margin-bottom: 10px;
   position: relative;
   cursor: pointer;
+}
+
+.results-item-selected {
+  background: #eee;
 }
 
 .results-item > a {
@@ -257,4 +271,33 @@ i.fa {
 }
 .doc-page .content pre {
   white-space: pre-wrap;
+}
+
+.batch-rate-limit-message {
+  color: #888;
+  font-size: 14px;
+  padding: 15px;
+}
+#batch-results {
+  padding: 0;
+  list-style: none;
+  margin-top: 1em;
+}
+.batch-results-link {
+  display: block;
+  font-size: 16px;
+}
+.batch-results-result {
+  width: 7em;
+  font-size: 80%;
+  font-weight: normal;
+  text-decoration: none;
+  display: inline-block;
+  color: #888;
+}
+.batch-results-result.error-result {
+  color: red;
+}
+.no-hits a {
+  color: #888;
 }

@@ -32,6 +32,11 @@ class CollectionsBox extends React.Component {
     this.setState({selected})
   }
 
+  changeSelection(selected) {
+    this.setState({selected})
+    this.props.onChange(selected)
+  }
+
   handleChange(name, checked) {
     var all = this.props.collections.map((c) => c.name)
     var selected = this.state.selected.splice(0)
@@ -41,8 +46,54 @@ class CollectionsBox extends React.Component {
       selected = selected.filter((c) => c != name)
     }
 
-    this.setState({selected})
-    this.props.onChange(selected)
+    this.changeSelection(selected)
+  }
+
+  renderCheckboxes(collections, selected) {
+    let allCheckbox = null
+    if(collections.length > 1) {
+      let allSelected = true
+      for(let col of collections) {
+        if(selected.indexOf(col.name) < 0) {
+          allSelected = false
+        }
+      }
+
+      let selectAll = () => {
+        let selected = []
+        if(allSelected) {
+          this.changeSelection([])
+        }
+        else {
+          this.changeSelection(collections.map((col) => col.name))
+        }
+      }
+
+      allCheckbox = (
+        <Checkbox
+          name={'_all_'}
+          title={<em>all</em>}
+          key={'_all_'}
+          checked={allSelected}
+          onChange={selectAll}/>
+      )
+    }
+
+    let collectionCheckboxes = collections.map((col) =>
+      <Checkbox
+        name={col.name}
+        title={col.title}
+        key={col.name}
+        checked={selected.indexOf(col.name) > -1}
+        onChange={this.handleChange.bind(this)}/>
+    )
+
+    return (
+      <div>
+        {allCheckbox}
+        {collectionCheckboxes}
+      </div>
+    )
   }
 
   render() {
@@ -50,14 +101,7 @@ class CollectionsBox extends React.Component {
     let {selected, collections} = this.props
     if(collections) {
       if(collections.length) {
-        result = collections.map((col) =>
-          <Checkbox
-            name={col.name}
-            title={col.title}
-            key={col.name}
-            checked={selected.indexOf(col.name) > -1}
-            onChange={this.handleChange.bind(this)}/>
-        )
+        result = this.renderCheckboxes(collections, selected)
       } else {
         result = <em>none available</em>
       }
@@ -65,7 +109,7 @@ class CollectionsBox extends React.Component {
       result = <em>loading collections ...</em>
     }
 
-    return <div id="collections-box" className="col-sm-2">{result}</div>
+    return <div id="collections-box">{result}</div>
   }
 }
 
