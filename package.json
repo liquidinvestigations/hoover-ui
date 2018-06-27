@@ -4,27 +4,32 @@
   "description": "React.js port of the hoover ui",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack -d --watch",
-    "build": "webpack -p"
+    "dev": "node server.js",
+    "build": "next build && next export -o build",
+    "start": "NODE_ENV=production node server.js",
+    "heroku-postbuild": "next build"
   },
   "dependencies": {
-    "babel-core": "=6.17.0",
-    "babel-loader": "=6.2.4",
-    "babel-preset-latest": "=6.16.0",
-    "babel-preset-react": "=6.16.0",
-    "babel-preset-stage-3": "=6.17.0",
-    "classnames": "=2.2.5",
+    "@zeit/next-sass": "^0.2.0",
+    "bootswatch": "^4.1.1",
+    "classnames": "^2.2.5",
     "d3": "=4.2.6",
     "d3-color": "=1.0.1",
     "d3-shape": "=1.0.3",
     "d3-svg": "=0.2.0",
-    "react": "=15.2.0",
-    "react-dom": "=15.2.0",
-    "webpack": "=1.13.1"
+    "fast-deep-equal": "^2.0.1",
+    "isomorphic-fetch": "^2.2.1",
+    "next": "^6.0.3",
+    "node-sass": "^4.9.0",
+    "nprogress": "^0.2.0",
+    "qs": "^6.5.2",
+    "react": "^16.4.0",
+    "react-dom": "^16.4.0",
+    "react-modal": "^3.4.5",
+    "react-placeholder": "^3.0.1"
   },
   "devDependencies": {
-    "body-parser": "=1.15.2",
-    "express": "=4.14.0",
-    "request": "=2.75.0"
+    "express": "^4.16.3",
+    "http-proxy-middleware": "^0.18.0"
   }
 }
