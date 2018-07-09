@@ -6,7 +6,6 @@ import equal from 'fast-deep-equal';
 import Link from 'next/link';
 import Router from 'next/router';
 
-import ReactPlaceholder from 'react-placeholder';
 import api from '../utils/api';
 import routerEvents from '../utils/router-events';
 
@@ -63,17 +62,40 @@ export default class SearchPage extends Component {
             size: params.size ? +params.size : 10,
             order: params.order ? params.order : SORT_OPTIONS[0],
             collections: params.collections ? params.collections.split('+') : [],
+            dateYears: params.dateYears ? params.dateYears.split('+') : [],
+            dateCreatedYears: params.dateCreatedYears
+                ? params.dateCreatedYears.split('+')
+                : [],
             page: params.page ? +params.page : 1,
         };
     }
 
     writeQueryToUrl() {
+        const query = {
+            ...this.state.query,
+            collections: this.state.query.collections.join('+'),
+        };
+
+        if (this.state.query.dateYears && this.state.query.dateYears.length) {
+            query.dateYears = this.state.query.dateYears.join('+');
+        } else {
+            delete query.dateYears;
+        }
+
+        if (
+            this.state.query.dateCreatedYears &&
+            this.state.query.dateCreatedYears.length
+        ) {
+            query.dateCreatedYears = this.state.query.dateCreatedYears.join('+');
+        } else {
+            delete query.dateCreatedYears;
+        }
+
+        console.log(query);
+
         Router.push({
             pathname: '/',
-            query: {
-                ...this.state.query,
-                collections: this.state.query.collections.join('+'),
-            },
+            query,
         });
     }
 
@@ -134,18 +156,32 @@ export default class SearchPage extends Component {
 
     handleFilter = filter => {
         const { query } = this.state;
-        const filterQueries = Object.entries(filter).map(f => f.join(':'));
+
+        const queryStringFilters = ['filetype'];
+        const filterQueries = Object.entries(filter)
+            .filter(([key, value]) => queryStringFilters.includes(key))
+            .map(f => f.join(':'));
+
+        const urlQuery = {};
+
+        if (filter['date']) {
+            urlQuery.dateYears = filter['date'];
+        }
+
+        if (filter['date-created']) {
+            urlQuery.dateCreatedYears = filter['date-created'];
+        }
 
         const q =
             query.q.indexOf(filterQueries) !== -1
                 ? query.q
                 : [query.q, ...filterQueries].join(' ');
 
-        this.setState({ query: { ...query, q, page: 1 } }, this.search);
+        this.setState({ query: { ...query, q, ...urlQuery, page: 1 } }, this.search);
     };
 
     search() {
-        this.setState({ isFetching: true, results: null }, async () => {
+        this.setState({ isFetching: true }, async () => {
             this.writeQueryToUrl();
 
             let results, error;
@@ -188,15 +224,13 @@ export default class SearchPage extends Component {
 
                     <div className="col-sm-10">
                         <div id="search-input-box" className="form-group">
-                            <i className="fa fa-search" />
-
                             <input
                                 name="q"
                                 value={q || ''}
                                 onChange={this.handleInputChange}
                                 type="search"
                                 autoFocus
-                                className="form-control"
+                                className="form-control p-3"
                                 placeholder="Search..."
                             />
 
@@ -287,19 +321,14 @@ export default class SearchPage extends Component {
                     </div>
                 </div>
 
-                <ReactPlaceholder
-                    showLoadingAnimation
-                    ready={!this.state.isFetching}
-                    type="text"
-                    rows={10}>
-                    <SearchResults
-                        results={this.state.results}
-                        query={this.state.query}
-                        onNextPage={this.loadNextPage}
-                        onPrevPage={this.loadPrevPage}
-                        onFilter={this.handleFilter}
-                    />
-                </ReactPlaceholder>
+                <SearchResults
+                    isFetching={this.state.isFetching}
+                    results={this.state.results}
+                    query={this.state.query}
+                    onNextPage={this.loadNextPage}
+                    onPrevPage={this.loadPrevPage}
+                    onFilter={this.handleFilter}
+                />
 
                 {this.state.error && (
                     <p className="alert alert-danger">

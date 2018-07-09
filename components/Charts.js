@@ -30,8 +30,9 @@ const arc = shape
 
 class PieChart extends Component {
     slices() {
-        let { buckets } = this.props;
-        let scale = (2 * π) / d3.sum(buckets, d => d.doc_count);
+        const { buckets } = this.props;
+        const scale = (2 * π) / d3.sum(buckets, d => d.doc_count);
+
         let slices = [];
         let x = 0;
 
@@ -40,6 +41,7 @@ class PieChart extends Component {
             let dx = count * scale;
             let geometry = { x, dx };
             let filetype = bucket.key;
+
             slices.push({ count, geometry, filetype });
             x += dx;
         }
@@ -70,7 +72,7 @@ class PieChart extends Component {
     }
 
     renderSvg(slices) {
-        let { hover } = this.state || {};
+        const { hover } = this.state || {};
         const OFFSET = RADIUS + PADDING;
         const width = 2 * OFFSET;
         const height = 2 * OFFSET;
@@ -101,7 +103,7 @@ class PieChart extends Component {
 
     renderLegend(slices) {
         const OFFSET = RADIUS + PADDING;
-        let { hover } = this.state || {};
+        const { hover } = this.state || {};
 
         return (
             <div
@@ -128,11 +130,16 @@ class PieChart extends Component {
     }
 
     render() {
-        let slices = this.slices();
+        const slices = this.slices();
+
         return (
-            <div className="charts-pie">
-                {this.renderSvg(slices)}
-                {this.renderLegend(slices)}
+            <div>
+                <div className="small text-muted">File type</div>
+
+                <div className="charts-pie">
+                    {this.renderSvg(slices)}
+                    {this.renderLegend(slices)}
+                </div>
             </div>
         );
     }

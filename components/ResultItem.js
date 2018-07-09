@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import cn from 'classnames';
+import { DateTime } from 'luxon';
 
 function timeMs() {
     return new Date().getTime();
@@ -72,9 +73,25 @@ export default class ResultItem extends Component {
                     </div>
 
                     <div className="row">
-                        <div className="col-md-3">
+                        <div className="col-md-3 result-item">
                             <p className="results-item-path">{fields.path}</p>
-                            <p className="results-item-word-count">{wordCount}</p>
+                            <p className="results-item-default">{wordCount}</p>
+                            <p className="results-item-default">
+                                {hit.fields.date
+                                    ? DateTime.fromISO(
+                                          hit.fields.date
+                                      ).toLocaleString(DateTime.DATE_FULL) +
+                                      ' (modified)'
+                                    : null}
+                            </p>
+                            <p className="results-item-default">
+                                {hit.fields['date-created']
+                                    ? DateTime.fromISO(
+                                          hit.fields['date-created']
+                                      ).toLocaleString(DateTime.DATE_FULL) +
+                                      ' (created)'
+                                    : null}
+                            </p>
                         </div>
 
                         <div className="col-md-9">

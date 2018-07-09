@@ -131,7 +131,7 @@ class DocumentMetaSection extends Component {
         const data = doc.content;
 
         return (
-            <div className="card my-1">
+            <div className="card my-2">
                 <div className="card-header">Meta</div>
 
                 <div className="card-body">
@@ -226,7 +226,7 @@ class DocumentEmailSection extends Component {
 
         if (data.filetype == 'email') {
             return (
-                <div className="card mt-1">
+                <div className="card my-2">
                     <div className="card-header">Email</div>
                     <div className="card-body">
                         <table className="table table-sm">
@@ -295,7 +295,7 @@ class DocumentFilesSection extends Component {
 
         return (
             files.length > 0 && (
-                <div className="card my-1">
+                <div className="card my-2">
                     <div className="card-header">{title}</div>
                     <div className="card-body">
                         <table className="table table-sm">
@@ -316,7 +316,7 @@ class DocumentTextSection extends Component {
         let title = this.props.title;
 
         return (
-            <div className="card my-1">
+            <div className="card my-2">
                 <div className="card-header">{title}</div>
                 <div className="card-body">
                     <div className="content">
@@ -336,7 +336,7 @@ class DocumentHTMLSection extends Component {
         let title = this.props.title;
 
         return (
-            <div className="card my-1">
+            <div className="card my-2">
                 <div className="card-header">{title}</div>
                 <div className="card-body">
                     <div className="content">
