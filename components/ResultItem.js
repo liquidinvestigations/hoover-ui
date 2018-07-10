@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import cn from 'classnames';
 import { DateTime } from 'luxon';
+import makeUnsearchable from '../utils/make-unsearchable';
 
 function timeMs() {
     return new Date().getTime();
@@ -17,7 +18,7 @@ export default class ResultItem extends Component {
     };
 
     render() {
-        let { hit, url, isSelected } = this.props;
+        let { hit, url, isSelected, unsearchable } = this.props;
         let fields = hit.fields || {};
         let highlight = hit.highlight || {};
 
@@ -32,7 +33,11 @@ export default class ResultItem extends Component {
             if (highlight.text) {
                 text = highlight.text.map((hi, n) => (
                     <li key={`${hit._url}${n}`}>
-                        <span dangerouslySetInnerHTML={{ __html: hi }} />
+                        <span
+                            dangerouslySetInnerHTML={{
+                                __html: unsearchable ? makeUnsearchable(hi) : hi,
+                            }}
+                        />
                     </li>
                 ));
             }

@@ -8,6 +8,10 @@ main {
     padding-top: 1rem;
 }
 
+.no-find {
+    font-size: 0;
+}
+
 body.ReactModal__Body--open {
     overflow-y: hidden;
 }

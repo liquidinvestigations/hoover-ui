@@ -70,6 +70,7 @@ export default class SearchResults extends Component {
                         hit={hit}
                         url={url}
                         n={start + i}
+                        unsearchable={this.state.preview}
                         onPreview={this.setPreview}
                         isSelected={url == this.state.preview}
                     />
