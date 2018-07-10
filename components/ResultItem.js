@@ -76,22 +76,22 @@ export default class ResultItem extends Component {
                         <div className="col-md-3 result-item">
                             <p className="results-item-path">{fields.path}</p>
                             <p className="results-item-default">{wordCount}</p>
-                            <p className="results-item-default">
+                            <div className="results-item-default">
+                                Modified:{' '}
                                 {hit.fields.date
                                     ? DateTime.fromISO(
                                           hit.fields.date
-                                      ).toLocaleString(DateTime.DATE_FULL) +
-                                      ' (modified)'
+                                      ).toLocaleString(DateTime.DATE_FULL)
                                     : null}
-                            </p>
-                            <p className="results-item-default">
+                            </div>
+                            <div className="results-item-default">
+                                Created:{' '}
                                 {hit.fields['date-created']
                                     ? DateTime.fromISO(
                                           hit.fields['date-created']
-                                      ).toLocaleString(DateTime.DATE_FULL) +
-                                      ' (created)'
+                                      ).toLocaleString(DateTime.DATE_FULL)
                                     : null}
-                            </p>
+                            </div>
                         </div>
 
                         <div className="col-md-9">

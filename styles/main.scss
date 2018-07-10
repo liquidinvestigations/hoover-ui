@@ -53,12 +53,14 @@ code {
 }
 
 .results-item {
+    // border-left: 1px solid transparent;
     margin-bottom: 10px;
     position: relative;
     cursor: pointer;
 }
 
 .results-item-selected {
+    border-left: 2px solid #666;
     background: #eee;
 }
 
