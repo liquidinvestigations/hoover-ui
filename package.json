@@ -9,6 +9,9 @@
     "start": "NODE_ENV=production node server.js",
     "heroku-postbuild": "next build"
   },
+  "engine": {
+    "node": "9.11"
+  },
   "dependencies": {
     "@zeit/next-sass": "^0.2.0",
     "bootswatch": "^4.1.1",
@@ -19,7 +22,7 @@
     "d3-svg": "=0.2.0",
     "fast-deep-equal": "^2.0.1",
     "isomorphic-fetch": "^2.2.1",
-    "next": "^6.0.3",
+    "next": "^6.1.1",
     "node-sass": "^4.9.0",
     "nprogress": "^0.2.0",
     "qs": "^6.5.2",
