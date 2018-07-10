@@ -2,7 +2,7 @@ Advanced UI for [Hoover](https://hoover.github.io)
 
 ## Installation
 
-The UI needs a recent nodejs 5 or newer.
+Working on the UI needs a recent nodejs (see 'engine' in package.json for the version currently used).
 
 1.  Download the code, install dependencies
 
@@ -43,3 +43,11 @@ HOOVER_REMOTE_SEARCH_URL=https://hoover.crji.org/ npm run dev
 
 The UI is served at `http://localhost:3000` and API calls are proxied to the
 remote server.
+
+## Node upgrade
+
+Upgrading the node version requires a version bump in the following files:
+
+-   package.json (`engine`)
+-   .travis.yml
+-   Dockerfile
