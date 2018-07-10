@@ -54,7 +54,8 @@ export default class YearFilter extends Component {
     render() {
         const { aggregation, title, selected } = this.props;
 
-        const buckets = aggregation.buckets || [];
+        const buckets =
+            aggregation && aggregation.buckets ? aggregation.buckets : [];
 
         if (!buckets.length) {
             return null;
