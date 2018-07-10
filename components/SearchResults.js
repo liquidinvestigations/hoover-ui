@@ -17,6 +17,8 @@ function documentViewUrl(item) {
     return 'doc/' + item._collection + '/' + item._id;
 }
 
+Modal.setAppElement('body');
+
 export default class SearchResults extends Component {
     static propTypes = {
         query: PropTypes.object.isRequired,
