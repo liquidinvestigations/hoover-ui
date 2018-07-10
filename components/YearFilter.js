@@ -43,7 +43,7 @@ export default class YearFilter extends Component {
                         checked={checked}
                         onChange={this.handleChange}
                     />
-                    {bucket.doc_count ? <span>{text}</span> : <del>{text}</del>}
+                    {text}
                 </label>
             </li>
         );
@@ -68,11 +68,12 @@ export default class YearFilter extends Component {
                     </div>
                     <div>
                         {!!selected.length && (
-                            <button
-                                className="btn btn-sm btn-secondary"
-                                onClick={this.reset}>
+                            <a
+                                href="#"
+                                onClick={this.reset}
+                                style={{ fontSize: '10px' }}>
                                 Reset
-                            </button>
+                            </a>
                         )}
                     </div>
                 </div>
