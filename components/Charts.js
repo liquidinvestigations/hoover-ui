@@ -132,6 +132,10 @@ class PieChart extends Component {
     render() {
         const slices = this.slices();
 
+        if (!slices.length) {
+            return null;
+        }
+
         return (
             <div>
                 <div className="small text-muted">File type</div>

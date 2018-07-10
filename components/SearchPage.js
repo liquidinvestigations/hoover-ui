@@ -91,8 +91,6 @@ export default class SearchPage extends Component {
             delete query.dateCreatedYears;
         }
 
-        console.log(query);
-
         Router.push({
             pathname: '/',
             query,

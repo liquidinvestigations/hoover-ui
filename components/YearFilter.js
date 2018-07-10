@@ -56,6 +56,10 @@ export default class YearFilter extends Component {
 
         const buckets = aggregation.buckets || [];
 
+        if (!buckets.length) {
+            return null;
+        }
+
         return (
             <div className="mt-2">
                 <div className="d-flex justify-content-between">
