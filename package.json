@@ -7,6 +7,9 @@
     "dev": "node server.js",
     "build": "next build && next export -o build",
     "start": "NODE_ENV=production node server.js",
+    "test": "NODE_ENV=test jest",
+    "test:update": "NODE_ENV=test jest -u",
+    "test:watch": "NODE_ENV=test jest --watch",
     "heroku-postbuild": "next build"
   },
   "engine": {
@@ -32,7 +35,11 @@
     "react-placeholder": "^3.0.1"
   },
   "devDependencies": {
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "^23.4.0",
     "express": "^4.16.3",
-    "http-proxy-middleware": "^0.18.0"
+    "http-proxy-middleware": "^0.18.0",
+    "jest": "^23.4.0",
+    "react-test-renderer": "^16.4.1"
   }
 }
