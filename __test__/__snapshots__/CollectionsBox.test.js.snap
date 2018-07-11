@@ -1,0 +1,53 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders a loading collections box 1`] = `
+<div
+  className="collections-box"
+>
+  <small
+    className="text-muted"
+  >
+    Collections
+  </small>
+  <div>
+    <div
+      className="loading"
+    >
+      <i
+        aria-hidden="true"
+        className="fa fa-spinner loading-animate"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`renders the collections box with a collection 1`] = `
+<div
+  className="collections-box"
+>
+  <small
+    className="text-muted"
+  >
+    Collections
+  </small>
+  <div>
+    <div>
+      <div
+        className="checkbox"
+      >
+        <label>
+          <input
+            checked={true}
+            id="checkbox-testcollection"
+            onChange={[Function]}
+            type="checkbox"
+          />
+           
+          Test Collection
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+`;
