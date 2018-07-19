@@ -29,6 +29,7 @@ export default class SearchPage extends Component {
         results: null,
         isFetching: false,
         query: {},
+        error: null,
     };
 
     componentDidMount() {
@@ -75,6 +76,10 @@ export default class SearchPage extends Component {
                 collections: this.state.query.collections.join('+'),
             },
         });
+    }
+
+    componentDidCatch(error, info) {
+        this.setState({ error });
     }
 
     async getCollections() {
@@ -168,7 +173,12 @@ export default class SearchPage extends Component {
         const {
             allCollections,
             query: { collections, q, size, order },
+            error,
         } = this.state;
+
+        if (error) {
+            return <p className="alert alert-warning">{error.toString()}</p>;
+        }
 
         return (
             <form onSubmit={this.handleSubmit}>
