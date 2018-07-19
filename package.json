@@ -26,7 +26,7 @@
     "fast-deep-equal": "^2.0.1",
     "isomorphic-fetch": "^2.2.1",
     "next": "^6.1.1",
-    "node-sass": "^4.9.0",
+    "node-sass": "^4.9.2",
     "nprogress": "^0.2.0",
     "qs": "^6.5.2",
     "react": "^16.4.0",
