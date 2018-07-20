@@ -17,11 +17,11 @@ export default class ResultItem extends Component {
 
     render() {
         let { hit, url, isSelected } = this.props;
-        let fields = hit.fields || {};
+        let fields = hit._source || {};
         let highlight = hit.highlight || {};
 
         var attachIcon = null;
-        if (fields.hasOwnProperty('attachments') && fields.attachments[0]) {
+        if (fields.attachments) {
             attachIcon = <i className="fa fa-paperclip" aria-hidden="true" />;
         }
 
