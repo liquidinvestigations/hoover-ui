@@ -136,9 +136,10 @@ i.fa {
         cursor: text;
     }
 
-    em {
+    mark {
+        background-color: rgba(250, 221, 0, 0.5);
+        color: #000;
         font-style: normal;
-        font-weight: bold;
     }
 }
 
@@ -331,11 +332,5 @@ i.fa {
         opacity: 1;
         transform: translateX(0);
     }
-}
-
-mark {
-    background-color: rgba(250, 221, 0, 0.5);
-    color: #000;
-    font-style: normal;
 }
 

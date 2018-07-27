@@ -45,8 +45,8 @@ export default class ResultItem extends Component {
 
         let wordCount = null;
 
-        if (fields['word-count'] && fields['word-count'].length == 1) {
-            wordCount = fields['word-count'][0] + ' words';
+        if (fields['word-count']) {
+            wordCount = fields['word-count'] + ' words';
         }
 
         return (
@@ -70,33 +70,40 @@ export default class ResultItem extends Component {
                 <div className="card-body">
                     <div className="card-title">
                         <h3>
-                            {this.props.n}.
+                            {this.props.n}.{' '}
                             <a href={url} target="_blank" onClick={this.handleClick}>
-                                {attachIcon} {title}
+                                {title} {attachIcon}
                             </a>
                         </h3>
                     </div>
 
                     <div className="row">
-                        <div className="col-md-3 result-item">
+                        <div className="col-md-12">
                             <p className="results-item-path">{fields.path}</p>
+                        </div>
+                    </div>
+
+                    <div className="row">
+                        <div className="col-md-3 result-item">
                             <p className="results-item-default">{wordCount}</p>
-                            <div className="results-item-default">
-                                Modified:{' '}
-                                {hit.fields.date
-                                    ? DateTime.fromISO(
-                                          hit.fields.date
-                                      ).toLocaleString(DateTime.DATE_FULL)
-                                    : null}
-                            </div>
-                            <div className="results-item-default">
-                                Created:{' '}
-                                {hit.fields['date-created']
-                                    ? DateTime.fromISO(
-                                          hit.fields['date-created']
-                                      ).toLocaleString(DateTime.DATE_FULL)
-                                    : null}
-                            </div>
+
+                            {fields.date && (
+                                <div className="results-item-default">
+                                    <strong>Date:</strong>{' '}
+                                    {DateTime.fromISO(fields.date).toLocaleString(
+                                        DateTime.DATE_FULL
+                                    )}
+                                </div>
+                            )}
+
+                            {fields['date-created'] && (
+                                <div className="results-item-default">
+                                    <strong>Date created: </strong>
+                                    {DateTime.fromISO(
+                                        fields['date-created']
+                                    ).toLocaleString(DateTime.DATE_FULL)}
+                                </div>
+                            )}
                         </div>
 
                         <div className="col-md-9">

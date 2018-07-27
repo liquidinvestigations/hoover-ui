@@ -13,6 +13,8 @@ import Dropdown from './Dropdown';
 import CollectionsBox from './CollectionsBox';
 import SearchResults from './SearchResults';
 
+import { pickBy, identity, castArray } from 'lodash';
+
 import {
     SORT_RELEVANCE,
     SORT_NEWEST,
@@ -64,9 +66,9 @@ export default class SearchPage extends Component {
             size: params.size ? +params.size : 10,
             order: params.order ? params.order : SORT_OPTIONS[0],
             collections: params.collections ? params.collections.split('+') : [],
-            dateYears: params.dateYears ? params.dateYears.split('+') : [],
+            dateYears: params.dateYears ? castArray(params.dateYears) : [],
             dateCreatedYears: params.dateCreatedYears
-                ? params.dateCreatedYears.split('+')
+                ? castArray(params.dateCreatedYears)
                 : [],
             page: params.page ? +params.page : 1,
             searchAfter: params.searchAfter || '',
@@ -74,25 +76,12 @@ export default class SearchPage extends Component {
     }
 
     writeQueryToUrl() {
-        const query = {
+        let query = {
             ...this.state.query,
             collections: this.state.query.collections.join('+'),
         };
 
-        if (this.state.query.dateYears && this.state.query.dateYears.length) {
-            query.dateYears = this.state.query.dateYears.join('+');
-        } else {
-            delete query.dateYears;
-        }
-
-        if (
-            this.state.query.dateCreatedYears &&
-            this.state.query.dateCreatedYears.length
-        ) {
-            query.dateCreatedYears = this.state.query.dateCreatedYears.join('+');
-        } else {
-            delete query.dateCreatedYears;
-        }
+        query = pickBy(query, d => (Array.isArray(d) ? d.length : Boolean(d)));
 
         Router.push({
             pathname: '/',
@@ -153,7 +142,7 @@ export default class SearchPage extends Component {
             },
             this.search
         );
-    }
+    };
 
     onChangeCollections = selected => {
         this.setState(
@@ -171,14 +160,12 @@ export default class SearchPage extends Component {
     };
 
     handleInputChange = event =>
-        this.setState(
-            {
-                query: {
-                    ...this.state.query,
-                    q: event.target.value
-                }
-            }
-        );
+        this.setState({
+            query: {
+                ...this.state.query,
+                q: event.target.value,
+            },
+        });
 
     handleSubmit = event => {
         event.preventDefault();
@@ -189,9 +176,10 @@ export default class SearchPage extends Component {
                     page: 1,
                     searchAfter: '',
                 },
-                searchAfterByPage: {}
+                searchAfterByPage: {},
             },
-            this.search);
+            this.search
+        );
     };
 
     loadNextPage = () => {
@@ -204,7 +192,7 @@ export default class SearchPage extends Component {
                     ...query,
                     page: page + 1,
                     searchAfter: searchAfterByPage[page + 1],
-                }
+                },
             },
             this.search
         );
@@ -219,8 +207,8 @@ export default class SearchPage extends Component {
                 query: {
                     ...query,
                     page: page - 1,
-                    searchAfter: searchAfterByPage[page - 1]
-                }
+                    searchAfter: searchAfterByPage[page - 1],
+                },
             },
             this.search
         );
@@ -256,11 +244,12 @@ export default class SearchPage extends Component {
                     q,
                     ...urlQuery,
                     searchAfter: '',
-                    page: 1
+                    page: 1,
                 },
-                searchAfterByPage: {}
+                searchAfterByPage: {},
             },
-            this.search);
+            this.search
+        );
     };
 
     search() {
@@ -285,12 +274,15 @@ export default class SearchPage extends Component {
                 if (order !== 'Relevance') {
                     const date = new Date(lastHit._source.date);
 
-                    searchAfterByPage[page + 1] = ['' + date.getTime(), ...searchAfterByPage[page + 1]];
+                    searchAfterByPage[page + 1] = [
+                        '' + date.getTime(),
+                        ...searchAfterByPage[page + 1],
+                    ];
                 }
             }
 
             this.setState({
-                searchAfterByPage: searchAfterByPage,
+                searchAfterByPage,
                 isFetching: false,
                 results,
                 error,

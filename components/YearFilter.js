@@ -79,7 +79,12 @@ export default class YearFilter extends Component {
                     </div>
                 </div>
 
-                <ul className="list-unstyled">{buckets.map(this.renderBucket)}</ul>
+                <ul className="list-unstyled">
+                    {buckets
+                        .sort((a, b) => b.key - a.key)
+                        .filter(d => d.doc_count)
+                        .map(this.renderBucket)}
+                </ul>
             </div>
         );
     }

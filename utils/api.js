@@ -142,6 +142,7 @@ class Api {
                 query: buildQuery(q),
                 search_after: searchAfter,
                 sort: buildSortQuery(order),
+                post_filter: buildPostFilter({ dateYears, dateCreatedYears }),
                 aggs: {
                     count_by_filetype: { terms: { field: 'filetype' } },
                     count_by_date_year: {
@@ -158,7 +159,7 @@ class Api {
                     },
                 },
                 collections: collections,
-                fields: [
+                _source: [
                     'path',
                     'url',
                     'mime_type',
