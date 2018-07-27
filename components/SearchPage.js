@@ -28,6 +28,8 @@ export default class SearchPage extends Component {
         results: null,
         isFetching: false,
         query: {},
+        searchAfterByPage: {},
+        error: null,
     };
 
     componentDidMount() {
@@ -67,6 +69,7 @@ export default class SearchPage extends Component {
                 ? params.dateCreatedYears.split('+')
                 : [],
             page: params.page ? +params.page : 1,
+            searchAfter: params.searchAfter || '',
         };
     }
 
@@ -97,6 +100,10 @@ export default class SearchPage extends Component {
         });
     }
 
+    componentDidCatch(error, info) {
+        this.setState({ error });
+    }
+
     async getCollections() {
         const allCollections = await api.collections();
 
@@ -115,41 +122,108 @@ export default class SearchPage extends Component {
     }
 
     setSize = event => {
+        const { query } = this.state;
+
         this.setState(
-            { query: { ...this.state.query, size: +event.target.name } },
+            {
+                query: {
+                    ...query,
+                    size: event.target.name,
+                    page: 1,
+                    searchAfter: '',
+                },
+                searchAfterByPage: {},
+            },
             this.search
         );
     };
 
-    setSort = event =>
+    setSort = event => {
+        const { query } = this.state;
+
         this.setState(
-            { query: { ...this.state.query, order: event.target.name } },
+            {
+                query: {
+                    ...query,
+                    order: event.target.name,
+                    page: 1,
+                    searchAfter: '',
+                },
+                searchAfterByPage: {},
+            },
             this.search
         );
+    }
 
     onChangeCollections = selected => {
         this.setState(
-            { query: { ...this.state.query, collections: selected } },
+            {
+                query: {
+                    ...this.state.query,
+                    collections: selected,
+                    page: 1,
+                    searchAfter: '',
+                },
+                searchAfterByPage: {},
+            },
             this.search
         );
     };
 
     handleInputChange = event =>
-        this.setState({ query: { ...this.state.query, q: event.target.value } });
+        this.setState(
+            {
+                query: {
+                    ...this.state.query,
+                    q: event.target.value
+                }
+            }
+        );
 
     handleSubmit = event => {
         event.preventDefault();
-        this.setState({ query: { ...this.state.query, page: 1 } }, this.search);
+        this.setState(
+            {
+                query: {
+                    ...this.state.query,
+                    page: 1,
+                    searchAfter: '',
+                },
+                searchAfterByPage: {}
+            },
+            this.search);
     };
 
     loadNextPage = () => {
-        const { query } = this.state;
-        this.setState({ query: { ...query, page: query.page + 1 } }, this.search);
+        const { query, searchAfterByPage } = this.state;
+        const { page } = query;
+
+        this.setState(
+            {
+                query: {
+                    ...query,
+                    page: page + 1,
+                    searchAfter: searchAfterByPage[page + 1],
+                }
+            },
+            this.search
+        );
     };
 
     loadPrevPage = () => {
-        const { query } = this.state;
-        this.setState({ query: { ...query, page: query.page - 1 } }, this.search);
+        const { query, searchAfterByPage } = this.state;
+        const { page } = query;
+
+        this.setState(
+            {
+                query: {
+                    ...query,
+                    page: page - 1,
+                    searchAfter: searchAfterByPage[page - 1]
+                }
+            },
+            this.search
+        );
     };
 
     handleFilter = filter => {
@@ -175,7 +249,18 @@ export default class SearchPage extends Component {
                 ? query.q
                 : [query.q, ...filterQueries].join(' ');
 
-        this.setState({ query: { ...query, q, ...urlQuery, page: 1 } }, this.search);
+        this.setState(
+            {
+                query: {
+                    ...query,
+                    q,
+                    ...urlQuery,
+                    searchAfter: '',
+                    page: 1
+                },
+                searchAfterByPage: {}
+            },
+            this.search);
     };
 
     search() {
@@ -190,7 +275,22 @@ export default class SearchPage extends Component {
                 error = err;
             }
 
+            const { query, searchAfterByPage } = this.state;
+            const { page, order } = query;
+
+            if (results.hits.total > 0) {
+                const lastHit = results.hits.hits.slice(-1)[0];
+
+                searchAfterByPage[page + 1] = ['' + lastHit._score, lastHit._id];
+                if (order !== 'Relevance') {
+                    const date = new Date(lastHit._source.date);
+
+                    searchAfterByPage[page + 1] = ['' + date.getTime(), ...searchAfterByPage[page + 1]];
+                }
+            }
+
             this.setState({
+                searchAfterByPage: searchAfterByPage,
                 isFetching: false,
                 results,
                 error,
@@ -202,7 +302,12 @@ export default class SearchPage extends Component {
         const {
             allCollections,
             query: { collections, q, size, order },
+            error,
         } = this.state;
+
+        if (error) {
+            return <p className="alert alert-warning">{error.toString()}</p>;
+        }
 
         return (
             <form onSubmit={this.handleSubmit}>

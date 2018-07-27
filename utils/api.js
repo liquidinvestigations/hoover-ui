@@ -53,7 +53,7 @@ function buildPostFilter(filters) {
 }
 
 function buildSortQuery(order) {
-    var sort = ['_score'];
+    var sort = ['_score', '_id'];
     switch (order) {
         case SORT_NEWEST:
             sort = [{ date: { order: 'desc' } }, ...sort];
@@ -132,6 +132,7 @@ class Api {
         collections = [],
         dateYears = null,
         dateCreatedYears = null,
+        searchAfter = '',
     } = {}) {
         return await fetchJson('/search', {
             method: 'POST',
@@ -139,7 +140,7 @@ class Api {
                 from: (page - 1) * size,
                 size: size,
                 query: buildQuery(q),
-                post_filter: buildPostFilter({ dateYears, dateCreatedYears }),
+                search_after: searchAfter,
                 sort: buildSortQuery(order),
                 aggs: {
                     count_by_filetype: { terms: { field: 'filetype' } },
