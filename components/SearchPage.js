@@ -6,13 +6,14 @@ import equal from 'fast-deep-equal';
 import Link from 'next/link';
 import Router from 'next/router';
 
-import ReactPlaceholder from 'react-placeholder';
 import api from '../utils/api';
 import routerEvents from '../utils/router-events';
 
 import Dropdown from './Dropdown';
 import CollectionsBox from './CollectionsBox';
 import SearchResults from './SearchResults';
+
+import { pickBy, identity, castArray } from 'lodash';
 
 import {
     SORT_RELEVANCE,
@@ -65,18 +66,26 @@ export default class SearchPage extends Component {
             size: params.size ? +params.size : 10,
             order: params.order ? params.order : SORT_OPTIONS[0],
             collections: params.collections ? params.collections.split('+') : [],
+            dateYears: params.dateYears ? castArray(params.dateYears) : [],
+            dateCreatedYears: params.dateCreatedYears
+                ? castArray(params.dateCreatedYears)
+                : [],
             page: params.page ? +params.page : 1,
             searchAfter: params.searchAfter || '',
         };
     }
 
     writeQueryToUrl() {
+        let query = {
+            ...this.state.query,
+            collections: this.state.query.collections.join('+'),
+        };
+
+        query = pickBy(query, d => (Array.isArray(d) ? d.length : Boolean(d)));
+
         Router.push({
             pathname: '/',
-            query: {
-                ...this.state.query,
-                collections: this.state.query.collections.join('+'),
-            },
+            query,
         });
     }
 
@@ -133,7 +142,7 @@ export default class SearchPage extends Component {
             },
             this.search
         );
-    }
+    };
 
     onChangeCollections = selected => {
         this.setState(
@@ -151,14 +160,12 @@ export default class SearchPage extends Component {
     };
 
     handleInputChange = event =>
-        this.setState(
-            {
-                query: {
-                    ...this.state.query,
-                    q: event.target.value
-                }
-            }
-        );
+        this.setState({
+            query: {
+                ...this.state.query,
+                q: event.target.value,
+            },
+        });
 
     handleSubmit = event => {
         event.preventDefault();
@@ -169,9 +176,10 @@ export default class SearchPage extends Component {
                     page: 1,
                     searchAfter: '',
                 },
-                searchAfterByPage: {}
+                searchAfterByPage: {},
             },
-            this.search);
+            this.search
+        );
     };
 
     loadNextPage = () => {
@@ -184,7 +192,7 @@ export default class SearchPage extends Component {
                     ...query,
                     page: page + 1,
                     searchAfter: searchAfterByPage[page + 1],
-                }
+                },
             },
             this.search
         );
@@ -199,8 +207,8 @@ export default class SearchPage extends Component {
                 query: {
                     ...query,
                     page: page - 1,
-                    searchAfter: searchAfterByPage[page - 1]
-                }
+                    searchAfter: searchAfterByPage[page - 1],
+                },
             },
             this.search
         );
@@ -208,7 +216,21 @@ export default class SearchPage extends Component {
 
     handleFilter = filter => {
         const { query } = this.state;
-        const filterQueries = Object.entries(filter).map(f => f.join(':'));
+
+        const queryStringFilters = ['filetype'];
+        const filterQueries = Object.entries(filter)
+            .filter(([key, value]) => queryStringFilters.includes(key))
+            .map(f => f.join(':'));
+
+        const urlQuery = {};
+
+        if (filter['date']) {
+            urlQuery.dateYears = filter['date'];
+        }
+
+        if (filter['date-created']) {
+            urlQuery.dateCreatedYears = filter['date-created'];
+        }
 
         const q =
             query.q.indexOf(filterQueries) !== -1
@@ -220,16 +242,18 @@ export default class SearchPage extends Component {
                 query: {
                     ...query,
                     q,
+                    ...urlQuery,
                     searchAfter: '',
-                    page: 1
+                    page: 1,
                 },
-                searchAfterByPage: {}
+                searchAfterByPage: {},
             },
-            this.search);
+            this.search
+        );
     };
 
     search() {
-        this.setState({ isFetching: true, results: null }, async () => {
+        this.setState({ isFetching: true }, async () => {
             this.writeQueryToUrl();
 
             let results, error;
@@ -250,12 +274,15 @@ export default class SearchPage extends Component {
                 if (order !== 'Relevance') {
                     const date = new Date(lastHit._source.date);
 
-                    searchAfterByPage[page + 1] = ['' + date.getTime(), ...searchAfterByPage[page + 1]];
+                    searchAfterByPage[page + 1] = [
+                        '' + date.getTime(),
+                        ...searchAfterByPage[page + 1],
+                    ];
                 }
             }
 
             this.setState({
-                searchAfterByPage: searchAfterByPage,
+                searchAfterByPage,
                 isFetching: false,
                 results,
                 error,
@@ -292,15 +319,13 @@ export default class SearchPage extends Component {
 
                     <div className="col-sm-10">
                         <div id="search-input-box" className="form-group">
-                            <i className="fa fa-search" />
-
                             <input
                                 name="q"
                                 value={q || ''}
                                 onChange={this.handleInputChange}
                                 type="search"
                                 autoFocus
-                                className="form-control"
+                                className="form-control p-3"
                                 placeholder="Search..."
                             />
 
@@ -391,19 +416,14 @@ export default class SearchPage extends Component {
                     </div>
                 </div>
 
-                <ReactPlaceholder
-                    showLoadingAnimation
-                    ready={!this.state.isFetching}
-                    type="text"
-                    rows={10}>
-                    <SearchResults
-                        results={this.state.results}
-                        query={this.state.query}
-                        onNextPage={this.loadNextPage}
-                        onPrevPage={this.loadPrevPage}
-                        onFilter={this.handleFilter}
-                    />
-                </ReactPlaceholder>
+                <SearchResults
+                    isFetching={this.state.isFetching}
+                    results={this.state.results}
+                    query={this.state.query}
+                    onNextPage={this.loadNextPage}
+                    onPrevPage={this.loadPrevPage}
+                    onFilter={this.handleFilter}
+                />
 
                 {this.state.error && (
                     <p className="alert alert-danger">

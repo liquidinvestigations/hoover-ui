@@ -1,5 +1,7 @@
 import { Component } from 'react';
 import cn from 'classnames';
+import { DateTime } from 'luxon';
+import makeUnsearchable from '../utils/make-unsearchable';
 
 function timeMs() {
     return new Date().getTime();
@@ -16,7 +18,7 @@ export default class ResultItem extends Component {
     };
 
     render() {
-        let { hit, url, isSelected } = this.props;
+        let { hit, url, isSelected, unsearchable } = this.props;
         let fields = hit._source || {};
         let highlight = hit.highlight || {};
 
@@ -31,7 +33,11 @@ export default class ResultItem extends Component {
             if (highlight.text) {
                 text = highlight.text.map((hi, n) => (
                     <li key={`${hit._url}${n}`}>
-                        <span dangerouslySetInnerHTML={{ __html: hi }} />
+                        <span
+                            dangerouslySetInnerHTML={{
+                                __html: unsearchable ? makeUnsearchable(hi) : hi,
+                            }}
+                        />
                     </li>
                 ));
             }
@@ -39,8 +45,8 @@ export default class ResultItem extends Component {
 
         let wordCount = null;
 
-        if (fields['word-count'] && fields['word-count'].length == 1) {
-            wordCount = fields['word-count'][0] + ' words';
+        if (fields['word-count']) {
+            wordCount = fields['word-count'] + ' words';
         }
 
         return (
@@ -64,17 +70,40 @@ export default class ResultItem extends Component {
                 <div className="card-body">
                     <div className="card-title">
                         <h3>
-                            {this.props.n}.
+                            {this.props.n}.{' '}
                             <a href={url} target="_blank" onClick={this.handleClick}>
-                                {attachIcon} {title}
+                                {title} {attachIcon}
                             </a>
                         </h3>
                     </div>
 
                     <div className="row">
-                        <div className="col-md-3">
+                        <div className="col-md-12">
                             <p className="results-item-path">{fields.path}</p>
-                            <p className="results-item-word-count">{wordCount}</p>
+                        </div>
+                    </div>
+
+                    <div className="row">
+                        <div className="col-md-3 result-item">
+                            <p className="results-item-default">{wordCount}</p>
+
+                            {fields.date && (
+                                <div className="results-item-default">
+                                    <strong>Date:</strong>{' '}
+                                    {DateTime.fromISO(fields.date).toLocaleString(
+                                        DateTime.DATE_FULL
+                                    )}
+                                </div>
+                            )}
+
+                            {fields['date-created'] && (
+                                <div className="results-item-default">
+                                    <strong>Date created: </strong>
+                                    {DateTime.fromISO(
+                                        fields['date-created']
+                                    ).toLocaleString(DateTime.DATE_FULL)}
+                                </div>
+                            )}
                         </div>
 
                         <div className="col-md-9">

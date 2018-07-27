@@ -13,6 +13,45 @@ function buildQuery(q) {
     };
 }
 
+function buildPostFilter(filters) {
+    const clauses = Object.entries(filters)
+        .filter(([key, value]) => value && value.length)
+        .map(([key, value]) => {
+            if (key === 'dateYears') {
+                return {
+                    bool: {
+                        should: value.map(year => ({
+                            range: {
+                                date: { gte: `${year}-01-01`, lte: `${year}-12-31` },
+                            },
+                        })),
+                    },
+                };
+            } else if (key === 'dateCreatedYears') {
+                return {
+                    bool: {
+                        should: value.map(year => ({
+                            range: {
+                                'date-created': {
+                                    gte: `${year}-01-01`,
+                                    lte: `${year}-12-31`,
+                                },
+                            },
+                        })),
+                    },
+                };
+            } else {
+                throw new Error(`unknown filter: ${JSON.stringify({ key, value })}`);
+            }
+        });
+
+    if (clauses.length) {
+        return { bool: { must: clauses } };
+    } else {
+        return {};
+    }
+}
+
 function buildSortQuery(order) {
     var sort = ['_score', '_id'];
     switch (order) {
@@ -44,8 +83,9 @@ async function fetchJson(url, opts = {}) {
     if (res.ok) {
         return await res.json();
     } else {
+        const body = await res.text();
         const err = new Error(
-            `unable to fetch ${res.url}: ${res.status} ${res.statusText}`
+            `unable to fetch ${res.url}: ${res.status} ${res.statusText}\n${body}`
         );
 
         err.url = res.url;
@@ -90,6 +130,8 @@ class Api {
         q = '*',
         order = SORT_RELEVANCE,
         collections = [],
+        dateYears = null,
+        dateCreatedYears = null,
         searchAfter = '',
     } = {}) {
         return await fetchJson('/search', {
@@ -100,17 +142,32 @@ class Api {
                 query: buildQuery(q),
                 search_after: searchAfter,
                 sort: buildSortQuery(order),
+                post_filter: buildPostFilter({ dateYears, dateCreatedYears }),
                 aggs: {
                     count_by_filetype: { terms: { field: 'filetype' } },
+                    count_by_date_year: {
+                        date_histogram: {
+                            field: 'date',
+                            interval: 'year',
+                        },
+                    },
+                    count_by_date_created_year: {
+                        date_histogram: {
+                            field: 'date-created',
+                            interval: 'year',
+                        },
+                    },
                 },
                 collections: collections,
-                fields: [
+                _source: [
                     'path',
                     'url',
                     'mime_type',
                     'attachments',
                     'filename',
                     'word-count',
+                    'date',
+                    'date-created',
                 ],
                 highlight: {
                     fields: {
