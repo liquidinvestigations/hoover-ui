@@ -1,13 +1,32 @@
 import { Component } from 'react';
+import PropTypes from 'prop-types';
 import cn from 'classnames';
 import { DateTime } from 'luxon';
 import makeUnsearchable from '../utils/make-unsearchable';
+
+import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardActions from '@material-ui/core/CardActions';
+import Typography from '@material-ui/core/Typography';
+import { withStyles } from '@material-ui/core/styles';
+
+const styles = theme => ({
+    card: {
+        marginTop: theme.spacing.unit,
+    },
+});
 
 function timeMs() {
     return new Date().getTime();
 }
 
-export default class ResultItem extends Component {
+const documentViewUrl = item => `doc/${item._collection}/${item._id}`;
+class ResultItem extends Component {
+    static propTypes = {
+        classes: PropTypes.object.isRequired,
+    };
+
     handleClick = e => {
         const modifier = e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
 
@@ -18,7 +37,7 @@ export default class ResultItem extends Component {
     };
 
     render() {
-        let { hit, url, isSelected, unsearchable } = this.props;
+        let { hit, url, isSelected, unsearchable, classes } = this.props;
         let fields = hit._source || {};
         let highlight = hit.highlight || {};
 
@@ -50,11 +69,8 @@ export default class ResultItem extends Component {
         }
 
         return (
-            <li
-                className={cn('card', {
-                    'results-item': true,
-                    'results-item-selected': isSelected,
-                })}
+            <div
+                className={classes.card}
                 onMouseDown={() => {
                     this.willFocus = !(this.tUp && timeMs() - this.tUp < 300);
                 }}
@@ -67,53 +83,53 @@ export default class ResultItem extends Component {
                         this.props.onPreview(url);
                     }
                 }}>
-                <div className="card-body">
-                    <div className="card-title">
-                        <h3>
+                <Card>
+                    <CardContent>
+                        <Typography variant="title">
                             {this.props.n}.{' '}
                             <a href={url} target="_blank" onClick={this.handleClick}>
                                 {title} {attachIcon}
                             </a>
-                        </h3>
-                    </div>
+                        </Typography>
 
-                    <div className="row">
-                        <div className="col-md-12">
-                            <p className="results-item-path">{fields.path}</p>
-                        </div>
-                    </div>
+                        <Typography variant="caption">{fields.path}</Typography>
 
-                    <div className="row">
-                        <div className="col-md-3 result-item">
-                            <p className="results-item-default">{wordCount}</p>
+                        <Grid container>
+                            <Grid item md={3}>
+                                <Typography
+                                    variant="caption"
+                                    className="results-item-default">
+                                    {wordCount}
+                                </Typography>
 
-                            {fields.date && (
-                                <div className="results-item-default">
-                                    <strong>Date:</strong>{' '}
-                                    {DateTime.fromISO(fields.date).toLocaleString(
-                                        DateTime.DATE_FULL
-                                    )}
-                                </div>
-                            )}
+                                {fields.date && (
+                                    <div className="results-item-default">
+                                        <strong>Date:</strong>{' '}
+                                        {DateTime.fromISO(
+                                            fields.date
+                                        ).toLocaleString(DateTime.DATE_FULL)}
+                                    </div>
+                                )}
 
-                            {fields['date-created'] && (
-                                <div className="results-item-default">
-                                    <strong>Date created: </strong>
-                                    {DateTime.fromISO(
-                                        fields['date-created']
-                                    ).toLocaleString(DateTime.DATE_FULL)}
-                                </div>
-                            )}
-                        </div>
+                                {fields['date-created'] && (
+                                    <div className="results-item-default">
+                                        <strong>Date created: </strong>
+                                        {DateTime.fromISO(
+                                            fields['date-created']
+                                        ).toLocaleString(DateTime.DATE_FULL)}
+                                    </div>
+                                )}
+                            </Grid>
 
-                        <div className="col-md-9">
-                            <div className="card-text">
+                            <Grid item md={9}>
                                 <ul className="results-highlight">{text}</ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </li>
+                            </Grid>
+                        </Grid>
+                    </CardContent>
+                </Card>
+            </div>
         );
     }
 }
+
+export default withStyles(styles)(ResultItem);

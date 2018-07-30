@@ -13,6 +13,18 @@ import Dropdown from './Dropdown';
 import CollectionsBox from './CollectionsBox';
 import SearchResults from './SearchResults';
 
+import Grid from '@material-ui/core/Grid';
+import { withStyles } from '@material-ui/core/styles';
+import Drawer from '@material-ui/core/Drawer';
+import List from '@material-ui/core/List';
+import Divider from '@material-ui/core/Divider';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+
 import { pickBy, identity, castArray } from 'lodash';
 
 import {
@@ -24,7 +36,16 @@ import {
     SIZE_OPTIONS,
 } from '../utils/constants';
 
-export default class SearchPage extends Component {
+const drawerWidth = 240;
+
+const styles = theme => ({
+    drawerPaper: {
+        position: 'relative',
+        width: drawerWidth,
+    },
+});
+
+class SearchPage extends Component {
     state = {
         allCollections: null,
         results: null,
@@ -120,7 +141,7 @@ export default class SearchPage extends Component {
             {
                 query: {
                     ...query,
-                    size: event.target.name,
+                    size: event.target.value,
                     page: 1,
                     searchAfter: '',
                 },
@@ -137,7 +158,7 @@ export default class SearchPage extends Component {
             {
                 query: {
                     ...query,
-                    order: event.target.name,
+                    order: event.target.value,
                     page: 1,
                     searchAfter: '',
                 },
@@ -312,14 +333,16 @@ export default class SearchPage extends Component {
             error,
         } = this.state;
 
+        const { classes } = this.props;
+
         if (error) {
-            return <p className="alert alert-warning">{error.toString()}</p>;
+            return <Typography color="error">{error.toString()}</Typography>;
         }
 
         return (
-            <form onSubmit={this.handleSubmit}>
-                <div className="row">
-                    <div className="col-sm-2">
+            <div>
+                <Grid container>
+                    <Grid item sm={3}>
                         <CollectionsBox
                             collections={allCollections}
                             selected={collections || []}
@@ -330,104 +353,80 @@ export default class SearchPage extends Component {
                                     : null
                             }
                         />
-                    </div>
+                    </Grid>
 
-                    <div className="col-sm-10">
-                        <div id="search-input-box" className="form-group">
-                            <input
-                                name="q"
-                                value={q || ''}
-                                onChange={this.handleInputChange}
-                                type="search"
-                                autoFocus
-                                className="form-control p-3"
-                                placeholder="Search..."
-                            />
+                    <Grid item sm={9}>
+                        <TextField
+                            name="q"
+                            value={q || ''}
+                            onChange={this.handleInputChange}
+                            label="Search"
+                            margin="normal"
+                            fullWidth
+                            type="search"
+                            autoFocus
+                        />
 
-                            <div className="d-flex justify-content-between">
-                                <div>
-                                    <small>
-                                        Refine your search using{' '}
-                                        <a href={SEARCH_GUIDE}>this handy guide</a>.
-                                    </small>
-                                </div>
+                        <Grid container justify="space-between">
+                            <Grid item>
+                                <Typography variant="caption">
+                                    Refine your search using{' '}
+                                    <a href={SEARCH_GUIDE}>this handy guide</a>.
+                                </Typography>
+                            </Grid>
 
-                                <div>
-                                    <small>
-                                        <Link href="/batch-search">
-                                            <a>Batch search</a>
-                                        </Link>
-                                    </small>
-                                </div>
-                            </div>
+                            <Grid item>
+                                <Typography variant="caption">
+                                    <Link href="/batch-search">
+                                        <a>Batch search</a>
+                                    </Link>
+                                </Typography>
+                            </Grid>
+                        </Grid>
 
-                            <div className="d-flex align-items-center  justify-content-between mt-2">
-                                <div>
-                                    <div>
-                                        <small className="text-muted pr-2">
-                                            Results per page
-                                        </small>
-                                    </div>
+                        <Grid container justify="space-between">
+                            <Grid item sm={6}>
+                                <FormControl style={{ minWidth: 120 }}>
+                                    <InputLabel>Results per page</InputLabel>
 
-                                    <div
-                                        className="btn-group btn-group-toggle"
-                                        data-toggle="buttons">
-                                        {SIZE_OPTIONS.map(sizeOption => (
-                                            <label
-                                                key={sizeOption}
-                                                className={cn(
-                                                    'btn btn-sm btn-secondary',
-                                                    {
-                                                        active: sizeOption === size,
-                                                    }
-                                                )}>
-                                                <input
-                                                    type="radio"
-                                                    name={sizeOption}
-                                                    autoComplete="off"
-                                                    onChange={this.setSize}
-                                                    checked={sizeOption == size}
-                                                />{' '}
-                                                {sizeOption}
-                                            </label>
+                                    <Select
+                                        autoWidth
+                                        inputProps={{
+                                            id: 'results-per-page',
+                                        }}
+                                        value={size || '10'}
+                                        onChange={this.setSize}>
+                                        {SIZE_OPTIONS.map(s => (
+                                            <MenuItem key={s} value={s}>
+                                                {s}
+                                            </MenuItem>
                                         ))}
-                                    </div>
-                                </div>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
 
-                                <div>
-                                    <div>
-                                        <small className="text-muted pr-2">
-                                            Sort by
-                                        </small>
-                                    </div>
-                                    <div
-                                        className="btn-group btn-group-toggle"
-                                        data-toggle="buttons">
-                                        {SORT_OPTIONS.map(sortOption => (
-                                            <label
-                                                key={sortOption}
-                                                className={cn(
-                                                    'btn btn-sm btn-secondary',
-                                                    {
-                                                        active: sortOption === order,
-                                                    }
-                                                )}>
-                                                <input
-                                                    type="radio"
-                                                    name={sortOption}
-                                                    autoComplete="off"
-                                                    onChange={this.setSort}
-                                                    checked={sortOption === order}
-                                                />{' '}
-                                                {sortOption}
-                                            </label>
+                            <Grid item>
+                                <FormControl style={{ minWidth: 120 }}>
+                                    <InputLabel>Order</InputLabel>
+
+                                    <Select
+                                        autoWidth
+                                        inputProps={{
+                                            id: 'sort',
+                                        }}
+                                        value={order || 'Relevance'}
+                                        onChange={this.setSort}>
+                                        {SORT_OPTIONS.map(s => (
+                                            <MenuItem key={s} value={s}>
+                                                {s}
+                                            </MenuItem>
                                         ))}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
 
                 <SearchResults
                     isFetching={this.state.isFetching}
@@ -437,13 +436,9 @@ export default class SearchPage extends Component {
                     onPrevPage={this.loadPrevPage}
                     onFilter={this.handleFilter}
                 />
-
-                {this.state.error && (
-                    <p className="alert alert-danger">
-                        {this.state.error.toString()}
-                    </p>
-                )}
-            </form>
+            </div>
         );
     }
 }
+
+export default withStyles(styles)(SearchPage);

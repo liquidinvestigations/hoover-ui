@@ -2,6 +2,7 @@ import { Component, Fragment } from 'react';
 import cn from 'classnames';
 import { withRouter } from 'next/router';
 import api from '../utils/api';
+import Button from '@material-ui/core/Button';
 
 class Menu extends Component {
     state = {
@@ -83,68 +84,18 @@ class Menu extends Component {
     render() {
         return (
             <Fragment>
-                <button
-                    className={cn('navbar-toggler', { collapsed: !this.state.open })}
-                    type="button"
-                    onClick={this.toggleMenu}
-                    data-toggle="collapse"
-                    data-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation">
-                    <span className="navbar-toggler-icon" />
-                </button>
-
-                <div
-                    className={cn('navbar-collapse', {
-                        collapse: !this.state.open,
-                        show: this.state.open,
-                    })}
-                    id="navbarSupportedContent">
-                    <ul className="navbar-nav ml-auto">
-                        {this.links()
-                            .filter(this.shouldShow)
-                            .map(l => (
-                                <li
-                                    className={cn('nav-item', {
-                                        active: l.active,
-                                    })}
-                                    key={l.name}>
-                                    <a className="nav-link" href={l.url}>
-                                        {l.name}
-                                    </a>
-                                </li>
-                            ))}
-                    </ul>
-                </div>
+                {this.links()
+                    .filter(this.shouldShow)
+                    .map(l => (
+                        <Button
+                            key={l.name}
+                            component="a"
+                            href={l.url}
+                            color="inherit">
+                            {l.name}
+                        </Button>
+                    ))}
             </Fragment>
-        );
-
-        return (
-            <div className="navbar-toggler">
-                <button
-                    type="button"
-                    className="btn"
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    onClick={this.toggleMenu}
-                    aria-expanded={this.state.open.toString()}>
-                    ☰
-                </button>
-                <div
-                    className={cn('dropdown-menu dropdown-menu-right', {
-                        show: this.state.open,
-                    })}
-                    aria-labelledby="loggedin-btngroup">
-                    {this.links()
-                        .filter(this.shouldShow)
-                        .map(l => (
-                            <a className="dropdown-item" href={l.url} key={l.name}>
-                                {l.name}
-                            </a>
-                        ))}
-                </div>
-            </div>
         );
     }
 }

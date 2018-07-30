@@ -2,27 +2,25 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import Loading from './Loading';
 
-class Checkbox extends Component {
-    render() {
-        const { name, checked, title, onChange } = this.props;
-        return (
-            <div className="checkbox">
-                <label>
-                    <input
-                        type="checkbox"
-                        id={`checkbox-${name}`}
-                        checked={checked}
-                        onChange={e => onChange(name, e.target.checked)}
-                    />{' '}
-                    {title}
-                </label>
-            </div>
-        );
-    }
-}
+import { withStyles } from '@material-ui/core/styles';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import Checkbox from '@material-ui/core/Checkbox';
 
-export default class CollectionsBox extends Component {
+const styles = theme => ({
+    root: {
+        display: 'flex',
+    },
+    formControl: {
+        margin: theme.spacing.unit * 3,
+    },
+});
+
+class CollectionsBox extends Component {
     static propTypes = {
+        classes: PropTypes.object.isRequired,
         collections: PropTypes.arrayOf(
             PropTypes.shape({
                 name: PropTypes.string.isRequired,
@@ -37,7 +35,10 @@ export default class CollectionsBox extends Component {
         this.props.onChange(selected);
     }
 
-    handleChange(name, checked) {
+    handleChange = event => {
+        const name = event.target.name;
+        const checked = event.target.checked;
+
         var all = this.props.collections.map(c => c.name);
         var selected = this.props.selected.splice(0);
 
@@ -48,7 +49,7 @@ export default class CollectionsBox extends Component {
         }
 
         this.changeSelection(selected);
-    }
+    };
 
     renderCheckboxes() {
         const { collections, selected, counts } = this.props;
@@ -73,23 +74,33 @@ export default class CollectionsBox extends Component {
             };
 
             allCheckbox = (
-                <Checkbox
-                    name={'_all_'}
-                    title={<em>All</em>}
-                    key={'_all_'}
-                    checked={allSelected}
-                    onChange={selectAll}
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            key={'_all_'}
+                            checked={allSelected}
+                            onChange={selectAll}
+                            value="_all_"
+                        />
+                    }
+                    label="All"
                 />
             );
         }
 
         const collectionCheckboxes = collections.map(col => (
-            <Checkbox
-                name={col.name}
-                title={col.title + (counts ? ` (${counts[col.name] || 0})` : '')}
+            <FormControlLabel
                 key={col.name}
-                checked={selected.indexOf(col.name) > -1}
-                onChange={this.handleChange.bind(this)}
+                control={
+                    <Checkbox
+                        key={col.name}
+                        name={col.name}
+                        checked={selected.indexOf(col.name) > -1}
+                        onChange={this.handleChange}
+                        value="_all_"
+                    />
+                }
+                label={col.title + (counts ? ` (${counts[col.name] || 0})` : '')}
             />
         ));
 
@@ -103,7 +114,7 @@ export default class CollectionsBox extends Component {
 
     render() {
         var result = null;
-        let { selected, collections } = this.props;
+        let { selected, collections, classes } = this.props;
 
         if (collections) {
             if (collections.length) {
@@ -116,10 +127,14 @@ export default class CollectionsBox extends Component {
         }
 
         return (
-            <div className="collections-box">
-                <small className="text-muted">Collections</small>
-                <div>{result}</div>
+            <div className={classes.root}>
+                <FormControl component="fieldset" className={classes.formControl}>
+                    <FormLabel component="legend">Collections</FormLabel>
+                    <FormGroup>{result}</FormGroup>
+                </FormControl>
             </div>
         );
     }
 }
+
+export default withStyles(styles)(CollectionsBox);

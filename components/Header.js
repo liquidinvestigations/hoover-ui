@@ -1,21 +1,76 @@
 import { Component } from 'react';
+import PropTypes from 'prop-types';
 import Menu from '../components/Menu';
 import Link from 'next/link';
 
-export default class Header extends Component {
-    render() {
-        return (
-            <nav className="navbar navbar-expand-md navbar-dark bg-dark">
-                <div className="container">
-                    <Link href="/">
-                        <a>
-                            <span className="navbar-brand">hoover</span>
-                        </a>
-                    </Link>
+import { withStyles } from '@material-ui/core/styles';
 
-                    <Menu />
-                </div>
-            </nav>
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+
+const styles = theme => ({
+    root: {
+        flexGrow: 1,
+        zIndex: theme.zIndex.drawer + 1,
+    },
+    flex: {
+        flexGrow: 1,
+    },
+    menuButton: {
+        marginLeft: -12,
+        marginRight: 20,
+    },
+});
+
+class Header extends Component {
+    static propTypes = {
+        classes: PropTypes.object.isRequired,
+    };
+
+    render() {
+        const { classes } = this.props;
+
+        return (
+            <div className={classes.root}>
+                <AppBar position="absolute">
+                    <Toolbar>
+                        <IconButton
+                            className={classes.menuButton}
+                            color="inherit"
+                            aria-label="Menu">
+                            <MenuIcon />
+                        </IconButton>
+                        <Typography
+                            variant="title"
+                            color="inherit"
+                            className={classes.flex}>
+                            hoover
+                        </Typography>
+                        <Menu />
+                    </Toolbar>
+                </AppBar>
+            </div>
         );
     }
+}
+
+export default withStyles(styles)(Header);
+
+{
+    /*<nav className="navbar navbar-expand-md navbar-dark bg-dark">
+    <div className="container">
+        <Link href="/">
+            <a>
+                <span className="navbar-brand">hoover</span>
+            </a>
+        </Link>
+
+        <Menu />
+    </div>
+</nav>
+*/
 }

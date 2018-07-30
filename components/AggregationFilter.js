@@ -1,6 +1,10 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import cn from 'classnames';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const defaultBucketSorter = (a, b) => b.key - a.key;
 
@@ -36,26 +40,27 @@ export default class AggregationFilter extends Component {
         const checked = this.props.selected.includes(formatted);
 
         return (
-            <li
-                className={cn('checkbox', { 'text-muted': !bucket.doc_count })}
-                key={bucket.key}>
-                <label className="d-flex justify-content-between">
-                    <div>
-                        <input
-                            disabled={!bucket.doc_count}
-                            type="checkbox"
-                            value={formatted}
-                            className="mr-2"
-                            checked={checked}
-                            onChange={this.handleChange}
+            <div key={bucket.key}>
+                <Grid container justify="space-between" alignItems="center">
+                    <Grid item>
+                        <FormControlLabel
+                            label={formatted}
+                            control={
+                                <Checkbox
+                                    value={formatted}
+                                    checked={checked}
+                                    disabled={!bucket.doc_count}
+                                    onChange={this.handleChange}
+                                />
+                            }
                         />
-                        {formatted}
-                    </div>
-                    <div className="text-muted">
-                        <small>{bucket.doc_count}</small>
-                    </div>
-                </label>
-            </li>
+                    </Grid>
+
+                    <Grid item>
+                        <Typography variant="caption">{bucket.doc_count}</Typography>
+                    </Grid>
+                </Grid>
+            </div>
         );
     };
 
@@ -76,7 +81,7 @@ export default class AggregationFilter extends Component {
 
         return (
             <div className="mt-2">
-                <div className="d-flex justify-content-between">
+                <Grid container justify="space-between">
                     <div>
                         <small className="text-muted">{title || ' '}</small>
                     </div>
@@ -87,9 +92,9 @@ export default class AggregationFilter extends Component {
                             </a>
                         )}
                     </div>
-                </div>
+                </Grid>
 
-                <ul className="list-unstyled">{buckets.map(this.renderBucket)}</ul>
+                <div>{buckets.map(this.renderBucket)}</div>
             </div>
         );
     }

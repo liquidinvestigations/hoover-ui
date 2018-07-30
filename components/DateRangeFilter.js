@@ -1,7 +1,8 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { DateTime } from 'luxon';
-import DayPickerInput from 'react-day-picker/DayPickerInput';
+import TextField from '@material-ui/core/TextField';
+import { withStyles } from '@material-ui/core/styles';
 
 const DATE_FORMAT = 'yyyy-MM-dd';
 
@@ -31,9 +32,15 @@ const dateType = (props, propName, componentName) => {
     }
 };
 
-// https://react-day-picker.js.org/examples/input-from-to
+const styles = theme => ({
+    textField: {
+        marginLeft: theme.spacing.unit,
+        marginRight: theme.spacing.unit,
+        width: 200,
+    },
+});
 
-export default class DateRangeFilter extends Component {
+class DateRangeFilter extends Component {
     static propTypes = {
         onChange: PropTypes.func.isRequired,
         defaultFrom: dateType,
@@ -82,7 +89,7 @@ export default class DateRangeFilter extends Component {
 
     render() {
         const { from, to } = this.state;
-        const { defaultFrom, defaultTo } = this.props;
+        const { defaultFrom, defaultTo, classes } = this.props;
 
         const modifiers = { start: from, end: to };
         const unedited = defaultFrom === from && defaultTo === to;
@@ -96,38 +103,31 @@ export default class DateRangeFilter extends Component {
                         </a>
                     )}
                 </div>
-                <DayPickerInput
+
+                <TextField
+                    id="date"
+                    label="From"
+                    type="date"
                     value={from}
-                    placeholder="From"
-                    format={DATE_FORMAT}
-                    formatDate={formatDate}
-                    parseDate={parseDate}
-                    dayPickerProps={{
-                        selectedDays: [from, { from, to }],
-                        disabledDays: { after: to },
-                        toMonth: to,
-                        modifiers,
-                        numberOfMonths: 2,
-                        onDayClick: () => this.to.getInput().focus(),
+                    defaultValue={defaultFrom}
+                    className={classes.textField}
+                    fullWidth
+                    InputLabelProps={{
+                        shrink: true,
                     }}
-                    onDayChange={this.handleFromChange}
                 />
-                <DayPickerInput
-                    ref={el => (this.to = el)}
+
+                <TextField
+                    id="date"
+                    label="To"
+                    type="date"
                     value={to}
-                    placeholder="To"
-                    format={DATE_FORMAT}
-                    formatDate={formatDate}
-                    parseDate={parseDate}
-                    dayPickerProps={{
-                        selectedDays: [from, { from, to }],
-                        disabledDays: { before: from },
-                        modifiers,
-                        month: from,
-                        fromMonth: from,
-                        numberOfMonths: 2,
+                    defaultValue={defaultTo}
+                    className={classes.textField}
+                    fullWidth
+                    InputLabelProps={{
+                        shrink: true,
                     }}
-                    onDayChange={this.handleToChange}
                 />
 
                 <div className="text-right">
@@ -142,3 +142,5 @@ export default class DateRangeFilter extends Component {
         );
     }
 }
+
+export default withStyles(styles)(DateRangeFilter);

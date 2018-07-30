@@ -13,6 +13,10 @@ import Filter from './Filter';
 import AggregationFilter from './AggregationFilter';
 import DateRangeFilter from './DateRangeFilter';
 
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
+
 Modal.setAppElement('body');
 
 const documentViewUrl = item => `doc/${item._collection}/${item._id}`;
@@ -48,9 +52,9 @@ export default class SearchResults extends Component {
     render() {
         if (this.state.error) {
             return (
-                <p className="alert alert-danger">
+                <Typography color="error">
                     ERROR: {this.state.error.toString()}
-                </p>
+                </Typography>
             );
         }
 
@@ -80,7 +84,12 @@ export default class SearchResults extends Component {
                 );
             });
 
-            resultList = <ul id="results"> {items} </ul>;
+            resultList = (
+                <Grid item id="results">
+                    {' '}
+                    {items}
+                </Grid>
+            );
         } else {
             resultList = null;
         }
@@ -91,8 +100,8 @@ export default class SearchResults extends Component {
         const aggregations = results.aggregations || {};
 
         return (
-            <div className="row">
-                <div className="col-sm-2">
+            <Grid container spacing={8}>
+                <Grid item sm={3}>
                     <div className="filters">
                         <Filter
                             title="File type"
@@ -138,9 +147,9 @@ export default class SearchResults extends Component {
                             />
                         </Filter>
                     </div>
-                </div>
+                </Grid>
 
-                <div className="col-sm-10">
+                <Grid item sm={9}>
                     <ReactPlaceholder
                         showLoadingAnimation
                         ready={!this.props.isFetching}
@@ -148,15 +157,13 @@ export default class SearchResults extends Component {
                         rows={
                             resultList && resultList.length ? resultList.length : 10
                         }>
-                        <div className="results-search">
-                            <Pagination {...this.props} />
+                        <Pagination {...this.props} />
 
-                            {resultList}
+                        <Grid container>{resultList}</Grid>
 
-                            {resultList && <Pagination {...this.props} />}
-                        </div>
+                        {resultList && <Pagination {...this.props} />}
                     </ReactPlaceholder>
-                </div>
+                </Grid>
 
                 <Modal
                     isOpen={!!preview}
@@ -182,7 +189,7 @@ export default class SearchResults extends Component {
                         />
                     )}
                 </Modal>
-            </div>
+            </Grid>
         );
     }
 }

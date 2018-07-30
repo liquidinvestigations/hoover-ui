@@ -1,15 +1,10 @@
-@import "~bootswatch/dist/yeti/variables";
-@import "~bootstrap/scss/bootstrap";
-@import "~bootswatch/dist/yeti/bootswatch";
 @import "./nprogress.scss";
 @import "~react-placeholder/lib/reactPlaceholder.css";
-@import "~react-day-picker/lib/style.css";
-
 
 $font-family-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
 main {
-    padding-top: 1rem;
+    font-family: Roboto, Helvetica Neue, Helvetica, sans-serif;
 }
 
 .no-find {
@@ -38,24 +33,6 @@ code {
 #search-back {
     float: right;
     margin: 0;
-}
-
-#search-input-box {
-    position: relative;
-
-    .fa-search {
-        position: absolute;
-        top: 11px;
-        right: 10px;
-        font-size: 15px;
-
-        // color: rgba(0, 0, 0, 0.40);
-
-    }
-
-    input {
-        border: 1px solid rgb(204, 204, 204);
-    }
 }
 
 #results,
@@ -170,7 +147,7 @@ i.fa {
             text-transform: uppercase;
             padding: 1rem;
 
-            i.fa {
+            .icon {
                 position: absolute;
                 right: 1rem;
                 top: 1rem;
@@ -208,7 +185,7 @@ i.fa {
             }
 
             .filter-header {
-                i.fa {
+                .icon {
                     transform: rotate(180deg);
                 }
             }
@@ -318,10 +295,9 @@ i.fa {
     }
 
     .fa {
-        color: $white;
+        color: white;
         padding-right: .5rem;
     }
-
 
     .content {
         overflow-wrap: break-word;
@@ -426,4 +402,3 @@ i.fa {
 
     margin-bottom: .5rem;
 }
-

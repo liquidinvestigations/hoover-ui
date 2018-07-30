@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import cn from 'classnames';
+import Grid from '@material-ui/core/Grid';
 
 export default class Pagination extends Component {
     static propTypes = {
@@ -43,16 +44,16 @@ export default class Pagination extends Component {
         const counts = results.count_by_index;
 
         return (
-            <div className="d-flex align-items-baseline justify-content-between">
-                <div>
+            <Grid container alignItems="baseline" justify="space-between">
+                <Grid item>
                     <span className="text-muted" style={{ fontWeight: 300 }}>
                         {results.hits.hits.length} of {total} hits – page {page} / {
                             pageCount
                         }
                     </span>
-                </div>
+                </Grid>
 
-                <nav>
+                <Grid item>
                     <ul className="pagination">
                         <li
                             className={cn('page-item', {
@@ -75,8 +76,8 @@ export default class Pagination extends Component {
                             </a>
                         </li>
                     </ul>
-                </nav>
-            </div>
+                </Grid>
+            </Grid>
         );
     }
 }

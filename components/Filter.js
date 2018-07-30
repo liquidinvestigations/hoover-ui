@@ -1,5 +1,7 @@
 import { Component } from 'react';
 import cn from 'classnames';
+import Icon from '@material-ui/icons/KeyboardArrowDown';
+import Typography from '@material-ui/core/Typography';
 
 export default class Filter extends Component {
     constructor(props) {
@@ -21,8 +23,10 @@ export default class Filter extends Component {
                     { open }
                 )}>
                 <div className="filter-header" onClick={this.toggle}>
-                    {title}
-                    <i className={'fa fa-angle-down'} />
+                    <Typography variant="body2">{title}</Typography>
+                    <span className="icon">
+                        <Icon />
+                    </span>
                 </div>
                 <div className="filter-body">{children}</div>
             </div>

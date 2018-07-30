@@ -75,7 +75,7 @@ class BatchPage extends Component {
         return (
             <form id="batch-form" ref="form">
                 <input type="hidden" value={collectionsValue} />
-                <div className="row">
+                >
                     <div className="col-sm-2">
                         <CollectionsBox
                             collections={collections}
