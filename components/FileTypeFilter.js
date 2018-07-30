@@ -137,13 +137,9 @@ class PieChart extends Component {
         }
 
         return (
-            <div>
-                <div className="small text-muted">File type</div>
-
-                <div className="charts-pie">
-                    {this.renderSvg(slices)}
-                    {this.renderLegend(slices)}
-                </div>
+            <div className="charts-pie">
+                {this.renderSvg(slices)}
+                {this.renderLegend(slices)}
             </div>
         );
     }
