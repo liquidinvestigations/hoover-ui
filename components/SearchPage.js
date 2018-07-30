@@ -66,12 +66,15 @@ export default class SearchPage extends Component {
             size: params.size ? +params.size : 10,
             order: params.order ? params.order : SORT_OPTIONS[0],
             collections: params.collections ? params.collections.split('+') : [],
+            dateFrom: params.dateFrom,
+            dateTo: params.dateTo,
             dateYears: params.dateYears ? castArray(params.dateYears) : [],
             dateCreatedYears: params.dateCreatedYears
                 ? castArray(params.dateCreatedYears)
                 : [],
             page: params.page ? +params.page : 1,
             searchAfter: params.searchAfter || '',
+            fileType: params.fileType ? castArray(params.fileType) : [],
         };
     }
 
@@ -169,6 +172,7 @@ export default class SearchPage extends Component {
 
     handleSubmit = event => {
         event.preventDefault();
+
         this.setState(
             {
                 query: {
@@ -217,31 +221,42 @@ export default class SearchPage extends Component {
     handleFilter = filter => {
         const { query } = this.state;
 
-        const queryStringFilters = ['filetype'];
-        const filterQueries = Object.entries(filter)
-            .filter(([key, value]) => queryStringFilters.includes(key))
-            .map(f => f.join(':'));
-
         const urlQuery = {};
 
-        if (filter['date']) {
-            urlQuery.dateYears = filter['date'];
+        if (
+            filter.date &&
+            filter.date.length &&
+            filter.date.every(e => e && e.length === 4) // is year
+        ) {
+            urlQuery.dateYears = filter.date;
+        } else {
+            urlQuery.dateYears = [];
+        }
+
+        if (
+            filter.date &&
+            filter.date.length === 2 &&
+            filter.date.every(d => d && d.length === 10) // is full date
+        ) {
+            urlQuery.dateFrom = filter.date[0];
+            urlQuery.dateTo = filter.date[1];
+        } else {
+            urlQuery.dateFrom = null;
+            urlQuery.dateTo = null;
         }
 
         if (filter['date-created']) {
             urlQuery.dateCreatedYears = filter['date-created'];
         }
 
-        const q =
-            query.q.indexOf(filterQueries) !== -1
-                ? query.q
-                : [query.q, ...filterQueries].join(' ');
+        if (filter.filetype) {
+            urlQuery.fileType = filter.filetype;
+        }
 
         this.setState(
             {
                 query: {
                     ...query,
-                    q,
                     ...urlQuery,
                     searchAfter: '',
                     page: 1,
@@ -411,8 +426,6 @@ export default class SearchPage extends Component {
                                 </div>
                             </div>
                         </div>
-
-                        <hr />
                     </div>
                 </div>
 

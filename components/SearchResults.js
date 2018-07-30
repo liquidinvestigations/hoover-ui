@@ -1,23 +1,22 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import url from 'url';
-import cn from 'classnames';
 import Link from 'next/link';
 import Modal from 'react-modal';
-
+import { DateTime } from 'luxon';
 import ReactPlaceholder from 'react-placeholder';
-
-import Charts from './Charts';
+import FileTypeFilter from './FileTypeFilter';
 import Document from './Document';
 import ResultItem from './ResultItem';
 import Pagination from './Pagination';
-import YearFilter from './YearFilter';
-
-function documentViewUrl(item) {
-    return 'doc/' + item._collection + '/' + item._id;
-}
+import Filter from './Filter';
+import AggregationFilter from './AggregationFilter';
+import DateRangeFilter from './DateRangeFilter';
 
 Modal.setAppElement('body');
+
+const documentViewUrl = item => `doc/${item._collection}/${item._id}`;
+const formatYear = bucket => DateTime.fromISO(bucket.key_as_string).year.toString();
 
 export default class SearchResults extends Component {
     static propTypes = {
@@ -34,9 +33,13 @@ export default class SearchResults extends Component {
     clearPreview = () => this.setState({ preview: null });
     setPreview = url => this.setState({ preview: url });
 
+    handleFileTypeFilter = fileTypes => this.props.onFilter({ filetype: fileTypes });
     handleDateFilter = years => this.props.onFilter({ date: years });
     handleDateCreatedFilter = years =>
         this.props.onFilter({ 'date-created': years });
+
+    handleDateRangeFilter = ({ from, to }) =>
+        this.props.onFilter({ date: [from, to] });
 
     componentDidCatch(error, info) {
         this.setState({ error: error });
@@ -90,20 +93,51 @@ export default class SearchResults extends Component {
         return (
             <div className="row">
                 <div className="col-sm-2">
-                    <Charts aggregations={aggregations} onSelect={onFilter} />
+                    <div className="filters">
+                        <Filter
+                            title="File type"
+                            defaultOpen={query.fileType.length}>
+                            <AggregationFilter
+                                title=""
+                                selected={query.fileType}
+                                aggregation={aggregations.count_by_filetype}
+                                onChange={this.handleFileTypeFilter}
+                            />
+                        </Filter>
 
-                    <YearFilter
-                        aggregation={aggregations.count_by_date_year}
-                        title="Year"
-                        selected={query.dateYears}
-                        onChange={this.handleDateFilter}
-                    />
-                    <YearFilter
-                        aggregation={aggregations.count_by_date_created_year}
-                        selected={query.dateCreatedYears}
-                        title="Year created"
-                        onChange={this.handleDateCreatedFilter}
-                    />
+                        <Filter
+                            title="Date range"
+                            defaultOpen={query.dateFrom || query.dateTo}>
+                            <DateRangeFilter
+                                onChange={this.handleDateRangeFilter}
+                                defaultFrom={query.dateFrom}
+                                defaultTo={query.dateTo}
+                            />
+                        </Filter>
+
+                        <Filter
+                            title="Years"
+                            defaultOpen={
+                                query.dateYears.length ||
+                                query.dateCreatedYears.length
+                            }>
+                            <AggregationFilter
+                                aggregation={aggregations.count_by_date_year}
+                                selected={query.dateYears}
+                                title="Year"
+                                onChange={this.handleDateFilter}
+                                bucketLabel={formatYear}
+                            />
+
+                            <AggregationFilter
+                                aggregation={aggregations.count_by_date_created_year}
+                                selected={query.dateCreatedYears}
+                                title="Year created"
+                                onChange={this.handleDateCreatedFilter}
+                                bucketLabel={formatYear}
+                            />
+                        </Filter>
+                    </div>
                 </div>
 
                 <div className="col-sm-10">
@@ -111,7 +145,9 @@ export default class SearchResults extends Component {
                         showLoadingAnimation
                         ready={!this.props.isFetching}
                         type="text"
-                        rows={10}>
+                        rows={
+                            resultList && resultList.length ? resultList.length : 10
+                        }>
                         <div className="results-search">
                             <Pagination {...this.props} />
 
@@ -135,7 +171,6 @@ export default class SearchResults extends Component {
                             top: 0,
                             right: 0,
                             bottom: 0,
-                            // animation: 'slideIn .2s ease-in-out',
                         },
                     }}
                     closeTimeMS={200}

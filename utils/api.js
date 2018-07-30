@@ -4,13 +4,28 @@ import NProgress from 'nprogress';
 
 NProgress.configure({ parent: '.nprogress', showSpinner: true });
 
-function buildQuery(q) {
-    return {
+function buildQuery(q, { dateFrom, dateTo }) {
+    const qs = {
         query_string: {
             query: q,
             default_operator: 'AND',
         },
     };
+
+    if (dateFrom && dateTo) {
+        return {
+            bool: {
+                must: qs,
+                filter: {
+                    range: {
+                        date: { gte: dateFrom, lte: dateTo },
+                    },
+                },
+            },
+        };
+    }
+
+    return qs;
 }
 
 function buildPostFilter(filters) {
@@ -38,6 +53,12 @@ function buildPostFilter(filters) {
                                 },
                             },
                         })),
+                    },
+                };
+            } else if (key === 'fileType') {
+                return {
+                    terms: {
+                        filetype: value,
                     },
                 };
             } else {
@@ -132,17 +153,24 @@ class Api {
         collections = [],
         dateYears = null,
         dateCreatedYears = null,
+        dateFrom = null,
+        dateTo = null,
         searchAfter = '',
+        fileType = null,
     } = {}) {
         return await fetchJson('/search', {
             method: 'POST',
             body: JSON.stringify({
                 from: (page - 1) * size,
                 size: size,
-                query: buildQuery(q),
+                query: buildQuery(q, { dateFrom, dateTo }),
                 search_after: searchAfter,
                 sort: buildSortQuery(order),
-                post_filter: buildPostFilter({ dateYears, dateCreatedYears }),
+                post_filter: buildPostFilter({
+                    dateYears,
+                    dateCreatedYears,
+                    fileType,
+                }),
                 aggs: {
                     count_by_filetype: { terms: { field: 'filetype' } },
                     count_by_date_year: {
