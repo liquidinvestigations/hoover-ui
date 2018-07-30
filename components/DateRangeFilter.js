@@ -98,6 +98,7 @@ export default class DateRangeFilter extends Component {
                 </div>
                 <DayPickerInput
                     value={from}
+                    placeholder="From"
                     format={DATE_FORMAT}
                     formatDate={formatDate}
                     parseDate={parseDate}
@@ -114,6 +115,7 @@ export default class DateRangeFilter extends Component {
                 <DayPickerInput
                     ref={el => (this.to = el)}
                     value={to}
+                    placeholder="To"
                     format={DATE_FORMAT}
                     formatDate={formatDate}
                     parseDate={parseDate}
