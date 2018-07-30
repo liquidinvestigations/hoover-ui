@@ -24,8 +24,9 @@ export default class Filter extends Component {
                 )}>
                 <div className="filter-header" onClick={this.toggle}>
                     <Typography variant="body2">{title}</Typography>
+
                     <span className="icon">
-                        <Icon />
+                        <Icon color="secondary" />
                     </span>
                 </div>
                 <div className="filter-body">{children}</div>
@@ -33,3 +34,5 @@ export default class Filter extends Component {
         );
     }
 }
+
+

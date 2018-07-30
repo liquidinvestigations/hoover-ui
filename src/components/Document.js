@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import Loading from './Loading';
-import api from '../utils/api';
+import api from '../api';
 
 export default class Document extends Component {
     state = { doc: {}, loaded: false };

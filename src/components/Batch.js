@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import classNames from 'classnames';
-import api from '../utils/api';
+import api from '../api';
 
 export default class Batch extends Component {
     state = {

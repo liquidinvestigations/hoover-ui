@@ -2,7 +2,7 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import cn from 'classnames';
 import { DateTime } from 'luxon';
-import makeUnsearchable from '../utils/make-unsearchable';
+import makeUnsearchable from '../make-unsearchable';
 
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
@@ -86,10 +86,7 @@ class ResultItem extends Component {
                 <Card>
                     <CardContent>
                         <Typography variant="title">
-                            {this.props.n}.{' '}
-                            <a href={url} target="_blank" onClick={this.handleClick}>
-                                {title} {attachIcon}
-                            </a>
+                            {this.props.n}. {title} {attachIcon}
                         </Typography>
 
                         <Typography variant="caption">{fields.path}</Typography>

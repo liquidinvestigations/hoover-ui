@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import Menu from '../components/Menu';
+import Menu from './Menu';
 import Link from 'next/link';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -14,7 +14,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 
 const styles = theme => ({
     root: {
-        flexGrow: 1,
         zIndex: theme.zIndex.drawer + 1,
     },
     flex: {

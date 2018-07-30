@@ -2,7 +2,7 @@ import { Component } from 'react';
 import Dropdown from './Dropdown';
 import CollectionsBox from './CollectionsBox';
 import Batch from './Batch';
-import api from '../utils/api';
+import api from '../api';
 
 class BatchPage extends Component {
     state = {
@@ -75,15 +75,15 @@ class BatchPage extends Component {
         return (
             <form id="batch-form" ref="form">
                 <input type="hidden" value={collectionsValue} />
-                >
-                    <div className="col-sm-2">
+                <Grid container>
+                    <Grid item sm={2}>
                         <CollectionsBox
                             collections={collections}
                             selected={selectedCollections}
                             onChange={onChangeCollections}
                         />
-                    </div>
-                    <div className="col-sm-9">
+                    </Grid>
+                    <Grid item sm={9}>
                         <div id="batch-input-box" className="form-group">
                             <textarea
                                 id="batch-input-terms"
@@ -105,8 +105,8 @@ class BatchPage extends Component {
                             {limitsMessage}
                         </div>
                         <Batch query={query} />
-                    </div>
-                </div>
+                    </Grid>
+                </Grid>
             </form>
         );
     }

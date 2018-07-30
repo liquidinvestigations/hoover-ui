@@ -4,13 +4,15 @@ import React from 'react';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import JssProvider from 'react-jss/lib/JssProvider';
-import getPageContext from '../utils/getPageContext';
+import getPageContext from '../src/get-page-context';
+import withReduxStore from '../src/with-redux-store';
+import { Provider } from 'react-redux';
 
-import Layout from '../components/Layout';
+import Layout from '../src/components/Layout';
 
 import '../styles/main.scss';
 
-export default class HooverApp extends App {
+class HooverApp extends App {
     pageContext = getPageContext();
 
     componentDidMount() {
@@ -22,7 +24,7 @@ export default class HooverApp extends App {
     }
 
     render() {
-        const { Component, pageProps } = this.props;
+        const { Component, pageProps, reduxStore } = this.props;
 
         return (
             <Container>
@@ -33,15 +35,19 @@ export default class HooverApp extends App {
                         theme={this.pageContext.theme}
                         sheetsManager={this.pageContext.sheetsManager}>
                         <CssBaseline />
-                        <Layout>
-                            <Component
-                                pageContext={this.pageContext}
-                                {...pageProps}
-                            />
-                        </Layout>
+                        <Provider store={reduxStore}>
+                            <Layout>
+                                <Component
+                                    pageContext={this.pageContext}
+                                    {...pageProps}
+                                />
+                            </Layout>
+                        </Provider>
                     </MuiThemeProvider>
                 </JssProvider>
             </Container>
         );
     }
 }
+
+export default withReduxStore(HooverApp);

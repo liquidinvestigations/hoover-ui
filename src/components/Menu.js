@@ -1,7 +1,7 @@
 import { Component, Fragment } from 'react';
 import cn from 'classnames';
 import { withRouter } from 'next/router';
-import api from '../utils/api';
+import api from '../api';
 import Button from '@material-ui/core/Button';
 
 class Menu extends Component {

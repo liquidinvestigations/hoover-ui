@@ -2,6 +2,9 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import Loading from './Loading';
 
+import { connect } from 'react-redux';
+import { setCollectionsSelection } from '../actions';
+
 import { withStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -12,6 +15,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 const styles = theme => ({
     root: {
         display: 'flex',
+        direction: 'column',
     },
     formControl: {
         margin: theme.spacing.unit * 3,
@@ -32,7 +36,7 @@ class CollectionsBox extends Component {
     };
 
     changeSelection(selected) {
-        this.props.onChange(selected);
+        this.props.dispatch(setCollectionsSelection(selected));
     }
 
     handleChange = event => {
@@ -57,21 +61,7 @@ class CollectionsBox extends Component {
         let allCheckbox = null;
 
         if (collections.length > 1) {
-            let allSelected = true;
-            for (let col of collections) {
-                if (selected.indexOf(col.name) < 0) {
-                    allSelected = false;
-                }
-            }
-
-            let selectAll = () => {
-                let selected = [];
-                if (allSelected) {
-                    this.changeSelection([]);
-                } else {
-                    this.changeSelection(collections.map(col => col.name));
-                }
-            };
+            const allSelected = collections.every(c => selected.includes(c.name));
 
             allCheckbox = (
                 <FormControlLabel
@@ -79,7 +69,13 @@ class CollectionsBox extends Component {
                         <Checkbox
                             key={'_all_'}
                             checked={allSelected}
-                            onChange={selectAll}
+                            onChange={() =>
+                                allSelected
+                                    ? this.changeSelection([])
+                                    : this.changeSelection(
+                                          collections.map(c => c.name)
+                                      )
+                            }
                             value="_all_"
                         />
                     }
@@ -95,7 +91,7 @@ class CollectionsBox extends Component {
                     <Checkbox
                         key={col.name}
                         name={col.name}
-                        checked={selected.indexOf(col.name) > -1}
+                        checked={selected.includes(col.name)}
                         onChange={this.handleChange}
                         value="_all_"
                     />
@@ -137,4 +133,9 @@ class CollectionsBox extends Component {
     }
 }
 
-export default withStyles(styles)(CollectionsBox);
+const mapStateToProps = ({ collections: { items, selected } }) => ({
+    collections: items,
+    selected,
+});
+
+export default connect(mapStateToProps)(withStyles(styles)(CollectionsBox));

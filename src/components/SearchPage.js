@@ -2,16 +2,21 @@ import { Component } from 'react';
 import qs from 'qs';
 import cn from 'classnames';
 import equal from 'fast-deep-equal';
+import PropTypes from 'prop-types';
 
 import Link from 'next/link';
 import Router from 'next/router';
 
-import api from '../utils/api';
-import routerEvents from '../utils/router-events';
+import { connect } from 'react-redux';
+import { fetchCollections } from '../actions';
+
+import api from '../api';
+import routerEvents from '../router-events';
 
 import Dropdown from './Dropdown';
 import CollectionsBox from './CollectionsBox';
 import SearchResults from './SearchResults';
+import SearchSettings from './SearchSettings';
 
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
@@ -34,7 +39,7 @@ import {
     SORT_OPTIONS,
     SEARCH_GUIDE,
     SIZE_OPTIONS,
-} from '../utils/constants';
+} from '../constants';
 
 const drawerWidth = 240;
 
@@ -46,19 +51,28 @@ const styles = theme => ({
 });
 
 class SearchPage extends Component {
+    static propTypes = {
+        isFetching: PropTypes.bool.isRequired,
+        result: PropTypes.shape({
+            hits: PropTypes.shape({
+                hits: PropTypes.array,
+            }).isRequired,
+        }).isRequired,
+    };
+
     state = {
-        allCollections: null,
-        results: null,
-        isFetching: false,
         query: {},
         searchAfterByPage: {},
         error: null,
     };
 
     componentDidMount() {
-        this.setState({ query: this.parseQueryFromUrl() }, async () => {
-            await this.getCollections();
+        console.log(this.props);
+        const { dispatch } = this.props;
 
+        dispatch(fetchCollections());
+
+        this.setState({ query: this.parseQueryFromUrl() }, async () => {
             if (this.state.query.q) {
                 this.search();
             }
@@ -118,18 +132,9 @@ class SearchPage extends Component {
     }
 
     async getCollections() {
-        const allCollections = await api.collections();
-
-        const { collections } = this.state.query;
-
         this.setState({
-            allCollections,
             query: {
                 ...this.state.query,
-                collections:
-                    collections && collections.length
-                        ? collections
-                        : allCollections.map(e => e.name),
             },
         });
     }
@@ -307,7 +312,7 @@ class SearchPage extends Component {
                 const lastHit = results.hits.hits.slice(-1)[0];
 
                 searchAfterByPage[page + 1] = ['' + lastHit._score, lastHit._id];
-                if (order !== 'Relevance') {
+                if (order !== SORT_RELEVANCE) {
                     const date = new Date(lastHit._source.date);
 
                     searchAfterByPage[page + 1] = [
@@ -342,20 +347,7 @@ class SearchPage extends Component {
         return (
             <div>
                 <Grid container>
-                    <Grid item sm={3}>
-                        <CollectionsBox
-                            collections={allCollections}
-                            selected={collections || []}
-                            onChange={this.onChangeCollections}
-                            counts={
-                                this.state.results
-                                    ? this.state.results.count_by_index
-                                    : null
-                            }
-                        />
-                    </Grid>
-
-                    <Grid item sm={9}>
+                    <Grid item lg={8} sm={12}>
                         <TextField
                             name="q"
                             value={q || ''}
@@ -384,52 +376,12 @@ class SearchPage extends Component {
                             </Grid>
                         </Grid>
 
-                        <Grid container justify="space-between">
-                            <Grid item sm={6}>
-                                <FormControl style={{ minWidth: 120 }}>
-                                    <InputLabel>Results per page</InputLabel>
-
-                                    <Select
-                                        autoWidth
-                                        inputProps={{
-                                            id: 'results-per-page',
-                                        }}
-                                        value={size || '10'}
-                                        onChange={this.setSize}>
-                                        {SIZE_OPTIONS.map(s => (
-                                            <MenuItem key={s} value={s}>
-                                                {s}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-
-                            <Grid item>
-                                <FormControl style={{ minWidth: 120 }}>
-                                    <InputLabel>Order</InputLabel>
-
-                                    <Select
-                                        autoWidth
-                                        inputProps={{
-                                            id: 'sort',
-                                        }}
-                                        value={order || 'Relevance'}
-                                        onChange={this.setSort}>
-                                        {SORT_OPTIONS.map(s => (
-                                            <MenuItem key={s} value={s}>
-                                                {s}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                        </Grid>
+                        <SearchSettings />
                     </Grid>
                 </Grid>
 
                 <SearchResults
-                    isFetching={this.state.isFetching}
+                    isFetching={this.props.isFetching}
                     results={this.state.results}
                     query={this.state.query}
                     onNextPage={this.loadNextPage}
@@ -441,4 +393,6 @@ class SearchPage extends Component {
     }
 }
 
-export default withStyles(styles)(SearchPage);
+const mapStateToProps = ({ search }) => search;
+
+export default withStyles(styles)(connect(mapStateToProps)(SearchPage));
