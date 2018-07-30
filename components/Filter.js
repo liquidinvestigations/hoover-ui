@@ -22,7 +22,7 @@ export default class Filter extends Component {
                 )}>
                 <div className="filter-header" onClick={this.toggle}>
                     {title}
-                    <i className={'fa fa-angle-right'} />
+                    <i className={'fa fa-angle-down'} />
                 </div>
                 <div className="filter-body">{children}</div>
             </div>
