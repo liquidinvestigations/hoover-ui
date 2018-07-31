@@ -56,7 +56,7 @@ const SearchSettings = ({ size, order, dispatch, classes }) => (
 
 const mapStateToProps = ({
     search: {
-        settings: { size, order },
+        query: { size, order },
     },
 }) => ({ size, order });
 

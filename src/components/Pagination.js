@@ -2,6 +2,10 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import cn from 'classnames';
 import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import IconPrevious from '@material-ui/icons/NavigateBefore';
+import IconNext from '@material-ui/icons/NavigateNext';
 
 export default class Pagination extends Component {
     static propTypes = {
@@ -44,38 +48,28 @@ export default class Pagination extends Component {
         const counts = results.count_by_index;
 
         return (
-            <Grid container alignItems="baseline" justify="space-between">
+            <Grid container alignItems="center" justify="flex-start">
                 <Grid item>
-                    <span className="text-muted" style={{ fontWeight: 300 }}>
+                    <Typography variant="caption">
                         {results.hits.hits.length} of {total} hits – page {page} / {
                             pageCount
                         }
-                    </span>
+                    </Typography>
                 </Grid>
 
                 <Grid item>
-                    <ul className="pagination">
-                        <li
-                            className={cn('page-item', {
-                                disabled: !hasPrev,
-                            })}>
-                            <a
-                                className="page-link"
-                                tabIndex="-1"
-                                onClick={this.handlePrev}>
-                                Previous
-                            </a>
-                        </li>
+                    <Grid container justify="flex-end">
+                        <IconButton
+                            tabIndex="-1"
+                            onClick={this.handlePrev}
+                            disabled={!hasPrev}>
+                            <IconPrevious />
+                        </IconButton>
 
-                        <li
-                            className={cn('page-item', {
-                                disabled: !hasNext,
-                            })}>
-                            <a className="page-link" onClick={this.handleNext}>
-                                Next
-                            </a>
-                        </li>
-                    </ul>
+                        <IconButton onClick={this.handleNext} disabled={!hasNext}>
+                            <IconNext />
+                        </IconButton>
+                    </Grid>
                 </Grid>
             </Grid>
         );

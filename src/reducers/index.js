@@ -1,25 +1,56 @@
 // search
 const INITIAL_SEARCH_STATE = {
     isFetching: false,
-    settings: {
+    query: {
         size: 10,
         order: 'Relevance',
+        page: 1,
+        searchAfter: '',
     },
-    filters: {},
-    result: {
+    searchAfterByPage: {},
+    results: {
         hits: { hits: null },
     },
+    error: null,
 };
 
 function search(state = INITIAL_SEARCH_STATE, action) {
     switch (action.type) {
         case 'SET_SEARCH_SETTINGS_SIZE':
-            return { ...state, settings: { ...state.settings, size: action.value } };
+            return {
+                ...state,
+                searchAfterByPage: {},
+                query: {
+                    ...state.query,
+                    page: 1,
+                    searchAfter: '',
+                    size: action.value,
+                },
+            };
         case 'SET_SEARCH_SETTINGS_ORDER':
             return {
                 ...state,
-                settings: { ...state.settings, order: action.value },
+                searchAfterByPage: {},
+                query: {
+                    ...state.query,
+                    page: 1,
+                    searchAfter: '',
+                    order: action.value,
+                },
             };
+        case 'SEARCH_URL_QUERY':
+            return { ...state, query: action.query };
+        case 'FETCH_SEARCH':
+            return { ...state, isFetching: true };
+        case 'FETCH_SEARCH_SUCCESS':
+            return {
+                ...state,
+                isFetching: false,
+                error: null,
+                results: action.results,
+            };
+        case 'FETCH_SEARCH_FAILURE':
+            return { ...state, isFetching: false, error: action.error };
         default:
             return state;
     }

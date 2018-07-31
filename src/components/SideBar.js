@@ -3,6 +3,7 @@ import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography';
+import Filters from './Filters';
 
 import CollectionsBox from './CollectionsBox';
 
@@ -25,6 +26,8 @@ export default ({ classes }) => (
             <ListItem>
                 <Typography>Filters</Typography>
             </ListItem>
+
+            <Filters />
         </List>
     </Drawer>
 );

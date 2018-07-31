@@ -9,11 +9,15 @@ import withReduxStore from '../src/with-redux-store';
 import { Provider } from 'react-redux';
 
 import Layout from '../src/components/Layout';
+import routerEvents from '../src/router-events';
+import { routeChanged } from '../src/actions';
 
 import '../styles/main.scss';
 
 class HooverApp extends App {
     pageContext = getPageContext();
+
+    handleRouteChange = url => this.props.reduxStore.dispatch(routeChanged(url));
 
     componentDidMount() {
         // Remove the server-side injected CSS.
@@ -21,6 +25,12 @@ class HooverApp extends App {
         if (jssStyles && jssStyles.parentNode) {
             jssStyles.parentNode.removeChild(jssStyles);
         }
+
+        routerEvents.on('changeComplete', this.handleRouteChange);
+    }
+
+    componentWillUnmount() {
+        routerEvents.removeListener('changeComplete', this.handleRouteChange);
     }
 
     render() {

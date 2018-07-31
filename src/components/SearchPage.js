@@ -1,5 +1,4 @@
 import { Component } from 'react';
-import qs from 'qs';
 import cn from 'classnames';
 import equal from 'fast-deep-equal';
 import PropTypes from 'prop-types';
@@ -8,10 +7,10 @@ import Link from 'next/link';
 import Router from 'next/router';
 
 import { connect } from 'react-redux';
-import { fetchCollections } from '../actions';
+import { fetchCollections, parseSearchUrlQuery, search } from '../actions';
 
-import api from '../api';
-import routerEvents from '../router-events';
+// import api from '../api';
+// import routerEvents from '../router-events';
 
 import Dropdown from './Dropdown';
 import CollectionsBox from './CollectionsBox';
@@ -53,65 +52,33 @@ const styles = theme => ({
 class SearchPage extends Component {
     static propTypes = {
         isFetching: PropTypes.bool.isRequired,
-        result: PropTypes.shape({
+        results: PropTypes.shape({
             hits: PropTypes.shape({
                 hits: PropTypes.array,
             }).isRequired,
         }).isRequired,
+        query: PropTypes.object.isRequired,
+        error: PropTypes.object,
     };
 
     state = {
         query: {},
         searchAfterByPage: {},
-        error: null,
     };
 
     componentDidMount() {
-        console.log(this.props);
         const { dispatch } = this.props;
 
-        dispatch(fetchCollections());
-
-        this.setState({ query: this.parseQueryFromUrl() }, async () => {
-            if (this.state.query.q) {
-                this.search();
-            }
-        });
-
-        routerEvents.on('changeComplete', this.searchIfNecessary);
-    }
-
-    componentWillUnmount() {
-        routerEvents.removeListener('changeComplete', this.searchIfNecessary);
+        dispatch(parseSearchUrlQuery());
     }
 
     searchIfNecessary = url => {
-        const parsedQuery = this.parseQueryFromUrl();
+        const parsedQuery = {};
 
         if (!equal(parsedQuery, this.state.query) && this.state.query.q) {
             this.setState({ query: parsedQuery }, this.search);
         }
     };
-
-    parseQueryFromUrl() {
-        const params = qs.parse(window.location.search.slice(1));
-
-        return {
-            q: params.q ? String(params.q).replace(/\+/g, ' ') : '',
-            size: params.size ? +params.size : 10,
-            order: params.order ? params.order : SORT_OPTIONS[0],
-            collections: params.collections ? params.collections.split('+') : [],
-            dateFrom: params.dateFrom,
-            dateTo: params.dateTo,
-            dateYears: params.dateYears ? castArray(params.dateYears) : [],
-            dateCreatedYears: params.dateCreatedYears
-                ? castArray(params.dateCreatedYears)
-                : [],
-            page: params.page ? +params.page : 1,
-            searchAfter: params.searchAfter || '',
-            fileType: params.fileType ? castArray(params.fileType) : [],
-        };
-    }
 
     writeQueryToUrl() {
         let query = {
@@ -129,14 +96,6 @@ class SearchPage extends Component {
 
     componentDidCatch(error, info) {
         this.setState({ error });
-    }
-
-    async getCollections() {
-        this.setState({
-            query: {
-                ...this.state.query,
-            },
-        });
     }
 
     setSize = event => {
@@ -293,52 +252,52 @@ class SearchPage extends Component {
         );
     };
 
-    search() {
-        this.setState({ isFetching: true }, async () => {
-            this.writeQueryToUrl();
+    search = event => {
+        if (event) {
+            event.preventDefault();
+        }
 
-            let results, error;
+        this.props.dispatch(search());
 
-            try {
-                results = await api.search(this.state.query);
-            } catch (err) {
-                error = err;
-            }
+        // this.setState({ isFetching: true }, async () => {
+        //     this.writeQueryToUrl();
 
-            const { query, searchAfterByPage } = this.state;
-            const { page, order } = query;
+        //     let results, error;
 
-            if (results.hits.total > 0) {
-                const lastHit = results.hits.hits.slice(-1)[0];
+        //     try {
+        //         results = await api.search(this.state.query);
+        //     } catch (err) {
+        //         error = err;
+        //     }
 
-                searchAfterByPage[page + 1] = ['' + lastHit._score, lastHit._id];
-                if (order !== SORT_RELEVANCE) {
-                    const date = new Date(lastHit._source.date);
+        //     const { query, searchAfterByPage } = this.state;
+        //     const { page, order } = query;
 
-                    searchAfterByPage[page + 1] = [
-                        '' + date.getTime(),
-                        ...searchAfterByPage[page + 1],
-                    ];
-                }
-            }
+        //     if (results.hits.total > 0) {
+        //         const lastHit = results.hits.hits.slice(-1)[0];
 
-            this.setState({
-                searchAfterByPage,
-                isFetching: false,
-                results,
-                error,
-            });
-        });
-    }
+        //         searchAfterByPage[page + 1] = ['' + lastHit._score, lastHit._id];
+        //         if (order !== SORT_RELEVANCE) {
+        //             const date = new Date(lastHit._source.date);
+
+        //             searchAfterByPage[page + 1] = [
+        //                 '' + date.getTime(),
+        //                 ...searchAfterByPage[page + 1],
+        //             ];
+        //         }
+        //     }
+
+        //     this.setState({
+        //         searchAfterByPage,
+        //         isFetching: false,
+        //         results,
+        //         error,
+        //     });
+        // });
+    };
 
     render() {
-        const {
-            allCollections,
-            query: { collections, q, size, order },
-            error,
-        } = this.state;
-
-        const { classes } = this.props;
+        const { classes, error, query, isFetching, results } = this.props;
 
         if (error) {
             return <Typography color="error">{error.toString()}</Typography>;
@@ -348,16 +307,18 @@ class SearchPage extends Component {
             <div>
                 <Grid container>
                     <Grid item lg={8} sm={12}>
-                        <TextField
-                            name="q"
-                            value={q || ''}
-                            onChange={this.handleInputChange}
-                            label="Search"
-                            margin="normal"
-                            fullWidth
-                            type="search"
-                            autoFocus
-                        />
+                        <form onSubmit={this.search}>
+                            <TextField
+                                name="q"
+                                value={query.q || ''}
+                                onChange={this.handleInputChange}
+                                label="Search"
+                                margin="normal"
+                                fullWidth
+                                type="search"
+                                autoFocus
+                            />
+                        </form>
 
                         <Grid container justify="space-between">
                             <Grid item>
@@ -377,17 +338,17 @@ class SearchPage extends Component {
                         </Grid>
 
                         <SearchSettings />
+
+                        <SearchResults
+                            isFetching={isFetching}
+                            results={results}
+                            query={query}
+                            onNextPage={this.loadNextPage}
+                            onPrevPage={this.loadPrevPage}
+                            onFilter={this.handleFilter}
+                        />
                     </Grid>
                 </Grid>
-
-                <SearchResults
-                    isFetching={this.props.isFetching}
-                    results={this.state.results}
-                    query={this.state.query}
-                    onNextPage={this.loadNextPage}
-                    onPrevPage={this.loadPrevPage}
-                    onFilter={this.handleFilter}
-                />
             </div>
         );
     }

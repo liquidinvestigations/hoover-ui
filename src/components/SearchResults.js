@@ -20,7 +20,6 @@ import Paper from '@material-ui/core/Paper';
 Modal.setAppElement('body');
 
 const documentViewUrl = item => `doc/${item._collection}/${item._id}`;
-const formatYear = bucket => DateTime.fromISO(bucket.key_as_string).year.toString();
 
 export default class SearchResults extends Component {
     static propTypes = {
@@ -37,13 +36,13 @@ export default class SearchResults extends Component {
     clearPreview = () => this.setState({ preview: null });
     setPreview = url => this.setState({ preview: url });
 
-    handleFileTypeFilter = fileTypes => this.props.onFilter({ filetype: fileTypes });
-    handleDateFilter = years => this.props.onFilter({ date: years });
-    handleDateCreatedFilter = years =>
-        this.props.onFilter({ 'date-created': years });
+    // handleFileTypeFilter = fileTypes => this.props.onFilter({ filetype: fileTypes });
+    // handleDateFilter = years => this.props.onFilter({ date: years });
+    // handleDateCreatedFilter = years =>
+    //     this.props.onFilter({ 'date-created': years });
 
-    handleDateRangeFilter = ({ from, to }) =>
-        this.props.onFilter({ date: [from, to] });
+    // handleDateRangeFilter = ({ from, to }) =>
+    //     this.props.onFilter({ date: [from, to] });
 
     componentDidCatch(error, info) {
         this.setState({ error: error });
@@ -60,7 +59,7 @@ export default class SearchResults extends Component {
 
         const { results, query, onFilter, isFetching } = this.props;
 
-        if (!results) {
+        if (!results.hits.hits) {
             return null;
         }
 
@@ -101,55 +100,7 @@ export default class SearchResults extends Component {
 
         return (
             <Grid container spacing={8}>
-                <Grid item sm={3}>
-                    <div className="filters">
-                        <Filter
-                            title="File type"
-                            defaultOpen={query.fileType.length}>
-                            <AggregationFilter
-                                title=""
-                                selected={query.fileType}
-                                aggregation={aggregations.count_by_filetype}
-                                onChange={this.handleFileTypeFilter}
-                            />
-                        </Filter>
-
-                        <Filter
-                            title="Date range"
-                            defaultOpen={query.dateFrom || query.dateTo}>
-                            <DateRangeFilter
-                                onChange={this.handleDateRangeFilter}
-                                defaultFrom={query.dateFrom}
-                                defaultTo={query.dateTo}
-                            />
-                        </Filter>
-
-                        <Filter
-                            title="Years"
-                            defaultOpen={
-                                query.dateYears.length ||
-                                query.dateCreatedYears.length
-                            }>
-                            <AggregationFilter
-                                aggregation={aggregations.count_by_date_year}
-                                selected={query.dateYears}
-                                title="Year"
-                                onChange={this.handleDateFilter}
-                                bucketLabel={formatYear}
-                            />
-
-                            <AggregationFilter
-                                aggregation={aggregations.count_by_date_created_year}
-                                selected={query.dateCreatedYears}
-                                title="Year created"
-                                onChange={this.handleDateCreatedFilter}
-                                bucketLabel={formatYear}
-                            />
-                        </Filter>
-                    </div>
-                </Grid>
-
-                <Grid item sm={9}>
+                <Grid item>
                     <ReactPlaceholder
                         showLoadingAnimation
                         ready={!this.props.isFetching}

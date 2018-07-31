@@ -47,7 +47,7 @@ class Header extends Component {
                             variant="title"
                             color="inherit"
                             className={classes.flex}>
-                            hoover
+                            Hoover
                         </Typography>
                         <Menu />
                     </Toolbar>

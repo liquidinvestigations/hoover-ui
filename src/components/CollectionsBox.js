@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Loading from './Loading';
 
 import { connect } from 'react-redux';
-import { setCollectionsSelection } from '../actions';
+import { setCollectionsSelection, fetchCollections } from '../actions';
 
 import { withStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
@@ -34,6 +34,10 @@ class CollectionsBox extends Component {
         selected: PropTypes.arrayOf(PropTypes.string).isRequired,
         counts: PropTypes.object,
     };
+
+    componentDidMount() {
+        this.props.dispatch(fetchCollections());
+    }
 
     changeSelection(selected) {
         this.props.dispatch(setCollectionsSelection(selected));

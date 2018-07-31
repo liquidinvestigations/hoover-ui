@@ -2,6 +2,8 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { DateTime } from 'luxon';
 import TextField from '@material-ui/core/TextField';
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 
 const DATE_FORMAT = 'yyyy-MM-dd';
@@ -95,7 +97,7 @@ class DateRangeFilter extends Component {
         const unedited = defaultFrom === from && defaultTo === to;
 
         return (
-            <div className="date-range-filter">
+            <Grid container direction="column">
                 <div className="reset">
                     {(from || to) && (
                         <a href="#" onClick={this.handleReset}>
@@ -130,15 +132,10 @@ class DateRangeFilter extends Component {
                     }}
                 />
 
-                <div className="text-right">
-                    <button
-                        className="btn btn-secondary btn-sm"
-                        disabled={unedited}
-                        onClick={this.handleSubmit}>
-                        Apply
-                    </button>
-                </div>
-            </div>
+                <Button size="small" disabled={unedited} onClick={this.handleSubmit}>
+                    Apply
+                </Button>
+            </Grid>
         );
     }
 }
