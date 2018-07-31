@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Modal from 'react-modal';
 import { DateTime } from 'luxon';
 import ReactPlaceholder from 'react-placeholder';
-import FileTypeFilter from './FileTypeFilter';
 import Document from './Document';
 import ResultItem from './ResultItem';
 import Pagination from './Pagination';

@@ -1,6 +1,6 @@
 import url from 'url';
 import { Component } from 'react';
-import api from '../utils/api';
+import api from '../api';
 import Loading from '../components/Loading';
 
 export default class Locations extends Component {
