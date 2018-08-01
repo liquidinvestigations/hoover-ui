@@ -9,6 +9,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import Typography from '@material-ui/core/Typography';
+import AttachIcon from '@material-ui/icons/AttachFile';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
@@ -41,25 +42,19 @@ class ResultItem extends Component {
         let fields = hit._source || {};
         let highlight = hit.highlight || {};
 
-        var attachIcon = null;
-        if (fields.attachments) {
-            attachIcon = <i className="fa fa-paperclip" aria-hidden="true" />;
-        }
-
         var title = fields.filename;
         var text = null;
-        if (highlight) {
-            if (highlight.text) {
-                text = highlight.text.map((hi, n) => (
-                    <li key={`${hit._url}${n}`}>
-                        <span
-                            dangerouslySetInnerHTML={{
-                                __html: unsearchable ? makeUnsearchable(hi) : hi,
-                            }}
-                        />
-                    </li>
-                ));
-            }
+
+        if (highlight.text) {
+            text = highlight.text.map((hi, n) => (
+                <li key={`${hit._url}${n}`}>
+                    <span
+                        dangerouslySetInnerHTML={{
+                            __html: unsearchable ? makeUnsearchable(hi) : hi,
+                        }}
+                    />
+                </li>
+            ));
         }
 
         let wordCount = null;
@@ -86,7 +81,9 @@ class ResultItem extends Component {
                 <Card>
                     <CardContent>
                         <Typography variant="title">
-                            {this.props.n}. {title} {attachIcon}
+                            {this.props.n}. {title} {fields.attachments && (
+                                <AttachIcon style={{ fontSize: 18 }} />
+                            )}
                         </Typography>
 
                         <Typography variant="caption">{fields.path}</Typography>

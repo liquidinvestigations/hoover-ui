@@ -1,36 +1,32 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import cn from 'classnames';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import IconPrevious from '@material-ui/icons/NavigateBefore';
 import IconNext from '@material-ui/icons/NavigateNext';
 
-export default class Pagination extends Component {
+import { connect } from 'react-redux';
+import { updateSearchQuery } from '../actions';
+
+export class Pagination extends Component {
     static propTypes = {
-        onNextPage: PropTypes.func.isRequired,
-        onPrevPage: PropTypes.func.isRequired,
+        results: PropTypes.object.isRequired,
+        query: PropTypes.object.isRequired,
     };
-
-    collectionTitle(name) {
-        const col = (this.props.query.collections || []).find(c => c.name === name);
-
-        if (col) {
-            return col.title;
-        }
-
-        return name;
-    }
 
     handleNext = e => {
         e.preventDefault();
-        this.props.onNextPage();
+
+        const { dispatch, query } = this.props;
+        dispatch(updateSearchQuery({ page: query.page + 1 }));
     };
 
     handlePrev = e => {
         e.preventDefault();
-        this.props.onPrevPage();
+
+        const { dispatch, query } = this.props;
+        dispatch(updateSearchQuery({ page: query.page - 1 }));
     };
 
     render() {
@@ -43,12 +39,8 @@ export default class Pagination extends Component {
         const hasNext = page < pageCount;
         const hasPrev = page > 1;
 
-        let countByIndex = null;
-
-        const counts = results.count_by_index;
-
         return (
-            <Grid container alignItems="center" justify="flex-start">
+            <Grid container alignItems="center" justify="space-between">
                 <Grid item>
                     <Typography variant="caption">
                         {results.hits.hits.length} of {total} hits – page {page} / {
@@ -75,3 +67,7 @@ export default class Pagination extends Component {
         );
     }
 }
+
+const mapStateToProps = ({ search: { results, query } }) => ({ results, query });
+
+export default connect(mapStateToProps)(Pagination);

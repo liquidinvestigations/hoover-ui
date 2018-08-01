@@ -81,25 +81,22 @@ export default class AggregationFilter extends Component {
             .filter(d => d.doc_count);
 
         return (
-            <div className="mt-2">
-                <Grid container alignItems="baseline" justify="space-between">
-                    <Typography variant="caption">{title || ' '}</Typography>
-
-                    <div>
-                        {!!selected.length && (
-                            <Typography>
-                                <Button
-                                    variant="outlined"
-                                    size="small"
-                                    onClick={this.reset}>
-                                    Reset
-                                </Button>
-                            </Typography>
-                        )}
-                    </div>
-                </Grid>
+            <div>
+                {title && <Typography variant="caption">{title}</Typography>}
 
                 <div>{buckets.map(this.renderBucket)}</div>
+
+                <div style={{ paddingBottom: '1rem' }}>
+                    {!!selected.length && (
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            fullWidth
+                            onClick={this.reset}>
+                            Reset
+                        </Button>
+                    )}
+                </div>
             </div>
         );
     }

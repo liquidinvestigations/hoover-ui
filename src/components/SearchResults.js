@@ -67,7 +67,7 @@ export default class SearchResults extends Component {
         let resultList = null;
 
         if (results.hits.total > 0) {
-            const items = results.hits.hits.map((hit, i) => {
+            resultList = results.hits.hits.map((hit, i) => {
                 const url = documentViewUrl(hit);
                 return (
                     <ResultItem
@@ -81,15 +81,6 @@ export default class SearchResults extends Component {
                     />
                 );
             });
-
-            resultList = (
-                <Grid item id="results">
-                    {' '}
-                    {items}
-                </Grid>
-            );
-        } else {
-            resultList = null;
         }
 
         const preview = this.state.preview;
@@ -107,11 +98,15 @@ export default class SearchResults extends Component {
                         rows={
                             resultList && resultList.length ? resultList.length : 10
                         }>
-                        <Pagination {...this.props} />
+                        <Pagination />
 
-                        <Grid container>{resultList}</Grid>
+                        <Grid container>
+                            <Grid item id="results">
+                                {resultList}
+                            </Grid>
+                        </Grid>
 
-                        {resultList && <Pagination {...this.props} />}
+                        {resultList && <Pagination />}
                     </ReactPlaceholder>
                 </Grid>
 

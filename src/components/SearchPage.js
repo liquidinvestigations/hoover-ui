@@ -96,87 +96,6 @@ class SearchPage extends Component {
         this.props.dispatch(writeSearchQueryToUrl());
     };
 
-    loadNextPage = () => {
-        const { query, searchAfterByPage } = this.state;
-        const { page } = query;
-
-        this.setState(
-            {
-                query: {
-                    ...query,
-                    page: page + 1,
-                    searchAfter: searchAfterByPage[page + 1],
-                },
-            },
-            this.search
-        );
-    };
-
-    loadPrevPage = () => {
-        const { query, searchAfterByPage } = this.state;
-        const { page } = query;
-
-        this.setState(
-            {
-                query: {
-                    ...query,
-                    page: page - 1,
-                    searchAfter: searchAfterByPage[page - 1],
-                },
-            },
-            this.search
-        );
-    };
-
-    handleFilter = filter => {
-        const { query } = this.state;
-
-        const urlQuery = {};
-
-        if (
-            filter.date &&
-            filter.date.length &&
-            filter.date.every(e => e && e.length === 4) // is year
-        ) {
-            urlQuery.dateYears = filter.date;
-        } else {
-            urlQuery.dateYears = [];
-        }
-
-        if (
-            filter.date &&
-            filter.date.length === 2 &&
-            filter.date.every(d => d && d.length === 10) // is full date
-        ) {
-            urlQuery.dateFrom = filter.date[0];
-            urlQuery.dateTo = filter.date[1];
-        } else {
-            urlQuery.dateFrom = null;
-            urlQuery.dateTo = null;
-        }
-
-        if (filter['date-created']) {
-            urlQuery.dateCreatedYears = filter['date-created'];
-        }
-
-        if (filter.filetype) {
-            urlQuery.fileType = filter.filetype;
-        }
-
-        this.setState(
-            {
-                query: {
-                    ...query,
-                    ...urlQuery,
-                    searchAfter: '',
-                    page: 1,
-                },
-                searchAfterByPage: {},
-            },
-            this.search
-        );
-    };
-
     render() {
         const { classes, error, query, isFetching, results } = this.props;
 
@@ -224,9 +143,6 @@ class SearchPage extends Component {
                             isFetching={isFetching}
                             results={results}
                             query={query}
-                            onNextPage={this.loadNextPage}
-                            onPrevPage={this.loadPrevPage}
-                            onFilter={this.handleFilter}
                         />
                     </Grid>
                 </Grid>
