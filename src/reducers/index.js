@@ -6,6 +6,7 @@ const INITIAL_SEARCH_STATE = {
         size: 10,
         order: 'Relevance',
         page: 1,
+        language: null,
         searchAfter: '',
     },
     searchAfterByPage: {},
@@ -22,17 +23,13 @@ function search(state = INITIAL_SEARCH_STATE, action) {
         case 'FETCH_SEARCH':
             return { ...state, isFetching: true };
         case 'UPDATE_SEARCH_QUERY':
-            let newState = { ...state, query: { ...state.query, ...action.query } };
-
-            if (action.options.resetPagination) {
-                newState = {
-                    ...newState,
-                    searchAfterByPage: {},
-                    query: { ...newState.query, page: 1, searchAfter: '' },
-                };
-            }
-
-            return newState;
+            return { ...state, query: { ...state.query, ...action.query } };
+        case 'RESET_PAGINATION':
+            return {
+                ...state,
+                searchAfterByPage: {},
+                query: { ...state.query, page: 1, searchAfter: '' },
+            };
         case 'FETCH_SEARCH_SUCCESS':
             return {
                 ...state,
@@ -50,8 +47,9 @@ function search(state = INITIAL_SEARCH_STATE, action) {
 const INITIAL_COLLECTIONS_STATE = {
     isFetching: false,
     items: [],
-    error: null,
     selected: [],
+    error: null,
+    counts: {},
 };
 
 function collections(state = INITIAL_COLLECTIONS_STATE, action) {
@@ -69,10 +67,21 @@ function collections(state = INITIAL_COLLECTIONS_STATE, action) {
             };
         case 'FETCH_COLLECTIONS_FAILURE':
             return { ...state, isFetching: false, items: [], error: action.error };
+        case 'FETCH_SEARCH_SUCCESS':
+            return { ...state, counts: action.results.count_by_index };
         case 'SET_COLLECTIONS_SELECTION':
             return { ...state, selected: action.collections };
-        case 'PARSE_SEARCH_URL_QUERY':
-            return { ...state, selected: action.collections };
+        default:
+            return state;
+    }
+}
+
+function preview(state = null, action) {
+    switch (action.type) {
+        case 'SET_PREVIEW':
+            return action.url;
+        case 'CLEAR_PREVIEW':
+            return null;
         default:
             return state;
     }
@@ -81,4 +90,5 @@ function collections(state = INITIAL_COLLECTIONS_STATE, action) {
 export default {
     search,
     collections,
+    preview,
 };

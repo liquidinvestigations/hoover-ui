@@ -5,11 +5,13 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
+import IconClear from '@material-ui/icons/Clear';
 import { withStyles } from '@material-ui/core/styles';
 import cn from 'classnames';
 
 const styles = theme => ({
     root: {
+        marginTop: '1rem',
         width: '100%',
         border: '1px solid #eee',
     },
@@ -52,9 +54,10 @@ const styles = theme => ({
     },
 
     bodyOpen: {
-        marginTop: '1rem',
-        marginBottom: '1rem',
         maxHeight: '100rem',
+        marginTop: '1rem',
+        // marginBottom: '1rem',
+        maxHeight: '1000rem',
     },
 });
 

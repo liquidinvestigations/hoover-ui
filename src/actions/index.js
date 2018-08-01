@@ -23,9 +23,14 @@ export function fetchCollections() {
 }
 
 export function setCollectionsSelection(collections) {
-    return {
-        type: 'SET_COLLECTIONS_SELECTION',
-        collections,
+    return dispatch => {
+        dispatch({
+            type: 'SET_COLLECTIONS_SELECTION',
+            collections,
+        });
+
+        dispatch(resetPagination());
+        dispatch(writeSearchQueryToUrl());
     };
 }
 
@@ -48,6 +53,7 @@ export function parseSearchUrlQuery() {
             page: params.page ? +params.page : 1,
             searchAfter: params.searchAfter || '',
             fileType: params.fileType ? castArray(params.fileType) : [],
+            language: params.language ? castArray(params.language) : [],
         },
     };
 }
@@ -114,16 +120,32 @@ export function writeSearchQueryToUrl() {
     };
 }
 
+export const resetPagination = () => ({
+    type: 'RESET_PAGINATION',
+});
+
 export const updateSearchQuery = (query, options = {}) => {
     return (dispatch, getState) => {
         dispatch({
             type: 'UPDATE_SEARCH_QUERY',
             query,
-            options,
         });
+
+        if (options.resetPagination) {
+            dispatch(resetPagination());
+        }
 
         if (options.syncUrl !== false) {
             dispatch(writeSearchQueryToUrl());
         }
     };
 };
+
+export const setPreview = url => ({
+    type: 'SET_PREVIEW',
+    url,
+});
+
+export const clearPreview = () => ({
+    type: 'CLEAR_PREVIEW',
+});

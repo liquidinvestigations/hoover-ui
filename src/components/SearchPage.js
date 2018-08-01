@@ -21,7 +21,6 @@ import SearchSettings from './SearchSettings';
 
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
@@ -42,14 +41,7 @@ import {
     SIZE_OPTIONS,
 } from '../constants';
 
-const drawerWidth = 240;
-
-const styles = theme => ({
-    drawerPaper: {
-        position: 'relative',
-        width: drawerWidth,
-    },
-});
+const styles = theme => ({});
 
 class SearchPage extends Component {
     static propTypes = {
@@ -106,7 +98,7 @@ class SearchPage extends Component {
         return (
             <div>
                 <Grid container>
-                    <Grid item lg={8} sm={12}>
+                    <Grid item sm={12}>
                         <form onSubmit={this.handleSubmit}>
                             <TextField
                                 name="q"
@@ -138,7 +130,11 @@ class SearchPage extends Component {
                         </Grid>
 
                         <SearchSettings />
+                    </Grid>
+                </Grid>
 
+                <Grid container>
+                    <Grid item sm={12}>
                         <SearchResults
                             isFetching={isFetching}
                             results={results}

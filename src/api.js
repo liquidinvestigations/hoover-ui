@@ -58,6 +58,12 @@ function buildPostFilter(filters) {
                         filetype: value,
                     },
                 };
+            } else if (key === 'language') {
+                return {
+                    terms: {
+                        lang: value,
+                    },
+                };
             } else {
                 throw new Error(`unknown filter: ${JSON.stringify({ key, value })}`);
             }
@@ -150,6 +156,7 @@ class Api {
         dateTo = null,
         searchAfter = '',
         fileType = null,
+        language = null,
     } = {}) {
         return await fetchJson('/search', {
             method: 'POST',
@@ -163,6 +170,7 @@ class Api {
                     dateYears,
                     dateCreatedYears,
                     fileType,
+                    language,
                 }),
                 aggs: {
                     count_by_filetype: { terms: { field: 'filetype' } },
@@ -176,6 +184,11 @@ class Api {
                         date_histogram: {
                             field: 'date-created',
                             interval: 'year',
+                        },
+                    },
+                    count_by_lang: {
+                        terms: {
+                            field: 'lang',
                         },
                     },
                 },

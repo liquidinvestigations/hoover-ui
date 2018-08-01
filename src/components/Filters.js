@@ -3,14 +3,17 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { DateTime } from 'luxon';
 
-import ListItem from '@material-ui/core/ListItem';
 import { updateSearchQuery } from '../actions';
 
 import Filter from './Filter';
 import AggregationFilter from './AggregationFilter';
 import DateRangeFilter from './DateRangeFilter';
 
+import langs from 'langs';
+
 const formatYear = bucket => DateTime.fromISO(bucket.key_as_string).year.toString();
+const formatLang = bucket => langs.where('1', bucket.key).name;
+const timeBucketSorter = (a, b) => b.key - a.key;
 
 class Filters extends Component {
     static propTypes = {
@@ -29,8 +32,8 @@ class Filters extends Component {
         }
 
         return (
-            <div className="filters">
-                <ListItem>
+            <div>
+                <div>
                     <Filter title="File type" defaultOpen={query.fileType.length}>
                         <AggregationFilter
                             title=""
@@ -39,9 +42,9 @@ class Filters extends Component {
                             onChange={this.filter('fileType')}
                         />
                     </Filter>
-                </ListItem>
+                </div>
 
-                <ListItem>
+                <div>
                     <Filter
                         title="Date range"
                         defaultOpen={query.dateFrom || query.dateTo}>
@@ -51,9 +54,9 @@ class Filters extends Component {
                             defaultTo={query.dateTo}
                         />
                     </Filter>
-                </ListItem>
+                </div>
 
-                <ListItem>
+                <div>
                     <Filter
                         title="Years"
                         defaultOpen={
@@ -64,7 +67,9 @@ class Filters extends Component {
                             selected={query.dateYears}
                             title="Year"
                             onChange={this.filter('dateYears')}
+                            sortBuckets={timeBucketSorter}
                             bucketLabel={formatYear}
+                            bucketValue={formatYear}
                         />
 
                         <AggregationFilter
@@ -72,10 +77,23 @@ class Filters extends Component {
                             selected={query.dateCreatedYears}
                             title="Year created"
                             onChange={this.filter('dateCreatedYears')}
+                            sortBuckets={timeBucketSorter}
                             bucketLabel={formatYear}
+                            bucketValue={formatYear}
                         />
                     </Filter>
-                </ListItem>
+                </div>
+
+                <div>
+                    <Filter title="Language" defaultOpen={query.language.length}>
+                        <AggregationFilter
+                            aggregation={aggregations.count_by_lang}
+                            selected={query.language}
+                            onChange={this.filter('language')}
+                            bucketLabel={formatLang}
+                        />
+                    </Filter>
+                </div>
             </div>
         );
     }

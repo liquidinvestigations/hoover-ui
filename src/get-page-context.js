@@ -18,6 +18,10 @@ const theme = createMuiTheme({
   //     dark: green[700],
   //   },
   // },
+  typography: {
+    fontFamilyMono:
+      'SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+  },
 });
 
 function createPageContext() {

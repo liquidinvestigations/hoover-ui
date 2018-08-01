@@ -16,10 +16,12 @@ import Typography from '@material-ui/core/Typography';
 const styles = theme => ({
     root: {
         display: 'flex',
-        direction: 'column',
     },
     formControl: {
         margin: theme.spacing.unit * 3,
+    },
+    formControlLabel: {
+        width: '100%',
     },
 });
 
@@ -61,7 +63,7 @@ export class CollectionsBox extends Component {
     };
 
     renderCheckboxes() {
-        const { collections, selected, counts } = this.props;
+        const { collections, selected, counts, classes } = this.props;
 
         let allCheckbox = null;
 
@@ -70,6 +72,7 @@ export class CollectionsBox extends Component {
 
             allCheckbox = (
                 <FormControlLabel
+                    className={classes.formControlLabel}
                     control={
                         <Checkbox
                             key={'_all_'}
@@ -91,6 +94,7 @@ export class CollectionsBox extends Component {
 
         const collectionCheckboxes = collections.map(col => (
             <FormControlLabel
+                className={classes.formControlLabel}
                 key={col.name}
                 control={
                     <Checkbox
@@ -138,9 +142,10 @@ export class CollectionsBox extends Component {
     }
 }
 
-const mapStateToProps = ({ collections: { items, selected } }) => ({
+const mapStateToProps = ({ collections: { items, selected, counts } }) => ({
     collections: items,
     selected,
+    counts,
 });
 
 export default connect(mapStateToProps)(withStyles(styles)(CollectionsBox));

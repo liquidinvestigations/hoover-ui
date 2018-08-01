@@ -3,18 +3,48 @@ import PropTypes from 'prop-types';
 import cn from 'classnames';
 import { DateTime } from 'luxon';
 import makeUnsearchable from '../make-unsearchable';
+import { connect } from 'react-redux';
 
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import Typography from '@material-ui/core/Typography';
 import AttachIcon from '@material-ui/icons/AttachFile';
 import { withStyles } from '@material-ui/core/styles';
 
+import { setPreview } from '../actions';
+
 const styles = theme => ({
     card: {
+        cursor: 'pointer',
         marginTop: theme.spacing.unit,
+        borderLeft: '3px solid transparent',
+        transition: theme.transitions.create('border', {
+            duration: theme.transitions.duration.short,
+        }),
+    },
+    selected: {
+        borderLeft: `3px solid ${theme.palette.secondary.main}`,
+    },
+    spaceBottom: {
+        marginBottom: theme.spacing.unit,
+    },
+    spaceTop: {
+        marginTop: theme.spacing.unit,
+    },
+    path: {
+        // overflow: 'hidden',
+        // whiteSpace: 'nowrap',
+        marginTop: theme.spacing.unit * 2,
+    },
+    text: {
+        cursor: 'text',
+        display: 'inline',
+        fontFamily: theme.typography.fontFamilyMono,
+        fontSize: '.7rem',
+        color: '#555',
     },
 });
 
@@ -23,6 +53,7 @@ function timeMs() {
 }
 
 const documentViewUrl = item => `doc/${item._collection}/${item._id}`;
+
 class ResultItem extends Component {
     static propTypes = {
         classes: PropTypes.object.isRequired,
@@ -33,29 +64,34 @@ class ResultItem extends Component {
 
         if (!modifier) {
             e.preventDefault();
-            this.props.onPreview(this.props.url);
+            this.onPreview();
         }
     };
 
+    onPreview = () => this.props.dispatch(setPreview(this.props.url));
+
     render() {
-        let { hit, url, isSelected, unsearchable, classes } = this.props;
-        let fields = hit._source || {};
-        let highlight = hit.highlight || {};
+        const { hit, url, classes, n, preview } = this.props;
 
-        var title = fields.filename;
-        var text = null;
+        const isSelected = url === preview;
+        const unsearchable = !!preview;
 
-        if (highlight.text) {
-            text = highlight.text.map((hi, n) => (
-                <li key={`${hit._url}${n}`}>
-                    <span
-                        dangerouslySetInnerHTML={{
-                            __html: unsearchable ? makeUnsearchable(hi) : hi,
-                        }}
-                    />
-                </li>
-            ));
-        }
+        const fields = hit._source || {};
+        const highlight = hit.highlight || {};
+
+        const icon = fields.attachments ? (
+            <AttachIcon style={{ fontSize: 18 }} />
+        ) : null;
+
+        const text = (highlight.text || []).map((hi, n) => (
+            <div key={`${hit._url}${n}`}>
+                <span
+                    dangerouslySetInnerHTML={{
+                        __html: unsearchable ? makeUnsearchable(hi) : hi,
+                    }}
+                />
+            </div>
+        ));
 
         let wordCount = null;
 
@@ -65,7 +101,7 @@ class ResultItem extends Component {
 
         return (
             <div
-                className={classes.card}
+                className={cn(classes.card, { [classes.selected]: isSelected })}
                 onMouseDown={() => {
                     this.willFocus = !(this.tUp && timeMs() - this.tUp < 300);
                 }}
@@ -75,49 +111,43 @@ class ResultItem extends Component {
                 onMouseUp={() => {
                     if (this.willFocus) {
                         this.tUp = timeMs();
-                        this.props.onPreview(url);
+                        this.onPreview(url);
                     }
                 }}>
                 <Card>
+                    <CardHeader
+                        title={fields.filename}
+                        action={icon}
+                        subheader={fields.path}
+                    />
                     <CardContent>
-                        <Typography variant="title">
-                            {this.props.n}. {title} {fields.attachments && (
-                                <AttachIcon style={{ fontSize: 18 }} />
-                            )}
-                        </Typography>
-
-                        <Typography variant="caption">{fields.path}</Typography>
-
-                        <Grid container>
-                            <Grid item md={3}>
-                                <Typography
-                                    variant="caption"
-                                    className="results-item-default">
+                        <Grid container alignItems="flex-end">
+                            <Grid item md={4}>
+                                <Typography variant="caption">
                                     {wordCount}
                                 </Typography>
 
                                 {fields.date && (
-                                    <div className="results-item-default">
-                                        <strong>Date:</strong>{' '}
-                                        {DateTime.fromISO(
-                                            fields.date
-                                        ).toLocaleString(DateTime.DATE_FULL)}
-                                    </div>
+                                    <Typography variant="caption">
+                                        <strong>Date modified:</strong>{' '}
+                                        {DateTime.fromISO(fields.date)
+                                            .toLocaleString(DateTime.DATE_FULL)
+                                            .replace(/\s/g, ' ')}
+                                    </Typography>
                                 )}
 
                                 {fields['date-created'] && (
-                                    <div className="results-item-default">
+                                    <Typography variant="caption">
                                         <strong>Date created: </strong>
                                         {DateTime.fromISO(
                                             fields['date-created']
                                         ).toLocaleString(DateTime.DATE_FULL)}
-                                    </div>
+                                    </Typography>
                                 )}
                             </Grid>
-
-                            <Grid item md={9}>
-                                <ul className="results-highlight">{text}</ul>
-                            </Grid>
+                            <Grid item md={8}>
+                                <ul className={classes.text}>{text}</ul>
+                            </Grid>{' '}
                         </Grid>
                     </CardContent>
                 </Card>
@@ -126,4 +156,8 @@ class ResultItem extends Component {
     }
 }
 
-export default withStyles(styles)(ResultItem);
+const mapStateToProps = ({ preview }) => ({ preview });
+export default withStyles(theme => {
+    console.log(theme);
+    return styles(theme);
+})(connect(mapStateToProps)(ResultItem));

@@ -2,7 +2,7 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import url from 'url';
 import Link from 'next/link';
-import Modal from 'react-modal';
+// import Modal from 'react-modal';
 import { DateTime } from 'luxon';
 import ReactPlaceholder from 'react-placeholder';
 import Document from './Document';
@@ -16,8 +16,6 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 
-Modal.setAppElement('body');
-
 const documentViewUrl = item => `doc/${item._collection}/${item._id}`;
 
 export default class SearchResults extends Component {
@@ -25,9 +23,6 @@ export default class SearchResults extends Component {
         query: PropTypes.object.isRequired,
         results: PropTypes.object,
         isFetching: PropTypes.bool.isRequired,
-        onFilter: PropTypes.func.isRequired,
-        onNextPage: PropTypes.func.isRequired,
-        onPrevPage: PropTypes.func.isRequired,
     };
 
     state = { preview: null, error: null };
@@ -70,15 +65,7 @@ export default class SearchResults extends Component {
             resultList = results.hits.hits.map((hit, i) => {
                 const url = documentViewUrl(hit);
                 return (
-                    <ResultItem
-                        key={hit._url}
-                        hit={hit}
-                        url={url}
-                        n={start + i}
-                        unsearchable={this.state.preview}
-                        onPreview={this.setPreview}
-                        isSelected={url == this.state.preview}
-                    />
+                    <ResultItem key={hit._url} hit={hit} url={url} n={start + i} />
                 );
             });
         }
@@ -89,52 +76,19 @@ export default class SearchResults extends Component {
         const aggregations = results.aggregations || {};
 
         return (
-            <Grid container spacing={8}>
-                <Grid item>
-                    <ReactPlaceholder
-                        showLoadingAnimation
-                        ready={!this.props.isFetching}
-                        type="text"
-                        rows={
-                            resultList && resultList.length ? resultList.length : 10
-                        }>
-                        <Pagination />
+            <div>
+                <ReactPlaceholder
+                    showLoadingAnimation
+                    ready={!this.props.isFetching}
+                    type="text"
+                    rows={10}>
+                    <Pagination />
 
-                        <Grid container>
-                            <Grid item id="results">
-                                {resultList}
-                            </Grid>
-                        </Grid>
+                    {resultList}
 
-                        {resultList && <Pagination />}
-                    </ReactPlaceholder>
-                </Grid>
-
-                <Modal
-                    isOpen={!!preview}
-                    ariaHideApp={false}
-                    style={{
-                        overlay: { zIndex: 1, backgroundColor: 'rgba(0,0,0,0.5)' },
-                        content: {
-                            background: '#eee',
-                            border: 'none',
-                            borderRadius: 0,
-                            left: '50%',
-                            top: 0,
-                            right: 0,
-                            bottom: 0,
-                        },
-                    }}
-                    closeTimeMS={200}
-                    onRequestClose={this.clearPreview}>
-                    {preview && (
-                        <Document
-                            docUrl={previewUrl}
-                            collectionBaseUrl={url.resolve(previewUrl, './')}
-                        />
-                    )}
-                </Modal>
-            </Grid>
+                    {resultList && <Pagination />}
+                </ReactPlaceholder>
+            </div>
         );
     }
 }

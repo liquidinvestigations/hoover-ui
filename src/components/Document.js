@@ -1,11 +1,47 @@
 import { Component } from 'react';
 import Loading from './Loading';
 import api from '../api';
+import url from 'url';
 
-export default class Document extends Component {
+import Grid from '@material-ui/core/Grid';
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardContent from '@material-ui/core/CardContent';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+
+import IconArrowUpward from '@material-ui/icons/ArrowUpward';
+import IconLaunch from '@material-ui/icons/Launch';
+import IconCloudDownload from '@material-ui/icons/CloudDownload';
+
+const styles = theme => ({
+    header: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        padding: '0 8px',
+        marginLeft: '1rem',
+        marginRight: '1rem',
+        ...theme.mixins.toolbar,
+    },
+    root: {
+        backgroundColor: theme.palette.background.default,
+    },
+    section: {
+        margin: '1rem',
+    },
+});
+
+class Document extends Component {
     state = { doc: {}, loaded: false };
 
-    async componentDidMount() {
+    componentDidMount() {
         let docUrl = this.props.docUrl;
         let split = docUrl.split('/');
         let docId = split.pop();
@@ -16,18 +52,31 @@ export default class Document extends Component {
             console.log('using HOOVER_HYDRATE_DOC');
             this.setState({ doc: window.HOOVER_HYDRATE_DOC, loaded: true });
         } else {
-            const doc = await api.doc(docUrl);
-            this.setState({ doc: doc, loaded: true });
+            this.fetchDoc();
         }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.docUrl !== prevProps.docUrl) {
+            this.fetchDoc();
+        }
+    }
+
+    fetchDoc() {
+        this.setState({ loaded: false }, async () => {
+            this.setState({ doc: await api.doc(this.props.docUrl), loaded: true });
+        });
     }
 
     render() {
         const { doc, loaded } = this.state;
-        const { docUrl, fullPage, collectionBaseUrl } = this.props;
+        const { docUrl, fullPage, classes } = this.props;
 
         if (!loaded) {
             return <Loading />;
         }
+
+        const collectionBaseUrl = url.resolve(docUrl, './');
 
         const data = doc.content;
         const files = doc.children || [];
@@ -39,21 +88,21 @@ export default class Document extends Component {
                     headerLinks.push({
                         href: `${docUrl}?locations=on`,
                         text: 'Locations',
-                        icon: 'fa fa-level-up',
+                        icon: <IconArrowUpward />,
                     });
                 } else {
                     headerLinks.push({
                         href: `${collectionBaseUrl}${doc.parent_id}`,
                         text: 'Up',
-                        icon: 'fa fa-level-up',
+                        icon: <IconArrowUpward />,
                     });
                 }
             }
         } else {
             headerLinks.push({
-                href: `${docUrl}`,
+                href: docUrl,
                 text: 'Open in new tab',
-                icon: 'fa fa-external-link-square',
+                icon: <IconLaunch />,
                 target: '_blank',
             });
         }
@@ -62,7 +111,7 @@ export default class Document extends Component {
             headerLinks.push({
                 href: `${docUrl}/raw/${data.filename}`,
                 text: `Original file`,
-                icon: 'fa fa-cloud-download',
+                icon: <IconCloudDownload />,
                 target: fullPage ? null : '_blank',
             });
         }
@@ -75,50 +124,74 @@ export default class Document extends Component {
                 return {
                     href: `${docUrl}/ocr/${tag}/`,
                     text: `OCR ${tag}`,
-                    icon: 'fa fa-cloud-download',
+                    icon: <IconCloudDownload />,
                 };
             })
         );
 
         return (
-            <div className="doc-page">
-                <div className="header-links d-flex justify-content-between mb-3">
-                    {headerLinks.map(({ text, icon, ...props }, index) => (
-                        <a
-                            key={index}
-                            className="btn btn-primary btn-sm "
-                            {...props}>
-                            <i className={icon} />
-                            {text}
-                        </a>
-                    ))}
+            <div className={classes.root}>
+                <div className={classes.header}>
+                    <Grid container justify="space-between">
+                        {headerLinks.map(({ text, icon, ...props }, index) => (
+                            <Button
+                                key={index}
+                                color="secondary"
+                                variant="contained"
+                                component="a"
+                                {...props}>
+                                {icon}
+                                {text}
+                            </Button>
+                        ))}
+                    </Grid>
                 </div>
 
-                <DocumentMetaSection doc={doc} />
-                <DocumentEmailSection doc={doc} />
-                <DocumentFilesSection
-                    title="Files"
-                    data={files}
-                    baseUrl={this.baseUrl}
-                    fullPage={this.props.fullPage}
-                />
-                <DocumentHTMLSection html={doc.safe_html} title="HTML" />
-                <DocumentTextSection
-                    title="Text"
-                    text={doc.content.text}
-                    fullPage={this.props.fullPage}
-                />
-                <DocumentTextSection
-                    title="Headers &amp; Parts"
-                    text={doc.content.tree}
-                    fullPage={this.props.fullPage}
-                />
-                {ocrData.map(({ tag, text }) => (
-                    <DocumentTextSection
-                        title={tag}
-                        text={text}
+                <div className={classes.section}>
+                    <DocumentMetaSection doc={doc} />
+                </div>
+
+                <div className={classes.section}>
+                    <DocumentEmailSection doc={doc} />
+                </div>
+
+                <div className={classes.section}>
+                    <DocumentFilesSection
+                        title="Files"
+                        data={files}
+                        baseUrl={this.baseUrl}
                         fullPage={this.props.fullPage}
                     />
+                </div>
+
+                <div className={classes.section}>
+                    <DocumentHTMLSection html={doc.safe_html} title="HTML" />
+                </div>
+
+                <div className={classes.section}>
+                    <DocumentTextSection
+                        title="Text"
+                        text={doc.content.text}
+                        fullPage={this.props.fullPage}
+                    />
+                </div>
+
+                <div className={classes.section}>
+                    <DocumentTextSection
+                        title="Headers &amp; Parts"
+                        text={doc.content.tree}
+                        fullPage={this.props.fullPage}
+                    />
+                </div>
+
+                {ocrData.map(({ tag, text }) => (
+                    <div className={classes.section}>
+                        <DocumentTextSection
+                            title={tag}
+                            text={text}
+                            fullPage={this.props.fullPage}
+                        />
+                    </div>
                 ))}
             </div>
         );
@@ -131,89 +204,89 @@ class DocumentMetaSection extends Component {
         const data = doc.content;
 
         return (
-            <div className="card my-2">
-                <div className="card-header">Meta</div>
+            <Card>
+                <CardHeader title="Meta" />
 
-                <div className="card-body">
-                    <table className="table table-sm">
-                        <tbody>
-                            <tr>
-                                <td>Filename</td>
-                                <td>
+                <CardContent>
+                    <Table>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell>Filename</TableCell>
+                                <TableCell>
                                     <code>{data.filename}</code>
-                                </td>
-                            </tr>
+                                </TableCell>
+                            </TableRow>
 
-                            <tr>
-                                <td>Path</td>
-                                <td>
+                            <TableRow>
+                                <TableCell>Path</TableCell>
+                                <TableCell>
                                     <code>{data.path}</code>
-                                </td>
-                            </tr>
+                                </TableCell>
+                            </TableRow>
 
-                            <tr>
-                                <td>Id</td>
-                                <td>
+                            <TableRow>
+                                <TableCell>Id</TableCell>
+                                <TableCell>
                                     <code>{doc.id}</code>
-                                </td>
-                            </tr>
+                                </TableCell>
+                            </TableRow>
 
                             {data.filetype && (
-                                <tr>
-                                    <td>Type</td>
-                                    <td>
+                                <TableRow>
+                                    <TableCell>Type</TableCell>
+                                    <TableCell>
                                         <code>{data.filetype}</code>
-                                    </td>
-                                </tr>
+                                    </TableCell>
+                                </TableRow>
                             )}
                             {data.filetype != 'folder' &&
                                 data.md5 && (
-                                    <tr>
-                                        <td>MD5</td>
-                                        <td>
+                                    <TableRow>
+                                        <TableCell>MD5</TableCell>
+                                        <TableCell>
                                             <code>{data.md5}</code>
-                                        </td>
-                                    </tr>
+                                        </TableCell>
+                                    </TableRow>
                                 )}
                             {data.filetype != 'folder' &&
                                 data.sha1 && (
-                                    <tr>
-                                        <td>SHA1</td>
-                                        <td>
+                                    <TableRow>
+                                        <TableCell>SHA1</TableCell>
+                                        <TableCell>
                                             <code>{data.sha1}</code>
-                                        </td>
-                                    </tr>
+                                        </TableCell>
+                                    </TableRow>
                                 )}
                             {data.lang && (
-                                <tr>
-                                    <td>Language</td>
-                                    <td>
+                                <TableRow>
+                                    <TableCell>Language</TableCell>
+                                    <TableCell>
                                         <code>{data.lang}</code>
-                                    </td>
-                                </tr>
+                                    </TableCell>
+                                </TableRow>
                             )}
                             {data['date-created'] && (
-                                <tr>
-                                    <td>Created</td>
-                                    <td>{data['date-created']}</td>
-                                </tr>
+                                <TableRow>
+                                    <TableCell>Created</TableCell>
+                                    <TableCell>{data['date-created']}</TableCell>
+                                </TableRow>
                             )}
                             {data.date && (
-                                <tr>
-                                    <td>Modified</td>
-                                    <td>{data.date}</td>
-                                </tr>
+                                <TableRow>
+                                    <TableCell>Modified</TableCell>
+                                    <TableCell>{data.date}</TableCell>
+                                </TableRow>
                             )}
                             {data.pgp && (
-                                <tr>
-                                    <td>PGP</td>
-                                    <td>{data.pgp}</td>
-                                </tr>
+                                <TableRow>
+                                    <TableCell>PGP</TableCell>
+                                    <TableCell>{data.pgp}</TableCell>
+                                </TableRow>
                             )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
         );
     }
 }
@@ -226,31 +299,31 @@ class DocumentEmailSection extends Component {
 
         if (data.filetype == 'email') {
             return (
-                <div className="card my-2">
-                    <div className="card-header">Email</div>
-                    <div className="card-body">
-                        <table className="table table-sm">
-                            <tbody>
-                                <tr>
-                                    <td>From</td>
-                                    <td>{data.from}</td>
-                                </tr>
-                                <tr>
-                                    <td>To</td>
-                                    <td>{data.to.join(', ')}</td>
-                                </tr>
-                                <tr>
-                                    <td>Date</td>
-                                    <td>{data.date}</td>
-                                </tr>
-                                <tr>
-                                    <td>Subject</td>
-                                    <td>{data.subject || '---'}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <Card>
+                    <CardHeader title="Email" />
+                    <CardContent>
+                        <Table>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell>From</TableCell>
+                                    <TableCell>{data.from}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>To</TableCell>
+                                    <TableCell>{data.to.join(', ')}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>Date</TableCell>
+                                    <TableCell>{data.date}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>Subject</TableCell>
+                                    <TableCell>{data.subject || '---'}</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
             );
         }
         return null;
@@ -263,8 +336,8 @@ class DocumentFilesSection extends Component {
 
         const files = data.map(({ id, filename, content_type, size }, index) => {
             return (
-                <tr key={index}>
-                    <td>
+                <TableRow key={index}>
+                    <TableCell>
                         {id ? (
                             <a
                                 href={`${baseUrl}/${id}`}
@@ -274,10 +347,10 @@ class DocumentFilesSection extends Component {
                         ) : (
                             <span>{filename}</span>
                         )}
-                    </td>
-                    <td className="text-muted">{content_type}</td>
-                    <td className="text-muted">{size}</td>
-                    <td>
+                    </TableCell>
+                    <TableCell className="text-muted">{content_type}</TableCell>
+                    <TableCell className="text-muted">{size}</TableCell>
+                    <TableCell>
                         {id ? (
                             <a
                                 href={`${baseUrl}/${id}/raw/${filename}`}
@@ -288,21 +361,21 @@ class DocumentFilesSection extends Component {
                         ) : (
                             <code>-- broken link --</code>
                         )}
-                    </td>
-                </tr>
+                    </TableCell>
+                </TableRow>
             );
         });
 
         return (
             files.length > 0 && (
-                <div className="card my-2">
-                    <div className="card-header">{title}</div>
-                    <div className="card-body">
-                        <table className="table table-sm">
-                            <tbody>{files}</tbody>
-                        </table>
-                    </div>
-                </div>
+                <Card>
+                    <CardHeader title={title} />
+                    <CardContent>
+                        <Table>
+                            <TableBody>{files}</TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
             )
         );
     }
@@ -316,14 +389,14 @@ class DocumentTextSection extends Component {
         let title = this.props.title;
 
         return (
-            <div className="card my-2">
-                <div className="card-header">{title}</div>
-                <div className="card-body">
+            <Card>
+                <CardHeader title={title} />
+                <CardContent>
                     <div className="content">
                         <pre>{text.trim()}</pre>
                     </div>
-                </div>
-            </div>
+                </CardContent>
+            </Card>
         );
     }
 }
@@ -336,14 +409,16 @@ class DocumentHTMLSection extends Component {
         let title = this.props.title;
 
         return (
-            <div className="card my-2">
-                <div className="card-header">{title}</div>
-                <div className="card-body">
+            <Card>
+                <CardHeader title={title} />
+                <CardContent>
                     <div className="content">
                         <span dangerouslySetInnerHTML={{ __html: html }} />
                     </div>
-                </div>
-            </div>
+                </CardContent>
+            </Card>
         );
     }
 }
+
+export default withStyles(styles)(Document);

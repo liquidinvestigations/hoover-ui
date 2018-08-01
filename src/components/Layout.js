@@ -1,10 +1,9 @@
 import Head from 'next/head';
 import Header from './Header';
 import SideBar from './SideBar';
+import PreviewDrawer from './PreviewDrawer';
 import ProgressIndicator from './ProgressIndicator';
 import { withStyles } from '@material-ui/core/styles';
-
-const drawerWidth = 300;
 
 const styles = theme => ({
     root: {
@@ -16,7 +15,14 @@ const styles = theme => ({
     },
     drawerPaper: {
         position: 'relative',
-        width: drawerWidth,
+        height: '100%',
+        minHeight: '100vh',
+    },
+    previewDrawer: {
+        width: '40%',
+    },
+    sideBarFormControl: {
+        margin: theme.spacing.unit * 3,
     },
     content: {
         flexGrow: 1,
@@ -32,12 +38,15 @@ const Layout = ({ children, classes }) => (
         <ProgressIndicator />
         <div className={classes.root}>
             <Header />
+
             <SideBar classes={classes} />
 
             <main className={classes.content}>
                 <div className={classes.toolbar} />
                 {children}
             </main>
+
+            <PreviewDrawer classes={classes} />
         </div>
     </div>
 );

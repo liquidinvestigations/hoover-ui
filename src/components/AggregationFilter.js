@@ -1,23 +1,27 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import cn from 'classnames';
+
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
+import List from '@material-ui/core/List';
+import ListSubheader from '@material-ui/core/ListSubheader';
 
-const defaultBucketSorter = (a, b) => b.key - a.key;
+const defaultBucketSorter = (a, b) => b.doc_count - a.doc_count;
 
 export default class AggregationFilter extends Component {
     static propTypes = {
         aggregation: PropTypes.shape({
             buckets: PropTypes.array.isRequired,
         }),
-        title: PropTypes.string.isRequired,
+        title: PropTypes.string,
         onChange: PropTypes.func.isRequired,
         selected: PropTypes.array,
         bucketLabel: PropTypes.func,
+        bucketValue: PropTypes.func,
         sortBuckets: PropTypes.func,
     };
 
@@ -34,21 +38,25 @@ export default class AggregationFilter extends Component {
     };
 
     renderBucket = bucket => {
-        const formatted = this.props.bucketLabel
+        const label = this.props.bucketLabel
             ? this.props.bucketLabel(bucket)
             : bucket.key;
 
-        const checked = this.props.selected.includes(formatted);
+        const value = this.props.bucketValue
+            ? this.props.bucketValue(bucket)
+            : bucket.key;
+
+        const checked = this.props.selected.includes(value);
 
         return (
             <div key={bucket.key}>
                 <Grid container justify="space-between" alignItems="center">
                     <Grid item>
                         <FormControlLabel
-                            label={formatted}
+                            label={label}
                             control={
                                 <Checkbox
-                                    value={formatted}
+                                    value={value}
                                     checked={checked}
                                     disabled={!bucket.doc_count}
                                     onChange={this.handleChange}
@@ -81,12 +89,10 @@ export default class AggregationFilter extends Component {
             .filter(d => d.doc_count);
 
         return (
-            <div>
-                {title && <Typography variant="caption">{title}</Typography>}
-
+            <List subheader={title ? <ListSubheader>{title}</ListSubheader> : null}>
                 <div>{buckets.map(this.renderBucket)}</div>
 
-                <div style={{ paddingBottom: '1rem' }}>
+                <div style={{ padding: '1rem 0' }}>
                     {!!selected.length && (
                         <Button
                             variant="outlined"
@@ -97,7 +103,7 @@ export default class AggregationFilter extends Component {
                         </Button>
                     )}
                 </div>
-            </div>
+            </List>
         );
     }
 }

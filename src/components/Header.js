@@ -23,6 +23,10 @@ const styles = theme => ({
         marginLeft: -12,
         marginRight: 20,
     },
+    noLink: {
+        textDecoration: 'none',
+        color: 'inherit',
+    },
 });
 
 class Header extends Component {
@@ -47,7 +51,9 @@ class Header extends Component {
                             variant="title"
                             color="inherit"
                             className={classes.flex}>
-                            Hoover
+                            <Link href="/">
+                                <a className={classes.noLink}>Hoover</a>
+                            </Link>
                         </Typography>
                         <Menu />
                     </Toolbar>
