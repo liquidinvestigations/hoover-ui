@@ -5,6 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import Button from '@material-ui/core/Button';
 
 const defaultBucketSorter = (a, b) => b.key - a.key;
 
@@ -81,15 +82,19 @@ export default class AggregationFilter extends Component {
 
         return (
             <div className="mt-2">
-                <Grid container justify="space-between">
-                    <div>
-                        <small className="text-muted">{title || ' '}</small>
-                    </div>
+                <Grid container alignItems="baseline" justify="space-between">
+                    <Typography variant="caption">{title || ' '}</Typography>
+
                     <div>
                         {!!selected.length && (
-                            <a href="#" onClick={this.reset} className="reset">
-                                Reset
-                            </a>
+                            <Typography>
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    onClick={this.reset}>
+                                    Reset
+                                </Button>
+                            </Typography>
                         )}
                     </div>
                 </Grid>

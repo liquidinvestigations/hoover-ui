@@ -7,10 +7,12 @@ import Link from 'next/link';
 import Router from 'next/router';
 
 import { connect } from 'react-redux';
-import { fetchCollections, parseSearchUrlQuery, search } from '../actions';
-
-// import api from '../api';
-// import routerEvents from '../router-events';
+import {
+    parseSearchUrlQuery,
+    updateSearchQuery,
+    writeSearchQueryToUrl,
+    search,
+} from '../actions';
 
 import Dropdown from './Dropdown';
 import CollectionsBox from './CollectionsBox';
@@ -59,116 +61,39 @@ class SearchPage extends Component {
         }).isRequired,
         query: PropTypes.object.isRequired,
         error: PropTypes.object,
+        selectedCollections: PropTypes.arrayOf(PropTypes.string),
     };
 
-    state = {
-        query: {},
-        searchAfterByPage: {},
-    };
+    state = { initialSearch: true };
 
     componentDidMount() {
-        const { dispatch } = this.props;
-
-        dispatch(parseSearchUrlQuery());
+        this.props.dispatch(parseSearchUrlQuery());
     }
 
-    searchIfNecessary = url => {
-        const parsedQuery = {};
-
-        if (!equal(parsedQuery, this.state.query) && this.state.query.q) {
-            this.setState({ query: parsedQuery }, this.search);
+    componentDidUpdate(prevProps, prevState) {
+        if (
+            prevProps.selectedCollections.length === 0 &&
+            this.props.selectedCollections.length &&
+            this.state.initialSearch &&
+            this.props.query.q &&
+            this.props.query.q.length
+        ) {
+            this.props.dispatch(search());
         }
-    };
-
-    writeQueryToUrl() {
-        let query = {
-            ...this.state.query,
-            collections: this.state.query.collections.join('+'),
-        };
-
-        query = pickBy(query, d => (Array.isArray(d) ? d.length : Boolean(d)));
-
-        Router.push({
-            pathname: '/',
-            query,
-        });
     }
 
     componentDidCatch(error, info) {
         this.setState({ error });
     }
 
-    setSize = event => {
-        const { query } = this.state;
-
-        this.setState(
-            {
-                query: {
-                    ...query,
-                    size: event.target.value,
-                    page: 1,
-                    searchAfter: '',
-                },
-                searchAfterByPage: {},
-            },
-            this.search
-        );
-    };
-
-    setSort = event => {
-        const { query } = this.state;
-
-        this.setState(
-            {
-                query: {
-                    ...query,
-                    order: event.target.value,
-                    page: 1,
-                    searchAfter: '',
-                },
-                searchAfterByPage: {},
-            },
-            this.search
-        );
-    };
-
-    onChangeCollections = selected => {
-        this.setState(
-            {
-                query: {
-                    ...this.state.query,
-                    collections: selected,
-                    page: 1,
-                    searchAfter: '',
-                },
-                searchAfterByPage: {},
-            },
-            this.search
-        );
-    };
-
     handleInputChange = event =>
-        this.setState({
-            query: {
-                ...this.state.query,
-                q: event.target.value,
-            },
-        });
+        this.props.dispatch(
+            updateSearchQuery({ q: event.target.value }, { syncUrl: false })
+        );
 
     handleSubmit = event => {
         event.preventDefault();
-
-        this.setState(
-            {
-                query: {
-                    ...this.state.query,
-                    page: 1,
-                    searchAfter: '',
-                },
-                searchAfterByPage: {},
-            },
-            this.search
-        );
+        this.props.dispatch(writeSearchQueryToUrl());
     };
 
     loadNextPage = () => {
@@ -252,50 +177,6 @@ class SearchPage extends Component {
         );
     };
 
-    search = event => {
-        if (event) {
-            event.preventDefault();
-        }
-
-        this.props.dispatch(search());
-
-        // this.setState({ isFetching: true }, async () => {
-        //     this.writeQueryToUrl();
-
-        //     let results, error;
-
-        //     try {
-        //         results = await api.search(this.state.query);
-        //     } catch (err) {
-        //         error = err;
-        //     }
-
-        //     const { query, searchAfterByPage } = this.state;
-        //     const { page, order } = query;
-
-        //     if (results.hits.total > 0) {
-        //         const lastHit = results.hits.hits.slice(-1)[0];
-
-        //         searchAfterByPage[page + 1] = ['' + lastHit._score, lastHit._id];
-        //         if (order !== SORT_RELEVANCE) {
-        //             const date = new Date(lastHit._source.date);
-
-        //             searchAfterByPage[page + 1] = [
-        //                 '' + date.getTime(),
-        //                 ...searchAfterByPage[page + 1],
-        //             ];
-        //         }
-        //     }
-
-        //     this.setState({
-        //         searchAfterByPage,
-        //         isFetching: false,
-        //         results,
-        //         error,
-        //     });
-        // });
-    };
-
     render() {
         const { classes, error, query, isFetching, results } = this.props;
 
@@ -307,7 +188,7 @@ class SearchPage extends Component {
             <div>
                 <Grid container>
                     <Grid item lg={8} sm={12}>
-                        <form onSubmit={this.search}>
+                        <form onSubmit={this.handleSubmit}>
                             <TextField
                                 name="q"
                                 value={query.q || ''}
@@ -354,6 +235,9 @@ class SearchPage extends Component {
     }
 }
 
-const mapStateToProps = ({ search }) => search;
+const mapStateToProps = ({ search, collections: { selected } }) => ({
+    ...search,
+    selectedCollections: selected,
+});
 
 export default withStyles(styles)(connect(mapStateToProps)(SearchPage));

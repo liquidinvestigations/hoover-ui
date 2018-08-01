@@ -1,8 +1,5 @@
 import fetch from 'isomorphic-fetch';
 import { SORT_RELEVANCE, SORT_NEWEST, SORT_OLDEST } from './constants';
-import NProgress from 'nprogress';
-
-NProgress.configure({ parent: '.nprogress', showSpinner: true });
 
 function buildQuery(q, { dateFrom, dateTo }) {
     const qs = {
@@ -87,8 +84,6 @@ function buildSortQuery(order) {
 }
 
 async function fetchJson(url, opts = {}) {
-    NProgress.start();
-
     const res = await fetch(url, {
         ...opts,
         credentials: 'same-origin',
@@ -98,8 +93,6 @@ async function fetchJson(url, opts = {}) {
             Accept: 'application/json',
         },
     });
-
-    NProgress.done();
 
     if (res.ok) {
         return await res.json();

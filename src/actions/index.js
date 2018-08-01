@@ -1,7 +1,8 @@
 import api from '../api';
 import qs from 'qs';
-import { castArray } from 'lodash';
+import { pickBy, castArray } from 'lodash';
 import { SORT_OPTIONS } from '../constants';
+import Router from 'next/router';
 
 export function fetchCollections() {
     return async (dispatch, getState) => {
@@ -28,26 +29,16 @@ export function setCollectionsSelection(collections) {
     };
 }
 
-export const setSearchSettingsSize = value => ({
-    type: 'SET_SEARCH_SETTINGS_SIZE',
-    value,
-});
-
-export const setSearchSettingsOrder = value => ({
-    type: 'SET_SEARCH_SETTINGS_ORDER',
-    value,
-});
-
 export function parseSearchUrlQuery() {
     const params = qs.parse(window.location.search.slice(1));
 
     return {
-        type: 'SEARCH_URL_QUERY',
+        type: 'PARSE_SEARCH_URL_QUERY',
+        collections: params.collections ? params.collections.split('+') : [],
         query: {
             q: params.q ? String(params.q).replace(/\+/g, ' ') : '',
             size: params.size ? +params.size : 10,
             order: params.order ? params.order : SORT_OPTIONS[0],
-            collections: params.collections ? params.collections.split('+') : [],
             dateFrom: params.dateFrom,
             dateTo: params.dateTo,
             dateYears: params.dateYears ? castArray(params.dateYears) : [],
@@ -62,31 +53,77 @@ export function parseSearchUrlQuery() {
 }
 
 export function routeChanged(url) {
-    return {
-        type: 'ROUTE_CHANGED',
-        url,
+    return dispatch => {
+        dispatch({
+            type: 'ROUTE_CHANGED',
+            url,
+        });
+
+        // hacky?
+        if (url.startsWith('/?')) {
+            dispatch(search());
+        }
     };
 }
 
 export function search() {
     return async (dispatch, getState) => {
-        dispatch({ type: 'FETCH_SEARCH' });
-
         const {
             search: { query },
             collections: { selected: selectedCollections },
         } = getState();
 
+        const params = {
+            ...query,
+            collections: selectedCollections,
+        };
+
+        dispatch({ type: 'FETCH_SEARCH', params });
+
         try {
             dispatch({
                 type: 'FETCH_SEARCH_SUCCESS',
-                results: await api.search({
-                    ...query,
-                    collections: selectedCollections,
-                }),
+                results: await api.search(params),
             });
         } catch (error) {
             dispatch({ type: 'FETCH_SEARCH_FAILURE', error });
         }
     };
 }
+
+export function writeSearchQueryToUrl() {
+    return (dispatch, getState) => {
+        dispatch({ type: 'WRITE_SEARCH_QUERY_TO_URL' });
+
+        const {
+            search: { query },
+            collections: { selected: selectedCollections },
+        } = getState();
+
+        let serializedQuery = {
+            ...query,
+            collections: selectedCollections.join('+'),
+        };
+
+        serializedQuery = pickBy(
+            serializedQuery,
+            d => (Array.isArray(d) ? d.length : Boolean(d))
+        );
+
+        Router.push({ pathname: '/', query: serializedQuery });
+    };
+}
+
+export const updateSearchQuery = (query, options = {}) => {
+    return (dispatch, getState) => {
+        dispatch({
+            type: 'UPDATE_SEARCH_QUERY',
+            query,
+            options,
+        });
+
+        if (options.syncUrl !== false) {
+            dispatch(writeSearchQueryToUrl());
+        }
+    };
+};

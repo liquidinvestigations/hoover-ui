@@ -11,6 +11,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import Checkbox from '@material-ui/core/Checkbox';
+import Typography from '@material-ui/core/Typography';
 
 const styles = theme => ({
     root: {
@@ -22,7 +23,7 @@ const styles = theme => ({
     },
 });
 
-class CollectionsBox extends Component {
+export class CollectionsBox extends Component {
     static propTypes = {
         classes: PropTypes.object.isRequired,
         collections: PropTypes.arrayOf(
@@ -120,7 +121,7 @@ class CollectionsBox extends Component {
             if (collections.length) {
                 result = this.renderCheckboxes();
             } else {
-                result = <em>no collections available</em>;
+                result = <Typography>no collections available</Typography>;
             }
         } else {
             result = <Loading />;

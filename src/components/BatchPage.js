@@ -4,16 +4,23 @@ import CollectionsBox from './CollectionsBox';
 import Batch from './Batch';
 import api from '../api';
 
+import Grid from '@material-ui/core/Grid';
+
 class BatchPage extends Component {
     state = {
         terms: '',
         collections: null,
         selectedCollections: null,
         limits: null,
+        error: null,
     };
 
     async componentDidMount() {
         await this.getCollectionsAndLimits();
+    }
+
+    componentDidCatch(error) {
+        this.setState({ error });
     }
 
     async getCollectionsAndLimits() {
@@ -43,6 +50,10 @@ class BatchPage extends Component {
     render() {
         if (!(this.state.collections && this.state.limits)) {
             return <p>loading ...</p>;
+        }
+
+        if (this.state.error) {
+            return <div>{error.toString()}</div>;
         }
 
         let onChangeCollections = selected => {

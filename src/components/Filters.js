@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { DateTime } from 'luxon';
 
 import ListItem from '@material-ui/core/ListItem';
+import { updateSearchQuery } from '../actions';
 
 import Filter from './Filter';
 import AggregationFilter from './AggregationFilter';
@@ -16,6 +17,9 @@ class Filters extends Component {
         query: PropTypes.object.isRequired,
         aggregations: PropTypes.object,
     };
+
+    filter = key => value =>
+        this.props.dispatch(updateSearchQuery({ [key]: value }));
 
     render() {
         const { query, aggregations } = this.props;
@@ -32,7 +36,7 @@ class Filters extends Component {
                             title=""
                             selected={query.fileType}
                             aggregation={aggregations.count_by_filetype}
-                            onChange={this.handleFileTypeFilter}
+                            onChange={this.filter('fileType')}
                         />
                     </Filter>
                 </ListItem>
@@ -42,7 +46,7 @@ class Filters extends Component {
                         title="Date range"
                         defaultOpen={query.dateFrom || query.dateTo}>
                         <DateRangeFilter
-                            onChange={this.handleDateRangeFilter}
+                            onChange={this.filter('dateRange')}
                             defaultFrom={query.dateFrom}
                             defaultTo={query.dateTo}
                         />
@@ -59,7 +63,7 @@ class Filters extends Component {
                             aggregation={aggregations.count_by_date_year}
                             selected={query.dateYears}
                             title="Year"
-                            onChange={this.handleDateFilter}
+                            onChange={this.filter('dateYears')}
                             bucketLabel={formatYear}
                         />
 
@@ -67,7 +71,7 @@ class Filters extends Component {
                             aggregation={aggregations.count_by_date_created_year}
                             selected={query.dateCreatedYears}
                             title="Year created"
-                            onChange={this.handleDateCreatedFilter}
+                            onChange={this.filter('dateCreatedYears')}
                             bucketLabel={formatYear}
                         />
                     </Filter>

@@ -26,7 +26,7 @@ export default class Filter extends Component {
                     <Typography variant="body2">{title}</Typography>
 
                     <span className="icon">
-                        <Icon color="secondary" />
+                        <Icon color="action" />
                     </span>
                 </div>
                 <div className="filter-body">{children}</div>

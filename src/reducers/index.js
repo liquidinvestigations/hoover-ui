@@ -1,4 +1,5 @@
-// search
+import { omit } from 'lodash';
+
 const INITIAL_SEARCH_STATE = {
     isFetching: false,
     query: {
@@ -16,32 +17,22 @@ const INITIAL_SEARCH_STATE = {
 
 function search(state = INITIAL_SEARCH_STATE, action) {
     switch (action.type) {
-        case 'SET_SEARCH_SETTINGS_SIZE':
-            return {
-                ...state,
-                searchAfterByPage: {},
-                query: {
-                    ...state.query,
-                    page: 1,
-                    searchAfter: '',
-                    size: action.value,
-                },
-            };
-        case 'SET_SEARCH_SETTINGS_ORDER':
-            return {
-                ...state,
-                searchAfterByPage: {},
-                query: {
-                    ...state.query,
-                    page: 1,
-                    searchAfter: '',
-                    order: action.value,
-                },
-            };
-        case 'SEARCH_URL_QUERY':
+        case 'PARSE_SEARCH_URL_QUERY':
             return { ...state, query: action.query };
         case 'FETCH_SEARCH':
             return { ...state, isFetching: true };
+        case 'UPDATE_SEARCH_QUERY':
+            let newState = { ...state, query: { ...state.query, ...action.query } };
+
+            if (action.options.resetPagination) {
+                newState = {
+                    ...newState,
+                    searchAfterByPage: {},
+                    query: { ...newState.query, page: 1, searchAfter: '' },
+                };
+            }
+
+            return newState;
         case 'FETCH_SEARCH_SUCCESS':
             return {
                 ...state,
@@ -56,7 +47,6 @@ function search(state = INITIAL_SEARCH_STATE, action) {
     }
 }
 
-// collections
 const INITIAL_COLLECTIONS_STATE = {
     isFetching: false,
     items: [],
@@ -73,11 +63,15 @@ function collections(state = INITIAL_COLLECTIONS_STATE, action) {
                 ...state,
                 isFetching: false,
                 items: action.items,
-                selected: action.items.map(c => c.name),
+                selected: state.selected.length
+                    ? state.selected
+                    : action.items.map(c => c.name),
             };
         case 'FETCH_COLLECTIONS_FAILURE':
             return { ...state, isFetching: false, items: [], error: action.error };
         case 'SET_COLLECTIONS_SELECTION':
+            return { ...state, selected: action.collections };
+        case 'PARSE_SEARCH_URL_QUERY':
             return { ...state, selected: action.collections };
         default:
             return state;

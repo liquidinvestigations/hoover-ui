@@ -16,7 +16,6 @@ import '../styles/main.scss';
 
 class HooverApp extends App {
     pageContext = getPageContext();
-
     handleRouteChange = url => this.props.reduxStore.dispatch(routeChanged(url));
 
     componentDidMount() {

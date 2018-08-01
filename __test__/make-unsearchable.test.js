@@ -1,4 +1,4 @@
-import makeUnsearchable from '../utils/make-unsearchable';
+import makeUnsearchable from '../src/make-unsearchable';
 
 it('injects hidden elements but leave <mark> elements intact', () => {
     expect(makeUnsearchable('foo')).toEqual(

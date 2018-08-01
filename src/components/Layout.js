@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import Header from './Header';
 import SideBar from './SideBar';
+import ProgressIndicator from './ProgressIndicator';
 import { withStyles } from '@material-ui/core/styles';
 
 const drawerWidth = 300;
@@ -27,16 +28,17 @@ const styles = theme => ({
 });
 
 const Layout = ({ children, classes }) => (
-    <div className={classes.root}>
-        <div className="nprogress" />
+    <div>
+        <ProgressIndicator />
+        <div className={classes.root}>
+            <Header />
+            <SideBar classes={classes} />
 
-        <Header />
-        <SideBar classes={classes} />
-
-        <main className={classes.content}>
-            <div className={classes.toolbar} />
-            {children}
-        </main>
+            <main className={classes.content}>
+                <div className={classes.toolbar} />
+                {children}
+            </main>
+        </div>
     </div>
 );
 

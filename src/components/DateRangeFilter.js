@@ -110,7 +110,7 @@ class DateRangeFilter extends Component {
                     id="date"
                     label="From"
                     type="date"
-                    value={from}
+                    value={from || ''}
                     defaultValue={defaultFrom}
                     className={classes.textField}
                     fullWidth
@@ -123,7 +123,7 @@ class DateRangeFilter extends Component {
                     id="date"
                     label="To"
                     type="date"
-                    value={to}
+                    value={to || ''}
                     defaultValue={defaultTo}
                     className={classes.textField}
                     fullWidth

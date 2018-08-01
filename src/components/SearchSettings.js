@@ -7,12 +7,17 @@ import InputLabel from '@material-ui/core/InputLabel';
 import { withStyles } from '@material-ui/core/styles';
 
 import { SORT_OPTIONS, SIZE_OPTIONS } from '../constants';
-import { setSearchSettingsSize, setSearchSettingsOrder } from '../actions';
+import { updateSearchQuery } from '../actions';
 
 const setSize = dispatch => event =>
-    dispatch(setSearchSettingsSize(event.target.value));
+    dispatch(
+        updateSearchQuery({ size: event.target.value }, { resetPagination: true })
+    );
+
 const setOrder = dispatch => event =>
-    dispatch(setSearchSettingsOrder(event.target.value));
+    dispatch(
+        updateSearchQuery({ order: event.target.value }, { resetPagination: true })
+    );
 
 const styles = theme => ({
     root: {
@@ -41,7 +46,7 @@ const SearchSettings = ({ size, order, dispatch, classes }) => (
                 <FormControl style={{ minWidth: 120 }}>
                     <InputLabel>Order</InputLabel>
 
-                    <Select autoWidth value={order} onChange={setOrder}>
+                    <Select autoWidth value={order} onChange={setOrder(dispatch)}>
                         {SORT_OPTIONS.map(s => (
                             <MenuItem key={s} value={s}>
                                 {s}
