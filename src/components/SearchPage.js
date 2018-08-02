@@ -3,22 +3,12 @@ import cn from 'classnames';
 import equal from 'fast-deep-equal';
 import PropTypes from 'prop-types';
 
+import { pickBy, identity, castArray } from 'lodash';
+
 import Link from 'next/link';
 import Router from 'next/router';
 
 import { connect } from 'react-redux';
-import {
-    parseSearchUrlQuery,
-    updateSearchQuery,
-    writeSearchQueryToUrl,
-    search,
-    fetchCollections,
-} from '../actions';
-
-import Dropdown from './Dropdown';
-import CollectionsBox from './CollectionsBox';
-import SearchResults from './SearchResults';
-import SearchSettings from './SearchSettings';
 
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
@@ -31,7 +21,18 @@ import Typography from '@material-ui/core/Typography';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
-import { pickBy, identity, castArray } from 'lodash';
+import Dropdown from './Dropdown';
+import CollectionsBox from './CollectionsBox';
+import SearchResults from './SearchResults';
+import SearchSettings from './SearchSettings';
+
+import {
+    parseSearchUrlQuery,
+    updateSearchQuery,
+    writeSearchQueryToUrl,
+    search,
+    fetchCollections,
+} from '../actions';
 
 import {
     SORT_RELEVANCE,

@@ -88,7 +88,7 @@ class Filters extends Component {
                 </div>
 
                 <div>
-                    <Filter title="Language" defaultOpen={query.language.length}>
+                    <Filter title="Language" defaultOpen={!!query.language.length}>
                         <AggregationFilter
                             aggregation={aggregations.count_by_lang}
                             selected={query.language}
@@ -101,7 +101,7 @@ class Filters extends Component {
                 <div>
                     <Filter
                         title="Email domain"
-                        defaultOpen={query.emailDomains.length}>
+                        defaultOpen={!!query.emailDomains.length}>
                         <AggregationFilter
                             aggregation={aggregations.count_by_email_domain}
                             selected={query.emailDomains}

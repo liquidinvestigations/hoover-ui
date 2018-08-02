@@ -160,12 +160,13 @@ class Document extends Component {
                     <DocumentEmailSection doc={doc} classes={classes} />
                 </div>
 
-                <div className={classes.section} classes={classes}>
+                <div className={classes.section}>
                     <DocumentFilesSection
                         title="Files"
                         data={files}
                         baseUrl={this.baseUrl}
                         fullPage={this.props.fullPage}
+                        classes={classes}
                     />
                 </div>
 
