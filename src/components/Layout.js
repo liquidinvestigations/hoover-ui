@@ -18,11 +18,20 @@ const styles = theme => ({
         height: '100%',
         minHeight: '100vh',
     },
+    filterDrawer: {
+        minWidth: 280,
+        maxWidth: '20%',
+    },
     previewDrawer: {
-        width: '40%',
+        minWidth: 280,
+        width: '35%',
     },
     sideBarFormControl: {
         margin: theme.spacing.unit * 3,
+        display: 'block',
+    },
+    sticky: {
+        position: 'sticky',
     },
     content: {
         flexGrow: 1,

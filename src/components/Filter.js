@@ -49,14 +49,9 @@ const styles = theme => ({
             duration: theme.transitions.duration.shortest,
         }),
         overflow: 'hidden',
-        paddingLeft: '1rem',
-        paddingRight: '1rem',
     },
 
     bodyOpen: {
-        maxHeight: '100rem',
-        marginTop: '1rem',
-        // marginBottom: '1rem',
         maxHeight: '1000rem',
     },
 });

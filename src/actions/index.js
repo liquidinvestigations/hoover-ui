@@ -54,6 +54,7 @@ export function parseSearchUrlQuery() {
             searchAfter: params.searchAfter || '',
             fileType: params.fileType ? castArray(params.fileType) : [],
             language: params.language ? castArray(params.language) : [],
+            emailDomains: params.emailDomains ? castArray(params.emailDomains) : [],
         },
     };
 }
@@ -145,6 +146,31 @@ export const setPreview = url => ({
     type: 'SET_PREVIEW',
     url,
 });
+
+export const fetchPreview = () => {
+    return async (dispatch, getState) => {
+        const {
+            preview: { url },
+        } = getState();
+
+        dispatch({
+            type: 'FETCH_PREVIEW',
+            url,
+        });
+
+        try {
+            dispatch({
+                type: 'FETCH_PREVIEW_SUCCESS',
+                doc: await api.doc(url),
+            });
+        } catch (error) {
+            dispatch({
+                type: 'FETCH_PREVIEW_FAILURE',
+                error,
+            });
+        }
+    };
+};
 
 export const clearPreview = () => ({
     type: 'CLEAR_PREVIEW',

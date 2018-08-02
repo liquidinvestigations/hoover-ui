@@ -30,40 +30,49 @@ export class Pagination extends Component {
     };
 
     render() {
-        const { results, query } = this.props;
+        const {
+            results,
+            query: { page, size },
+        } = this.props;
 
         const total = results.hits.total;
-        const pageCount = Math.ceil(total / query.size);
-        const page = results.hits.total ? query.page : 0;
+        const pageCount = Math.ceil(total / size);
+
+        const from = total === 0 ? 0 : page * size - 9;
+        const to = Math.min(total, page * size);
 
         const hasNext = page < pageCount;
         const hasPrev = page > 1;
 
         return (
-            <Grid container alignItems="center" justify="space-between">
-                <Grid item>
-                    <Typography variant="caption">
-                        {results.hits.hits.length} of {total} hits – page {page} / {
-                            pageCount
-                        }
-                    </Typography>
-                </Grid>
+            <div>
+                <Grid container alignItems="center" justify="space-between">
+                    <Grid item>
+                        <Typography variant="caption">
+                            Showing {from} - {to} of {total} hits – page {page} / {
+                                pageCount
+                            }
+                        </Typography>
+                    </Grid>
 
-                <Grid item>
-                    <Grid container justify="flex-end">
-                        <IconButton
-                            tabIndex="-1"
-                            onClick={this.handlePrev}
-                            disabled={!hasPrev}>
-                            <IconPrevious />
-                        </IconButton>
+                    <Grid item>
+                        <Grid container justify="flex-end">
+                            <IconButton
+                                tabIndex="-1"
+                                onClick={this.handlePrev}
+                                disabled={!hasPrev}>
+                                <IconPrevious />
+                            </IconButton>
 
-                        <IconButton onClick={this.handleNext} disabled={!hasNext}>
-                            <IconNext />
-                        </IconButton>
+                            <IconButton
+                                onClick={this.handleNext}
+                                disabled={!hasNext}>
+                                <IconNext />
+                            </IconButton>
+                        </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
+            </div>
         );
     }
 }

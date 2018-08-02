@@ -15,21 +15,25 @@ export default ({ classes }) => (
         variant="permanent"
         classes={{
             paper: classes.drawerPaper,
+            docked: classes.filterDrawer,
         }}>
         <div className={classes.toolbar} />
-        <List>
-            <ListItem>
-                <CollectionsBox />
-            </ListItem>
-        </List>
 
-        <Divider />
+        <div className={classes.sticky}>
+            <List>
+                <ListItem>
+                    <CollectionsBox />
+                </ListItem>
+            </List>
 
-        <FormControl component="fieldset" className={classes.sideBarFormControl}>
-            <FormLabel component="legend">Filters</FormLabel>
-            <FormGroup>
-                <Filters />
-            </FormGroup>
-        </FormControl>
+            <Divider />
+
+            <FormControl component="fieldset" className={classes.sideBarFormControl}>
+                <FormLabel component="legend">Filters</FormLabel>
+                <FormGroup>
+                    <Filters />
+                </FormGroup>
+            </FormControl>
+        </div>
     </Drawer>
 );

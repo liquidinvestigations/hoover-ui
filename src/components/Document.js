@@ -3,6 +3,8 @@ import Loading from './Loading';
 import api from '../api';
 import url from 'url';
 
+import { connect } from 'react-redux';
+
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -20,6 +22,8 @@ import IconArrowUpward from '@material-ui/icons/ArrowUpward';
 import IconLaunch from '@material-ui/icons/Launch';
 import IconCloudDownload from '@material-ui/icons/CloudDownload';
 
+import { fetchPreview } from '../actions';
+
 const styles = theme => ({
     header: {
         display: 'flex',
@@ -31,20 +35,28 @@ const styles = theme => ({
         ...theme.mixins.toolbar,
     },
     root: {
-        backgroundColor: theme.palette.background.default,
+        // backgroundColor: theme.palette.background.default,
     },
     section: {
         margin: '1rem',
     },
+    content: {
+        overflowWrap: 'break-word',
+        position: 'relative',
+        padding: '1rem 2rem 1rem 0',
+        fontSize: 13,
+    },
+
+    preWrap: { whiteSpace: 'pre-wrap' },
 });
 
 class Document extends Component {
     state = { doc: {}, loaded: false };
 
     componentDidMount() {
-        let docUrl = this.props.docUrl;
-        let split = docUrl.split('/');
-        let docId = split.pop();
+        const docUrl = this.props.docUrl;
+        const split = docUrl.split('/');
+        const docId = split.pop();
 
         this.baseUrl = split.join('/');
 
@@ -63,17 +75,19 @@ class Document extends Component {
     }
 
     fetchDoc() {
-        this.setState({ loaded: false }, async () => {
-            this.setState({ doc: await api.doc(this.props.docUrl), loaded: true });
-        });
+        this.props.dispatch(fetchPreview(this.props.docUrl));
     }
 
     render() {
-        const { doc, loaded } = this.state;
-        const { docUrl, fullPage, classes } = this.props;
+        const { docUrl, fullPage, classes, isFetching } = this.props;
+        let doc = this.props.doc;
 
-        if (!loaded) {
+        if (isFetching) {
             return <Loading />;
+        }
+
+        if (!isFetching && !doc) {
+            doc = this.state.doc;
         }
 
         const collectionBaseUrl = url.resolve(docUrl, './');
@@ -136,26 +150,26 @@ class Document extends Component {
                         {headerLinks.map(({ text, icon, ...props }, index) => (
                             <Button
                                 key={index}
+                                size="small"
                                 color="secondary"
-                                variant="contained"
+                                variant="outlined"
                                 component="a"
                                 {...props}>
-                                {icon}
-                                {text}
+                                {icon}  {text}
                             </Button>
                         ))}
                     </Grid>
                 </div>
 
                 <div className={classes.section}>
-                    <DocumentMetaSection doc={doc} />
+                    <DocumentMetaSection doc={doc} classes={classes} />
                 </div>
 
                 <div className={classes.section}>
-                    <DocumentEmailSection doc={doc} />
+                    <DocumentEmailSection doc={doc} classes={classes} />
                 </div>
 
-                <div className={classes.section}>
+                <div className={classes.section} classes={classes}>
                     <DocumentFilesSection
                         title="Files"
                         data={files}
@@ -165,7 +179,11 @@ class Document extends Component {
                 </div>
 
                 <div className={classes.section}>
-                    <DocumentHTMLSection html={doc.safe_html} title="HTML" />
+                    <DocumentHTMLSection
+                        html={doc.safe_html}
+                        title="HTML"
+                        classes={classes}
+                    />
                 </div>
 
                 <div className={classes.section}>
@@ -173,6 +191,7 @@ class Document extends Component {
                         title="Text"
                         text={doc.content.text}
                         fullPage={this.props.fullPage}
+                        classes={classes}
                     />
                 </div>
 
@@ -181,6 +200,7 @@ class Document extends Component {
                         title="Headers &amp; Parts"
                         text={doc.content.tree}
                         fullPage={this.props.fullPage}
+                        classes={classes}
                     />
                 </div>
 
@@ -190,6 +210,7 @@ class Document extends Component {
                             title={tag}
                             text={text}
                             fullPage={this.props.fullPage}
+                            classes={classes}
                         />
                     </div>
                 ))}
@@ -383,17 +404,15 @@ class DocumentFilesSection extends Component {
 
 class DocumentTextSection extends Component {
     render() {
-        let text = this.props.text;
+        const { classes, text, title } = this.props;
         if (!text) return null;
-
-        let title = this.props.title;
 
         return (
             <Card>
                 <CardHeader title={title} />
                 <CardContent>
-                    <div className="content">
-                        <pre>{text.trim()}</pre>
+                    <div className={classes.content}>
+                        <pre className={classes.preWrap}>{text.trim()}</pre>
                     </div>
                 </CardContent>
             </Card>
@@ -412,7 +431,7 @@ class DocumentHTMLSection extends Component {
             <Card>
                 <CardHeader title={title} />
                 <CardContent>
-                    <div className="content">
+                    <div className={classes.content}>
                         <span dangerouslySetInnerHTML={{ __html: html }} />
                     </div>
                 </CardContent>
@@ -420,5 +439,9 @@ class DocumentHTMLSection extends Component {
         );
     }
 }
-
-export default withStyles(styles)(Document);
+const mapStateToProps = ({ preview: { isFetching, doc, url } }) => ({
+    isFetching,
+    doc,
+    docUrl: url,
+});
+export default withStyles(styles)(connect(mapStateToProps)(Document));

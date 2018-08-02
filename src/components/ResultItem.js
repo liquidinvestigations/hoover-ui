@@ -73,8 +73,8 @@ class ResultItem extends Component {
     render() {
         const { hit, url, classes, n, preview } = this.props;
 
-        const isSelected = url === preview;
-        const unsearchable = !!preview;
+        const isSelected = url === preview.url;
+        const unsearchable = !!preview.url;
 
         const fields = hit._source || {};
         const highlight = hit.highlight || {};

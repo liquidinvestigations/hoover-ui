@@ -8,7 +8,7 @@ const styles = theme => ({
         top: 0,
         height: '5px',
         width: '100%',
-        zIndex: 2,
+        zIndex: theme.zIndex.appBar + 1,
     },
 });
 
@@ -22,5 +22,6 @@ export default connect(
     ({
         search: { isFetching: searchFetching },
         collections: { isFetching: collectionsFetching },
-    }) => ({ isFetching: searchFetching || collectionsFetching })
+        preview: { isFetching: previewFetching },
+    }) => ({ isFetching: searchFetching || collectionsFetching || previewFetching })
 )(ProgressIndicator);

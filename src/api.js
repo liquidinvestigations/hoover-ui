@@ -89,6 +89,36 @@ function buildSortQuery(order) {
     return sort;
 }
 
+function buildAggregations() {
+    return {
+        count_by_filetype: {
+            terms: { field: 'filetype' },
+        },
+        count_by_date_year: {
+            date_histogram: {
+                field: 'date',
+                interval: 'year',
+            },
+        },
+        count_by_date_created_year: {
+            date_histogram: {
+                field: 'date-created',
+                interval: 'year',
+            },
+        },
+        count_by_lang: {
+            terms: {
+                field: 'lang',
+            },
+        },
+        count_by_email_domain: {
+            terms: {
+                field: 'email-domains',
+            },
+        },
+    };
+}
+
 async function fetchJson(url, opts = {}) {
     const res = await fetch(url, {
         ...opts,
@@ -158,6 +188,13 @@ class Api {
         fileType = null,
         language = null,
     } = {}) {
+        const postFilter = buildPostFilter({
+            dateYears,
+            dateCreatedYears,
+            fileType,
+            language,
+        });
+
         return await fetchJson('/search', {
             method: 'POST',
             body: JSON.stringify({
@@ -166,32 +203,8 @@ class Api {
                 query: buildQuery(q, { dateFrom, dateTo }),
                 search_after: searchAfter,
                 sort: buildSortQuery(order),
-                post_filter: buildPostFilter({
-                    dateYears,
-                    dateCreatedYears,
-                    fileType,
-                    language,
-                }),
-                aggs: {
-                    count_by_filetype: { terms: { field: 'filetype' } },
-                    count_by_date_year: {
-                        date_histogram: {
-                            field: 'date',
-                            interval: 'year',
-                        },
-                    },
-                    count_by_date_created_year: {
-                        date_histogram: {
-                            field: 'date-created',
-                            interval: 'year',
-                        },
-                    },
-                    count_by_lang: {
-                        terms: {
-                            field: 'lang',
-                        },
-                    },
-                },
+                post_filter: postFilter,
+                aggs: buildAggregations(postFilter),
                 collections: collections,
                 _source: [
                     'path',

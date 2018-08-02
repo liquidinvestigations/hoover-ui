@@ -3,16 +3,28 @@ import PropTypes from 'prop-types';
 import cn from 'classnames';
 
 import Grid from '@material-ui/core/Grid';
+import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListSubheader from '@material-ui/core/ListSubheader';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 
 const defaultBucketSorter = (a, b) => b.doc_count - a.doc_count;
 
-export default class AggregationFilter extends Component {
+const styles = theme => ({
+    root: {},
+    label: {
+        overflowX: 'hidden',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+    },
+});
+
+class AggregationFilter extends Component {
     static propTypes = {
         aggregation: PropTypes.shape({
             buckets: PropTypes.array.isRequired,
@@ -23,53 +35,62 @@ export default class AggregationFilter extends Component {
         bucketLabel: PropTypes.func,
         bucketValue: PropTypes.func,
         sortBuckets: PropTypes.func,
+        classes: PropTypes.object.isRequired,
     };
 
-    handleChange = event => {
+    state = { checked: [] };
+
+    handleChange = value => () => {
         const selected = new Set(this.props.selected || []);
 
-        if (event.target.checked) {
-            selected.add(event.target.value);
+        if (selected.has(value)) {
+            selected.delete(value);
         } else {
-            selected.delete(event.target.value);
+            selected.add(value);
         }
 
         this.props.onChange(Array.from(selected));
     };
 
     renderBucket = bucket => {
-        const label = this.props.bucketLabel
-            ? this.props.bucketLabel(bucket)
-            : bucket.key;
+        const { bucketLabel, bucketValue, selected, classes } = this.props;
 
-        const value = this.props.bucketValue
-            ? this.props.bucketValue(bucket)
-            : bucket.key;
+        const label = bucketLabel ? bucketLabel(bucket) : bucket.key;
 
-        const checked = this.props.selected.includes(value);
+        const value = bucketValue ? bucketValue(bucket) : bucket.key;
+
+        const checked = selected.includes(value);
 
         return (
-            <div key={bucket.key}>
-                <Grid container justify="space-between" alignItems="center">
-                    <Grid item>
-                        <FormControlLabel
-                            label={label}
-                            control={
-                                <Checkbox
-                                    value={value}
-                                    checked={checked}
-                                    disabled={!bucket.doc_count}
-                                    onChange={this.handleChange}
-                                />
-                            }
-                        />
-                    </Grid>
+            <ListItem
+                key={bucket.key}
+                role={undefined}
+                classes={{
+                    root: classes.root,
+                }}
+                dense
+                button
+                disableGutters
+                onClick={this.handleChange(value)}>
+                <Checkbox
+                    tabIndex={-1}
+                    disableRipple
+                    value={value}
+                    checked={checked}
+                    disabled={!bucket.doc_count}
+                    onChange={this.handleChange(value)}
+                />
 
-                    <Grid item>
+                <ListItemText primary={label} className={classes.label} />
+
+                <ListItemText
+                    primary={
                         <Typography variant="caption">{bucket.doc_count}</Typography>
-                    </Grid>
-                </Grid>
-            </div>
+                    }
+                    disableTypography
+                    align="right"
+                />
+            </ListItem>
         );
     };
 
@@ -90,20 +111,29 @@ export default class AggregationFilter extends Component {
 
         return (
             <List subheader={title ? <ListSubheader>{title}</ListSubheader> : null}>
-                <div>{buckets.map(this.renderBucket)}</div>
+                {buckets.map(this.renderBucket)}
 
-                <div style={{ padding: '1rem 0' }}>
-                    {!!selected.length && (
-                        <Button
-                            variant="outlined"
-                            size="small"
-                            fullWidth
-                            onClick={this.reset}>
-                            Reset
-                        </Button>
-                    )}
-                </div>
+                <ListItem>
+                    <Grid container alignItems="center" justify="space-between">
+                        <Grid item>
+                            <Button size="small" onClick={this.handleMore}>
+                                More
+                            </Button>
+                        </Grid>
+
+                        <Grid item>
+                            <Button
+                                size="small"
+                                disabled={!!selected}
+                                onClick={this.reset}>
+                                Reset
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </ListItem>
             </List>
         );
     }
 }
+
+export default withStyles(styles)(AggregationFilter);

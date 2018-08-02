@@ -8,6 +8,7 @@ const INITIAL_SEARCH_STATE = {
         page: 1,
         language: null,
         searchAfter: '',
+        email: null,
     },
     searchAfterByPage: {},
     results: {
@@ -21,7 +22,7 @@ function search(state = INITIAL_SEARCH_STATE, action) {
         case 'PARSE_SEARCH_URL_QUERY':
             return { ...state, query: action.query };
         case 'FETCH_SEARCH':
-            return { ...state, isFetching: true };
+            return { ...state, isFetching: true, error: null };
         case 'UPDATE_SEARCH_QUERY':
             return { ...state, query: { ...state.query, ...action.query } };
         case 'RESET_PAGINATION':
@@ -76,12 +77,24 @@ function collections(state = INITIAL_COLLECTIONS_STATE, action) {
     }
 }
 
-function preview(state = null, action) {
+const INITIAL_PREVIEW_STATE = {
+    isFetching: false,
+    url: null,
+    doc: null,
+};
+
+function preview(state = INITIAL_PREVIEW_STATE, action) {
     switch (action.type) {
         case 'SET_PREVIEW':
-            return action.url;
+            return { ...state, url: action.url, isFetching: true };
         case 'CLEAR_PREVIEW':
-            return null;
+            return { ...state, url: null, doc: null };
+        case 'FETCH_PREVIEW':
+            return { ...state, isFetching: true, doc: null, error: null };
+        case 'FETCH_PREVIEW_SUCCESS':
+            return { ...state, isFetching: false, doc: action.doc };
+        case 'FETCH_PREVIEW_FAILURE':
+            return { ...state, isFetching: false, error: action.error };
         default:
             return state;
     }

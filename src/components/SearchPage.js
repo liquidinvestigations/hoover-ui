@@ -12,6 +12,7 @@ import {
     updateSearchQuery,
     writeSearchQueryToUrl,
     search,
+    fetchCollections,
 } from '../actions';
 
 import Dropdown from './Dropdown';
@@ -60,6 +61,7 @@ class SearchPage extends Component {
 
     componentDidMount() {
         this.props.dispatch(parseSearchUrlQuery());
+        this.props.dispatch(fetchCollections());
     }
 
     componentDidUpdate(prevProps, prevState) {

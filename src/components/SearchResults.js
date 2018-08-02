@@ -25,18 +25,7 @@ export default class SearchResults extends Component {
         isFetching: PropTypes.bool.isRequired,
     };
 
-    state = { preview: null, error: null };
-
-    clearPreview = () => this.setState({ preview: null });
-    setPreview = url => this.setState({ preview: url });
-
-    // handleFileTypeFilter = fileTypes => this.props.onFilter({ filetype: fileTypes });
-    // handleDateFilter = years => this.props.onFilter({ date: years });
-    // handleDateCreatedFilter = years =>
-    //     this.props.onFilter({ 'date-created': years });
-
-    // handleDateRangeFilter = ({ from, to }) =>
-    //     this.props.onFilter({ date: [from, to] });
+    state = { error: null };
 
     componentDidCatch(error, info) {
         this.setState({ error: error });
@@ -59,21 +48,17 @@ export default class SearchResults extends Component {
 
         const start = 1 + (query.page - 1) * query.size;
 
-        let resultList = null;
-
-        if (results.hits.total > 0) {
-            resultList = results.hits.hits.map((hit, i) => {
-                const url = documentViewUrl(hit);
-                return (
-                    <ResultItem key={hit._url} hit={hit} url={url} n={start + i} />
-                );
-            });
-        }
+        const resultList = results.hits.hits.map((hit, i) => (
+            <ResultItem
+                key={hit._url}
+                hit={hit}
+                url={documentViewUrl(hit)}
+                n={start + i}
+            />
+        ));
 
         const preview = this.state.preview;
         const previewUrl = preview && url.resolve(window.location.href, preview);
-
-        const aggregations = results.aggregations || {};
 
         return (
             <div>
@@ -86,7 +71,7 @@ export default class SearchResults extends Component {
 
                     {resultList}
 
-                    {resultList && <Pagination />}
+                    {resultList.length && <Pagination />}
                 </ReactPlaceholder>
             </div>
         );

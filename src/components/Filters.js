@@ -94,6 +94,18 @@ class Filters extends Component {
                         />
                     </Filter>
                 </div>
+
+                <div>
+                    <Filter
+                        title="Email domain"
+                        defaultOpen={query.emailDomains.length}>
+                        <AggregationFilter
+                            aggregation={aggregations.count_by_email_domain}
+                            selected={query.emailDomains}
+                            onChange={this.filter('emailDomains')}
+                        />
+                    </Filter>
+                </div>
             </div>
         );
     }
