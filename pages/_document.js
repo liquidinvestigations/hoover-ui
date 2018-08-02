@@ -24,7 +24,7 @@ export default class HooverDocument extends Document {
             ...page,
             pageContext,
             // Styles fragment is rendered after the app and page rendering finish.
-            styles: (
+            styles: pageContext ? (
                 <Fragment>
                     <style
                         id="jss-server-side"
@@ -35,6 +35,8 @@ export default class HooverDocument extends Document {
                     />
                     {flush() || null}
                 </Fragment>
+            ) : (
+                undefined
             ),
         };
     }

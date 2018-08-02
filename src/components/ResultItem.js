@@ -14,7 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import AttachIcon from '@material-ui/icons/AttachFile';
 import { withStyles } from '@material-ui/core/styles';
 
-import { setPreview } from '../actions';
+import { fetchPreview } from '../actions';
 
 const styles = theme => ({
     card: {
@@ -68,7 +68,7 @@ class ResultItem extends Component {
         }
     };
 
-    onPreview = () => this.props.dispatch(setPreview(this.props.url));
+    onPreview = () => this.props.dispatch(fetchPreview(this.props.url));
 
     render() {
         const { hit, url, classes, n, preview } = this.props;

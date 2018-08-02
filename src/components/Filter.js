@@ -48,6 +48,7 @@ const styles = theme => ({
 class Filter extends Component {
     static propTypes = {
         classes: PropTypes.object.isRequired,
+        defaultOpen: PropTypes.boolean,
     };
 
     constructor(props) {

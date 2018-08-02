@@ -2,6 +2,7 @@ import { Component } from 'react';
 import Loading from './Loading';
 import api from '../api';
 import url from 'url';
+import cn from 'classnames';
 
 import { connect } from 'react-redux';
 
@@ -21,8 +22,6 @@ import TableRow from '@material-ui/core/TableRow';
 import IconArrowUpward from '@material-ui/icons/ArrowUpward';
 import IconLaunch from '@material-ui/icons/Launch';
 import IconCloudDownload from '@material-ui/icons/CloudDownload';
-
-import { fetchPreview } from '../actions';
 
 const styles = theme => ({
     header: {
@@ -63,19 +62,7 @@ class Document extends Component {
         if (window.HOOVER_HYDRATE_DOC) {
             console.log('using HOOVER_HYDRATE_DOC');
             this.setState({ doc: window.HOOVER_HYDRATE_DOC, loaded: true });
-        } else {
-            this.fetchDoc();
         }
-    }
-
-    componentDidUpdate(prevProps) {
-        if (this.props.docUrl !== prevProps.docUrl) {
-            this.fetchDoc();
-        }
-    }
-
-    fetchDoc() {
-        this.props.dispatch(fetchPreview(this.props.docUrl));
     }
 
     render() {
@@ -88,6 +75,10 @@ class Document extends Component {
 
         if (!isFetching && !doc) {
             doc = this.state.doc;
+        }
+
+        if (!doc || !Object.keys(doc).length) {
+            return null;
         }
 
         const collectionBaseUrl = url.resolve(docUrl, './');
@@ -144,7 +135,7 @@ class Document extends Component {
         );
 
         return (
-            <div className={classes.root}>
+            <div className={cn('document', classes.root)}>
                 <div className={classes.header}>
                     <Grid container justify="space-between">
                         {headerLinks.map(({ text, icon, ...props }, index) => (
@@ -233,57 +224,43 @@ class DocumentMetaSection extends Component {
                         <TableBody>
                             <TableRow>
                                 <TableCell>Filename</TableCell>
-                                <TableCell>
-                                    <code>{data.filename}</code>
-                                </TableCell>
+                                <TableCell>{data.filename}</TableCell>
                             </TableRow>
 
                             <TableRow>
                                 <TableCell>Path</TableCell>
-                                <TableCell>
-                                    <code>{data.path}</code>
-                                </TableCell>
+                                <TableCell>{data.path}</TableCell>
                             </TableRow>
 
                             <TableRow>
                                 <TableCell>Id</TableCell>
-                                <TableCell>
-                                    <code>{doc.id}</code>
-                                </TableCell>
+                                <TableCell>{doc.id}</TableCell>
                             </TableRow>
 
                             {data.filetype && (
                                 <TableRow>
                                     <TableCell>Type</TableCell>
-                                    <TableCell>
-                                        <code>{data.filetype}</code>
-                                    </TableCell>
+                                    <TableCell>{data.filetype}</TableCell>
                                 </TableRow>
                             )}
                             {data.filetype != 'folder' &&
                                 data.md5 && (
                                     <TableRow>
                                         <TableCell>MD5</TableCell>
-                                        <TableCell>
-                                            <code>{data.md5}</code>
-                                        </TableCell>
+                                        <TableCell>{data.md5}</TableCell>
                                     </TableRow>
                                 )}
                             {data.filetype != 'folder' &&
                                 data.sha1 && (
                                     <TableRow>
                                         <TableCell>SHA1</TableCell>
-                                        <TableCell>
-                                            <code>{data.sha1}</code>
-                                        </TableCell>
+                                        <TableCell>{data.sha1}</TableCell>
                                     </TableRow>
                                 )}
                             {data.lang && (
                                 <TableRow>
                                     <TableCell>Language</TableCell>
-                                    <TableCell>
-                                        <code>{data.lang}</code>
-                                    </TableCell>
+                                    <TableCell>{data.lang}</TableCell>
                                 </TableRow>
                             )}
                             {data['date-created'] && (
@@ -380,7 +357,7 @@ class DocumentFilesSection extends Component {
                                 <i className="fa fa-file-o" />
                             </a>
                         ) : (
-                            <code>-- broken link --</code>
+                            <p>-- broken link --</p>
                         )}
                     </TableCell>
                 </TableRow>

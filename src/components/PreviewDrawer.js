@@ -17,6 +17,6 @@ export default connect(mapStateToProps)(({ classes, preview }) => (
         variant="permanent"
         anchor="right">
         <div className={classes.toolbar} />
-        {preview.url ? <Document /> : null}
+        {preview.url && <Document />}
     </Drawer>
 ));

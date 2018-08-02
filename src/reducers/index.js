@@ -1,10 +1,11 @@
 import { omit } from 'lodash';
+import { SORT_RELEVANCE } from '../constants';
 
 const INITIAL_SEARCH_STATE = {
     isFetching: false,
     query: {
         size: 10,
-        order: 'Relevance',
+        order: SORT_RELEVANCE,
         page: 1,
         language: null,
         searchAfter: '',
@@ -13,9 +14,32 @@ const INITIAL_SEARCH_STATE = {
     searchAfterByPage: {},
     results: {
         hits: { hits: null },
+        total: 0,
     },
     error: null,
 };
+
+function getSearchAfterByPage(state, results) {
+    const {
+        query: { page, order },
+        searchAfterByPage,
+    } = state;
+
+    let result = { ...searchAfterByPage };
+
+    if (results.hits.total > 0) {
+        const lastHit = results.hits.hits.slice(-1)[0];
+
+        result[page + 1] = ['' + lastHit._score, lastHit._id];
+        if (order !== SORT_RELEVANCE) {
+            const date = new Date(lastHit._source.date);
+
+            result[page + 1] = ['' + date.getTime(), ...result[page + 1]];
+        }
+    }
+
+    return result;
+}
 
 function search(state = INITIAL_SEARCH_STATE, action) {
     switch (action.type) {
@@ -37,6 +61,10 @@ function search(state = INITIAL_SEARCH_STATE, action) {
                 isFetching: false,
                 error: null,
                 results: action.results,
+                searchAfterByPage: {
+                    ...state.searchAfterByPage,
+                    ...getSearchAfterByPage(state, action.results),
+                },
             };
         case 'FETCH_SEARCH_FAILURE':
             return { ...state, isFetching: false, error: action.error };
@@ -85,12 +113,16 @@ const INITIAL_PREVIEW_STATE = {
 
 function preview(state = INITIAL_PREVIEW_STATE, action) {
     switch (action.type) {
-        case 'SET_PREVIEW':
-            return { ...state, url: action.url, isFetching: true };
         case 'CLEAR_PREVIEW':
             return { ...state, url: null, doc: null };
         case 'FETCH_PREVIEW':
-            return { ...state, isFetching: true, doc: null, error: null };
+            return {
+                ...state,
+                isFetching: true,
+                url: action.url,
+                doc: null,
+                error: null,
+            };
         case 'FETCH_PREVIEW_SUCCESS':
             return { ...state, isFetching: false, doc: action.doc };
         case 'FETCH_PREVIEW_FAILURE':

@@ -71,7 +71,7 @@ export default class SearchResults extends Component {
 
                     {resultList}
 
-                    {resultList.length && <Pagination />}
+                    {!!resultList.length && <Pagination />}
                 </ReactPlaceholder>
             </div>
         );

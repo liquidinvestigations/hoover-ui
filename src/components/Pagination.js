@@ -13,20 +13,33 @@ export class Pagination extends Component {
     static propTypes = {
         results: PropTypes.object.isRequired,
         query: PropTypes.object.isRequired,
+        searchAfterByPage: PropTypes.object.isRequired,
     };
 
     handleNext = e => {
         e.preventDefault();
 
-        const { dispatch, query } = this.props;
-        dispatch(updateSearchQuery({ page: query.page + 1 }));
+        const { dispatch, query, searchAfterByPage } = this.props;
+
+        dispatch(
+            updateSearchQuery({
+                page: query.page + 1,
+                searchAfter: searchAfterByPage[query.page + 1],
+            })
+        );
     };
 
     handlePrev = e => {
         e.preventDefault();
 
-        const { dispatch, query } = this.props;
-        dispatch(updateSearchQuery({ page: query.page - 1 }));
+        const { dispatch, query, searchAfterByPage } = this.props;
+
+        dispatch(
+            updateSearchQuery({
+                page: query.page - 1,
+                searchAfter: searchAfterByPage[query.page - 1],
+            })
+        );
     };
 
     render() {
@@ -45,13 +58,14 @@ export class Pagination extends Component {
         const hasPrev = page > 1;
 
         return (
-            <div>
+            <div style={{ marginTop: '1rem' }}>
                 <Grid container alignItems="center" justify="space-between">
                     <Grid item>
                         <Typography variant="caption">
-                            Showing {from} - {to} of {total} hits – page {page} / {
-                                pageCount
-                            }
+                            Showing {from} - {to} of {total} hits page{' '}
+                        </Typography>
+                        <Typography variant="caption">
+                            Page {total === 0 ? 0 : page} / {pageCount}
                         </Typography>
                     </Grid>
 
@@ -77,6 +91,10 @@ export class Pagination extends Component {
     }
 }
 
-const mapStateToProps = ({ search: { results, query } }) => ({ results, query });
+const mapStateToProps = ({ search: { results, query, searchAfterByPage } }) => ({
+    results,
+    query,
+    searchAfterByPage,
+});
 
 export default connect(mapStateToProps)(Pagination);

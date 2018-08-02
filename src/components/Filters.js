@@ -34,7 +34,7 @@ class Filters extends Component {
         return (
             <div>
                 <div>
-                    <Filter title="File type" defaultOpen={query.fileType.length}>
+                    <Filter title="File type" defaultOpen={!!query.fileType.length}>
                         <AggregationFilter
                             title=""
                             selected={query.fileType}
@@ -47,7 +47,7 @@ class Filters extends Component {
                 <div>
                     <Filter
                         title="Date range"
-                        defaultOpen={query.dateFrom || query.dateTo}>
+                        defaultOpen={!!(query.dateFrom || query.dateTo)}>
                         <DateRangeFilter
                             onChange={this.filter('dateRange')}
                             defaultFrom={query.dateFrom}
@@ -60,7 +60,10 @@ class Filters extends Component {
                     <Filter
                         title="Years"
                         defaultOpen={
-                            query.dateYears.length || query.dateCreatedYears.length
+                            !!(
+                                query.dateYears.length ||
+                                query.dateCreatedYears.length
+                            )
                         }>
                         <AggregationFilter
                             aggregation={aggregations.count_by_date_year}

@@ -45,7 +45,7 @@ const styles = theme => ({
 
 const Layout = ({ children, classes }) => (
     <div>
-        <ProgressIndicator />
+        <ProgressIndicator type="linear" />
         <div className={classes.root}>
             <Header />
 

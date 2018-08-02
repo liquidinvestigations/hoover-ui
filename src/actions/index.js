@@ -142,17 +142,8 @@ export const updateSearchQuery = (query, options = {}) => {
     };
 };
 
-export const setPreview = url => ({
-    type: 'SET_PREVIEW',
-    url,
-});
-
-export const fetchPreview = () => {
+export const fetchPreview = url => {
     return async (dispatch, getState) => {
-        const {
-            preview: { url },
-        } = getState();
-
         dispatch({
             type: 'FETCH_PREVIEW',
             url,
