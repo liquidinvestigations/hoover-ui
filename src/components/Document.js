@@ -52,19 +52,6 @@ const styles = theme => ({
 class Document extends Component {
     state = { doc: {}, loaded: false };
 
-    componentDidMount() {
-        const docUrl = this.props.docUrl;
-        const split = docUrl.split('/');
-        const docId = split.pop();
-
-        this.baseUrl = split.join('/');
-
-        if (window.HOOVER_HYDRATE_DOC) {
-            console.log('using HOOVER_HYDRATE_DOC');
-            this.setState({ doc: window.HOOVER_HYDRATE_DOC, loaded: true });
-        }
-    }
-
     render() {
         const { docUrl, fullPage, classes, isFetching } = this.props;
         let doc = this.props.doc;
@@ -164,7 +151,7 @@ class Document extends Component {
                     <DocumentFilesSection
                         title="Files"
                         data={files}
-                        baseUrl={this.baseUrl}
+                        baseUrl={collectionBaseUrl}
                         fullPage={this.props.fullPage}
                         classes={classes}
                     />
@@ -422,4 +409,5 @@ const mapStateToProps = ({ preview: { isFetching, doc, url } }) => ({
     doc,
     docUrl: url,
 });
-export default withStyles(styles)(connect(mapStateToProps)(Document));
+
+export default connect(mapStateToProps)(withStyles(styles)(Document));

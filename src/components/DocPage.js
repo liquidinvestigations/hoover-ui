@@ -1,33 +1,18 @@
-import url from 'url';
 import { Component } from 'react';
 import Document from './Document';
 import Locations from './Locations';
 
-export default class DocPage extends Component {
-    state = { docUrl: null, locations: null };
+import { connect } from 'react-redux';
+import { fetchServerDoc } from '../actions';
 
+class DocPage extends Component {
     componentDidMount() {
-        const docUrl = window.location.href.split('?')[0];
-        const { query } = url.parse(window.location.href, true);
-
-        this.setState({ docUrl, locations: query.locations });
+        this.props.dispatch(fetchServerDoc());
     }
 
     render() {
-        const { docUrl, locations } = this.state;
-
-        if (locations) {
-            return <Locations docUrl={docUrl} />;
-        } else if (docUrl) {
-            return (
-                <Document
-                    docUrl={docUrl}
-                    collectionBaseUrl={url.resolve(docUrl, './')}
-                    fullPage={true}
-                />
-            );
-        } else {
-            return null;
-        }
+        return this.props.url ? <Document fullPage /> : null;
     }
 }
+
+export default connect(({ preview: { doc, url } }) => ({ doc, url }))(DocPage);

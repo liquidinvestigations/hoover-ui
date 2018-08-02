@@ -109,6 +109,7 @@ const INITIAL_PREVIEW_STATE = {
     isFetching: false,
     url: null,
     doc: null,
+    locations: null,
 };
 
 function preview(state = INITIAL_PREVIEW_STATE, action) {
@@ -122,9 +123,17 @@ function preview(state = INITIAL_PREVIEW_STATE, action) {
                 url: action.url,
                 doc: null,
                 error: null,
+                locations: action.locations,
             };
         case 'FETCH_PREVIEW_SUCCESS':
-            return { ...state, isFetching: false, doc: action.doc };
+        case 'FETCH_SERVER_DOC':
+            return {
+                ...state,
+                isFetching: false,
+                doc: action.doc,
+                url: action.url,
+                locations: action.locations,
+            };
         case 'FETCH_PREVIEW_FAILURE':
             return { ...state, isFetching: false, error: action.error };
         default:

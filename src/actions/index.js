@@ -1,3 +1,4 @@
+import url from 'url';
 import api from '../api';
 import qs from 'qs';
 import { pickBy, castArray } from 'lodash';
@@ -142,16 +143,35 @@ export const updateSearchQuery = (query, options = {}) => {
     };
 };
 
-export const fetchPreview = url => {
+export const fetchServerDoc = () => {
+    const doc = window.HOOVER_HYDRATE_DOC;
+    const docUrl = window.location.href.split('?')[0];
+    const { query } = url.parse(window.location.href, true);
+
+    if (!doc) {
+        return fetchPreview(docUrl, { locations: query.locations });
+    }
+
+    return {
+        type: 'FETCH_SERVER_DOC',
+        doc,
+        url: docUrl,
+        locations: query.locations,
+    };
+};
+
+export const fetchPreview = (url, extraState = {}) => {
     return async (dispatch, getState) => {
         dispatch({
             type: 'FETCH_PREVIEW',
             url,
+            ...extraState,
         });
 
         try {
             dispatch({
                 type: 'FETCH_PREVIEW_SUCCESS',
+                url,
                 doc: await api.doc(url),
             });
         } catch (error) {
