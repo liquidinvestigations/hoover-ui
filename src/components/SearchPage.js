@@ -87,7 +87,7 @@ class SearchPage extends Component {
 
     handleSubmit = event => {
         event.preventDefault();
-        this.props.dispatch(writeSearchQueryToUrl());
+        this.props.dispatch(updateSearchQuery({}, { resetPagination: true }));
     };
 
     render() {

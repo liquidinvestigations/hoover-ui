@@ -4,6 +4,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
+import Collapse from '@material-ui/core/Collapse';
 import Divider from '@material-ui/core/Divider';
 import IconClear from '@material-ui/icons/Clear';
 import { withStyles } from '@material-ui/core/styles';
@@ -41,18 +42,6 @@ const styles = theme => ({
 
     expandOpen: {
         transform: 'rotate(180deg)',
-    },
-
-    body: {
-        maxHeight: 0,
-        transition: theme.transitions.create('max-height', {
-            duration: theme.transitions.duration.shortest,
-        }),
-        overflow: 'hidden',
-    },
-
-    bodyOpen: {
-        maxHeight: '1000rem',
     },
 });
 
@@ -100,11 +89,10 @@ class Filter extends Component {
                     </Grid>
                 </div>
 
-                {open && <Divider />}
-
-                <div className={cn(classes.body, { [classes.bodyOpen]: open })}>
+                <Collapse in={open}>
+                    <Divider />
                     {children}
-                </div>
+                </Collapse>
             </div>
         );
     }

@@ -152,7 +152,7 @@ class Document extends Component {
                                 key={index}
                                 size="small"
                                 color="secondary"
-                                variant="outlined"
+                                variant="flat"
                                 component="a"
                                 {...props}>
                                 {icon}  {text}
