@@ -12,12 +12,12 @@ const mapStateToProps = ({ preview }) => ({ preview });
 export default connect(mapStateToProps)(({ classes, preview }) => (
     <Drawer
         classes={{
-            docked: classes.previewDrawer,
-            paper: classes.drawerPaper,
+            paper: classes.rightDrawerPaper,
+            docked: classes.rightDrawer,
         }}
         variant="permanent"
         anchor="right">
         <div className={classes.toolbar} />
-        <div className={classes.previewContent}>{preview.url && <Document />}</div>
+        <div className={classes.rightContent}>{preview.url && <Document />}</div>
     </Drawer>
 ));

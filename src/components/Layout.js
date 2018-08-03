@@ -7,46 +7,65 @@ import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
     root: {
-        flexGrow: 1,
+        // flexGrow: 1,
         zIndex: 1,
-        // overflow: 'hidden',
-        position: 'relative',
-        display: 'flex',
-        marginBottom: '1rem',
+        // // overflow: 'hidden',
+        // position: 'relative',
+        // display: 'flex',
+        // marginBottom: '1rem',
     },
-    drawerPaper: {
+    leftDrawerPaper: {
         position: 'relative',
-        minHeight: '100vh',
-        height: '100%',
-        // top: 0,
-        // overflow: 'auto',
+        zIndex: 0,
+        // minHeight: '100vh',
+        // height: '100%',
     },
-    filterDrawer: {
+    rightDrawerPaper: {
+        position: 'relative',
+        zIndex: 0,
+    },
+    leftDrawer: {
         minWidth: 280,
         maxWidth: '20%',
+        overflowX: 'hidden',
+        overflowY: 'auto',
+        height: 'auto',
     },
-    previewDrawer: {
-        position: 'relative',
+    rightDrawer: {
         minWidth: 280,
         width: '40%',
-        height: '100%',
-        minHeight: '100vh',
+        overflowX: 'hidden',
+        overflowY: 'auto',
+        height: 'auto',
     },
-    previewContent: {
-        position: 'relative',
+    rightContent: {
+        // position: 'relative',
     },
     sideBarFormControl: {
         margin: theme.spacing.unit * 3,
         display: 'block',
     },
-    content: {
-        flexGrow: 1,
+    middle: {
+        flex: 1,
+        //     flexGrow: 1,
         backgroundColor: theme.palette.background.default,
         paddingLeft: theme.spacing.unit * 3,
         paddingRight: theme.spacing.unit * 3,
         minWidth: 0, // So the Typography noWrap works
+        overflowX: 'hidden',
+        overflowY: 'auto',
+        height: 'auto',
     },
     toolbar: theme.mixins.toolbar,
+
+    container: {
+        display: 'flex',
+        overflow: 'hidden',
+        height: '100vh',
+        position: 'relative',
+        backfaceVisibility: 'hidden',
+        willChange: 'overflow',
+    },
 });
 
 const Layout = ({ children, classes }) => (
@@ -55,14 +74,16 @@ const Layout = ({ children, classes }) => (
         <div className={classes.root}>
             <Header />
 
-            <SideBar classes={classes} />
+            <div className={classes.container}>
+                <SideBar classes={classes} />
 
-            <main className={classes.content}>
-                <div className={classes.toolbar} />
-                {children}
-            </main>
+                <main className={classes.middle}>
+                    <div className={classes.toolbar} />
+                    {children}
+                </main>
 
-            <PreviewDrawer classes={classes} />
+                <PreviewDrawer classes={classes} />
+            </div>
         </div>
     </div>
 );

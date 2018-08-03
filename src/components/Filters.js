@@ -50,8 +50,8 @@ class Filters extends Component {
                         defaultOpen={!!(query.dateRange.from || query.dateRange.to)}>
                         <DateRangeFilter
                             onChange={this.filter('dateRange')}
-                            from={query.dateRange.from}
-                            to={query.dateRange.to}
+                            defaultFrom={query.dateRange.from}
+                            defaultTo={query.dateRange.to}
                         />
                     </Filter>
                 </div>

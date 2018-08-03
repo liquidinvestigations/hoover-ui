@@ -1,5 +1,5 @@
 import { omit } from 'lodash';
-import { SORT_RELEVANCE } from '../constants';
+import { SORT_RELEVANCE } from './constants';
 
 const INITIAL_SEARCH_STATE = {
     isFetching: false,

@@ -1,7 +1,7 @@
 import fetch from 'isomorphic-fetch';
-import { SORT_RELEVANCE, SORT_NEWEST, SORT_OLDEST } from './constants';
+import { SORT_RELEVANCE, SORT_NEWEST, SORT_OLDEST, DATE_FORMAT } from './constants';
 
-function buildQuery(q, { dateFrom, dateTo }) {
+function buildQuery(q, { dateRange }) {
     const qs = {
         query_string: {
             query: q,
@@ -9,13 +9,16 @@ function buildQuery(q, { dateFrom, dateTo }) {
         },
     };
 
-    if (dateFrom && dateTo) {
+    if (dateRange && dateRange.from && dateRange.to) {
         return {
             bool: {
                 must: qs,
                 filter: {
                     range: {
-                        date: { gte: dateFrom, lte: dateTo },
+                        date: {
+                            gte: dateRange.from.toFormat(DATE_FORMAT),
+                            lte: dateRange.to.toFormat(DATE_FORMAT),
+                        },
                     },
                 },
             },
@@ -188,8 +191,7 @@ class Api {
         collections = [],
         dateYears = null,
         dateCreatedYears = null,
-        dateFrom = null,
-        dateTo = null,
+        dateRange,
         searchAfter = '',
         fileType = null,
         language = null,
@@ -201,6 +203,7 @@ class Api {
             fileType,
             language,
             emailDomains,
+            dateRange,
         });
 
         return await fetchJson('/search', {
@@ -208,7 +211,7 @@ class Api {
             body: JSON.stringify({
                 from: (page - 1) * size,
                 size: size,
-                query: buildQuery(q, { dateFrom, dateTo }),
+                query: buildQuery(q, { dateRange }),
                 search_after: searchAfter,
                 sort: buildSortQuery(order),
                 post_filter: postFilter,

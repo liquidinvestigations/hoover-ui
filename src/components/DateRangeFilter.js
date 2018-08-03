@@ -51,9 +51,15 @@ class DateRangeFilter extends Component {
     handleApply = () => this.props.onChange({ ...this.state });
     handleReset = () => this.props.onChange({ from: null, to: null });
 
+    constructor(props) {
+        super(props);
+
+        this.state = { from: this.props.defaultFrom, to: this.props.defaultTo };
+    }
+
     render() {
         const { defaultFrom, defaultTo, classes } = this.props;
-        const { from, to } = this.props;
+        const { from, to } = this.state;
 
         const icons = {
             leftArrowIcon: <IconArrowLeft />,
@@ -61,7 +67,12 @@ class DateRangeFilter extends Component {
             keyboardIcon: <IconEvent />,
         };
 
-        const unedited = defaultFrom === from && defaultTo === to;
+        const unedited =
+            defaultFrom &&
+            defaultTo &&
+            (defaultFrom.equals(from) && defaultTo.equals(to));
+
+        console.log({ from, to });
 
         return (
             <List>
@@ -69,10 +80,9 @@ class DateRangeFilter extends Component {
                     <DatePicker
                         value={from}
                         format={DATE_FORMAT}
-                        initialFocusedDate={defaultFrom}
                         onChange={this.handleFromChange}
                         maxDate={to}
-                        openToYearSelection={false}
+                        openToYearSelection
                         autoOk
                         keyboard
                         fullWidth
@@ -85,9 +95,8 @@ class DateRangeFilter extends Component {
                         value={to}
                         format={DATE_FORMAT}
                         minDate={from}
-                        initialFocusedDate={defaultTo}
                         onChange={this.handleToChange}
-                        openToYearSelection={false}
+                        openToYearSelection
                         autoOk
                         keyboard
                         fullWidth
@@ -98,12 +107,18 @@ class DateRangeFilter extends Component {
                 <ListItem>
                     <Grid container alignItems="center" justify="space-between">
                         <Grid item>
-                            <Button size="small" onClick={this.handleReset}>
+                            <Button
+                                size="small"
+                                onClick={this.handleReset}
+                                disabled={!from && !to}>
                                 Reset
                             </Button>
                         </Grid>
                         <Grid item>
-                            <Button size="small" onClick={this.handleApply}>
+                            <Button
+                                size="small"
+                                onClick={this.handleApply}
+                                disabled={unedited}>
                                 Apply
                             </Button>
                         </Grid>

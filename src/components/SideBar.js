@@ -14,8 +14,8 @@ export default ({ classes }) => (
     <Drawer
         variant="permanent"
         classes={{
-            paper: classes.drawerPaper,
-            docked: classes.filterDrawer,
+            paper: classes.leftDrawerPaper,
+            docked: classes.leftDrawer,
         }}>
         <div className={classes.toolbar} />
 

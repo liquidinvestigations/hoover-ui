@@ -47,12 +47,14 @@ const styles = theme => ({
         color: theme.palette.text.secondary,
         padding: '1rem',
     },
+
     sectionContent: {
         margin: '1rem',
         overflowWrap: 'break-word',
+        wordWrap: 'break-word',
         position: 'relative',
         // padding: '0 2rem 0 0',
-        fontSize: 13,
+        fontSize: 12,
     },
 
     preWrap: { whiteSpace: 'pre-wrap' },
@@ -146,7 +148,7 @@ class Document extends Component {
                     <Grid container justify="space-between" spacing={0}>
                         {headerLinks.map(({ text, icon, ...props }, index) => (
                             <Button
-                                key={index}
+                                key={props.href}
                                 size="small"
                                 color="secondary"
                                 variant="raised"
@@ -297,7 +299,10 @@ class DocumentMetaSection extends Component {
 
 class DocumentEmailSection extends Component {
     render() {
-        let doc = this.props.doc || {};
+        let { classes, doc } = this.props;
+
+        doc = doc || {};
+
         let data = doc.content;
         let files = doc.children || [];
 
@@ -313,19 +318,35 @@ class DocumentEmailSection extends Component {
                         <TableBody>
                             <TableRow>
                                 <TableCell>From</TableCell>
-                                <TableCell>{data.from}</TableCell>
+                                <TableCell>
+                                    <pre className={classes.preWrap}>
+                                        {data.from}
+                                    </pre>
+                                </TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell>To</TableCell>
-                                <TableCell>{data.to.join(', ')}</TableCell>
+                                <TableCell>
+                                    <pre className={classes.preWrap}>
+                                        {data.to.join(', ')}
+                                    </pre>
+                                </TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell>Date</TableCell>
-                                <TableCell>{data.date}</TableCell>
+                                <TableCell>
+                                    <pre className={classes.preWrap}>
+                                        {data.date}
+                                    </pre>
+                                </TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell>Subject</TableCell>
-                                <TableCell>{data.subject || '---'}</TableCell>
+                                <TableCell>
+                                    <pre className={classes.preWrap}>
+                                        {data.subject || '---'}
+                                    </pre>
+                                </TableCell>
                             </TableRow>
                         </TableBody>
                     </Table>
@@ -341,7 +362,7 @@ class DocumentFilesSection extends Component {
 
         const files = data.map(({ id, filename, content_type, size }, index) => {
             return (
-                <TableRow key={index}>
+                <TableRow key={id || filename}>
                     <TableCell>
                         {id ? (
                             <a

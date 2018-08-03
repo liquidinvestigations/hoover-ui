@@ -1,9 +1,12 @@
 import url from 'url';
-import api from '../api';
 import qs from 'qs';
+import { DateTime } from 'luxon';
 import { pickBy, castArray } from 'lodash';
-import { SORT_OPTIONS } from '../constants';
+
 import Router from 'next/router';
+
+import api from './api';
+import { SORT_OPTIONS, DATE_FORMAT } from './constants';
 
 export function fetchCollections() {
     return async (dispatch, getState) => {
@@ -41,6 +44,7 @@ export function parseSearchUrlQuery() {
     return {
         type: 'PARSE_SEARCH_URL_QUERY',
         collections: params.collections ? params.collections.split('+') : [],
+        raw: params,
         query: {
             q: params.q ? String(params.q).replace(/\+/g, ' ') : '',
             size: params.size ? +params.size : 10,
@@ -54,7 +58,12 @@ export function parseSearchUrlQuery() {
             fileType: params.fileType ? castArray(params.fileType) : [],
             language: params.language ? castArray(params.language) : [],
             emailDomains: params.emailDomains ? castArray(params.emailDomains) : [],
-            dateRange: params.dateRange || {},
+            dateRange: params.dateRange
+                ? {
+                      from: DateTime.fromISO(params.dateRange.from),
+                      to: DateTime.fromISO(params.dateRange.to),
+                  }
+                : {},
         },
     };
 }
@@ -72,8 +81,8 @@ export function writeSearchQueryToUrl() {
 
         if (query.dateRange.from && query.dateRange.to) {
             dateRange = {
-                from: query.dateRange.from.format(DATE_FORMAT),
-                to: query.dateRange.to.format(DATE_FORMAT),
+                from: query.dateRange.from.toFormat(DATE_FORMAT),
+                to: query.dateRange.to.toFormat(DATE_FORMAT),
             };
         } else {
             dateRange = {};
@@ -90,19 +99,22 @@ export function writeSearchQueryToUrl() {
             d => (Array.isArray(d) ? d.length : Boolean(d))
         );
 
-        Router.push({ pathname: '/', query: serializedQuery });
+        Router.push({ pathname: '/', search: qs.stringify(serializedQuery) });
     };
 }
 
-export function routeChanged(url) {
+export function routeChanged(newUrl) {
     return dispatch => {
+        const parsed = url.parse(newUrl);
+
         dispatch({
             type: 'ROUTE_CHANGED',
-            url,
+            url: newUrl,
+            parsed,
         });
 
-        // hacky?
-        if (url.startsWith('/?')) {
+        // hacky
+        if (parsed.pathname === '/') {
             dispatch(search());
         }
     };
