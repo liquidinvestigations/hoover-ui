@@ -64,6 +64,12 @@ function buildPostFilter(filters) {
                         lang: value,
                     },
                 };
+            } else if (key === 'emailDomains') {
+                return {
+                    terms: {
+                        'email-domains': value,
+                    },
+                };
             } else {
                 throw new Error(`unknown filter: ${JSON.stringify({ key, value })}`);
             }
@@ -187,12 +193,14 @@ class Api {
         searchAfter = '',
         fileType = null,
         language = null,
+        emailDomains = null,
     } = {}) {
         const postFilter = buildPostFilter({
             dateYears,
             dateCreatedYears,
             fileType,
             language,
+            emailDomains,
         });
 
         return await fetchJson('/search', {

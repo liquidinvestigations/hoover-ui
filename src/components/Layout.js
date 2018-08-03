@@ -12,26 +12,32 @@ const styles = theme => ({
         // overflow: 'hidden',
         position: 'relative',
         display: 'flex',
+        marginBottom: '1rem',
     },
     drawerPaper: {
         position: 'relative',
-        height: '100%',
         minHeight: '100vh',
+        height: '100%',
+        // top: 0,
+        // overflow: 'auto',
     },
     filterDrawer: {
         minWidth: 280,
         maxWidth: '20%',
     },
     previewDrawer: {
+        position: 'relative',
         minWidth: 280,
-        width: '35%',
+        width: '40%',
+        height: '100%',
+        minHeight: '100vh',
+    },
+    previewContent: {
+        position: 'relative',
     },
     sideBarFormControl: {
         margin: theme.spacing.unit * 3,
         display: 'block',
-    },
-    sticky: {
-        position: 'sticky',
     },
     content: {
         flexGrow: 1,

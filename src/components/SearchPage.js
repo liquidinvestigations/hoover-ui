@@ -60,9 +60,11 @@ class SearchPage extends Component {
 
     state = { initialSearch: true };
 
-    componentDidMount() {
-        this.props.dispatch(parseSearchUrlQuery());
-        this.props.dispatch(fetchCollections());
+    async componentDidMount() {
+        const { dispatch } = this.props;
+
+        await dispatch(fetchCollections());
+        dispatch(parseSearchUrlQuery());
     }
 
     componentDidUpdate(prevProps, prevState) {

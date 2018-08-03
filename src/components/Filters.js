@@ -47,11 +47,11 @@ class Filters extends Component {
                 <div>
                     <Filter
                         title="Date range"
-                        defaultOpen={!!(query.dateFrom || query.dateTo)}>
+                        defaultOpen={!!(query.dateRange.from || query.dateRange.to)}>
                         <DateRangeFilter
                             onChange={this.filter('dateRange')}
-                            defaultFrom={query.dateFrom}
-                            defaultTo={query.dateTo}
+                            from={query.dateRange.from}
+                            to={query.dateRange.to}
                         />
                     </Filter>
                 </div>

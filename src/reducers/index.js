@@ -10,6 +10,7 @@ const INITIAL_SEARCH_STATE = {
         language: null,
         searchAfter: '',
         email: null,
+        dateRange: {},
     },
     searchAfterByPage: {},
     results: {
@@ -79,6 +80,7 @@ const INITIAL_COLLECTIONS_STATE = {
     selected: [],
     error: null,
     counts: {},
+    wasFetched: false,
 };
 
 function collections(state = INITIAL_COLLECTIONS_STATE, action) {
@@ -90,9 +92,7 @@ function collections(state = INITIAL_COLLECTIONS_STATE, action) {
                 ...state,
                 isFetching: false,
                 items: action.items,
-                selected: state.selected.length
-                    ? state.selected
-                    : action.items.map(c => c.name),
+                wasFetched: true,
             };
         case 'FETCH_COLLECTIONS_FAILURE':
             return { ...state, isFetching: false, items: [], error: action.error };
@@ -100,6 +100,13 @@ function collections(state = INITIAL_COLLECTIONS_STATE, action) {
             return { ...state, counts: action.results.count_by_index };
         case 'SET_COLLECTIONS_SELECTION':
             return { ...state, selected: action.collections };
+        case 'PARSE_SEARCH_URL_QUERY':
+            return {
+                ...state,
+                selected: action.collections.length
+                    ? action.collections
+                    : state.items.map(c => c.name),
+            };
         default:
             return state;
     }

@@ -62,10 +62,8 @@ export class Pagination extends Component {
                 <Grid container alignItems="center" justify="space-between">
                     <Grid item>
                         <Typography variant="caption">
-                            Showing {from} - {to} of {total} hits page{' '}
-                        </Typography>
-                        <Typography variant="caption">
-                            Page {total === 0 ? 0 : page} / {pageCount}
+                            Showing {from} - {to} of {total} hits. Page{' '}
+                            {total === 0 ? 0 : page} of {pageCount} pages.
                         </Typography>
                     </Grid>
 

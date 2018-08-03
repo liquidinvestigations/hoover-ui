@@ -5,3 +5,4 @@ export const SORT_OPTIONS = [SORT_RELEVANCE, SORT_NEWEST, SORT_OLDEST];
 export const SEARCH_GUIDE =
     'https://github.com/hoover/search/wiki/Guide-to-search-terms';
 export const SIZE_OPTIONS = [10, 50, 200, 1000];
+export const DATE_FORMAT = 'yyyy-MM-dd';

@@ -45,8 +45,6 @@ export function parseSearchUrlQuery() {
             q: params.q ? String(params.q).replace(/\+/g, ' ') : '',
             size: params.size ? +params.size : 10,
             order: params.order ? params.order : SORT_OPTIONS[0],
-            dateFrom: params.dateFrom,
-            dateTo: params.dateTo,
             dateYears: params.dateYears ? castArray(params.dateYears) : [],
             dateCreatedYears: params.dateCreatedYears
                 ? castArray(params.dateCreatedYears)
@@ -56,7 +54,43 @@ export function parseSearchUrlQuery() {
             fileType: params.fileType ? castArray(params.fileType) : [],
             language: params.language ? castArray(params.language) : [],
             emailDomains: params.emailDomains ? castArray(params.emailDomains) : [],
+            dateRange: params.dateRange || {},
         },
+    };
+}
+
+export function writeSearchQueryToUrl() {
+    return (dispatch, getState) => {
+        dispatch({ type: 'WRITE_SEARCH_QUERY_TO_URL' });
+
+        const {
+            search: { query },
+            collections: { selected: selectedCollections },
+        } = getState();
+
+        let dateRange;
+
+        if (query.dateRange.from && query.dateRange.to) {
+            dateRange = {
+                from: query.dateRange.from.format(DATE_FORMAT),
+                to: query.dateRange.to.format(DATE_FORMAT),
+            };
+        } else {
+            dateRange = {};
+        }
+
+        let serializedQuery = {
+            ...query,
+            dateRange,
+            collections: selectedCollections.join('+'),
+        };
+
+        serializedQuery = pickBy(
+            serializedQuery,
+            d => (Array.isArray(d) ? d.length : Boolean(d))
+        );
+
+        Router.push({ pathname: '/', query: serializedQuery });
     };
 }
 
@@ -96,29 +130,6 @@ export function search() {
         } catch (error) {
             dispatch({ type: 'FETCH_SEARCH_FAILURE', error });
         }
-    };
-}
-
-export function writeSearchQueryToUrl() {
-    return (dispatch, getState) => {
-        dispatch({ type: 'WRITE_SEARCH_QUERY_TO_URL' });
-
-        const {
-            search: { query },
-            collections: { selected: selectedCollections },
-        } = getState();
-
-        let serializedQuery = {
-            ...query,
-            collections: selectedCollections.join('+'),
-        };
-
-        serializedQuery = pickBy(
-            serializedQuery,
-            d => (Array.isArray(d) ? d.length : Boolean(d))
-        );
-
-        Router.push({ pathname: '/', query: serializedQuery });
     };
 }
 

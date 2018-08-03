@@ -1,8 +1,8 @@
 import { Component } from 'react';
-import Loading from './Loading';
-import api from '../api';
 import url from 'url';
+
 import cn from 'classnames';
+import langs from 'langs';
 
 import { connect } from 'react-redux';
 
@@ -10,18 +10,22 @@ import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardContent from '@material-ui/core/CardContent';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Typography from '@material-ui/core/Typography';
 
 import IconArrowUpward from '@material-ui/icons/ArrowUpward';
 import IconLaunch from '@material-ui/icons/Launch';
 import IconCloudDownload from '@material-ui/icons/CloudDownload';
+
+import Loading from './Loading';
+import api from '../api';
 
 const styles = theme => ({
     header: {
@@ -36,18 +40,33 @@ const styles = theme => ({
     root: {
         // backgroundColor: theme.palette.background.default,
     },
-    section: {
-        margin: '1rem',
+    section: {},
+
+    sectionHeader: {
+        backgroundColor: theme.palette.grey[200],
+        color: theme.palette.text.secondary,
+        padding: '1rem',
     },
-    content: {
+    sectionContent: {
+        margin: '1rem',
         overflowWrap: 'break-word',
         position: 'relative',
-        padding: '1rem 2rem 1rem 0',
+        // padding: '0 2rem 0 0',
         fontSize: 13,
     },
 
     preWrap: { whiteSpace: 'pre-wrap' },
 });
+
+const SectionHeader = withStyles(styles)(({ classes, title }) => (
+    <div className={classes.sectionHeader}>
+        <Typography variant="title">{title}</Typography>
+    </div>
+));
+
+const SectionContent = withStyles(styles)(({ classes, children, ...props }) => (
+    <div className={classes.sectionContent}>{children}</div>
+));
 
 class Document extends Component {
     state = { doc: {}, loaded: false };
@@ -124,13 +143,13 @@ class Document extends Component {
         return (
             <div className={cn('document', classes.root)}>
                 <div className={classes.header}>
-                    <Grid container justify="space-between">
+                    <Grid container justify="space-between" spacing={0}>
                         {headerLinks.map(({ text, icon, ...props }, index) => (
                             <Button
                                 key={index}
                                 size="small"
                                 color="secondary"
-                                variant="flat"
+                                variant="raised"
                                 component="a"
                                 {...props}>
                                 {icon}  {text}
@@ -139,59 +158,44 @@ class Document extends Component {
                     </Grid>
                 </div>
 
-                <div className={classes.section}>
-                    <DocumentMetaSection doc={doc} classes={classes} />
-                </div>
+                <DocumentMetaSection doc={doc} classes={classes} />
+                <DocumentEmailSection doc={doc} classes={classes} />
 
-                <div className={classes.section}>
-                    <DocumentEmailSection doc={doc} classes={classes} />
-                </div>
+                <DocumentFilesSection
+                    title="Files"
+                    data={files}
+                    baseUrl={collectionBaseUrl}
+                    fullPage={this.props.fullPage}
+                    classes={classes}
+                />
 
-                <div className={classes.section}>
-                    <DocumentFilesSection
-                        title="Files"
-                        data={files}
-                        baseUrl={collectionBaseUrl}
-                        fullPage={this.props.fullPage}
-                        classes={classes}
-                    />
-                </div>
+                <DocumentHTMLSection
+                    html={doc.safe_html}
+                    title="HTML"
+                    classes={classes}
+                />
 
-                <div className={classes.section}>
-                    <DocumentHTMLSection
-                        html={doc.safe_html}
-                        title="HTML"
-                        classes={classes}
-                    />
-                </div>
+                <DocumentTextSection
+                    title="Text"
+                    text={doc.content.text}
+                    fullPage={this.props.fullPage}
+                    classes={classes}
+                />
 
-                <div className={classes.section}>
-                    <DocumentTextSection
-                        title="Text"
-                        text={doc.content.text}
-                        fullPage={this.props.fullPage}
-                        classes={classes}
-                    />
-                </div>
-
-                <div className={classes.section}>
-                    <DocumentTextSection
-                        title="Headers &amp; Parts"
-                        text={doc.content.tree}
-                        fullPage={this.props.fullPage}
-                        classes={classes}
-                    />
-                </div>
+                <DocumentTextSection
+                    title="Headers &amp; Parts"
+                    text={doc.content.tree}
+                    fullPage={this.props.fullPage}
+                    classes={classes}
+                />
 
                 {ocrData.map(({ tag, text }) => (
-                    <div className={classes.section}>
-                        <DocumentTextSection
-                            title={tag}
-                            text={text}
-                            fullPage={this.props.fullPage}
-                            classes={classes}
-                        />
-                    </div>
+                    <DocumentTextSection
+                        title={tag}
+                        text={text}
+                        fullPage={this.props.fullPage}
+                        classes={classes}
+                    />
                 ))}
             </div>
         );
@@ -200,79 +204,93 @@ class Document extends Component {
 
 class DocumentMetaSection extends Component {
     render() {
-        const { doc } = this.props;
+        const { doc, classes } = this.props;
         const data = doc.content;
 
         return (
-            <Card>
-                <CardHeader title="Meta" />
+            <section className={classes.section}>
+                <SectionHeader title="Meta" />
 
-                <CardContent>
-                    <Table>
-                        <TableBody>
-                            <TableRow>
-                                <TableCell>Filename</TableCell>
-                                <TableCell>{data.filename}</TableCell>
-                            </TableRow>
+                <SectionContent>
+                    <List>
+                        <ListItem disableGutters>
+                            <ListItemText
+                                primary="Filename"
+                                secondary={data.filename}
+                            />
+                        </ListItem>
 
-                            <TableRow>
-                                <TableCell>Path</TableCell>
-                                <TableCell>{data.path}</TableCell>
-                            </TableRow>
+                        <ListItem disableGutters>
+                            <ListItemText primary="Path" secondary={data.path} />
+                        </ListItem>
 
-                            <TableRow>
-                                <TableCell>Id</TableCell>
-                                <TableCell>{doc.id}</TableCell>
-                            </TableRow>
+                        <ListItem disableGutters>
+                            <ListItemText primary="Id" secondary={doc.id} />
+                        </ListItem>
 
-                            {data.filetype && (
-                                <TableRow>
-                                    <TableCell>Type</TableCell>
-                                    <TableCell>{data.filetype}</TableCell>
-                                </TableRow>
+                        {data.filetype && (
+                            <ListItem disableGutters>
+                                <ListItemText
+                                    primary="Type"
+                                    secondary={data.filetype}
+                                />
+                            </ListItem>
+                        )}
+
+                        {data.filetype != 'folder' &&
+                            data.md5 && (
+                                <ListItem disableGutters>
+                                    <ListItemText
+                                        primary="MD5"
+                                        secondary={data.md5}
+                                    />
+                                </ListItem>
                             )}
-                            {data.filetype != 'folder' &&
-                                data.md5 && (
-                                    <TableRow>
-                                        <TableCell>MD5</TableCell>
-                                        <TableCell>{data.md5}</TableCell>
-                                    </TableRow>
-                                )}
-                            {data.filetype != 'folder' &&
-                                data.sha1 && (
-                                    <TableRow>
-                                        <TableCell>SHA1</TableCell>
-                                        <TableCell>{data.sha1}</TableCell>
-                                    </TableRow>
-                                )}
-                            {data.lang && (
-                                <TableRow>
-                                    <TableCell>Language</TableCell>
-                                    <TableCell>{data.lang}</TableCell>
-                                </TableRow>
+
+                        {data.filetype != 'folder' &&
+                            data.sha1 && (
+                                <ListItem disableGutters>
+                                    <ListItemText
+                                        primary="SHA1"
+                                        secondary={data.sha1}
+                                    />
+                                </ListItem>
                             )}
-                            {data['date-created'] && (
-                                <TableRow>
-                                    <TableCell>Created</TableCell>
-                                    <TableCell>{data['date-created']}</TableCell>
-                                </TableRow>
-                            )}
-                            {data.date && (
-                                <TableRow>
-                                    <TableCell>Modified</TableCell>
-                                    <TableCell>{data.date}</TableCell>
-                                </TableRow>
-                            )}
-                            {data.pgp && (
-                                <TableRow>
-                                    <TableCell>PGP</TableCell>
-                                    <TableCell>{data.pgp}</TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+
+                        {data.lang && (
+                            <ListItem disableGutters>
+                                <ListItemText
+                                    primary="Language"
+                                    secondary={
+                                        langs.where('1', data.lang).name || data.lang
+                                    }
+                                />
+                            </ListItem>
+                        )}
+                        {data.date && (
+                            <ListItem disableGutters>
+                                <ListItemText
+                                    primary="Modified"
+                                    secondary={data['date']}
+                                />
+                            </ListItem>
+                        )}
+                        {data['date-created'] && (
+                            <ListItem disableGutters>
+                                <ListItemText
+                                    primary="Created"
+                                    secondary={data['date-created']}
+                                />
+                            </ListItem>
+                        )}
+                        {data.pgp && (
+                            <ListItem disableGutters>
+                                <ListItemText primary="PGP" secondary={data.pgp} />
+                            </ListItem>
+                        )}
+                    </List>
+                </SectionContent>
+            </section>
         );
     }
 }
@@ -283,42 +301,43 @@ class DocumentEmailSection extends Component {
         let data = doc.content;
         let files = doc.children || [];
 
-        if (data.filetype == 'email') {
-            return (
-                <Card>
-                    <CardHeader title="Email" />
-                    <CardContent>
-                        <Table>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell>From</TableCell>
-                                    <TableCell>{data.from}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>To</TableCell>
-                                    <TableCell>{data.to.join(', ')}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>Date</TableCell>
-                                    <TableCell>{data.date}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>Subject</TableCell>
-                                    <TableCell>{data.subject || '---'}</TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
-            );
+        if (data.filetype !== 'email') {
+            return null;
         }
-        return null;
+
+        return (
+            <section className={this.props.classes.section}>
+                <SectionHeader title="Email" />
+                <SectionContent>
+                    <Table>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell>From</TableCell>
+                                <TableCell>{data.from}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>To</TableCell>
+                                <TableCell>{data.to.join(', ')}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>Date</TableCell>
+                                <TableCell>{data.date}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>Subject</TableCell>
+                                <TableCell>{data.subject || '---'}</TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </SectionContent>
+            </section>
+        );
     }
 }
 
 class DocumentFilesSection extends Component {
     render() {
-        const { data, baseUrl, title, fullPage } = this.props;
+        const { data, baseUrl, title, fullPage, classes } = this.props;
 
         const files = data.map(({ id, filename, content_type, size }, index) => {
             return (
@@ -326,7 +345,7 @@ class DocumentFilesSection extends Component {
                     <TableCell>
                         {id ? (
                             <a
-                                href={`${baseUrl}/${id}`}
+                                href={url.resolve(baseUrl, id)}
                                 target={fullPage ? null : '_blank'}>
                                 {filename}
                             </a>
@@ -339,7 +358,7 @@ class DocumentFilesSection extends Component {
                     <TableCell>
                         {id ? (
                             <a
-                                href={`${baseUrl}/${id}/raw/${filename}`}
+                                href={url.resolve(baseUrl, `${id}/raw/${filename}`)}
                                 target={fullPage ? null : '_blank'}
                                 title="Original file">
                                 <i className="fa fa-file-o" />
@@ -354,14 +373,14 @@ class DocumentFilesSection extends Component {
 
         return (
             files.length > 0 && (
-                <Card>
-                    <CardHeader title={title} />
-                    <CardContent>
+                <section classes={classes.section}>
+                    <SectionHeader title={title} />
+                    <SectionContent>
                         <Table>
                             <TableBody>{files}</TableBody>
                         </Table>
-                    </CardContent>
-                </Card>
+                    </SectionContent>
+                </section>
             )
         );
     }
@@ -373,14 +392,14 @@ class DocumentTextSection extends Component {
         if (!text) return null;
 
         return (
-            <Card>
-                <CardHeader title={title} />
-                <CardContent>
+            <section className={classes.section}>
+                <SectionHeader title={title} />
+                <SectionContent>
                     <div className={classes.content}>
                         <pre className={classes.preWrap}>{text.trim()}</pre>
                     </div>
-                </CardContent>
-            </Card>
+                </SectionContent>
+            </section>
         );
     }
 }
@@ -393,14 +412,14 @@ class DocumentHTMLSection extends Component {
         let title = this.props.title;
 
         return (
-            <Card>
-                <CardHeader title={title} />
-                <CardContent>
+            <div>
+                <SectionHeader title={title} />
+                <SectionContent>
                     <div className={classes.content}>
                         <span dangerouslySetInnerHTML={{ __html: html }} />
                     </div>
-                </CardContent>
-            </Card>
+                </SectionContent>
+            </div>
         );
     }
 }

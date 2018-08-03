@@ -6,8 +6,8 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import Typography from '@material-ui/core/Typography';
-import Filters from './Filters';
 
+import Filters from './Filters';
 import CollectionsBox from './CollectionsBox';
 
 export default ({ classes }) => (
@@ -19,21 +19,19 @@ export default ({ classes }) => (
         }}>
         <div className={classes.toolbar} />
 
-        <div className={classes.sticky}>
-            <List>
-                <ListItem>
-                    <CollectionsBox />
-                </ListItem>
-            </List>
+        <List>
+            <ListItem>
+                <CollectionsBox />
+            </ListItem>
+        </List>
 
-            <Divider />
+        <Divider />
 
-            <FormControl component="fieldset" className={classes.sideBarFormControl}>
-                <FormLabel component="legend">Filters</FormLabel>
-                <FormGroup>
-                    <Filters />
-                </FormGroup>
-            </FormControl>
-        </div>
+        <FormControl component="fieldset" className={classes.sideBarFormControl}>
+            <FormLabel component="legend">Filters</FormLabel>
+            <FormGroup>
+                <Filters />
+            </FormGroup>
+        </FormControl>
     </Drawer>
 );

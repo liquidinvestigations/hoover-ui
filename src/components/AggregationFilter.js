@@ -113,7 +113,7 @@ class AggregationFilter extends Component {
             <List subheader={title ? <ListSubheader>{title}</ListSubheader> : null}>
                 {buckets.map(this.renderBucket)}
 
-                <ListItem>
+                <ListItem disableGutters dense>
                     <Grid container alignItems="center" justify="space-between">
                         <Grid item>
                             <Button size="small" onClick={this.handleMore}>
@@ -124,7 +124,7 @@ class AggregationFilter extends Component {
                         <Grid item>
                             <Button
                                 size="small"
-                                disabled={!!selected}
+                                disabled={!selected.length}
                                 onClick={this.reset}>
                                 Reset
                             </Button>

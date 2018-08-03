@@ -4,6 +4,10 @@ import React from 'react';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import JssProvider from 'react-jss/lib/JssProvider';
+
+import LuxonUtils from 'material-ui-pickers/utils/luxon-utils';
+import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider';
+
 import getPageContext from '../src/get-page-context';
 import withReduxStore from '../src/with-redux-store';
 import { Provider } from 'react-redux';
@@ -45,12 +49,14 @@ class HooverApp extends App {
                         sheetsManager={this.pageContext.sheetsManager}>
                         <CssBaseline />
                         <Provider store={reduxStore}>
-                            <Layout>
-                                <Component
-                                    pageContext={this.pageContext}
-                                    {...pageProps}
-                                />
-                            </Layout>
+                            <MuiPickersUtilsProvider utils={LuxonUtils}>
+                                <Layout>
+                                    <Component
+                                        pageContext={this.pageContext}
+                                        {...pageProps}
+                                    />
+                                </Layout>
+                            </MuiPickersUtilsProvider>
                         </Provider>
                     </MuiThemeProvider>
                 </JssProvider>
