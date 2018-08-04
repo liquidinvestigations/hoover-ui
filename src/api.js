@@ -128,56 +128,58 @@ function buildAggregations() {
     };
 }
 
-async function fetchJson(url, opts = {}) {
-    const res = await fetch(url, {
-        ...opts,
-        credentials: 'same-origin',
-        headers: {
-            ...(opts.headers || {}),
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
-    });
-
-    if (res.ok) {
-        return await res.json();
-    } else {
-        const body = await res.text();
-        const err = new Error(
-            `unable to fetch ${res.url}: ${res.status} ${res.statusText}\n${body}`
-        );
-
-        err.url = res.url;
-        err.status = res.status;
-        err.statusText = res.statusText;
-
-        throw err;
-    }
-}
-
 class Api {
+    async fetchJson(url, opts = {}) {
+        const res = await fetch(url, {
+            ...opts,
+            credentials: 'same-origin',
+            headers: {
+                ...(opts.headers || {}),
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+        });
+
+        if (res.ok) {
+            return await res.json();
+        } else {
+            const body = await res.text();
+            const err = new Error(
+                `unable to fetch ${res.url}: ${res.status} ${
+                    res.statusText
+                }\n${body}`
+            );
+
+            err.url = res.url;
+            err.status = res.status;
+            err.statusText = res.statusText;
+
+            throw err;
+        }
+    }
+
     async collections() {
-        return await fetchJson('/collections');
+        return await this.fetchJson('/collections');
     }
 
     async limits() {
-        return await fetchJson('/limits');
+        return await this.fetchJson('/limits');
     }
 
     async locationsFor(docUrl) {
-        return await fetchJson(`${docUrl}/locations`);
+        return await this.fetchJson(`${docUrl}/locations`);
     }
 
     async doc(docUrl) {
-        return await fetchJson(`${docUrl}/json`);
+        return await this.fetchJson(`${docUrl}/json`);
     }
 
     async whoami() {
-        return await fetchJson('/whoami');
+        return await this.fetchJson('/whoami');
     }
 
     async batch(query) {
-        return await fetchJson('/batch', {
+        return await this.fetchJson('/batch', {
             method: 'POST',
             body: JSON.stringify(query),
         });
@@ -206,7 +208,7 @@ class Api {
             dateRange,
         });
 
-        return await fetchJson('/search', {
+        return await this.fetchJson('/search', {
             method: 'POST',
             body: JSON.stringify({
                 from: (page - 1) * size,

@@ -15,4 +15,4 @@ class DocPage extends Component {
     }
 }
 
-export default connect(({ preview: { doc, url } }) => ({ doc, url }))(DocPage);
+export default connect(({ doc: { doc, url } }) => ({ doc, url }))(DocPage);

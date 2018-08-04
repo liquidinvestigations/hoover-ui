@@ -19,6 +19,12 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 
 import IconArrowUpward from '@material-ui/icons/ArrowUpward';
 import IconLaunch from '@material-ui/icons/Launch';
@@ -28,15 +34,6 @@ import Loading from './Loading';
 import api from '../api';
 
 const styles = theme => ({
-    header: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        padding: '0 8px',
-        marginLeft: '1rem',
-        marginRight: '1rem',
-        ...theme.mixins.toolbar,
-    },
     root: {
         // backgroundColor: theme.palette.background.default,
     },
@@ -57,6 +54,10 @@ const styles = theme => ({
         fontSize: 12,
     },
 
+    button: {
+        margin: theme.spacing.unit,
+    },
+
     preWrap: { whiteSpace: 'pre-wrap' },
 });
 
@@ -71,18 +72,17 @@ const SectionContent = withStyles(styles)(({ classes, children, ...props }) => (
 ));
 
 class Document extends Component {
-    state = { doc: {}, loaded: false };
+    state = { tab: 0 };
+
+    handleTabChange = (event, value) => this.setState({ tab: value });
 
     render() {
+        const { tab } = this.state;
         const { docUrl, fullPage, classes, isFetching } = this.props;
-        let doc = this.props.doc;
+        let doc = this.props.data;
 
         if (isFetching) {
             return <Loading />;
-        }
-
-        if (!isFetching && !doc) {
-            doc = this.state.doc;
         }
 
         if (!doc || !Object.keys(doc).length) {
@@ -123,7 +123,7 @@ class Document extends Component {
         if (data.filetype != 'folder') {
             headerLinks.push({
                 href: `${docUrl}/raw/${data.filename}`,
-                text: `Original file`,
+                text: `Download original file`,
                 icon: <IconCloudDownload />,
                 target: fullPage ? null : '_blank',
             });
@@ -144,61 +144,88 @@ class Document extends Component {
 
         return (
             <div className={cn('document', classes.root)}>
-                <div className={classes.header}>
-                    <Grid container justify="space-between" spacing={0}>
-                        {headerLinks.map(({ text, icon, ...props }, index) => (
-                            <Button
-                                key={props.href}
+                <Toolbar>
+                    {headerLinks.map(({ text, icon, ...props }, index) => (
+                        <Tooltip title={text} key={props.href}>
+                            <IconButton
                                 size="small"
-                                color="secondary"
-                                variant="raised"
+                                color="primary"
                                 component="a"
                                 {...props}>
-                                {icon}  {text}
-                            </Button>
-                        ))}
-                    </Grid>
-                </div>
+                                {icon}
+                            </IconButton>
+                        </Tooltip>
+                    ))}
+                </Toolbar>
 
-                <DocumentMetaSection doc={doc} classes={classes} />
-                <DocumentEmailSection doc={doc} classes={classes} />
+                <Toolbar disableGutters dense color="secondary" component="div">
+                    <Tabs
+                        value={tab}
+                        onChange={this.handleTabChange}
+                        indicatorColor="secondary"
+                        textColor="secondary"
+                        scrollable
+                        fullWidth>
+                        <Tab label="Meta" />
+                        <Tab
+                            label="Email"
+                            disabled={doc.content.filetype !== 'email'}
+                        />
+                        <Tab label="Files" />
+                        <Tab label="HTML" />
+                        <Tab label="Text" />
+                        <Tab label="Headers and parts" />
+                        <Tab label="OCR Data" />
+                    </Tabs>
+                </Toolbar>
 
-                <DocumentFilesSection
-                    title="Files"
-                    data={files}
-                    baseUrl={collectionBaseUrl}
-                    fullPage={this.props.fullPage}
-                    classes={classes}
-                />
-
-                <DocumentHTMLSection
-                    html={doc.safe_html}
-                    title="HTML"
-                    classes={classes}
-                />
-
-                <DocumentTextSection
-                    title="Text"
-                    text={doc.content.text}
-                    fullPage={this.props.fullPage}
-                    classes={classes}
-                />
-
-                <DocumentTextSection
-                    title="Headers &amp; Parts"
-                    text={doc.content.tree}
-                    fullPage={this.props.fullPage}
-                    classes={classes}
-                />
-
-                {ocrData.map(({ tag, text }) => (
-                    <DocumentTextSection
-                        title={tag}
-                        text={text}
+                {tab === 0 && <DocumentMetaSection doc={doc} classes={classes} />}
+                {tab === 1 && <DocumentEmailSection doc={doc} classes={classes} />}
+                {tab === 2 && (
+                    <DocumentFilesSection
+                        title="Files"
+                        data={files}
+                        baseUrl={collectionBaseUrl}
                         fullPage={this.props.fullPage}
                         classes={classes}
                     />
-                ))}
+                )}
+
+                {tab === 3 && (
+                    <DocumentHTMLSection
+                        html={doc.safe_html}
+                        title="HTML"
+                        classes={classes}
+                    />
+                )}
+
+                {tab === 4 && (
+                    <DocumentTextSection
+                        title="Text"
+                        text={doc.content.text}
+                        fullPage={this.props.fullPage}
+                        classes={classes}
+                    />
+                )}
+
+                {tab === 5 && (
+                    <DocumentTextSection
+                        title="Headers &amp; Parts"
+                        text={doc.content.tree}
+                        fullPage={this.props.fullPage}
+                        classes={classes}
+                    />
+                )}
+
+                {tab === 6 &&
+                    ocrData.map(({ tag, text }) => (
+                        <DocumentTextSection
+                            title={tag}
+                            text={text}
+                            fullPage={this.props.fullPage}
+                            classes={classes}
+                        />
+                    ))}
             </div>
         );
     }
@@ -444,9 +471,9 @@ class DocumentHTMLSection extends Component {
         );
     }
 }
-const mapStateToProps = ({ preview: { isFetching, doc, url } }) => ({
+const mapStateToProps = ({ doc: { isFetching, data, url } }) => ({
     isFetching,
-    doc,
+    data,
     docUrl: url,
 });
 

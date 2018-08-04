@@ -35,6 +35,6 @@ export default connect(
     ({
         search: { isFetching: searchFetching },
         collections: { isFetching: collectionsFetching },
-        preview: { isFetching: previewFetching },
-    }) => ({ isFetching: searchFetching || collectionsFetching || previewFetching })
+        doc: { isFetching: docFetching },
+    }) => ({ isFetching: searchFetching || collectionsFetching || docFetching })
 )(ProgressIndicator);

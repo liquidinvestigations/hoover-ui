@@ -172,40 +172,40 @@ export const fetchServerDoc = () => {
     const { query } = url.parse(window.location.href, true);
 
     if (!doc) {
-        return fetchPreview(docUrl, { locations: query.locations });
+        return fetchDoc(docUrl, { locations: query.locations });
     }
 
     return {
         type: 'FETCH_SERVER_DOC',
-        doc,
+        data: doc,
         url: docUrl,
         locations: query.locations,
     };
 };
 
-export const fetchPreview = (url, extraState = {}) => {
+export const fetchDoc = (url, extraState = {}) => {
     return async (dispatch, getState) => {
         dispatch({
-            type: 'FETCH_PREVIEW',
+            type: 'FETCH_DOC',
             url,
             ...extraState,
         });
 
         try {
             dispatch({
-                type: 'FETCH_PREVIEW_SUCCESS',
+                type: 'FETCH_DOC_SUCCESS',
                 url,
-                doc: await api.doc(url),
+                data: await api.doc(url),
             });
         } catch (error) {
             dispatch({
-                type: 'FETCH_PREVIEW_FAILURE',
+                type: 'FETCH_DOC_FAILURE',
                 error,
             });
         }
     };
 };
 
-export const clearPreview = () => ({
-    type: 'CLEAR_PREVIEW',
+export const clearDoc = () => ({
+    type: 'CLEAR_DOC',
 });

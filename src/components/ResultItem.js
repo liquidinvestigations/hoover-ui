@@ -14,7 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import AttachIcon from '@material-ui/icons/AttachFile';
 import { withStyles } from '@material-ui/core/styles';
 
-import { fetchPreview } from '../actions';
+import { fetchDoc } from '../actions';
 
 const styles = theme => ({
     card: {
@@ -68,13 +68,13 @@ class ResultItem extends Component {
         }
     };
 
-    onPreview = () => this.props.dispatch(fetchPreview(this.props.url));
+    onPreview = () => this.props.dispatch(fetchDoc(this.props.url));
 
     render() {
-        const { hit, url, classes, n, preview } = this.props;
+        const { hit, url, classes, n, doc } = this.props;
 
-        const isSelected = url === preview.url;
-        const unsearchable = !!preview.url;
+        const isSelected = url === doc.url;
+        const unsearchable = !!doc.url;
 
         const fields = hit._source || {};
         const highlight = hit.highlight || {};
@@ -156,8 +156,5 @@ class ResultItem extends Component {
     }
 }
 
-const mapStateToProps = ({ preview }) => ({ preview });
-export default withStyles(theme => {
-    console.log(theme);
-    return styles(theme);
-})(connect(mapStateToProps)(ResultItem));
+const mapStateToProps = ({ doc }) => ({ doc });
+export default withStyles(styles)(connect(mapStateToProps)(ResultItem));

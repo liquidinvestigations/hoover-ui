@@ -7,9 +7,9 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 import Document from './Document';
 
-const mapStateToProps = ({ preview }) => ({ preview });
+const mapStateToProps = ({ doc }) => ({ doc });
 
-export default connect(mapStateToProps)(({ classes, preview }) => (
+export default connect(mapStateToProps)(({ classes, doc }) => (
     <Drawer
         classes={{
             paper: classes.rightDrawerPaper,
@@ -18,6 +18,6 @@ export default connect(mapStateToProps)(({ classes, preview }) => (
         variant="permanent"
         anchor="right">
         <div className={classes.toolbar} />
-        <div className={classes.rightContent}>{preview.url && <Document />}</div>
+        <div className={classes.rightContent}>{doc.url && <Document />}</div>
     </Drawer>
 ));

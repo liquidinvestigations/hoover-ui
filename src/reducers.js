@@ -112,36 +112,36 @@ function collections(state = INITIAL_COLLECTIONS_STATE, action) {
     }
 }
 
-const INITIAL_PREVIEW_STATE = {
+const INITIAL_DOC_STATE = {
     isFetching: false,
     url: null,
-    doc: null,
+    data: null,
     locations: null,
 };
 
-function preview(state = INITIAL_PREVIEW_STATE, action) {
+function doc(state = INITIAL_DOC_STATE, action) {
     switch (action.type) {
-        case 'CLEAR_PREVIEW':
-            return { ...state, url: null, doc: null };
-        case 'FETCH_PREVIEW':
+        case 'CLEAR_DOC':
+            return { ...state, url: null, data: null };
+        case 'FETCH_DOC':
             return {
                 ...state,
                 isFetching: true,
                 url: action.url,
-                doc: null,
+                data: null,
                 error: null,
                 locations: action.locations,
             };
-        case 'FETCH_PREVIEW_SUCCESS':
+        case 'FETCH_DOC_SUCCESS':
         case 'FETCH_SERVER_DOC':
             return {
                 ...state,
                 isFetching: false,
-                doc: action.doc,
+                data: action.data,
                 url: action.url,
                 locations: action.locations,
             };
-        case 'FETCH_PREVIEW_FAILURE':
+        case 'FETCH_DOC_FAILURE':
             return { ...state, isFetching: false, error: action.error };
         default:
             return state;
@@ -151,5 +151,5 @@ function preview(state = INITIAL_PREVIEW_STATE, action) {
 export default {
     search,
     collections,
-    preview,
+    doc,
 };
