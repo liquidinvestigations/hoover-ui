@@ -68,38 +68,6 @@ mark {
     }
 }
 
-.collections-box {
-    label {
-        cursor: pointer;
-    }
-}
-
-.charts {
-    overflow: hidden;
-}
-
-.charts-pie > * {
-    float: left;
-}
-
-.charts-pie-slice {
-    fill: #eee;
-    cursor: pointer;
-
-    &.hover {
-        opacity: 0.6;
-    }
-}
-
-.charts-pie-legend > div {
-    font-size: 12px;
-    cursor: pointer;
-
-    &.hover {
-        text-decoration: underline;
-    }
-}
-
 .loading {
     margin-auto: true;
     margin-top: 25px;
@@ -164,7 +132,4 @@ mark {
 
 .no-hits a {
     color: #888;
-}
-
-.document {
 }

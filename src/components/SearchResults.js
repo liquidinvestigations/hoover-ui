@@ -62,13 +62,13 @@ export default class SearchResults extends Component {
 
         return (
             <div>
+                <Pagination />
+
                 <ReactPlaceholder
                     showLoadingAnimation
-                    ready={!this.props.isFetching}
+                    ready={!isFetching}
                     type="text"
                     rows={10}>
-                    <Pagination />
-
                     {resultList}
 
                     {!!resultList.length && <Pagination />}

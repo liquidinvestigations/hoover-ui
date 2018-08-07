@@ -34,10 +34,9 @@ import Loading from './Loading';
 import api from '../api';
 
 const styles = theme => ({
-    root: {
-        // backgroundColor: theme.palette.background.default,
+    toolbar: {
+        backgroundColor: theme.palette.grey[200],
     },
-    section: {},
 
     sectionHeader: {
         backgroundColor: theme.palette.grey[200],
@@ -54,6 +53,13 @@ const styles = theme => ({
         fontSize: 12,
     },
 
+    scrollX: {
+        overflowX: 'scroll',
+        '> table': {
+            overflowX: 'scroll',
+        },
+    },
+
     button: {
         margin: theme.spacing.unit,
     },
@@ -67,9 +73,13 @@ const SectionHeader = withStyles(styles)(({ classes, title }) => (
     </div>
 ));
 
-const SectionContent = withStyles(styles)(({ classes, children, ...props }) => (
-    <div className={classes.sectionContent}>{children}</div>
-));
+const SectionContent = withStyles(styles)(
+    ({ classes, children, scrollX, ...props }) => (
+        <div className={cn(classes.sectionContent, { [classes.scrollX]: scroll })}>
+            {children}
+        </div>
+    )
+);
 
 class Document extends Component {
     state = { tab: 0 };
@@ -143,8 +153,8 @@ class Document extends Component {
         );
 
         return (
-            <div className={cn('document', classes.root)}>
-                <Toolbar>
+            <div className={classes.root}>
+                <Toolbar classes={{ root: classes.toolbar }}>
                     {headerLinks.map(({ text, icon, ...props }, index) => (
                         <Tooltip title={text} key={props.href}>
                             <IconButton
@@ -158,74 +168,45 @@ class Document extends Component {
                     ))}
                 </Toolbar>
 
-                <Toolbar disableGutters dense color="secondary" component="div">
-                    <Tabs
-                        value={tab}
-                        onChange={this.handleTabChange}
-                        indicatorColor="secondary"
-                        textColor="secondary"
-                        scrollable
-                        fullWidth>
-                        <Tab label="Meta" />
-                        <Tab
-                            label="Email"
-                            disabled={doc.content.filetype !== 'email'}
-                        />
-                        <Tab label="Files" />
-                        <Tab label="HTML" />
-                        <Tab label="Text" />
-                        <Tab label="Headers and parts" />
-                        <Tab label="OCR Data" />
-                    </Tabs>
-                </Toolbar>
+                <DocumentMetaSection doc={doc} classes={classes} />
+                <DocumentEmailSection doc={doc} classes={classes} />
 
-                {tab === 0 && <DocumentMetaSection doc={doc} classes={classes} />}
-                {tab === 1 && <DocumentEmailSection doc={doc} classes={classes} />}
-                {tab === 2 && (
-                    <DocumentFilesSection
-                        title="Files"
-                        data={files}
-                        baseUrl={collectionBaseUrl}
-                        fullPage={this.props.fullPage}
-                        classes={classes}
-                    />
-                )}
+                <DocumentFilesSection
+                    title="Files"
+                    data={files}
+                    baseUrl={collectionBaseUrl}
+                    fullPage={this.props.fullPage}
+                    classes={classes}
+                />
 
-                {tab === 3 && (
-                    <DocumentHTMLSection
-                        html={doc.safe_html}
-                        title="HTML"
-                        classes={classes}
-                    />
-                )}
+                <DocumentHTMLSection
+                    html={doc.safe_html}
+                    title="HTML"
+                    classes={classes}
+                />
 
-                {tab === 4 && (
+                <DocumentTextSection
+                    title="Text"
+                    text={doc.content.text}
+                    fullPage={this.props.fullPage}
+                    classes={classes}
+                />
+
+                <DocumentTextSection
+                    title="Headers &amp; Parts"
+                    text={doc.content.tree}
+                    fullPage={this.props.fullPage}
+                    classes={classes}
+                />
+
+                {ocrData.map(({ tag, text }) => (
                     <DocumentTextSection
-                        title="Text"
-                        text={doc.content.text}
+                        title={tag}
+                        text={text}
                         fullPage={this.props.fullPage}
                         classes={classes}
                     />
-                )}
-
-                {tab === 5 && (
-                    <DocumentTextSection
-                        title="Headers &amp; Parts"
-                        text={doc.content.tree}
-                        fullPage={this.props.fullPage}
-                        classes={classes}
-                    />
-                )}
-
-                {tab === 6 &&
-                    ocrData.map(({ tag, text }) => (
-                        <DocumentTextSection
-                            title={tag}
-                            text={text}
-                            fullPage={this.props.fullPage}
-                            classes={classes}
-                        />
-                    ))}
+                ))}
             </div>
         );
     }
@@ -390,6 +371,20 @@ class DocumentFilesSection extends Component {
         const files = data.map(({ id, filename, content_type, size }, index) => {
             return (
                 <TableRow key={id || filename}>
+                    <TableCell className="text-muted">{content_type}</TableCell>
+                    <TableCell className="text-muted">{size}</TableCell>
+                    <TableCell>
+                        {id ? (
+                            <a
+                                href={url.resolve(baseUrl, `${id}/raw/${filename}`)}
+                                target={fullPage ? null : '_blank'}
+                                title="Original file">
+                                <IconCloudDownload />
+                            </a>
+                        ) : (
+                            <p>-- broken link --</p>
+                        )}
+                    </TableCell>
                     <TableCell>
                         {id ? (
                             <a
@@ -401,29 +396,15 @@ class DocumentFilesSection extends Component {
                             <span>{filename}</span>
                         )}
                     </TableCell>
-                    <TableCell className="text-muted">{content_type}</TableCell>
-                    <TableCell className="text-muted">{size}</TableCell>
-                    <TableCell>
-                        {id ? (
-                            <a
-                                href={url.resolve(baseUrl, `${id}/raw/${filename}`)}
-                                target={fullPage ? null : '_blank'}
-                                title="Original file">
-                                <i className="fa fa-file-o" />
-                            </a>
-                        ) : (
-                            <p>-- broken link --</p>
-                        )}
-                    </TableCell>
                 </TableRow>
             );
         });
 
         return (
             files.length > 0 && (
-                <section classes={classes.section}>
+                <section>
                     <SectionHeader title={title} />
-                    <SectionContent>
+                    <SectionContent scrollX>
                         <Table>
                             <TableBody>{files}</TableBody>
                         </Table>

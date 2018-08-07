@@ -43,7 +43,11 @@ import {
     SIZE_OPTIONS,
 } from '../constants';
 
-const styles = theme => ({});
+const styles = theme => ({
+    error: {
+        paddingTop: theme.spacing.unit * 2,
+    },
+});
 
 class SearchPage extends Component {
     static propTypes = {
@@ -58,7 +62,7 @@ class SearchPage extends Component {
         selectedCollections: PropTypes.arrayOf(PropTypes.string),
     };
 
-    state = { initialSearch: true };
+    state = {};
 
     async componentDidMount() {
         const { dispatch } = this.props;
@@ -71,7 +75,6 @@ class SearchPage extends Component {
         if (
             prevProps.selectedCollections.length === 0 &&
             this.props.selectedCollections.length &&
-            this.state.initialSearch &&
             this.props.query.q &&
             this.props.query.q.length
         ) {
@@ -95,9 +98,10 @@ class SearchPage extends Component {
 
     render() {
         const { classes, error, query, isFetching, results } = this.props;
+        const { error: localError } = this.state;
 
-        if (error) {
-            return <Typography color="error">{error.toString()}</Typography>;
+        if (localError) {
+            return <Typography color="error">{localError.toString()}</Typography>;
         }
 
         return (
@@ -137,6 +141,12 @@ class SearchPage extends Component {
                         <SearchSettings />
                     </Grid>
                 </Grid>
+
+                {error && (
+                    <div className={classes.error}>
+                        <Typography color="error">{error.toString()}</Typography>
+                    </div>
+                )}
 
                 <Grid container>
                     <Grid item sm={12}>

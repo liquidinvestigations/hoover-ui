@@ -28,8 +28,8 @@ const styles = theme => ({
 const SearchSettings = ({ size, order, dispatch, classes }) => (
     <div className={classes.root}>
         <Grid container justify="space-between">
-            <Grid item sm={6}>
-                <FormControl style={{ minWidth: 120 }}>
+            <Grid item>
+                <FormControl style={{ minWidth: 200 }}>
                     <InputLabel>Results per page</InputLabel>
 
                     <Select autoWidth value={size} onChange={setSize(dispatch)}>
@@ -43,7 +43,7 @@ const SearchSettings = ({ size, order, dispatch, classes }) => (
             </Grid>
 
             <Grid item>
-                <FormControl style={{ minWidth: 120 }}>
+                <FormControl style={{ minWidth: 200 }}>
                     <InputLabel>Order</InputLabel>
 
                     <Select autoWidth value={order} onChange={setOrder(dispatch)}>

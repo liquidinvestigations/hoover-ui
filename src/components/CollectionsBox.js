@@ -101,7 +101,10 @@ export class CollectionsBox extends Component {
                         value="_all_"
                     />
                 }
-                label={col.title + (counts ? ` (${counts[col.name] || 0})` : '')}
+                label={
+                    col.title +
+                    (counts && counts[col.name] ? ` (${counts[col.name]})` : '')
+                }
             />
         ));
 

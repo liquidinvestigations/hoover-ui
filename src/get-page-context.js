@@ -6,20 +6,14 @@ import { createMuiTheme, createGenerateClassName } from '@material-ui/core/style
 // A theme with custom primary and secondary color.
 // It's optional.
 const theme = createMuiTheme({
-    // palette: {
-    //   primary: {
-    //     light: purple[300],
-    //     main: purple[500],
-    //     dark: purple[700],
-    //   },
-    //   secondary: {
-    //     light: green[300],
-    //     main: green[500],
-    //     dark: green[700],
-    //   },
-    // },
+    palette: {
+        // primary: {
+        // },
+        // secondary: {
+        // },
+    },
     typography: {
-        // fontFamily: "'Raleway', sans-serif",
+        fontFamily: "'Open Sans', sans-serif",
         fontFamilyMono:
             'SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     },
