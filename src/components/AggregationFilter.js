@@ -70,7 +70,6 @@ class AggregationFilter extends Component {
                 }}
                 dense
                 button
-                disableGutters
                 onClick={this.handleChange(value)}>
                 <Checkbox
                     tabIndex={-1}
@@ -113,10 +112,13 @@ class AggregationFilter extends Component {
             <List subheader={title ? <ListSubheader>{title}</ListSubheader> : null}>
                 {buckets.map(this.renderBucket)}
 
-                <ListItem disableGutters dense>
+                <ListItem dense>
                     <Grid container alignItems="center" justify="space-between">
                         <Grid item>
-                            <Button size="small" onClick={this.handleMore}>
+                            <Button
+                                size="small"
+                                variant="flat"
+                                onClick={this.handleMore}>
                                 More
                             </Button>
                         </Grid>
@@ -124,6 +126,7 @@ class AggregationFilter extends Component {
                         <Grid item>
                             <Button
                                 size="small"
+                                variant="flat"
                                 disabled={!selected.length}
                                 onClick={this.reset}>
                                 Reset

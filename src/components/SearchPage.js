@@ -21,6 +21,9 @@ import Typography from '@material-ui/core/Typography';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
+import SplitPaneLayout from './SplitPaneLayout';
+import SearchLeftDrawer from './SearchLeftDrawer';
+import SearchRightDrawer from './SearchRightDrawer';
 import Dropdown from './Dropdown';
 import CollectionsBox from './CollectionsBox';
 import SearchResults from './SearchResults';
@@ -105,7 +108,9 @@ class SearchPage extends Component {
         }
 
         return (
-            <div>
+            <SplitPaneLayout
+                left={<SearchLeftDrawer />}
+                right={<SearchRightDrawer />}>
                 <Grid container>
                     <Grid item sm={12}>
                         <form onSubmit={this.handleSubmit}>
@@ -157,7 +162,7 @@ class SearchPage extends Component {
                         />
                     </Grid>
                 </Grid>
-            </div>
+            </SplitPaneLayout>
         );
     }
 }

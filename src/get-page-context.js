@@ -19,10 +19,6 @@ const theme = createMuiTheme({
     },
 });
 
-if (process.env.NODE_ENV !== 'production') {
-    console.log(theme);
-}
-
 function createPageContext() {
     return {
         theme,

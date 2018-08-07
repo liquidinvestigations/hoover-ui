@@ -130,7 +130,7 @@ class Document extends Component {
             });
         }
 
-        if (data.filetype != 'folder') {
+        if (data.filetype !== 'folder') {
             headerLinks.push({
                 href: `${docUrl}/raw/${data.filename}`,
                 text: `Download original file`,
@@ -139,7 +139,7 @@ class Document extends Component {
             });
         }
 
-        let ocrData = Object.keys(data.ocrtext || {}).map((tag, index) => {
+        const ocrData = Object.keys(data.ocrtext || {}).map((tag, index) => {
             return { tag: tag, text: data.ocrtext[tag] };
         });
         headerLinks.push(
@@ -336,7 +336,7 @@ class DocumentEmailSection extends Component {
                                 <TableCell>To</TableCell>
                                 <TableCell>
                                     <pre className={classes.preWrap}>
-                                        {data.to.join(', ')}
+                                        {data.to.filter(Boolean).join(', ')}
                                     </pre>
                                 </TableCell>
                             </TableRow>

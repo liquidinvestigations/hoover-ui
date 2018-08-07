@@ -75,7 +75,7 @@ function search(state = INITIAL_SEARCH_STATE, action) {
 }
 
 const INITIAL_COLLECTIONS_STATE = {
-    isFetching: false,
+    isFetching: true,
     items: [],
     selected: [],
     error: null,

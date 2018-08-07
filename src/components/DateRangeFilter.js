@@ -72,8 +72,6 @@ class DateRangeFilter extends Component {
             defaultTo &&
             (defaultFrom.equals(from) && defaultTo.equals(to));
 
-        console.log({ from, to });
-
         return (
             <List>
                 <ListItem>

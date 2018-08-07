@@ -1,32 +1,21 @@
-import { Component } from 'react';
+import { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
+import cn from 'classnames';
+
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
 import Collapse from '@material-ui/core/Collapse';
 import Divider from '@material-ui/core/Divider';
 import IconClear from '@material-ui/icons/Clear';
 import { withStyles } from '@material-ui/core/styles';
-import cn from 'classnames';
 
 const styles = theme => ({
-    root: {
-        marginTop: '1rem',
-        width: '100%',
-        border: '1px solid #eee',
-    },
-
-    header: {
-        cursor: 'pointer',
-        position: 'relative',
+    upper: {
         textTransform: 'uppercase',
-        paddingLeft: theme.spacing.unit * 2,
-        paddingRight: theme.spacing.unit * 2,
-
-        '&:hover': {
-            background: theme.palette.background.default,
-        },
     },
 
     expand: {
@@ -63,12 +52,13 @@ class Filter extends Component {
         const { open } = this.state;
 
         return (
-            <div className={classes.root}>
-                <div className={classes.header} onClick={this.toggle}>
+            <Fragment>
+                <ListItem onClick={this.toggle} button dense>
                     <Grid container alignItems="baseline" justify="space-between">
                         <Grid item>
                             <Typography
                                 variant="body2"
+                                className={classes.upper}
                                 color={defaultOpen ? 'secondary' : 'default'}>
                                 {title}
                             </Typography>
@@ -88,13 +78,13 @@ class Filter extends Component {
                             </IconButton>
                         </Grid>
                     </Grid>
-                </div>
+                </ListItem>
 
                 <Collapse in={open}>
-                    <Divider />
                     {children}
+                    <Divider />
                 </Collapse>
-            </div>
+            </Fragment>
         );
     }
 }

@@ -1,4 +1,4 @@
-export default function makeUnsearchable(text) {
+export function makeUnsearchable(text) {
     let inMark = false;
 
     const chars = text.split('');
@@ -25,4 +25,17 @@ export default function makeUnsearchable(text) {
             }
         })
         .join('');
+}
+
+export function truncatePath(str) {
+    if (str.length < 100) {
+        return str;
+    }
+    const parts = str.split('/');
+
+    return [
+        ...parts.slice(0, parts.length / 3),
+        '…',
+        ...parts.slice(-(parts.length / 3)),
+    ].join('/');
 }

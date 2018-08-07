@@ -17,9 +17,6 @@ const styles = theme => ({
     root: {
         display: 'flex',
     },
-    formControl: {
-        margin: theme.spacing.unit * 3,
-    },
     formControlLabel: {
         width: '100%',
     },
@@ -118,13 +115,15 @@ export class CollectionsBox extends Component {
 
     render() {
         var result = null;
-        let { selected, collections, classes } = this.props;
+        let { selected, collections, classes, isFetching } = this.props;
 
         if (collections) {
             if (collections.length) {
                 result = this.renderCheckboxes();
             } else {
-                result = <Typography>no collections available</Typography>;
+                result = isFetching ? null : (
+                    <Typography>no collections available</Typography>
+                );
             }
         } else {
             result = <Loading />;
@@ -141,7 +140,10 @@ export class CollectionsBox extends Component {
     }
 }
 
-const mapStateToProps = ({ collections: { items, selected, counts } }) => ({
+const mapStateToProps = ({
+    collections: { isFetching, items, selected, counts },
+}) => ({
+    isFetching,
     collections: items,
     selected,
     counts,

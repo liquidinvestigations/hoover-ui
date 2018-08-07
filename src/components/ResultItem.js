@@ -2,7 +2,6 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import cn from 'classnames';
 import { DateTime } from 'luxon';
-import makeUnsearchable from '../make-unsearchable';
 import { connect } from 'react-redux';
 
 import Grid from '@material-ui/core/Grid';
@@ -13,6 +12,8 @@ import CardActions from '@material-ui/core/CardActions';
 import Typography from '@material-ui/core/Typography';
 import AttachIcon from '@material-ui/icons/AttachFile';
 import { withStyles } from '@material-ui/core/styles';
+
+import { makeUnsearchable, truncatePath } from '../utils';
 
 import { fetchDoc } from '../actions';
 
@@ -118,7 +119,7 @@ class ResultItem extends Component {
                     <CardHeader
                         title={fields.filename}
                         action={icon}
-                        subheader={fields.path}
+                        subheader={truncatePath(fields.path)}
                     />
                     <CardContent>
                         <Grid container alignItems="flex-end">
@@ -146,7 +147,7 @@ class ResultItem extends Component {
                                 )}
                             </Grid>
                             <Grid item md={8}>
-                                <ul className={classes.text}>{text}</ul>
+                                <div className={classes.text}>{text}</div>
                             </Grid>{' '}
                         </Grid>
                     </CardContent>

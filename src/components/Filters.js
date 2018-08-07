@@ -5,6 +5,9 @@ import { DateTime } from 'luxon';
 
 import { updateSearchQuery } from '../actions';
 
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+
 import Filter from './Filter';
 import AggregationFilter from './AggregationFilter';
 import DateRangeFilter from './DateRangeFilter';
@@ -32,84 +35,71 @@ class Filters extends Component {
         }
 
         return (
-            <div>
-                <div>
-                    <Filter title="File type" defaultOpen={!!query.fileType.length}>
-                        <AggregationFilter
-                            title=""
-                            selected={query.fileType}
-                            aggregation={aggregations.count_by_filetype}
-                            onChange={this.filter('fileType')}
-                        />
-                    </Filter>
-                </div>
+            <List>
+                <Filter title="File type" defaultOpen={!!query.fileType.length}>
+                    <AggregationFilter
+                        title=""
+                        selected={query.fileType}
+                        aggregation={aggregations.count_by_filetype}
+                        onChange={this.filter('fileType')}
+                    />
+                </Filter>
 
-                <div>
-                    <Filter
-                        title="Date range"
-                        defaultOpen={!!(query.dateRange.from || query.dateRange.to)}>
-                        <DateRangeFilter
-                            onChange={this.filter('dateRange')}
-                            defaultFrom={query.dateRange.from}
-                            defaultTo={query.dateRange.to}
-                        />
-                    </Filter>
-                </div>
+                <Filter
+                    title="Date range"
+                    defaultOpen={!!(query.dateRange.from || query.dateRange.to)}>
+                    <DateRangeFilter
+                        onChange={this.filter('dateRange')}
+                        defaultFrom={query.dateRange.from}
+                        defaultTo={query.dateRange.to}
+                    />
+                </Filter>
 
-                <div>
-                    <Filter
-                        title="Years"
-                        defaultOpen={
-                            !!(
-                                query.dateYears.length ||
-                                query.dateCreatedYears.length
-                            )
-                        }>
-                        <AggregationFilter
-                            aggregation={aggregations.count_by_date_year}
-                            selected={query.dateYears}
-                            title="Year"
-                            onChange={this.filter('dateYears')}
-                            sortBuckets={timeBucketSorter}
-                            bucketLabel={formatYear}
-                            bucketValue={formatYear}
-                        />
+                <Filter
+                    title="Years"
+                    defaultOpen={
+                        !!(query.dateYears.length || query.dateCreatedYears.length)
+                    }>
+                    <AggregationFilter
+                        aggregation={aggregations.count_by_date_year}
+                        selected={query.dateYears}
+                        title="Year"
+                        onChange={this.filter('dateYears')}
+                        sortBuckets={timeBucketSorter}
+                        bucketLabel={formatYear}
+                        bucketValue={formatYear}
+                    />
 
-                        <AggregationFilter
-                            aggregation={aggregations.count_by_date_created_year}
-                            selected={query.dateCreatedYears}
-                            title="Year created"
-                            onChange={this.filter('dateCreatedYears')}
-                            sortBuckets={timeBucketSorter}
-                            bucketLabel={formatYear}
-                            bucketValue={formatYear}
-                        />
-                    </Filter>
-                </div>
+                    <AggregationFilter
+                        aggregation={aggregations.count_by_date_created_year}
+                        selected={query.dateCreatedYears}
+                        title="Year created"
+                        onChange={this.filter('dateCreatedYears')}
+                        sortBuckets={timeBucketSorter}
+                        bucketLabel={formatYear}
+                        bucketValue={formatYear}
+                    />
+                </Filter>
 
-                <div>
-                    <Filter title="Language" defaultOpen={!!query.language.length}>
-                        <AggregationFilter
-                            aggregation={aggregations.count_by_lang}
-                            selected={query.language}
-                            onChange={this.filter('language')}
-                            bucketLabel={formatLang}
-                        />
-                    </Filter>
-                </div>
+                <Filter title="Language" defaultOpen={!!query.language.length}>
+                    <AggregationFilter
+                        aggregation={aggregations.count_by_lang}
+                        selected={query.language}
+                        onChange={this.filter('language')}
+                        bucketLabel={formatLang}
+                    />
+                </Filter>
 
-                <div>
-                    <Filter
-                        title="Email domain"
-                        defaultOpen={!!query.emailDomains.length}>
-                        <AggregationFilter
-                            aggregation={aggregations.count_by_email_domain}
-                            selected={query.emailDomains}
-                            onChange={this.filter('emailDomains')}
-                        />
-                    </Filter>
-                </div>
-            </div>
+                <Filter
+                    title="Email domain"
+                    defaultOpen={!!query.emailDomains.length}>
+                    <AggregationFilter
+                        aggregation={aggregations.count_by_email_domain}
+                        selected={query.emailDomains}
+                        onChange={this.filter('emailDomains')}
+                    />
+                </Filter>
+            </List>
         );
     }
 }
