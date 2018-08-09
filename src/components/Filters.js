@@ -40,7 +40,7 @@ class Filters extends Component {
                     <AggregationFilter
                         title=""
                         selected={query.fileType}
-                        aggregation={aggregations.count_by_filetype}
+                        aggregation={aggregations.count_by_filetype.filetype}
                         onChange={this.filter('fileType')}
                     />
                 </Filter>
@@ -61,7 +61,7 @@ class Filters extends Component {
                         !!(query.dateYears.length || query.dateCreatedYears.length)
                     }>
                     <AggregationFilter
-                        aggregation={aggregations.count_by_date_year}
+                        aggregation={aggregations.count_by_date_years.date_years}
                         selected={query.dateYears}
                         title="Year"
                         onChange={this.filter('dateYears')}
@@ -71,7 +71,10 @@ class Filters extends Component {
                     />
 
                     <AggregationFilter
-                        aggregation={aggregations.count_by_date_created_year}
+                        aggregation={
+                            aggregations.count_by_date_created_years
+                                .date_created_years
+                        }
                         selected={query.dateCreatedYears}
                         title="Year created"
                         onChange={this.filter('dateCreatedYears')}
@@ -83,7 +86,7 @@ class Filters extends Component {
 
                 <Filter title="Language" defaultOpen={!!query.language.length}>
                     <AggregationFilter
-                        aggregation={aggregations.count_by_lang}
+                        aggregation={aggregations.count_by_lang.lang}
                         selected={query.language}
                         onChange={this.filter('language')}
                         bucketLabel={formatLang}
@@ -94,7 +97,9 @@ class Filters extends Component {
                     title="Email domain"
                     defaultOpen={!!query.emailDomains.length}>
                     <AggregationFilter
-                        aggregation={aggregations.count_by_email_domain}
+                        aggregation={
+                            aggregations.count_by_email_domains.email_domains
+                        }
                         selected={query.emailDomains}
                         onChange={this.filter('emailDomains')}
                     />

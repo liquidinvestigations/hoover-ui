@@ -1,0 +1,112 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`builds a default query 1`] = `
+Object {
+  "_source": Array [
+    "path",
+    "url",
+    "mime_type",
+    "attachments",
+    "filename",
+    "word-count",
+    "date",
+    "date-created",
+  ],
+  "aggs": Object {
+    "count_by_date_created_years": Object {
+      "aggs": Object {
+        "date_created_years": Object {
+          "date_histogram": Object {
+            "field": "date-created",
+            "interval": "year",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "count_by_date_years": Object {
+      "aggs": Object {
+        "date_years": Object {
+          "date_histogram": Object {
+            "field": "date",
+            "interval": "year",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "count_by_email_domains": Object {
+      "aggs": Object {
+        "email_domains": Object {
+          "terms": Object {
+            "field": "email_domains",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "count_by_filetype": Object {
+      "aggs": Object {
+        "filetype": Object {
+          "terms": Object {
+            "field": "filetype",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "count_by_lang": Object {
+      "aggs": Object {
+        "lang": Object {
+          "terms": Object {
+            "field": "lang",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+  },
+  "collections": Array [],
+  "from": 0,
+  "highlight": Object {
+    "fields": Object {
+      "*": Object {
+        "fragment_size": 150,
+        "number_of_fragments": 3,
+        "post_tags": Array [
+          "</mark>",
+        ],
+        "pre_tags": Array [
+          "<mark>",
+        ],
+        "require_field_match": false,
+      },
+    },
+  },
+  "post_filter": Object {
+    "bool": Object {},
+  },
+  "query": Object {
+    "query_string": Object {
+      "default_operator": "AND",
+      "query": "*",
+    },
+  },
+  "search_after": "",
+  "size": 0,
+  "sort": Array [
+    "_score",
+    "_id",
+  ],
+}
+`;

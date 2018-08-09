@@ -10,6 +10,7 @@
     "test": "NODE_ENV=test jest",
     "test:update": "NODE_ENV=test jest -u",
     "test:watch": "NODE_ENV=test jest --watch",
+    "tdd": "yarn test:watch",
     "heroku-postbuild": "next build"
   },
   "engine": {
