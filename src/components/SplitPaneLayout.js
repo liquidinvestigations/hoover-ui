@@ -1,27 +1,18 @@
+import SplitPane from 'react-split-pane';
 import { withStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
 
 const styles = theme => ({
-    drawerPaper: {
-        position: 'relative',
-        zIndex: 0,
-    },
-    leftDrawer: {
-        minWidth: 280,
-        maxWidth: '20%',
+    left: {
         overflowX: 'hidden',
         overflowY: 'auto',
         height: 'auto',
     },
-    rightDrawer: {
-        minWidth: 280,
-        width: '40%',
+    right: {
         overflowX: 'hidden',
         overflowY: 'auto',
         height: 'auto',
     },
     middle: {
-        flex: 1,
         backgroundColor: theme.palette.background.default,
         paddingLeft: theme.spacing.unit * 3,
         paddingRight: theme.spacing.unit * 3,
@@ -34,7 +25,6 @@ const styles = theme => ({
     toolbar: theme.mixins.toolbar,
 
     container: {
-        display: 'flex',
         overflow: 'hidden',
         height: '100vh',
         position: 'relative',
@@ -43,36 +33,35 @@ const styles = theme => ({
     },
 });
 
-export default withStyles(styles)(({ left, right, children, classes }) => (
+export default withStyles(styles)(({ left, children, right, classes }) => (
     <div className={classes.container}>
-        {left && (
-            <Drawer
-                variant={'permanent'}
-                classes={{
-                    paper: classes.drawerPaper,
-                    docked: classes.leftDrawer,
-                }}>
+        <SplitPane
+            split="vertical"
+            defaultSize="20%"
+            allowResize
+            pane1ClassName={classes.left}>
+            <div>
                 <div className={classes.toolbar} />
                 {left}
-            </Drawer>
-        )}
+            </div>
 
-        <main className={classes.middle}>
-            <div className={classes.toolbar} />
-            {children}
-        </main>
+            <SplitPane
+                split="vertical"
+                defaultSize="60%"
+                allowResize
+                pane1ClassName={classes.middle}
+                pane2ClassName={classes.right}>
+                <div>
+                    <div className={classes.toolbar} />
+                    {children}
+                </div>
 
-        {right && (
-            <Drawer
-                classes={{
-                    paper: classes.drawerPaper,
-                    docked: classes.rightDrawer,
-                }}
-                variant={right ? 'permanent' : undefined}
-                anchor="right">
-                <div className={classes.toolbar} />
-                {right}
-            </Drawer>
-        )}
+                <div>
+                    <div className={classes.toolbar} />
+                    {right}
+                </div>
+            </SplitPane>
+        </SplitPane>
     </div>
 ));
+

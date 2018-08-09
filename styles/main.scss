@@ -1,4 +1,5 @@
 @import "~react-placeholder/lib/reactPlaceholder.css";
+@import "resizer.scss";
 
 $font-family-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 $font-family-sans-serif: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -133,3 +134,4 @@ mark {
 .no-hits a {
     color: #888;
 }
+
