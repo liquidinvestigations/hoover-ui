@@ -21,6 +21,11 @@ Object {
             "interval": "year",
           },
         },
+        "date_created_years_count": Object {
+          "cardinality": Object {
+            "field": "date-created",
+          },
+        },
       },
       "filter": Object {
         "bool": Object {},
@@ -34,6 +39,11 @@ Object {
             "interval": "year",
           },
         },
+        "date_years_count": Object {
+          "cardinality": Object {
+            "field": "date",
+          },
+        },
       },
       "filter": Object {
         "bool": Object {},
@@ -43,7 +53,13 @@ Object {
       "aggs": Object {
         "email_domains": Object {
           "terms": Object {
-            "field": "email_domains",
+            "field": "email-domains",
+            "size": 10,
+          },
+        },
+        "email_domains_count": Object {
+          "cardinality": Object {
+            "field": "email-domains",
           },
         },
       },
@@ -56,6 +72,12 @@ Object {
         "filetype": Object {
           "terms": Object {
             "field": "filetype",
+            "size": 10,
+          },
+        },
+        "filetype_count": Object {
+          "cardinality": Object {
+            "field": "filetype",
           },
         },
       },
@@ -67,6 +89,12 @@ Object {
       "aggs": Object {
         "lang": Object {
           "terms": Object {
+            "field": "lang",
+            "size": 10,
+          },
+        },
+        "lang_count": Object {
+          "cardinality": Object {
             "field": "lang",
           },
         },

@@ -1,4 +1,10 @@
-import { SORT_RELEVANCE, SORT_NEWEST, SORT_OLDEST, DATE_FORMAT } from './constants';
+import {
+    SORT_RELEVANCE,
+    SORT_NEWEST,
+    SORT_OLDEST,
+    DATE_FORMAT,
+    DEFAULT_FACET_SIZE,
+} from './constants';
 
 function buildQuery(q, { dateRange }) {
     const qs = {
@@ -40,13 +46,16 @@ function buildSortQuery(order) {
     return sort;
 }
 
-function buildTermsField(name, terms, field) {
-    field = field || name;
-
+function buildTermsField(
+    name,
+    terms,
+    { field = name, size = DEFAULT_FACET_SIZE } = {}
+) {
     return {
         name,
+        field,
         aggregation: {
-            terms: { field },
+            terms: { field, size },
         },
         filterClause:
             terms && terms.length
@@ -57,12 +66,13 @@ function buildTermsField(name, terms, field) {
     };
 }
 
-function buildYearField(name, value, field) {
+function buildYearField(name, value, { field = name } = {}) {
     return {
         name,
+        field,
         aggregation: {
             date_histogram: {
-                field: field || name,
+                field,
                 interval: 'year',
             },
         },
@@ -105,6 +115,7 @@ function buildAggs(fields) {
             [`count_by_${field.name}`]: {
                 aggs: {
                     [field.name]: field.aggregation,
+                    [`${field.name}_count`]: { cardinality: { field: field.field } },
                 },
                 filter: buildFilter(
                     fields.filter(other => other.name !== field.name)
@@ -128,16 +139,26 @@ export default function buildSearchQuery({
     fileType = null,
     language = null,
     emailDomains = null,
+    facets = {},
 } = {}) {
     const query = buildQuery(q, { dateRange });
     const sort = buildSortQuery(order);
 
     const fields = [
-        buildTermsField('filetype', fileType),
-        buildTermsField('email_domains', emailDomains),
-        buildTermsField('lang', language),
-        buildYearField('date_years', dateYears, 'date'),
-        buildYearField('date_created_years', dateCreatedYears, 'date-created'),
+        buildTermsField('filetype', fileType, { size: facets.fileType }),
+        buildTermsField('email_domains', emailDomains, {
+            field: 'email-domains',
+            size: facets.emailDomains,
+        }),
+        buildTermsField('lang', language, { size: facets.language }),
+        buildYearField('date_years', dateYears, {
+            field: 'date',
+            size: facets.dateYears,
+        }),
+        buildYearField('date_created_years', dateCreatedYears, {
+            field: 'date-created',
+            size: facets.dateCreatedYears,
+        }),
     ];
 
     const postFilter = buildFilter(fields);

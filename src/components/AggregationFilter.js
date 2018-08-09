@@ -29,8 +29,13 @@ class AggregationFilter extends Component {
         aggregation: PropTypes.shape({
             buckets: PropTypes.array.isRequired,
         }),
+        cardinality: PropTypes.shape({
+            value: PropTypes.number.isRequired,
+        }),
+        size: PropTypes.number,
         title: PropTypes.string,
         onChange: PropTypes.func.isRequired,
+        onLoadMore: PropTypes.func,
         selected: PropTypes.array,
         bucketLabel: PropTypes.func,
         bucketValue: PropTypes.func,
@@ -53,12 +58,10 @@ class AggregationFilter extends Component {
     };
 
     renderBucket = bucket => {
-        const { bucketLabel, bucketValue, selected, classes } = this.props;
+        const { bucketLabel, bucketValue, selected, classes, disabled } = this.props;
 
         const label = bucketLabel ? bucketLabel(bucket) : bucket.key;
-
         const value = bucketValue ? bucketValue(bucket) : bucket.key;
-
         const checked = selected.includes(value);
 
         return (
@@ -76,7 +79,7 @@ class AggregationFilter extends Component {
                     disableRipple
                     value={value}
                     checked={checked}
-                    disabled={!bucket.doc_count}
+                    disabled={disabled || !bucket.doc_count}
                     onChange={this.handleChange(value)}
                 />
 
@@ -96,17 +99,26 @@ class AggregationFilter extends Component {
     reset = () => this.props.onChange([]);
 
     render() {
-        const { aggregation, title, selected } = this.props;
+        const {
+            aggregation,
+            title,
+            selected,
+            cardinality,
+            onLoadMore,
+            size,
+            disabled,
+        } = this.props;
 
-        let buckets = aggregation && aggregation.buckets ? aggregation.buckets : [];
+        const buckets = (aggregation && aggregation.buckets
+            ? aggregation.buckets
+            : []
+        )
+            .sort(this.props.sortBuckets || defaultBucketSorter)
+            .filter(d => d.doc_count);
 
         if (!buckets.length) {
             return null;
         }
-
-        buckets = buckets
-            .sort(this.props.sortBuckets || defaultBucketSorter)
-            .filter(d => d.doc_count);
 
         return (
             <List subheader={title ? <ListSubheader>{title}</ListSubheader> : null}>
@@ -115,19 +127,25 @@ class AggregationFilter extends Component {
                 <ListItem dense>
                     <Grid container alignItems="center" justify="space-between">
                         <Grid item>
-                            <Button
-                                size="small"
-                                variant="flat"
-                                onClick={this.handleMore}>
-                                More
-                            </Button>
+                            {onLoadMore &&
+                            cardinality &&
+                            size &&
+                            cardinality.value > size ? (
+                                <Button
+                                    size="small"
+                                    disabled={disabled}
+                                    variant="flat"
+                                    onClick={onLoadMore}>
+                                    More ({cardinality.value - size})
+                                </Button>
+                            ) : null}
                         </Grid>
 
                         <Grid item>
                             <Button
                                 size="small"
                                 variant="flat"
-                                disabled={!selected.length}
+                                disabled={disabled || !selected.length}
                                 onClick={this.reset}>
                                 Reset
                             </Button>

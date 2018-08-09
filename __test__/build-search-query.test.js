@@ -17,7 +17,7 @@ it('builds a query with a filetype filter', () => {
     expect(query.aggs.count_by_email_domains).toMatchObject({
         aggs: {
             email_domains: {
-                terms: { field: 'email_domains' },
+                terms: { field: 'email-domains' },
             },
         },
         filter: {
@@ -95,7 +95,7 @@ it('builds a query with multiple fields filtered', () => {
         bool: {
             must: [
                 { terms: { filetype: ['doc', 'email'] } },
-                { terms: { email_domains: ['gmail.com'] } },
+                { terms: { 'email-domains': ['gmail.com'] } },
             ],
         },
     });
@@ -108,7 +108,7 @@ it('builds a query with multiple fields filtered', () => {
         },
         filter: {
             bool: {
-                must: [{ terms: { email_domains: ['gmail.com'] } }],
+                must: [{ terms: { 'email-domains': ['gmail.com'] } }],
             },
         },
     });
@@ -116,7 +116,7 @@ it('builds a query with multiple fields filtered', () => {
     expect(query.aggs.count_by_email_domains).toMatchObject({
         aggs: {
             email_domains: {
-                terms: { field: 'email_domains' },
+                terms: { field: 'email-domains' },
             },
         },
         filter: {

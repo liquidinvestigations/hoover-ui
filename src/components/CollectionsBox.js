@@ -114,16 +114,24 @@ export class CollectionsBox extends Component {
     }
 
     render() {
-        var result = null;
-        let { selected, collections, classes, isFetching } = this.props;
+        let result;
+
+        const {
+            selected,
+            collections,
+            classes,
+            isFetching,
+            wasFetched,
+        } = this.props;
 
         if (collections) {
             if (collections.length) {
                 result = this.renderCheckboxes();
             } else {
-                result = isFetching ? null : (
-                    <Typography>no collections available</Typography>
-                );
+                result =
+                    isFetching || !wasFetched ? null : (
+                        <Typography>no collections available</Typography>
+                    );
             }
         } else {
             result = <Loading />;
@@ -141,7 +149,7 @@ export class CollectionsBox extends Component {
 }
 
 const mapStateToProps = ({
-    collections: { isFetching, items, selected, counts },
+    collections: { isFetching, items, selected, counts, wasFetched },
 }) => ({
     isFetching,
     collections: items,

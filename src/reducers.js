@@ -1,5 +1,5 @@
 import { omit } from 'lodash';
-import { SORT_RELEVANCE } from './constants';
+import { SORT_RELEVANCE, DEFAULT_FACET_SIZE } from './constants';
 
 const INITIAL_SEARCH_STATE = {
     isFetching: false,
@@ -11,6 +11,7 @@ const INITIAL_SEARCH_STATE = {
         searchAfter: '',
         email: null,
         dateRange: {},
+        facets: {},
     },
     searchAfterByPage: {},
     results: {
@@ -50,11 +51,23 @@ function search(state = INITIAL_SEARCH_STATE, action) {
             return { ...state, isFetching: true, error: null };
         case 'UPDATE_SEARCH_QUERY':
             return { ...state, query: { ...state.query, ...action.query } };
+        case 'EXPAND_FACET':
+            const newValue =
+                (state.query.facets[action.key] || DEFAULT_FACET_SIZE) +
+                DEFAULT_FACET_SIZE;
+
+            return {
+                ...state,
+                query: {
+                    ...state.query,
+                    facets: { ...state.query.facets, [action.key]: newValue },
+                },
+            };
         case 'RESET_PAGINATION':
             return {
                 ...state,
                 searchAfterByPage: {},
-                query: { ...state.query, page: 1, searchAfter: '' },
+                query: { ...state.query, page: 1, searchAfter: '', facets: {} },
             };
         case 'FETCH_SEARCH_SUCCESS':
             return {
@@ -75,7 +88,7 @@ function search(state = INITIAL_SEARCH_STATE, action) {
 }
 
 const INITIAL_COLLECTIONS_STATE = {
-    isFetching: true,
+    isFetching: false,
     items: [],
     selected: [],
     error: null,

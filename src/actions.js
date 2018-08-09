@@ -1,7 +1,7 @@
 import url from 'url';
 import qs from 'qs';
 import { DateTime } from 'luxon';
-import { pickBy, castArray } from 'lodash';
+import { pickBy, castArray, mapValues } from 'lodash';
 
 import Router from 'next/router';
 
@@ -49,6 +49,7 @@ export function parseSearchUrlQuery() {
             q: params.q ? String(params.q).replace(/\+/g, ' ') : '',
             size: params.size ? +params.size : 10,
             order: params.order ? params.order : SORT_OPTIONS[0],
+            facets: params.facets ? mapValues(params.facets, d => +d) : {},
             dateYears: params.dateYears ? castArray(params.dateYears) : [],
             dateCreatedYears: params.dateCreatedYears
                 ? castArray(params.dateCreatedYears)
@@ -77,25 +78,19 @@ export function writeSearchQueryToUrl() {
             collections: { selected: selectedCollections },
         } = getState();
 
-        let dateRange;
+        const dateRange = {};
 
         if (query.dateRange.from && query.dateRange.to) {
-            dateRange = {
-                from: query.dateRange.from.toFormat(DATE_FORMAT),
-                to: query.dateRange.to.toFormat(DATE_FORMAT),
-            };
-        } else {
-            dateRange = {};
+            dateRange.from = query.dateRange.from.toFormat(DATE_FORMAT);
+            dateRange.to = query.dateRange.to.toFormat(DATE_FORMAT);
         }
 
-        let serializedQuery = {
-            ...query,
-            dateRange,
-            collections: selectedCollections.join('+'),
-        };
-
-        serializedQuery = pickBy(
-            serializedQuery,
+        const serializedQuery = pickBy(
+            {
+                ...query,
+                dateRange,
+                collections: selectedCollections.join('+'),
+            },
             d => (Array.isArray(d) ? d.length : Boolean(d))
         );
 
@@ -163,6 +158,17 @@ export const updateSearchQuery = (query, options = {}) => {
         if (options.syncUrl !== false) {
             dispatch(writeSearchQueryToUrl());
         }
+    };
+};
+
+export const expandFacet = key => {
+    return dispatch => {
+        dispatch({
+            type: 'EXPAND_FACET',
+            key,
+        });
+
+        dispatch(writeSearchQueryToUrl());
     };
 };
 
