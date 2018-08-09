@@ -61,8 +61,6 @@ class Api {
     async search(params) {
         const query = buildSearchQuery(params);
 
-        console.log(query);
-
         return await this.fetchJson('/search', {
             method: 'POST',
             body: JSON.stringify(query),
