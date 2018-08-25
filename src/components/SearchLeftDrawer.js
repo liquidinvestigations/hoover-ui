@@ -7,25 +7,16 @@ import Divider from '@material-ui/core/Divider';
 import Filters from './Filters';
 import CollectionsBox from './CollectionsBox';
 
-import SplitPane from 'react-split-pane';
-
 export default () => (
     <Fragment>
-        <SplitPane
-            split="horizontal"
-            defaultSize="auto"
-            pane1Style={{ overflow: 'hidden' }}>
-            <div>
-                <List>
-                    <ListItem>
-                        <CollectionsBox />
-                    </ListItem>
-                </List>
-            </div>
+        <List>
+            <ListItem>
+                <CollectionsBox />
+            </ListItem>
+        </List>
 
-            <div>
-                <Filters />
-            </div>
-        </SplitPane>
+        <Divider />
+
+        <Filters />
     </Fragment>
 );

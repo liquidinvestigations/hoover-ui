@@ -35,14 +35,15 @@ const styles = theme => ({
 
 export default withStyles(styles)(({ left, children, right, classes }) => (
     <div className={classes.container}>
-        <div className={classes.toolbar} />
-
         <SplitPane
             split="vertical"
             defaultSize="20%"
             allowResize
             pane1ClassName={classes.left}>
-            {left}
+            <div>
+                <div className={classes.toolbar} />
+                {left}
+            </div>
 
             <SplitPane
                 split="vertical"
@@ -50,10 +51,17 @@ export default withStyles(styles)(({ left, children, right, classes }) => (
                 allowResize
                 pane1ClassName={classes.middle}
                 pane2ClassName={classes.right}>
-                <div>{children}</div>
+                <div>
+                    <div className={classes.toolbar} />
+                    {children}
+                </div>
 
-                <div>{right}</div>
+                <div>
+                    <div className={classes.toolbar} />
+                    {right}
+                </div>
             </SplitPane>
         </SplitPane>
     </div>
 ));
+
