@@ -1,14 +1,24 @@
 import { Component } from 'react';
 import SplitPaneLayout from '../src/components/SplitPaneLayout';
-import Document from '../src/components/Document';
+import Document, { Meta } from '../src/components/Document';
 import Locations from '../src/components/Locations';
 
 import { connect } from 'react-redux';
-import { fetchServerDoc } from '../src/actions';
+import { fetchServerDoc, fetchDoc } from '../src/actions';
+
+import url from 'url';
 
 class Doc extends Component {
-    componentDidMount() {
-        this.props.dispatch(fetchServerDoc());
+    async componentDidMount() {
+        const { query } = url.parse(window.location.href, true);
+
+        console.log(query.path);
+
+        if (query.path) {
+            await this.props.dispatch(fetchDoc(query.path));
+        } else {
+            await this.props.dispatch(fetchServerDoc());
+        }
     }
 
     render() {
@@ -16,12 +26,21 @@ class Doc extends Component {
             return null;
         }
 
+        const { data, url } = this.props;
+
+        const left = data && <Locations data={data} url={url} />;
+        const right = data && <Meta doc={data} />;
+
         return (
-            <SplitPaneLayout>
+            <SplitPaneLayout
+                left={left}
+                right={right}
+                defaultSizeLeft="25%"
+                defaultSizeMiddle="70%">
                 <Document fullPage />
             </SplitPaneLayout>
         );
     }
 }
 
-export default connect(({ doc: { doc, url } }) => ({ doc, url }))(Doc);
+export default connect(({ doc: { data, url } }) => ({ data, url }))(Doc);

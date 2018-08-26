@@ -14,8 +14,6 @@ const styles = theme => ({
     },
     middle: {
         backgroundColor: theme.palette.background.default,
-        paddingLeft: theme.spacing.unit * 3,
-        paddingRight: theme.spacing.unit * 3,
         minWidth: 0, // So the Typography noWrap works
         overflowX: 'hidden',
         overflowY: 'auto',
@@ -33,35 +31,52 @@ const styles = theme => ({
     },
 });
 
-export default withStyles(styles)(({ left, children, right, classes }) => (
-    <div className={classes.container}>
-        <SplitPane
-            split="vertical"
-            defaultSize="20%"
-            allowResize
-            pane1ClassName={classes.left}>
-            <div>
-                <div className={classes.toolbar} />
-                {left}
-            </div>
-
+export default withStyles(styles)(
+    ({
+        left,
+        children,
+        right,
+        classes,
+        defaultSizeLeft = '20%',
+        defaultSizeMiddle = '60%',
+    } = {}) => (
+        <div className={classes.container}>
             <SplitPane
                 split="vertical"
-                defaultSize="60%"
+                defaultSize={defaultSizeLeft}
                 allowResize
-                pane1ClassName={classes.middle}
-                pane2ClassName={classes.right}>
+                pane1ClassName={classes.left}
+                pane2ClassName={right ? null : classes.middle}>
                 <div>
                     <div className={classes.toolbar} />
-                    {children}
+                    {left}
                 </div>
+                {right ? (
+                    <SplitPane
+                        split="vertical"
+                        defaultSize={defaultSizeMiddle}
+                        allowResize
+                        pane1ClassName={classes.middle}
+                        pane2ClassName={classes.right}>
+                        <div>
+                            <div className={classes.toolbar} />
+                            {children}
+                        </div>
 
-                <div>
-                    <div className={classes.toolbar} />
-                    {right}
-                </div>
+                        {right && (
+                            <div>
+                                <div className={classes.toolbar} />
+                                {right}
+                            </div>
+                        )}
+                    </SplitPane>
+                ) : (
+                    <div>
+                        <div className={classes.toolbar} />
+                        {children}
+                    </div>
+                )}
             </SplitPane>
-        </SplitPane>
-    </div>
-));
-
+        </div>
+    )
+);

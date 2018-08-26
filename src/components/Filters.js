@@ -97,6 +97,7 @@ class Filters extends Component {
                 </Filter>
 
                 <Filter
+                    enabled={false}
                     title="Years"
                     defaultOpen={
                         !!(query.dateYears.length || query.dateCreatedYears.length)

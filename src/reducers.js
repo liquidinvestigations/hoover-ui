@@ -143,7 +143,6 @@ function doc(state = INITIAL_DOC_STATE, action) {
                 url: action.url,
                 data: null,
                 error: null,
-                locations: action.locations,
             };
         case 'FETCH_DOC_SUCCESS':
         case 'FETCH_SERVER_DOC':
@@ -152,7 +151,6 @@ function doc(state = INITIAL_DOC_STATE, action) {
                 isFetching: false,
                 data: action.data,
                 url: action.url,
-                locations: action.locations,
             };
         case 'FETCH_DOC_FAILURE':
             return { ...state, isFetching: false, error: action.error };

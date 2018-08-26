@@ -1,54 +1,31 @@
-import { Component } from 'react';
-import cn from 'classnames';
-import equal from 'fast-deep-equal';
-import PropTypes from 'prop-types';
-
-import { pickBy, identity, castArray } from 'lodash';
-
-import Link from 'next/link';
-import Router from 'next/router';
-
-import { connect } from 'react-redux';
-
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-
-import SplitPaneLayout from './SplitPaneLayout';
-import SearchLeftDrawer from './SearchLeftDrawer';
-import SearchRightDrawer from './SearchRightDrawer';
-import Dropdown from './Dropdown';
-import CollectionsBox from './CollectionsBox';
-import SearchResults from './SearchResults';
-import SearchSettings from './SearchSettings';
-
+import Link from 'next/link';
+import PropTypes from 'prop-types';
+import { Component } from 'react';
+import { connect } from 'react-redux';
 import {
-    parseSearchUrlQuery,
-    updateSearchQuery,
-    writeSearchQueryToUrl,
-    search,
     fetchCollections,
+    parseSearchUrlQuery,
+    search,
+    updateSearchQuery,
 } from '../actions';
-
-import {
-    SORT_RELEVANCE,
-    SORT_NEWEST,
-    SORT_OLDEST,
-    SORT_OPTIONS,
-    SEARCH_GUIDE,
-    SIZE_OPTIONS,
-} from '../constants';
+import { SEARCH_GUIDE } from '../constants';
+import SearchLeftDrawer from './SearchLeftDrawer';
+import SearchResults from './SearchResults';
+import SearchRightDrawer from './SearchRightDrawer';
+import SearchSettings from './SearchSettings';
+import SplitPaneLayout from './SplitPaneLayout';
 
 const styles = theme => ({
     error: {
         paddingTop: theme.spacing.unit * 2,
+    },
+    main: {
+        paddingLeft: theme.spacing.unit * 3,
+        paddingRight: theme.spacing.unit * 3,
     },
 });
 
@@ -111,57 +88,59 @@ class SearchPage extends Component {
             <SplitPaneLayout
                 left={<SearchLeftDrawer />}
                 right={<SearchRightDrawer />}>
-                <Grid container>
-                    <Grid item sm={12}>
-                        <form onSubmit={this.handleSubmit}>
-                            <TextField
-                                name="q"
-                                value={query.q || ''}
-                                onChange={this.handleInputChange}
-                                label="Search"
-                                margin="normal"
-                                fullWidth
-                                type="search"
-                                autoFocus
-                            />
-                        </form>
+                <div className={classes.main}>
+                    <Grid container>
+                        <Grid item sm={12}>
+                            <form onSubmit={this.handleSubmit}>
+                                <TextField
+                                    name="q"
+                                    value={query.q || ''}
+                                    onChange={this.handleInputChange}
+                                    label="Search"
+                                    margin="normal"
+                                    fullWidth
+                                    type="search"
+                                    autoFocus
+                                />
+                            </form>
 
-                        <Grid container justify="space-between">
-                            <Grid item>
-                                <Typography variant="caption">
-                                    Refine your search using{' '}
-                                    <a href={SEARCH_GUIDE}>this handy guide</a>.
-                                </Typography>
+                            <Grid container justify="space-between">
+                                <Grid item>
+                                    <Typography variant="caption">
+                                        Refine your search using{' '}
+                                        <a href={SEARCH_GUIDE}>this handy guide</a>.
+                                    </Typography>
+                                </Grid>
+
+                                <Grid item>
+                                    <Typography variant="caption">
+                                        <Link href="/batch-search">
+                                            <a>Batch search</a>
+                                        </Link>
+                                    </Typography>
+                                </Grid>
                             </Grid>
 
-                            <Grid item>
-                                <Typography variant="caption">
-                                    <Link href="/batch-search">
-                                        <a>Batch search</a>
-                                    </Link>
-                                </Typography>
-                            </Grid>
+                            <SearchSettings />
                         </Grid>
-
-                        <SearchSettings />
                     </Grid>
-                </Grid>
 
-                {error && (
-                    <div className={classes.error}>
-                        <Typography color="error">{error.toString()}</Typography>
-                    </div>
-                )}
+                    {error && (
+                        <div className={classes.error}>
+                            <Typography color="error">{error.toString()}</Typography>
+                        </div>
+                    )}
 
-                <Grid container>
-                    <Grid item sm={12}>
-                        <SearchResults
-                            isFetching={isFetching}
-                            results={results}
-                            query={query}
-                        />
+                    <Grid container>
+                        <Grid item sm={12}>
+                            <SearchResults
+                                isFetching={isFetching}
+                                results={results}
+                                query={query}
+                            />
+                        </Grid>
                     </Grid>
-                </Grid>
+                </div>
             </SplitPaneLayout>
         );
     }

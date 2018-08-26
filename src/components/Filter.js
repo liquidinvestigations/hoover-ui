@@ -36,8 +36,15 @@ const styles = theme => ({
 
 class Filter extends Component {
     static propTypes = {
+        enabled: PropTypes.bool,
         classes: PropTypes.object.isRequired,
         defaultOpen: PropTypes.bool,
+        colorIfFiltered: PropTypes.bool,
+    };
+
+    static defaultProps = {
+        colorIfFiltered: true,
+        enabled: true,
     };
 
     constructor(props) {
@@ -48,7 +55,19 @@ class Filter extends Component {
     toggle = () => this.setState({ open: !this.state.open });
 
     render() {
-        const { title, children, classes, defaultOpen } = this.props;
+        const {
+            title,
+            children,
+            classes,
+            defaultOpen,
+            colorIfFiltered,
+            enabled,
+        } = this.props;
+
+        if (!enabled) {
+            return null;
+        }
+
         const { open } = this.state;
 
         return (
@@ -59,7 +78,11 @@ class Filter extends Component {
                             <Typography
                                 variant="body2"
                                 className={classes.upper}
-                                color={defaultOpen ? 'secondary' : 'default'}>
+                                color={
+                                    defaultOpen && colorIfFiltered
+                                        ? 'secondary'
+                                        : 'default'
+                                }>
                                 {title}
                             </Typography>
                         </Grid>
@@ -73,7 +96,11 @@ class Filter extends Component {
                                 aria-expanded={open}
                                 aria-label="Show more">
                                 <ExpandMoreIcon
-                                    color={defaultOpen ? 'secondary' : 'action'}
+                                    color={
+                                        defaultOpen && colorIfFiltered
+                                            ? 'secondary'
+                                            : 'action'
+                                    }
                                 />
                             </IconButton>
                         </Grid>

@@ -1,17 +1,14 @@
-import { Component } from 'react';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import ListItem from '@material-ui/core/ListItem';
+import { withStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
-import Loading from './Loading';
-
+import { Component } from 'react';
 import { connect } from 'react-redux';
 import { setCollectionsSelection } from '../actions';
-
-import { withStyles } from '@material-ui/core/styles';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormLabel from '@material-ui/core/FormLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import Checkbox from '@material-ui/core/Checkbox';
-import Typography from '@material-ui/core/Typography';
+import Loading from './Loading';
 
 const styles = theme => ({
     root: {
@@ -138,12 +135,9 @@ export class CollectionsBox extends Component {
         }
 
         return (
-            <div className={classes.root}>
-                <FormControl component="fieldset" className={classes.formControl}>
-                    <FormLabel component="legend">Collections</FormLabel>
-                    <FormGroup>{result}</FormGroup>
-                </FormControl>
-            </div>
+            <ListItem>
+                <FormGroup>{result}</FormGroup>
+            </ListItem>
         );
     }
 }

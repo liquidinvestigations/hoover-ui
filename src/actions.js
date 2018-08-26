@@ -175,26 +175,23 @@ export const expandFacet = key => {
 export const fetchServerDoc = () => {
     const doc = window.HOOVER_HYDRATE_DOC;
     const docUrl = window.location.href.split('?')[0];
-    const { query } = url.parse(window.location.href, true);
 
     if (!doc) {
-        return fetchDoc(docUrl, { locations: query.locations });
+        return fetchDoc(docUrl);
     }
 
     return {
         type: 'FETCH_SERVER_DOC',
         data: doc,
         url: docUrl,
-        locations: query.locations,
     };
 };
 
-export const fetchDoc = (url, extraState = {}) => {
+export const fetchDoc = url => {
     return async (dispatch, getState) => {
         dispatch({
             type: 'FETCH_DOC',
             url,
-            ...extraState,
         });
 
         try {

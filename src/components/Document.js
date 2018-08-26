@@ -1,41 +1,30 @@
-import { Component } from 'react';
-import url from 'url';
-
-import cn from 'classnames';
-import langs from 'langs';
-
-import { connect } from 'react-redux';
-
-import Grid from '@material-ui/core/Grid';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
-import AppBar from '@material-ui/core/AppBar';
+import { withStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
 import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-
-import IconArrowUpward from '@material-ui/icons/ArrowUpward';
-import IconLaunch from '@material-ui/icons/Launch';
+import Typography from '@material-ui/core/Typography';
 import IconCloudDownload from '@material-ui/icons/CloudDownload';
-
+import IconLaunch from '@material-ui/icons/Launch';
+import cn from 'classnames';
+import langs from 'langs';
+import { Component } from 'react';
+import { connect } from 'react-redux';
+import url from 'url';
 import Loading from './Loading';
-import api from '../api';
 
 const styles = theme => ({
     toolbar: {
-        backgroundColor: theme.palette.grey[200],
+        backgroundColor: theme.palette.grey[100],
+        borderBottomColor: theme.palette.grey[400],
+        borderBottomWidth: 1,
+        borderBottomStyle: 'solid',
     },
 
     sectionHeader: {
@@ -105,23 +94,7 @@ class Document extends Component {
         const files = doc.children || [];
         const headerLinks = [];
 
-        if (fullPage) {
-            if (doc.parent_id) {
-                if (doc.has_locations) {
-                    headerLinks.push({
-                        href: `${docUrl}?locations=on`,
-                        text: 'Locations',
-                        icon: <IconArrowUpward />,
-                    });
-                } else {
-                    headerLinks.push({
-                        href: `${collectionBaseUrl}${doc.parent_id}`,
-                        text: 'Up',
-                        icon: <IconArrowUpward />,
-                    });
-                }
-            }
-        } else {
+        if (!fullPage) {
             headerLinks.push({
                 href: docUrl,
                 text: 'Open in new tab',
@@ -154,30 +127,34 @@ class Document extends Component {
 
         return (
             <div className={classes.root}>
-                <Toolbar classes={{ root: classes.toolbar }}>
-                    {headerLinks.map(({ text, icon, ...props }, index) => (
-                        <Tooltip title={text} key={props.href}>
-                            <IconButton
-                                size="small"
-                                color="primary"
-                                component="a"
-                                {...props}>
-                                {icon}
-                            </IconButton>
-                        </Tooltip>
-                    ))}
-                </Toolbar>
+                {headerLinks.length > 0 && (
+                    <Toolbar classes={{ root: classes.toolbar }}>
+                        {headerLinks.map(({ text, icon, ...props }, index) => (
+                            <Tooltip title={text} key={props.href}>
+                                <IconButton
+                                    size="small"
+                                    color="default"
+                                    component="a"
+                                    {...props}>
+                                    {icon}
+                                </IconButton>
+                            </Tooltip>
+                        ))}
+                    </Toolbar>
+                )}
 
-                <DocumentMetaSection doc={doc} classes={classes} />
+                {!fullPage && <DocumentMetaSection doc={doc} classes={classes} />}
                 <DocumentEmailSection doc={doc} classes={classes} />
 
-                <DocumentFilesSection
-                    title="Files"
-                    data={files}
-                    baseUrl={collectionBaseUrl}
-                    fullPage={this.props.fullPage}
-                    classes={classes}
-                />
+                {!fullPage && (
+                    <DocumentFilesSection
+                        title="Files"
+                        data={files}
+                        fullPage={fullPage}
+                        baseUrl={collectionBaseUrl}
+                        classes={classes}
+                    />
+                )}
 
                 <DocumentHTMLSection
                     html={doc.safe_html}
@@ -222,7 +199,7 @@ class DocumentMetaSection extends Component {
                 <SectionHeader title="Meta" />
 
                 <SectionContent>
-                    <List>
+                    <List dense>
                         <ListItem disableGutters>
                             <ListItemText
                                 primary="Filename"
@@ -247,7 +224,7 @@ class DocumentMetaSection extends Component {
                             </ListItem>
                         )}
 
-                        {data.filetype != 'folder' &&
+                        {data.filetype !== 'folder' &&
                             data.md5 && (
                                 <ListItem disableGutters>
                                     <ListItemText
@@ -257,7 +234,7 @@ class DocumentMetaSection extends Component {
                                 </ListItem>
                             )}
 
-                        {data.filetype != 'folder' &&
+                        {data.filetype !== 'folder' &&
                             data.sha1 && (
                                 <ListItem disableGutters>
                                     <ListItemText
@@ -458,4 +435,5 @@ const mapStateToProps = ({ doc: { isFetching, data, url } }) => ({
     docUrl: url,
 });
 
+export const Meta = withStyles(styles)(DocumentMetaSection);
 export default connect(mapStateToProps)(withStyles(styles)(Document));
