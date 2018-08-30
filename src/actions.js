@@ -1,12 +1,10 @@
-import url from 'url';
-import qs from 'qs';
+import { castArray, mapValues, pickBy } from 'lodash';
 import { DateTime } from 'luxon';
-import { pickBy, castArray, mapValues } from 'lodash';
-
 import Router from 'next/router';
-
+import qs from 'qs';
+import url from 'url';
 import api from './api';
-import { SORT_OPTIONS, DATE_FORMAT } from './constants';
+import { DATE_FORMAT, SORT_OPTIONS } from './constants';
 
 export function fetchCollections() {
     return async (dispatch, getState) => {

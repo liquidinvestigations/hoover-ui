@@ -1,5 +1,4 @@
-import { omit } from 'lodash';
-import { SORT_RELEVANCE, DEFAULT_FACET_SIZE } from './constants';
+import { DEFAULT_FACET_SIZE, SORT_RELEVANCE } from './constants';
 
 const INITIAL_SEARCH_STATE = {
     isFetching: false,

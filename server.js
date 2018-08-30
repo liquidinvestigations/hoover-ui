@@ -1,4 +1,3 @@
-const { parse } = require('url');
 const next = require('next');
 const express = require('express');
 const proxy = require('http-proxy-middleware');
