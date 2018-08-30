@@ -1,3 +1,3 @@
-import SearchPage from '../components/SearchPage';
+import SearchPage from '../src/components/SearchPage';
 
 export default () => <SearchPage />;
