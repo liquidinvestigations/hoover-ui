@@ -9,7 +9,7 @@ import CollectionsBox from './CollectionsBox';
 
 export default () => (
     <Fragment>
-        <List>
+        <List dense>
             <Filter title="Collections" defaultOpen colorIfFiltered={false}>
                 <CollectionsBox />
             </Filter>

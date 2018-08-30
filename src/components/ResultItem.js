@@ -130,7 +130,7 @@ class ResultItem extends Component {
 
                                 {fields.date && (
                                     <Typography variant="caption">
-                                        <strong>Date modified:</strong>{' '}
+                                        <strong>Modified:</strong>{' '}
                                         {DateTime.fromISO(fields.date)
                                             .toLocaleString(DateTime.DATE_FULL)
                                             .replace(/\s/g, ' ')}
@@ -139,7 +139,7 @@ class ResultItem extends Component {
 
                                 {fields['date-created'] && (
                                     <Typography variant="caption">
-                                        <strong>Date created: </strong>
+                                        <strong>Created: </strong>
                                         {DateTime.fromISO(
                                             fields['date-created']
                                         ).toLocaleString(DateTime.DATE_FULL)}

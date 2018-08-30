@@ -137,7 +137,7 @@ export class CollectionsBox extends Component {
         }
 
         return (
-            <ListItem>
+            <ListItem dense>
                 <FormGroup>{result}</FormGroup>
             </ListItem>
         );
