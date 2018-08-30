@@ -24,15 +24,38 @@ export function fetchCollections() {
     };
 }
 
+export function fetchBatchLimits() {
+    return async (dispatch, getState) => {
+        dispatch({ type: 'FETCH_BATCH_LIMITS' });
+
+        try {
+            dispatch({
+                type: 'FETCH_BATCH_LIMITS_SUCCESS',
+                limits: await api.limits(),
+            });
+        } catch (err) {
+            dispatch({
+                type: 'FETCH_BATCH_LIMITS_FAILURE',
+                error: err,
+            });
+        }
+    };
+}
+
 export function setCollectionsSelection(collections) {
-    return dispatch => {
+    return (dispatch, getState) => {
         dispatch({
             type: 'SET_COLLECTIONS_SELECTION',
             collections,
         });
 
-        dispatch(resetPagination());
-        dispatch(writeSearchQueryToUrl());
+        const { router } = getState();
+
+        // FIXME
+        if (router.pathname === '/') {
+            dispatch(resetPagination());
+            dispatch(writeSearchQueryToUrl());
+        }
     };
 }
 

@@ -158,8 +158,44 @@ function doc(state = INITIAL_DOC_STATE, action) {
     }
 }
 
+const INITIAL_BATCH_STATE = {
+    isFetching: false,
+    error: null,
+    limits: null,
+};
+
+function batch(state = INITIAL_BATCH_STATE, action) {
+    switch (action.type) {
+        case 'FETCH_BATCH_LIMITS':
+            return { ...state, isFetching: true, limits: null, error: null };
+        case 'FETCH_BATCH_LIMITS_SUCCESS':
+            return {
+                ...state,
+                isFetching: false,
+                limits: action.limits,
+                error: null,
+            };
+        case 'FETCH_BATCH_LIMITS_FAILURE':
+            return { ...state, isFetching: false, error: null };
+        default:
+            return state;
+    }
+}
+
+const INITIAL_ROUTE_STATE = {};
+
+function router(state = INITIAL_ROUTE_STATE, action) {
+    if (action.type === 'ROUTE_CHANGED') {
+        return { ...state, ...action.parsed };
+    } else {
+        return state;
+    }
+}
+
 export default {
     search,
     collections,
     doc,
+    batch,
+    router,
 };

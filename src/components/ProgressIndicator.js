@@ -36,5 +36,9 @@ export default connect(
         search: { isFetching: searchFetching },
         collections: { isFetching: collectionsFetching },
         doc: { isFetching: docFetching },
-    }) => ({ isFetching: searchFetching || collectionsFetching || docFetching })
+        batch: { isFetching: batchFetching },
+    }) => ({
+        isFetching:
+            searchFetching || collectionsFetching || docFetching || batchFetching,
+    })
 )(ProgressIndicator);

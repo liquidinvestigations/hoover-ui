@@ -32,6 +32,7 @@ export default class Batch extends Component {
         );
     }
 
+    // TODO: redux
     async batchSearch() {
         let offset = this.state.batchOffset;
         let { terms, collections, batchSize } = this.state.query;
@@ -45,7 +46,7 @@ export default class Batch extends Component {
                 })
             );
         } catch (err) {
-            this.onError(res);
+            this.onError(err);
         }
     }
 

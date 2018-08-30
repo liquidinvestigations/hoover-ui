@@ -20,6 +20,7 @@ import '../styles/main.scss';
 
 class HooverApp extends App {
     pageContext = getPageContext();
+
     handleRouteChange = url => this.props.reduxStore.dispatch(routeChanged(url));
 
     componentDidMount() {
@@ -30,6 +31,7 @@ class HooverApp extends App {
         }
 
         routerEvents.on('changeComplete', this.handleRouteChange);
+        this.handleRouteChange(window.location.href);
     }
 
     componentWillUnmount() {
