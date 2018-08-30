@@ -2,6 +2,8 @@ import url from 'url';
 import { Component, Fragment } from 'react';
 import api from '../api';
 import Loading from './Loading';
+import { formatThousands } from '../utils';
+
 import Link from 'next/link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -43,7 +45,6 @@ export default class Locations extends Component {
         const baseUrl = url.resolve(docUrl, './');
         const basePath = url.parse(baseUrl).pathname;
         const children = data.children || [];
-        console.log(locations);
 
         return (
             <div>
@@ -75,9 +76,11 @@ export default class Locations extends Component {
                     {children.length > 0 && (
                         <Fragment>
                             <ListItem dense>
-                                <Typography variant="subheading">
-                                    Children
-                                </Typography>
+                                <ListItemText
+                                    primary={`Children (${formatThousands(
+                                        children.length
+                                    )})`}
+                                />
                             </ListItem>
 
                             {children.map((child, index) => (
