@@ -17,7 +17,10 @@ app.prepare().then(() => {
 
     if (process.env.HOOVER_REMOTE_SEARCH_URL) {
         server.use(
-            /^\/(whoami|collections|search|doc|limits|batch)/,
+            [
+                /^\/(whoami|collections|search|limits|batch)/,
+                /^\/doc.+?\/(json|locations)/,
+            ],
             proxy({
                 target: process.env.HOOVER_REMOTE_SEARCH_URL,
                 changeOrigin: true,

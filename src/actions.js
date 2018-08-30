@@ -100,7 +100,7 @@ export function writeSearchQueryToUrl() {
 
 export function routeChanged(newUrl) {
     return dispatch => {
-        const parsed = url.parse(newUrl);
+        const parsed = url.parse(newUrl, true);
 
         dispatch({
             type: 'ROUTE_CHANGED',
@@ -111,6 +111,8 @@ export function routeChanged(newUrl) {
         // hacky
         if (parsed.pathname === '/') {
             dispatch(search());
+        } else if (parsed.pathname === '/doc' && parsed.query.path) {
+            dispatch(fetchDoc(parsed.query.path));
         }
     };
 }

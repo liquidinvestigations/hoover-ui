@@ -2,6 +2,7 @@ import { Component } from 'react';
 import SplitPaneLayout from '../src/components/SplitPaneLayout';
 import Document, { Meta } from '../src/components/Document';
 import Locations from '../src/components/Locations';
+import { withRouter } from 'next/router';
 
 import { connect } from 'react-redux';
 import { fetchServerDoc, fetchDoc } from '../src/actions';
@@ -9,15 +10,13 @@ import { fetchServerDoc, fetchDoc } from '../src/actions';
 import url from 'url';
 
 class Doc extends Component {
-    async componentDidMount() {
-        const { query } = url.parse(window.location.href, true);
-
-        console.log(query.path);
+    componentDidMount() {
+        const { query } = this.props.router;
 
         if (query.path) {
-            await this.props.dispatch(fetchDoc(query.path));
+            this.props.dispatch(fetchDoc(query.path));
         } else {
-            await this.props.dispatch(fetchServerDoc());
+            this.props.dispatch(fetchServerDoc());
         }
     }
 
@@ -43,4 +42,4 @@ class Doc extends Component {
     }
 }
 
-export default connect(({ doc: { data, url } }) => ({ data, url }))(Doc);
+export default connect(({ doc: { data, url } }) => ({ data, url }))(withRouter(Doc));

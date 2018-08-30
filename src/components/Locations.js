@@ -55,14 +55,12 @@ export default class Locations extends Component {
 
                     {data.parent_id && (
                         <Link
-                            href={`${basePath}${data.parent_id}`}
-                            // href={{
-                            //     pathname: '/doc',
-                            //     query: {
-                            //         path: `${basePath}${data.parent_id}`,
-                            //     },
-                            // }}
-                        >
+                            href={{
+                                pathname: '/doc',
+                                query: {
+                                    path: `${basePath}${data.parent_id}`,
+                                },
+                            }}>
                             <ListItem button dense>
                                 <ListItemIcon>
                                     <IconArrowUpward />
@@ -85,13 +83,12 @@ export default class Locations extends Component {
 
                             {children.map((child, index) => (
                                 <Link
-                                    href={`${basePath}${child.id}`}
-                                    // href={{
-                                    //     pathname: '/doc',
-                                    //     query: {
-                                    //         path: `${basePath}${child.id}`,
-                                    //     },
-                                    // }}
+                                    href={{
+                                        pathname: '/doc',
+                                        query: {
+                                            path: `${basePath}${child.id}`,
+                                        },
+                                    }}
                                     key={child.id || index}>
                                     <ListItem button dense>
                                         <ListItemIcon>
@@ -144,13 +141,12 @@ export default class Locations extends Component {
 
                             {locations.map((loc, index) => (
                                 <Link
-                                    href={`${baseUrl}${data.parent_id}`}
-                                    // href={{
-                                    //     pathname: '/doc',
-                                    //     query: {
-                                    //         path: `${basePath}${data.parent_id}`,
-                                    //     },
-                                    // }}
+                                    href={{
+                                        pathname: '/doc',
+                                        query: {
+                                            path: `${basePath}${data.parent_id}`,
+                                        },
+                                    }}
                                     key={index}>
                                     <ListItem button>
                                         <ListItemIcon>
