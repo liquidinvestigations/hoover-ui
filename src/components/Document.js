@@ -25,6 +25,7 @@ const styles = theme => ({
         borderBottomColor: theme.palette.grey[400],
         borderBottomWidth: 1,
         borderBottomStyle: 'solid',
+        justifyContent: 'space-between',
     },
 
     sectionHeader: {
