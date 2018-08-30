@@ -39,3 +39,5 @@ export function truncatePath(str) {
         ...parts.slice(-(parts.length / 3)),
     ].join('/');
 }
+
+export const formatThousands = n => n.toLocaleString('en');

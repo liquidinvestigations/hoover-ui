@@ -1,17 +1,17 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import cn from 'classnames';
 
 import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+
+import { formatThousands } from '../utils';
 
 const defaultBucketSorter = (a, b) => b.doc_count - a.doc_count;
 
@@ -64,6 +64,10 @@ class AggregationFilter extends Component {
         const value = bucketValue ? bucketValue(bucket) : bucket.key;
         const checked = selected.includes(value);
 
+        if (!checked && !bucket.doc_count) {
+            return null;
+        }
+
         return (
             <ListItem
                 key={bucket.key}
@@ -87,7 +91,9 @@ class AggregationFilter extends Component {
 
                 <ListItemText
                     primary={
-                        <Typography variant="caption">{bucket.doc_count}</Typography>
+                        <Typography variant="caption">
+                            {formatThousands(bucket.doc_count)}
+                        </Typography>
                     }
                     disableTypography
                     align="right"
@@ -112,9 +118,7 @@ class AggregationFilter extends Component {
         const buckets = (aggregation && aggregation.buckets
             ? aggregation.buckets
             : []
-        )
-            .sort(this.props.sortBuckets || defaultBucketSorter)
-            .filter(d => d.doc_count);
+        ).sort(this.props.sortBuckets || defaultBucketSorter);
 
         if (!buckets.length) {
             return null;
@@ -122,7 +126,7 @@ class AggregationFilter extends Component {
 
         return (
             <List subheader={title ? <ListSubheader>{title}</ListSubheader> : null}>
-                {buckets.map(this.renderBucket)}
+                {buckets.map(this.renderBucket).filter(Boolean)}
 
                 <ListItem dense>
                     <Grid container alignItems="center" justify="space-between">

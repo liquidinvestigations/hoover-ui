@@ -9,6 +9,7 @@ import { Component } from 'react';
 import { connect } from 'react-redux';
 import { setCollectionsSelection } from '../actions';
 import Loading from './Loading';
+import { formatThousands } from '../utils';
 
 const styles = theme => ({
     root: {
@@ -40,7 +41,6 @@ export class CollectionsBox extends Component {
         const name = event.target.name;
         const checked = event.target.checked;
 
-        var all = this.props.collections.map(c => c.name);
         var selected = this.props.selected.splice(0);
 
         if (checked) {
@@ -97,7 +97,9 @@ export class CollectionsBox extends Component {
                 }
                 label={
                     col.title +
-                    (counts && counts[col.name] ? ` (${counts[col.name]})` : '')
+                    (counts && counts[col.name]
+                        ? ` (${formatThousands(counts[col.name])})`
+                        : '')
                 }
             />
         ));
