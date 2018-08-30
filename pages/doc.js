@@ -1,13 +1,10 @@
+import { withRouter } from 'next/router';
 import { Component } from 'react';
-import SplitPaneLayout from '../src/components/SplitPaneLayout';
+import { connect } from 'react-redux';
+import { fetchDoc, fetchServerDoc } from '../src/actions';
 import Document, { Meta } from '../src/components/Document';
 import Locations from '../src/components/Locations';
-import { withRouter } from 'next/router';
-
-import { connect } from 'react-redux';
-import { fetchServerDoc, fetchDoc } from '../src/actions';
-
-import url from 'url';
+import SplitPaneLayout from '../src/components/SplitPaneLayout';
 
 class Doc extends Component {
     componentDidMount() {
