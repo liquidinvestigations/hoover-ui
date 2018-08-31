@@ -1,20 +1,10 @@
-import { Component } from 'react';
-import PropTypes from 'prop-types';
-import url from 'url';
-import Link from 'next/link';
-// import Modal from 'react-modal';
-import { DateTime } from 'luxon';
-import ReactPlaceholder from 'react-placeholder';
-import Document from './Document';
-import ResultItem from './ResultItem';
-import Pagination from './Pagination';
-import Filter from './Filter';
-import AggregationFilter from './AggregationFilter';
-import DateRangeFilter from './DateRangeFilter';
-
-import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
+import PropTypes from 'prop-types';
+import { Component } from 'react';
+import ReactPlaceholder from 'react-placeholder';
+import url from 'url';
+import Pagination from './Pagination';
+import ResultItem from './ResultItem';
 
 const documentViewUrl = item => `doc/${item._collection}/${item._id}`;
 
@@ -40,7 +30,7 @@ export default class SearchResults extends Component {
             );
         }
 
-        const { results, query, onFilter, isFetching } = this.props;
+        const { results, query, isFetching } = this.props;
 
         if (!results.hits.hits) {
             return null;
@@ -56,9 +46,6 @@ export default class SearchResults extends Component {
                 n={start + i}
             />
         ));
-
-        const preview = this.state.preview;
-        const previewUrl = preview && url.resolve(window.location.href, preview);
 
         return (
             <div>

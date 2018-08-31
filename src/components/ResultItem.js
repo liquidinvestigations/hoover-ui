@@ -8,7 +8,6 @@ import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
 import Typography from '@material-ui/core/Typography';
 import AttachIcon from '@material-ui/icons/AttachFile';
 import { withStyles } from '@material-ui/core/styles';
@@ -71,8 +70,14 @@ class ResultItem extends Component {
 
     onPreview = () => this.props.dispatch(fetchDoc(this.props.url));
 
+    componentDidUpdate(prevProps) {
+        if (this.props.url === this.props.doc.url && 'scrollIntoView' in this.node) {
+            this.node.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
     render() {
-        const { hit, url, classes, n, doc } = this.props;
+        const { hit, url, classes, doc } = this.props;
 
         const isSelected = url === doc.url;
         const unsearchable = !!doc.url;
@@ -102,6 +107,7 @@ class ResultItem extends Component {
 
         return (
             <div
+                ref={node => (this.node = node)}
                 className={cn(classes.card, { [classes.selected]: isSelected })}
                 onMouseDown={() => {
                     this.willFocus = !(this.tUp && timeMs() - this.tUp < 300);

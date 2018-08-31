@@ -7,7 +7,7 @@ import IconPrevious from '@material-ui/icons/NavigateBefore';
 import IconNext from '@material-ui/icons/NavigateNext';
 
 import { connect } from 'react-redux';
-import { updateSearchQuery } from '../actions';
+import { loadNextSearchPage, loadPreviousSearchPage } from '../actions';
 
 import { formatThousands } from '../utils';
 
@@ -21,27 +21,15 @@ export class Pagination extends Component {
     handleNext = e => {
         e.preventDefault();
 
-        const { dispatch, query, searchAfterByPage } = this.props;
-
-        dispatch(
-            updateSearchQuery({
-                page: query.page + 1,
-                searchAfter: searchAfterByPage[query.page + 1],
-            })
-        );
+        const { dispatch } = this.props;
+        dispatch(loadNextSearchPage());
     };
 
     handlePrev = e => {
         e.preventDefault();
 
-        const { dispatch, query, searchAfterByPage } = this.props;
-
-        dispatch(
-            updateSearchQuery({
-                page: query.page - 1,
-                searchAfter: searchAfterByPage[query.page - 1],
-            })
-        );
+        const { dispatch } = this.props;
+        dispatch(loadPreviousSearchPage());
     };
 
     render() {

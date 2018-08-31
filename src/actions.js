@@ -120,7 +120,7 @@ export function writeSearchQueryToUrl() {
 }
 
 export function routeChanged(newUrl) {
-    return dispatch => {
+    return (dispatch, getState) => {
         const parsed = url.parse(newUrl, true);
 
         dispatch({
@@ -129,8 +129,12 @@ export function routeChanged(newUrl) {
             parsed,
         });
 
+        const {
+            collections: { wasFetched: collectionsWasFetched },
+        } = getState();
+
         // hacky
-        if (parsed.pathname === '/') {
+        if (parsed.pathname === '/' && collectionsWasFetched) {
             dispatch(search());
         } else if (parsed.pathname === '/doc' && parsed.query.path) {
             dispatch(fetchDoc(parsed.query.path));
@@ -179,10 +183,40 @@ export const updateSearchQuery = (query, options = {}) => {
         }
 
         if (options.syncUrl !== false) {
-            dispatch(writeSearchQueryToUrl());
+            return dispatch(writeSearchQueryToUrl());
         }
     };
 };
+
+export function loadNextSearchPage() {
+    return (dispatch, getState) => {
+        const {
+            search: { query, searchAfterByPage },
+        } = getState();
+
+        return dispatch(
+            updateSearchQuery({
+                page: query.page + 1,
+                searchAfter: searchAfterByPage[query.page + 1],
+            })
+        );
+    };
+}
+
+export function loadPreviousSearchPage() {
+    return (dispatch, getState) => {
+        const {
+            search: { query, searchAfterByPage },
+        } = getState();
+
+        return dispatch(
+            updateSearchQuery({
+                page: query.page - 1,
+                searchAfter: searchAfterByPage[query.page - 1],
+            })
+        );
+    };
+}
 
 export const expandFacet = key => {
     return dispatch => {
@@ -235,3 +269,53 @@ export const fetchDoc = url => {
 export const clearDoc = () => ({
     type: 'CLEAR_DOC',
 });
+
+export function fetchNextDoc() {
+    return async (dispatch, getState) => {
+        const {
+            search: { results },
+            doc: { url: docUrl, isFetching },
+        } = getState();
+
+        if (isFetching) {
+            return;
+        }
+
+        const hits = results.hits.hits || [];
+        const urls = hits.map(h => url.parse(h._url).pathname.slice(1));
+        const currentIndex = urls.indexOf(docUrl);
+
+        const found = urls[currentIndex + 1];
+
+        if (currentIndex === urls.length - 1) {
+            dispatch(loadNextSearchPage());
+        } else if (found) {
+            dispatch(fetchDoc(found));
+        }
+    };
+}
+
+export function fetchPreviousDoc() {
+    return (dispatch, getState) => {
+        const {
+            search: { results, query },
+            doc: { url: docUrl, isFetching },
+        } = getState();
+
+        if (isFetching) {
+            return;
+        }
+
+        const hits = results.hits.hits || [];
+        const urls = hits.map(h => url.parse(h._url).pathname.slice(1));
+        const currentIndex = urls.indexOf(docUrl);
+
+        const found = urls[currentIndex - 1];
+
+        if (currentIndex === 0 && query.page > 1) {
+            return dispatch(loadPreviousSearchPage());
+        } else if (found) {
+            return dispatch(fetchDoc(found));
+        }
+    };
+}
