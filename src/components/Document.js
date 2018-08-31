@@ -144,18 +144,7 @@ class Document extends Component {
                     </Toolbar>
                 )}
 
-                {!fullPage && <DocumentMetaSection doc={doc} classes={classes} />}
                 <DocumentEmailSection doc={doc} classes={classes} />
-
-                {!fullPage && (
-                    <DocumentFilesSection
-                        title="Files"
-                        data={files}
-                        fullPage={fullPage}
-                        baseUrl={collectionBaseUrl}
-                        classes={classes}
-                    />
-                )}
 
                 <DocumentHTMLSection
                     html={doc.safe_html}
@@ -185,6 +174,18 @@ class Document extends Component {
                         classes={classes}
                     />
                 ))}
+
+                {!fullPage && <DocumentMetaSection doc={doc} classes={classes} />}
+
+                {!fullPage && (
+                    <DocumentFilesSection
+                        title="Files"
+                        data={files}
+                        fullPage={fullPage}
+                        baseUrl={collectionBaseUrl}
+                        classes={classes}
+                    />
+                )}
             </div>
         );
     }
