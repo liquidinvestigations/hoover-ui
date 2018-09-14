@@ -1,14 +1,14 @@
-import { withRouter } from 'next/router';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import { fetchDoc, fetchServerDoc } from '../src/actions';
 import Document, { Meta } from '../src/components/Document';
 import Locations from '../src/components/Locations';
 import SplitPaneLayout from '../src/components/SplitPaneLayout';
+import { parseLocation } from '../src/utils';
 
 class Doc extends Component {
     componentDidMount() {
-        const { query } = this.props.router;
+        const { query } = parseLocation();
 
         if (query.path) {
             this.props.dispatch(fetchDoc(query.path));
@@ -39,4 +39,4 @@ class Doc extends Component {
     }
 }
 
-export default connect(({ doc: { data, url } }) => ({ data, url }))(withRouter(Doc));
+export default connect(({ doc: { data, url } }) => ({ data, url }))(Doc);

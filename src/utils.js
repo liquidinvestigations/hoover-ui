@@ -1,3 +1,5 @@
+import url from 'url';
+
 export function makeUnsearchable(text) {
     let inMark = false;
 
@@ -41,3 +43,7 @@ export function truncatePath(str) {
 }
 
 export const formatThousands = n => n.toLocaleString('en');
+
+export function parseLocation() {
+    return url.parse(window.location.href, true);
+}
