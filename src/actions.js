@@ -136,7 +136,7 @@ export function routeChanged(newUrl) {
         // hacky
         if (parsed.pathname === '/' && collectionsWasFetched) {
             dispatch(search());
-        } else if (parsed.pathname === '/doc' && parsed.query.path) {
+        } else if (parsed.pathname.match(/\/doc\/?/) && parsed.query.path) {
             dispatch(fetchDoc(parsed.query.path));
         }
     };
