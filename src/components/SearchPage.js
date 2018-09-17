@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import Snackbar from '@material-ui/core/Snackbar';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
 import { HotKeys } from 'react-hotkeys';
@@ -28,6 +28,8 @@ import SearchRightDrawer from './SearchRightDrawer';
 import SearchSettings from './SearchSettings';
 import SplitPaneLayout from './SplitPaneLayout';
 import Modal from '@material-ui/core/Modal';
+
+import copy from 'copy-text-to-clipboard';
 
 const styles = theme => ({
     error: {
@@ -58,6 +60,7 @@ const keyMap = {
     openItem: 'o',
     focusInputField: '/',
     showHelp: '?',
+    copyMetadata: 'c',
 };
 
 const keyHelp = {
@@ -66,6 +69,9 @@ const keyHelp = {
     openItem: 'Open the currently previewed result',
     focusInputField: 'Focus the search field',
     showHelp: 'Show this help text',
+    copyMD5:
+        'Copy the checksum (MD5) of the currently previewed item to the clipboard.',
+    copyPath: 'Copy the path of the currently previewed item to the clipboard.',
 };
 
 const KeyHelp = ({ open, onClose, className }) => (
@@ -100,6 +106,7 @@ class SearchPage extends Component {
 
     state = {
         keyHelpOpen: false,
+        snackbarMessage: null,
     };
 
     async componentDidMount() {
@@ -157,6 +164,31 @@ class SearchPage extends Component {
         }
     };
 
+    copyMetadata = e => {
+        if (this.isSearchFieldFocused()) {
+            return;
+        }
+
+        e.preventDefault();
+
+        if (this.props.docData && this.props.docData.content) {
+            const string = [
+                this.props.docData.content.md5,
+                this.props.docData.content.path,
+            ].join('\n');
+
+            this.setState({
+                snackbarMessage: copy(string)
+                    ? `Copied MD5 and path to clipboard`
+                    : `Could not copy meta metadata – unsupported browser?`,
+            });
+        } else {
+            this.setState({
+                snackbarMessage: 'Unable to copy metadata – no document selected?',
+            });
+        }
+    };
+
     openCurrentItem = e => {
         this.isSearchFieldFocused() || window.open(this.props.docUrl, '_blank');
     };
@@ -170,6 +202,8 @@ class SearchPage extends Component {
 
     hideKeyHelp = () => this.setState({ keyHelpOpen: false });
 
+    handleSnackbarClose = () => this.setState({ snackbarMessage: null });
+
     render() {
         const { classes, error, query, isFetching, results } = this.props;
         const { error: localError, keyHelpOpen } = this.state;
@@ -179,15 +213,7 @@ class SearchPage extends Component {
         }
 
         return (
-            <HotKeys
-                keyMap={keyMap}
-                handlers={{
-                    nextItem: this.moveToNextItem,
-                    previousItem: this.moveToPreviousItem,
-                    focusInputField: this.focusInputField,
-                    openItem: this.openCurrentItem,
-                    showHelp: this.showKeyHelp,
-                }}>
+            <HotKeys keyMap={keyMap} handlers={this.keyHandlers}>
                 <SplitPaneLayout
                     left={<SearchLeftDrawer />}
                     right={<SearchRightDrawer />}>
@@ -255,21 +281,49 @@ class SearchPage extends Component {
                             onClose={this.hideKeyHelp}
                             className={[classes.keyHelp, classes.paper].join(' ')}
                         />
+
+                        <Snackbar
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            }}
+                            open={Boolean(this.state.snackbarMessage)}
+                            autoHideDuration={6000}
+                            onClose={this.handleSnackbarClose}
+                            ContentProps={{
+                                'aria-describedby': 'snackbar-message',
+                            }}
+                            message={
+                                <span id="snackbar-message-id">
+                                    {this.state.snackbarMessage}
+                                </span>
+                            }
+                        />
                     </div>
                 </SplitPaneLayout>
             </HotKeys>
         );
     }
+
+    keyHandlers = {
+        nextItem: this.moveToNextItem,
+        previousItem: this.moveToPreviousItem,
+        focusInputField: this.focusInputField,
+        openItem: this.openCurrentItem,
+        showHelp: this.showKeyHelp,
+        copyMetadata: this.copyMetadata,
+    };
 }
 
 const mapStateToProps = ({
     search,
     collections: { selected },
-    doc: { url: docUrl },
+    doc: { url: docUrl, data: docData },
 }) => ({
     ...search,
     selectedCollections: selected,
     docUrl,
+    docData,
 });
 
 export default withStyles(styles)(connect(mapStateToProps)(SearchPage));
