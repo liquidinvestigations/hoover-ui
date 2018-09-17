@@ -69,9 +69,8 @@ const keyHelp = {
     openItem: 'Open the currently previewed result',
     focusInputField: 'Focus the search field',
     showHelp: 'Show this help text',
-    copyMD5:
-        'Copy the checksum (MD5) of the currently previewed item to the clipboard.',
-    copyPath: 'Copy the path of the currently previewed item to the clipboard.',
+    copyMetadata:
+        'Copy metadata (MD5 and path) of the currently previewed item to the clipboard.',
 };
 
 const KeyHelp = ({ open, onClose, className }) => (
