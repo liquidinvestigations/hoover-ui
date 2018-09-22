@@ -95,7 +95,7 @@ class BatchPage extends Component {
             <form id="batch-form" ref="form">
                 <div className={classes.toolbar} />
                 <Grid container>
-                    <Grid item sm={4}>
+                    <Grid item sm={2}>
                         <List dense>
                             <Filter
                                 title="Collections"
@@ -105,7 +105,7 @@ class BatchPage extends Component {
                             </Filter>
                         </List>
                     </Grid>
-                    <Grid item sm={8}>
+                    <Grid item sm={6}>
                         <div className={classes.main}>
                             <TextField
                                 id="multiline-flexible"

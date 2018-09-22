@@ -1,6 +1,8 @@
 import { Component } from 'react';
 import classNames from 'classnames';
 import api from '../api';
+import url from 'url';
+import Typography from '@material-ui/core/Typography';
 
 export default class Batch extends Component {
     state = {
@@ -55,19 +57,21 @@ export default class Batch extends Component {
             return this.onError(resp);
         }
 
-        var url = function(term) {
-            var u = './?q=' + encodeURIComponent(term);
-            let collections = this.state.query.collections;
-            if (collections) {
-                u += '&collections=' + collections.map(encodeURIComponent).join('+');
-            }
-            return u;
-        }.bind(this);
+        const formatUrl = term =>
+            url.format({
+                pathname: './',
+                query: {
+                    q: term,
+                    collections: this.state.query.collections
+                        ? this.state.query.collections.join('+')
+                        : undefined,
+                },
+            });
 
         let newResults = resp.responses.map(r => {
             let rv = {
                 term: r._query_string,
-                url: url(r._query_string),
+                url: formatUrl(r._query_string),
             };
             if (r.error) {
                 console.error(r.error);
@@ -79,7 +83,7 @@ export default class Batch extends Component {
         });
 
         this.setState({
-            results: [].concat(this.state.results, newResults),
+            results: [...this.state.results, ...newResults],
         });
 
         let offset = this.state.batchOffset;
@@ -136,12 +140,12 @@ export default class Batch extends Component {
 
             return (
                 <li key={url} className={classNames({ 'no-hits': count == 0 })}>
-                    <h3>
+                    <Typography>
                         <a href={url} target="_blank" className="batch-results-link">
                             {result}
                             {term}
                         </a>
-                    </h3>
+                    </Typography>
                 </li>
             );
         };
@@ -171,7 +175,7 @@ export default class Batch extends Component {
         }
 
         return (
-            <div className="batch-results col-sm-10">
+            <div className="batch-results">
                 <p style={{ float: 'right' }}>{progressMessage}</p>
                 {resultList}
             </div>
