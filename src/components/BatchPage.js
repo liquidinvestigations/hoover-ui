@@ -114,6 +114,7 @@ class BatchPage extends Component {
                                 fullWidth
                                 autoFocus
                                 rows="4"
+                                rowsMax={batchSize || Infinity}
                                 value={this.state.query}
                                 onChange={e =>
                                     this.setState({ query: e.target.value })
