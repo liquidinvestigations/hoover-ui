@@ -59,7 +59,7 @@ export default class Batch extends Component {
 
         const formatUrl = term =>
             url.format({
-                pathname: './',
+                pathname: '/',
                 query: {
                     q: term,
                     collections: this.state.query.collections
