@@ -55,6 +55,10 @@ const styles = theme => ({
     },
 
     preWrap: { whiteSpace: 'pre-wrap' },
+
+    section: {
+        backgroundColor: 'white',
+    },
 });
 
 const SectionHeader = withStyles(styles)(({ classes, title }) => (
@@ -395,7 +399,7 @@ class DocumentFilesSection extends Component {
 
         return (
             files.length > 0 && (
-                <section>
+                <section className={classes.section}>
                     <SectionHeader title={title} />
                     <SectionContent scrollX>
                         <Table>

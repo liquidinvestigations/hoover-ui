@@ -46,36 +46,7 @@ export default class HooverDocument extends Document {
 
         return (
             <html lang="no">
-                <Head>
-                    <meta charSet="utf-8" />
-                    <title>Hoover</title>
-
-                    <meta
-                        name="viewport"
-                        content={
-                            'user-scalable=0, initial-scale=1, ' +
-                            'minimum-scale=1, width=device-width, height=device-height'
-                        }
-                    />
-
-                    <link rel="stylesheet" href="/_next/static/style.css" />
-
-                    <link
-                        rel="stylesheet"
-                        href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500|Roboto+Condensed:300,400,500"
-                    />
-
-                    <meta
-                        name="theme-color"
-                        content={pageContext.theme.palette.primary.main}
-                    />
-
-                    <script
-                        dangerouslySetInnerHTML={{
-                            __html: `/* HOOVER HYDRATION PLACEHOLDER */\n<!-- HOOVER SCRIPT PLACEHOLDER -->`,
-                        }}
-                    />
-                </Head>
+                <Head />
 
                 <body>
                     <Main />
