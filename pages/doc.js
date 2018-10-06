@@ -22,10 +22,10 @@ class Doc extends Component {
             return null;
         }
 
-        const { data, url } = this.props;
+        const { data, url, collection } = this.props;
 
         const left = data && <Locations data={data} url={url} />;
-        const right = data && <Meta doc={data} />;
+        const right = data && <Meta doc={data} collection={collection} />;
 
         return (
             <SplitPaneLayout
@@ -39,4 +39,8 @@ class Doc extends Component {
     }
 }
 
-export default connect(({ doc: { data, url } }) => ({ data, url }))(Doc);
+export default connect(({ doc: { data, url, collection } }) => ({
+    data,
+    url,
+    collection,
+}))(Doc);

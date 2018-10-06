@@ -131,6 +131,11 @@ const INITIAL_DOC_STATE = {
     locations: null,
 };
 
+const parseCollection = url => {
+    const [, collection] = url.match(/(?:^|\/)doc\/(.+?)\//) || [];
+    return collection;
+};
+
 function doc(state = INITIAL_DOC_STATE, action) {
     switch (action.type) {
         case 'CLEAR_DOC':
@@ -140,6 +145,7 @@ function doc(state = INITIAL_DOC_STATE, action) {
                 ...state,
                 isFetching: true,
                 url: action.url,
+                collection: parseCollection(action.url),
                 data: null,
                 error: null,
             };
@@ -150,6 +156,7 @@ function doc(state = INITIAL_DOC_STATE, action) {
                 isFetching: false,
                 data: action.data,
                 url: action.url,
+                collection: parseCollection(action.url),
             };
         case 'FETCH_DOC_FAILURE':
             return { ...state, isFetching: false, error: action.error };

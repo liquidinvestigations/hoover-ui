@@ -78,7 +78,8 @@ class Document extends Component {
 
     render() {
         const { tab } = this.state;
-        const { docUrl, fullPage, classes, isFetching } = this.props;
+        const { docUrl, collection, fullPage, classes, isFetching } = this.props;
+
         let doc = this.props.data;
 
         if (isFetching) {
@@ -175,7 +176,13 @@ class Document extends Component {
                     />
                 ))}
 
-                {!fullPage && <DocumentMetaSection doc={doc} classes={classes} />}
+                {!fullPage && (
+                    <DocumentMetaSection
+                        doc={doc}
+                        collection={collection}
+                        classes={classes}
+                    />
+                )}
 
                 {!fullPage && (
                     <DocumentFilesSection
@@ -193,7 +200,7 @@ class Document extends Component {
 
 class DocumentMetaSection extends Component {
     render() {
-        const { doc, classes } = this.props;
+        const { doc, collection, classes } = this.props;
         const data = doc.content;
 
         return (
@@ -202,6 +209,13 @@ class DocumentMetaSection extends Component {
 
                 <SectionContent>
                     <List dense>
+                        <ListItem disableGutters>
+                            <ListItemText
+                                primary="Collection"
+                                secondary={collection}
+                            />
+                        </ListItem>
+
                         <ListItem disableGutters>
                             <ListItemText
                                 primary="Filename"
@@ -431,10 +445,11 @@ class DocumentHTMLSection extends Component {
         );
     }
 }
-const mapStateToProps = ({ doc: { isFetching, data, url } }) => ({
+const mapStateToProps = ({ doc: { isFetching, data, url, collection } }) => ({
     isFetching,
     data,
     docUrl: url,
+    collection,
 });
 
 export const Meta = withStyles(styles)(DocumentMetaSection);
