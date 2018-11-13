@@ -17,8 +17,6 @@ export default withTheme()(({ children, theme }) => (
                 }
             />
 
-            <link rel="stylesheet" href="/_next/static/style.css" />
-
             <link
                 rel="stylesheet"
                 href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500|Roboto+Condensed:300,400,500"

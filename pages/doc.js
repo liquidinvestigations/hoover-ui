@@ -1,12 +1,22 @@
 import { Component } from 'react';
 import { connect } from 'react-redux';
+import { withStyles } from '@material-ui/core/styles';
+
 import { fetchDoc, fetchServerDoc } from '../src/actions';
+
 import Document, { Meta } from '../src/components/Document';
 import Locations from '../src/components/Locations';
+import Finder from '../src/components/Finder';
 import SplitPaneLayout from '../src/components/SplitPaneLayout';
 import { parseLocation } from '../src/utils';
 
+const styles = theme => ({
+    container: theme.mixins.toolbar,
+});
+
 class Doc extends Component {
+    state = { finder: false };
+
     componentDidMount() {
         const { query } = parseLocation();
 
@@ -15,26 +25,57 @@ class Doc extends Component {
         } else {
             this.props.dispatch(fetchServerDoc());
         }
+
+        if (query.finder) {
+            this.setState({ finder: true });
+        }
     }
 
     render() {
-        if (!this.props.url) {
+        const { data, url, collection, classes } = this.props;
+        const { finder } = this.state;
+
+        if (!url) {
             return null;
         }
 
-        const { data, url, collection } = this.props;
+        let left,
+            right,
+            center,
+            size = {};
 
-        const left = data && <Locations data={data} url={url} />;
-        const right = data && <Meta doc={data} collection={collection} />;
+        const doc = <Document fullPage />;
+        const meta = data && <Meta doc={data} collection={collection} />;
+
+        if (finder) {
+            size = { left: '50%', middle: '50%' };
+
+            left = (
+                <div>
+                    {data && <Finder data={data} url={url} />}
+                    {meta}
+                </div>
+            );
+
+            center = doc;
+            right = null;
+        } else {
+            size = { left: '25%', middle: '70%' };
+            left = data && <Locations data={data} url={url} />;
+            center = meta;
+            right = doc;
+        }
 
         return (
-            <SplitPaneLayout
-                left={left}
-                right={right}
-                defaultSizeLeft="25%"
-                defaultSizeMiddle="70%">
-                <Document fullPage />
-            </SplitPaneLayout>
+            <div>
+                <SplitPaneLayout
+                    left={left}
+                    right={right}
+                    defaultSizeLeft={size.left}
+                    defaultSizeMiddle={size.middle}>
+                    {center}
+                </SplitPaneLayout>
+            </div>
         );
     }
 }
@@ -43,4 +84,4 @@ export default connect(({ doc: { data, url, collection } }) => ({
     data,
     url,
     collection,
-}))(Doc);
+}))(withStyles(styles)(Doc));

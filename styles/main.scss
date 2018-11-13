@@ -1,5 +1,6 @@
 @import "~react-placeholder/lib/reactPlaceholder.css";
 @import "resizer.scss";
+@import "~finderjs/example/finderjs.css";
 
 $font-family-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 $font-family-sans-serif: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -55,7 +56,6 @@ mark {
     font-style: normal;
 }
 
-
 .preview-content {
     white-space: pre-wrap;
 
@@ -67,7 +67,6 @@ mark {
 }
 
 .loading {
-    margin-auto: true;
     margin-top: 25px;
     text-align: center;
     line-height: 35px;
@@ -75,16 +74,15 @@ mark {
 
 .loading-animate {
     -animation: spin 0.7s infinite linear;
-    -webkit-animation: spin2 0.7s infinite linear;
 }
 
-@-webkit-keyframes spin2 {
+@keyframes spin2 {
     from {
-        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
     }
 
     to {
-        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
     }
 }
 
@@ -134,4 +132,15 @@ mark {
 
 div[tabindex="-1"]:focus {
     outline: 0;
+}
+
+.finder {
+    .fjs-container {
+        font-family: $font-family-sans-serif;
+        font-size: 12px;
+    }
+
+    .fjs-col {
+        text-align: left;
+    }
 }
