@@ -5,8 +5,8 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import JssProvider from 'react-jss/lib/JssProvider';
 
-import LuxonUtils from 'material-ui-pickers/utils/luxon-utils';
-import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider';
+import LuxonUtils from '@date-io/luxon';
+import { MuiPickersUtilsProvider } from 'material-ui-pickers';
 
 import getPageContext from '../src/get-page-context';
 import withReduxStore from '../src/with-redux-store';

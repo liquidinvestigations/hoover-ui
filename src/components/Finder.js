@@ -50,7 +50,10 @@ class Finder extends React.Component {
 
     navigateTo(item) {
         if (item.href) {
-            this.props.router.push({ pathname: '/doc', query: { path: item.href } });
+            this.props.router.push({
+                pathname: '/doc',
+                query: { path: item.href },
+            });
         }
     }
 

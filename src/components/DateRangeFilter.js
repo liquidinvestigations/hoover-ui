@@ -14,7 +14,7 @@ import IconArrowLeft from '@material-ui/icons/ArrowLeft';
 import IconArrowRight from '@material-ui/icons/ArrowRight';
 import IconEvent from '@material-ui/icons/Event';
 
-import DatePicker from 'material-ui-pickers/DatePicker';
+import { DatePicker } from 'material-ui-pickers';
 
 const styles = theme => ({
     textField: {

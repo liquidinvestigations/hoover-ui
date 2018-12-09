@@ -50,7 +50,7 @@ export default class Locations extends Component {
             <div>
                 <List component="nav" dense>
                     <ListItem dense>
-                        <Typography variant="title">Navigation</Typography>
+                        <Typography variant="h6">Navigation</Typography>
                     </ListItem>
 
                     {data.parent_id && (
@@ -134,7 +134,7 @@ export default class Locations extends Component {
                     {locations.length > 1 && (
                         <Fragment>
                             <ListItem>
-                                <Typography variant="subheading">
+                                <Typography variant="subtitle1">
                                     Locations
                                 </Typography>
                             </ListItem>

@@ -63,7 +63,7 @@ const styles = theme => ({
 
 const SectionHeader = withStyles(styles)(({ classes, title }) => (
     <div className={classes.sectionHeader}>
-        <Typography variant="title">{title}</Typography>
+        <Typography variant="h6">{title}</Typography>
     </div>
 ));
 
@@ -244,25 +244,17 @@ class DocumentMetaSection extends Component {
                             </ListItem>
                         )}
 
-                        {data.filetype !== 'folder' &&
-                            data.md5 && (
-                                <ListItem disableGutters>
-                                    <ListItemText
-                                        primary="MD5"
-                                        secondary={data.md5}
-                                    />
-                                </ListItem>
-                            )}
+                        {data.filetype !== 'folder' && data.md5 && (
+                            <ListItem disableGutters>
+                                <ListItemText primary="MD5" secondary={data.md5} />
+                            </ListItem>
+                        )}
 
-                        {data.filetype !== 'folder' &&
-                            data.sha1 && (
-                                <ListItem disableGutters>
-                                    <ListItemText
-                                        primary="SHA1"
-                                        secondary={data.sha1}
-                                    />
-                                </ListItem>
-                            )}
+                        {data.filetype !== 'folder' && data.sha1 && (
+                            <ListItem disableGutters>
+                                <ListItemText primary="SHA1" secondary={data.sha1} />
+                            </ListItem>
+                        )}
 
                         {data.lang && (
                             <ListItem disableGutters>

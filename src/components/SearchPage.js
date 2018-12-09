@@ -76,7 +76,7 @@ const keyHelp = {
 const KeyHelp = ({ open, onClose, className }) => (
     <Modal open={open} onClose={onClose}>
         <div className={className}>
-            <Typography variant="title">Keyboard shortcuts</Typography>
+            <Typography variant="h6">Keyboard shortcuts</Typography>
 
             <List dense>
                 {Object.entries(keyMap).map(([key, shortcut]) => (

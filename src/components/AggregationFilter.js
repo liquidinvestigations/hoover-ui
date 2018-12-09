@@ -138,7 +138,7 @@ class AggregationFilter extends Component {
                                 <Button
                                     size="small"
                                     disabled={disabled}
-                                    variant="flat"
+                                    variant="text"
                                     onClick={onLoadMore}>
                                     More ({cardinality.value - size})
                                 </Button>
@@ -148,7 +148,7 @@ class AggregationFilter extends Component {
                         <Grid item>
                             <Button
                                 size="small"
-                                variant="flat"
+                                variant="text"
                                 disabled={disabled || !selected.length}
                                 onClick={this.reset}>
                                 Reset

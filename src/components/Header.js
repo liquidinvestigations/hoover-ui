@@ -44,7 +44,7 @@ class Header extends Component {
                 <AppBar position="absolute">
                     <Toolbar>
                         <Typography
-                            variant="title"
+                            variant="h6"
                             color="inherit"
                             className={classes.flex}>
                             <Link href="/">

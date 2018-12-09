@@ -13,6 +13,7 @@ const theme = createMuiTheme({
         // },
     },
     typography: {
+        useNextVariants: true,
         fontFamily: "'Open Sans', sans-serif",
         fontFamilyMono:
             'SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
