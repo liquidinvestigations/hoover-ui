@@ -15,24 +15,30 @@ const styles = theme => ({
 });
 
 class Doc extends Component {
-    state = { finder: false };
+    state = { finder: true };
 
     componentDidMount() {
         const { query } = parseLocation();
 
-        if (query.path) {
-            this.props.dispatch(fetchDoc(query.path));
-        } else {
-            this.props.dispatch(fetchServerDoc());
-        }
+        const fetch = () => {
+            if (query.path) {
+                this.props.dispatch(
+                    fetchDoc(query.path, { includeParents: this.state.finder })
+                );
+            } else {
+                this.props.dispatch(fetchServerDoc());
+            }
+        };
 
-        if (query.finder) {
-            this.setState({ finder: true });
+        if (query.finder === 'false') {
+            this.setState({ finder: false }, fetch);
+        } else {
+            fetch();
         }
     }
 
     render() {
-        const { data, url, collection, classes } = this.props;
+        const { data, url, collection, isFetching } = this.props;
         const { finder } = this.state;
 
         if (!url) {
@@ -52,7 +58,7 @@ class Doc extends Component {
 
             left = (
                 <div>
-                    {data && <Finder data={data} url={url} />}
+                    <Finder isFetching={isFetching} data={data} url={url} />
                     {meta}
                 </div>
             );
@@ -80,7 +86,8 @@ class Doc extends Component {
     }
 }
 
-export default connect(({ doc: { data, url, collection } }) => ({
+export default connect(({ doc: { isFetching, data, url, collection } }) => ({
+    isFetching,
     data,
     url,
     collection,

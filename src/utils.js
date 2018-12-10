@@ -1,5 +1,9 @@
 import url from 'url';
 
+export function getBasePath(docUrl) {
+    return url.parse(url.resolve(docUrl, './')).pathname;
+}
+
 export function makeUnsearchable(text) {
     let inMark = false;
 

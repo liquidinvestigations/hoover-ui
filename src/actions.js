@@ -4,6 +4,7 @@ import Router from 'next/router';
 import qs from 'qs';
 import url from 'url';
 import api from './api';
+import { getBasePath } from './utils';
 import { DATE_FORMAT, SORT_OPTIONS } from './constants';
 
 export function fetchCollections() {
@@ -136,8 +137,12 @@ export function routeChanged(newUrl) {
         // hacky
         if (parsed.pathname === '/' && collectionsWasFetched) {
             dispatch(search());
-        } else if (parsed.pathname.match(/\/doc\/?/) && parsed.query.path) {
-            dispatch(fetchDoc(parsed.query.path));
+        } else if (
+            parsed.pathname.match(/\/doc\/?/) &&
+            parsed.query.path &&
+            parsed.query.path !== getState().doc.url
+        ) {
+            dispatch(fetchDoc(parsed.query.path, { includeParents: true }));
         }
     };
 }
@@ -244,7 +249,7 @@ export const fetchServerDoc = () => {
     };
 };
 
-export const fetchDoc = url => {
+export const fetchDoc = (url, { includeParents } = {}) => {
     return async (dispatch, getState) => {
         dispatch({
             type: 'FETCH_DOC',
@@ -252,10 +257,26 @@ export const fetchDoc = url => {
         });
 
         try {
+            const data = await api.doc(url);
+
+            if (includeParents) {
+                let current = data;
+
+                while (current.parent_id) {
+                    console.log(current.id, current.parent_id);
+
+                    current.parent = await api.doc(
+                        getBasePath(url) + current.parent_id
+                    );
+
+                    current = current.parent;
+                }
+            }
+
             dispatch({
                 type: 'FETCH_DOC_SUCCESS',
                 url,
-                data: await api.doc(url),
+                data,
             });
         } catch (error) {
             dispatch({

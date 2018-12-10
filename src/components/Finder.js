@@ -1,34 +1,50 @@
+import { Component } from 'react';
 import ReactFinder from './ReactFinder';
-import api from '../api';
-import url from 'url';
 import last from 'lodash/last';
 import { withRouter } from 'next/router';
+import { getBasePath } from '../utils';
 
-class Finder extends React.Component {
-    state = {};
+const filenameFor = item => {
+    if (item.filename) {
+        return item.filename;
+    } else {
+        const { filename, path } = item.content;
+        return filename || last(path.split('/').filter(Boolean)) || path || item.id;
+    }
+};
 
-    getBasePath() {
-        const { url: docUrl } = this.props;
-        return url.parse(url.resolve(docUrl, './')).pathname;
+const buildTree = (leaf, url) => {
+    const basePath = getBasePath(url);
+
+    const createNode = item => {
+        return {
+            id: item.id,
+            label: filenameFor(item),
+            href: [basePath, item.id].join(''),
+            parent: item.parent,
+            children: [],
+        };
+    };
+
+    let current = createNode(leaf);
+    current.children = (leaf.children || []).map(createNode);
+
+    while (current.parent) {
+        const parentNode = createNode(current.parent);
+
+        parentNode.children = (current.parent.children || []).map(child =>
+            child.id === current.id ? current : createNode(child)
+        );
+
+        current = parentNode;
     }
 
-    async componentDidMount() {
-        const { data } = this.props;
-        const basePath = this.getBasePath();
+    return [current];
+};
 
-        this.setState({
-            parent: await this.fetchParent(basePath, data),
-        });
-    }
-
-    async fetchParent(basePath, data) {
-        console.log(data);
-
-        if (data.parent_id) {
-            const parentUrl = `${basePath}${data.parent_id}`;
-            console.log('fetching', parentUrl);
-            return await api.doc(parentUrl);
-        }
+class Finder extends Component {
+    shouldComponentUpdate(nextProps, nextState) {
+        return !nextProps.isFetching;
     }
 
     handleColumnCreated = (...args) => console.log('column-created', ...args);
@@ -57,40 +73,10 @@ class Finder extends React.Component {
         }
     }
 
-    urlFor(item) {
-        return [this.getBasePath(), item.id].join('');
-    }
-
-    filenameFor(item) {
-        if (item.filename) {
-            return item.filename;
-        } else {
-            const { filename, path } = item.content;
-            return filename || last(path.split('/').filter(Boolean)) || path;
-        }
-    }
-
-    buildTree(root) {
-        const { data } = this.props;
-        const isCurrent = root && root.id == data.id;
-
-        return {
-            id: root ? root.id : null,
-            label: root ? this.filenameFor(root) : 'Loading…',
-            href: root ? this.urlFor(root) : null,
-            children: root
-                ? ((isCurrent ? data.children : root.children) || []).map(child =>
-                      this.buildTree(child)
-                  )
-                : [],
-        };
-    }
-
     render() {
-        const { parent } = this.state;
-        const { data } = this.props;
+        const { data, url } = this.props;
 
-        const tree = [this.buildTree(parent)];
+        const tree = data ? buildTree(data, url) : [];
 
         return (
             <div className="finder">
