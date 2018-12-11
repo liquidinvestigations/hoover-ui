@@ -9,6 +9,7 @@ import Locations from '../src/components/Locations';
 import Finder from '../src/components/Finder';
 import SplitPaneLayout from '../src/components/SplitPaneLayout';
 import { parseLocation } from '../src/utils';
+import { Typography } from '@material-ui/core';
 
 const styles = theme => ({
     container: theme.mixins.toolbar,
@@ -40,11 +41,19 @@ class Doc extends Component {
     }
 
     render() {
-        const { data, url, collection, isFetching } = this.props;
+        const { data, url, collection, isFetching, error } = this.props;
         const { finder } = this.state;
 
         if (!url) {
             return null;
+        }
+
+        if (error) {
+            return (
+                <Typography style={{ margin: '5rem 2rem' }}>
+                    {error.message}
+                </Typography>
+            );
         }
 
         let left,
@@ -88,9 +97,10 @@ class Doc extends Component {
     }
 }
 
-export default connect(({ doc: { isFetching, data, url, collection } }) => ({
+export default connect(({ doc: { isFetching, data, url, collection, error } }) => ({
     isFetching,
     data,
     url,
     collection,
+    error,
 }))(withStyles(styles)(Doc));

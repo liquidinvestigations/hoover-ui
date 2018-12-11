@@ -265,8 +265,6 @@ export const fetchDoc = (url, { includeParents } = {}) => {
                 let current = data;
 
                 while (current.parent_id) {
-                    console.log(current.id, current.parent_id);
-
                     current.parent = await api.doc(
                         getBasePath(url) + current.parent_id
                     );
