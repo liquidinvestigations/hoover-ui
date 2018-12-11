@@ -56,6 +56,10 @@ export default class ReactFinder extends PureComponent {
                 const node = this.container.current;
                 node.scrollLeft = node.scrollWidth - node.clientWidth;
             });
+
+            this.finder.on('item-selected', ({ col, item }) => {
+                col.scrollTop = item.offsetTop - 100;
+            });
         }
 
         if (defaultValue) {
@@ -77,6 +81,7 @@ export default class ReactFinder extends PureComponent {
         }
 
         let i = data.findIndex(e => e.id === value.id);
+
         if (i > -1) {
             result.push(i);
             return result;
@@ -89,6 +94,7 @@ export default class ReactFinder extends PureComponent {
                     result = result.concat([i], ci);
                     return true;
                 }
+
                 return false;
             }
         });
@@ -110,6 +116,7 @@ export default class ReactFinder extends PureComponent {
             if (item != undefined) {
                 itemData = itemData.children[index];
                 item._item = itemData;
+
                 this.finder.emit('item-selected', {
                     col: cols[i],
                     item: item,

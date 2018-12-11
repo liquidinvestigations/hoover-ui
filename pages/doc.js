@@ -15,23 +15,25 @@ const styles = theme => ({
 });
 
 class Doc extends Component {
-    state = { finder: true };
+    state = { finder: false };
 
     componentDidMount() {
-        const { query } = parseLocation();
+        const { query, pathname } = parseLocation();
 
         const fetch = () => {
             if (query.path) {
                 this.props.dispatch(
                     fetchDoc(query.path, { includeParents: this.state.finder })
                 );
+            } else if (this.state.finder) {
+                this.props.dispatch(fetchDoc(pathname, { includeParents: true }));
             } else {
                 this.props.dispatch(fetchServerDoc());
             }
         };
 
-        if (query.finder === 'false') {
-            this.setState({ finder: false }, fetch);
+        if (query.finder && query.finder !== 'false') {
+            this.setState({ finder: true }, fetch);
         } else {
             fetch();
         }

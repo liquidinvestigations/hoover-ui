@@ -13,27 +13,28 @@ const filenameFor = item => {
     }
 };
 
-const buildTree = (leaf, url) => {
-    const basePath = getBasePath(url);
+const buildTree = (leaf, basePath) => {
+    const nodesById = {};
 
     const createNode = item => {
-        return {
+        const node = (nodesById[item.id] = nodesById[item.id] || {
             id: item.id,
             label: filenameFor(item),
             href: [basePath, item.id].join(''),
-            parent: item.parent,
-            children: [],
-        };
+            parent: item.parent ? createNode(item.parent) : null,
+            children: (item.children || []).map(createNode),
+        });
+
+        return node;
     };
 
     let current = createNode(leaf);
-    current.children = (leaf.children || []).map(createNode);
 
     while (current.parent) {
-        const parentNode = createNode(current.parent);
+        const parentNode = current.parent;
 
-        parentNode.children = (current.parent.children || []).map(child =>
-            child.id === current.id ? current : createNode(child)
+        parentNode.children = parentNode.children.map(
+            child => nodesById[child.id] || child
         );
 
         current = parentNode;
@@ -76,7 +77,7 @@ class Finder extends Component {
     render() {
         const { data, url } = this.props;
 
-        const tree = data ? buildTree(data, url) : [];
+        const tree = data ? buildTree(data, getBasePath(url)) : [];
 
         return (
             <div className="finder">
