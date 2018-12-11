@@ -123,6 +123,11 @@ export function writeSearchQueryToUrl() {
 export function routeChanged(newUrl) {
     return (dispatch, getState) => {
         const parsed = url.parse(newUrl, true);
+        const {
+            initial,
+            doc,
+            collections: { wasFetched: collectionsWasFetched },
+        } = getState();
 
         dispatch({
             type: 'ROUTE_CHANGED',
@@ -130,17 +135,14 @@ export function routeChanged(newUrl) {
             parsed,
         });
 
-        const {
-            collections: { wasFetched: collectionsWasFetched },
-        } = getState();
-
         // hacky
         if (parsed.pathname === '/' && collectionsWasFetched) {
             dispatch(search());
         } else if (
             parsed.pathname.match(/\/doc\/?/) &&
             parsed.query.path &&
-            parsed.query.path !== getState().doc.url
+            parsed.query.path !== doc.url &&
+            !initial
         ) {
             dispatch(fetchDoc(parsed.query.path, { includeParents: true }));
         }

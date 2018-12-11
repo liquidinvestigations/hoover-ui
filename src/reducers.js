@@ -189,11 +189,13 @@ function batch(state = INITIAL_BATCH_STATE, action) {
     }
 }
 
-const INITIAL_ROUTE_STATE = {};
+const INITIAL_ROUTE_STATE = {
+    initial: true,
+};
 
 function router(state = INITIAL_ROUTE_STATE, action) {
     if (action.type === 'ROUTE_CHANGED') {
-        return { ...state, ...action.parsed };
+        return { ...state, ...action.parsed, initial: false };
     } else {
         return state;
     }
