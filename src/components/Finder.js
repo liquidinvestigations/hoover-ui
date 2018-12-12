@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import ReactFinder from './ReactFinder';
+import ErrorBoundary from './ErrorBoundary';
 import last from 'lodash/last';
 import { withRouter } from 'next/router';
 import { getBasePath } from '../utils';
@@ -22,7 +23,7 @@ const buildTree = (leaf, basePath) => {
             label: filenameFor(item),
             href: [basePath, item.id].join(''),
             parent: item.parent ? createNode(item.parent) : null,
-            children: (item.children || []).map(createNode),
+            children: item.children ? item.children.map(createNode) : null,
         });
 
         return node;
@@ -33,9 +34,9 @@ const buildTree = (leaf, basePath) => {
     while (current.parent) {
         const parentNode = current.parent;
 
-        parentNode.children = parentNode.children.map(
-            child => nodesById[child.id] || child
-        );
+        parentNode.children = parentNode.children
+            ? parentNode.children.map(child => nodesById[child.id] || child)
+            : null;
 
         current = parentNode;
     }
@@ -81,7 +82,7 @@ class Finder extends Component {
 
         return (
             <div className="finder">
-                <div>
+                <ErrorBoundary visible>
                     <ReactFinder
                         data={tree}
                         defaultValue={data}
@@ -90,7 +91,7 @@ class Finder extends Component {
                         onInteriorSelected={this.handleInteriorSelected}
                         onColumnCreated={this.handleColumnCreated}
                     />
-                </div>
+                </ErrorBoundary>
             </div>
         );
     }

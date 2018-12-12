@@ -135,9 +135,23 @@ div[tabindex="-1"]:focus {
 }
 
 .finder {
+    height: 100%;
+
     .fjs-container {
         font-family: $font-family-sans-serif;
         font-size: 12px;
+        min-height: 0;
+        height: 100%;
+    }
+
+    .fjs-col {
+        min-height: 0;
+        max-height: none;
+        height: 100%;
+    }
+
+    .fjs-list {
+        height: 100%;
     }
 
     .fjs-item a {

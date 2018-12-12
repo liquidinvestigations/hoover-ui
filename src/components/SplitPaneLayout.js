@@ -39,8 +39,9 @@ export default withStyles(styles)(
         classes,
         defaultSizeLeft = '20%',
         defaultSizeMiddle = '60%',
+        container = true,
     } = {}) => (
-        <div className={classes.container}>
+        <div className={container ? classes.container : null}>
             <SplitPane
                 split="vertical"
                 defaultSize={defaultSizeLeft}
@@ -48,7 +49,7 @@ export default withStyles(styles)(
                 pane1ClassName={classes.left}
                 pane2ClassName={right ? null : classes.middle}>
                 <div>
-                    <div className={classes.toolbar} />
+                    <div className={container ? classes.toolbar : null} />
                     {left}
                 </div>
                 {right ? (
@@ -59,20 +60,22 @@ export default withStyles(styles)(
                         pane1ClassName={classes.middle}
                         pane2ClassName={classes.right}>
                         <div>
-                            <div className={classes.toolbar} />
+                            <div className={container ? classes.toolbar : null} />
                             {children}
                         </div>
 
                         {right && (
                             <div>
-                                <div className={classes.toolbar} />
+                                <div
+                                    className={container ? classes.toolbar : null}
+                                />
                                 {right}
                             </div>
                         )}
                     </SplitPane>
                 ) : (
                     <div>
-                        <div className={classes.toolbar} />
+                        <div className={container ? classes.toolbar : null} />
                         {children}
                     </div>
                 )}

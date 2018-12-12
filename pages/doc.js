@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
+import SplitPane from 'react-split-pane';
 
 import { fetchDoc, fetchServerDoc } from '../src/actions';
 
@@ -24,7 +25,9 @@ class Doc extends Component {
         const fetch = () => {
             if (query.path) {
                 this.props.dispatch(
-                    fetchDoc(query.path, { includeParents: this.state.finder })
+                    fetchDoc(query.path, {
+                        includeParents: this.state.finder,
+                    })
                 );
             } else if (this.state.finder) {
                 this.props.dispatch(fetchDoc(pathname, { includeParents: true }));
@@ -41,7 +44,7 @@ class Doc extends Component {
     }
 
     render() {
-        const { data, url, collection, isFetching, error } = this.props;
+        const { data, url, collection, isFetching, error, classes } = this.props;
         const { finder } = this.state;
 
         if (!url) {
@@ -56,44 +59,41 @@ class Doc extends Component {
             );
         }
 
-        let left,
-            right,
-            center,
-            size = {};
-
         const doc = <Document fullPage />;
-        const meta = data && <Meta doc={data} collection={collection} />;
+        const meta = <Meta doc={data} collection={collection} />;
 
         if (finder) {
-            size = { left: '50%', middle: '50%' };
-
-            left = (
+            return (
                 <div>
-                    <Finder isFetching={isFetching} data={data} url={url} />
-                    {meta}
+                    <SplitPane split="horizontal" defaultSize="25%">
+                        <div>
+                            <div className={classes.container} />
+                            <Finder isFetching={isFetching} data={data} url={url} />
+                        </div>
+
+                        <SplitPaneLayout
+                            container={false}
+                            left={meta}
+                            defaultSizeLeft={'30%'}
+                            defaultSizeMiddle={'70%'}>
+                            {doc}
+                        </SplitPaneLayout>
+                    </SplitPane>
                 </div>
             );
-
-            center = doc;
-            right = null;
         } else {
-            size = { left: '25%', middle: '70%' };
-            left = data && <Locations data={data} url={url} />;
-            center = meta;
-            right = doc;
-        }
+            // remove this branch when https://github.com/CRJI/EIC/issues/83 is done
 
-        return (
-            <div>
+            return (
                 <SplitPaneLayout
-                    left={left}
-                    right={right}
-                    defaultSizeLeft={size.left}
-                    defaultSizeMiddle={size.middle}>
-                    {center}
+                    left={data && <Locations data={data} url={url} />}
+                    right={doc}
+                    defaultSizeLeft={'25%'}
+                    defaultSizeMiddle={'70%'}>
+                    {meta}
                 </SplitPaneLayout>
-            </div>
-        );
+            );
+        }
     }
 }
 

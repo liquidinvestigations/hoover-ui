@@ -34,7 +34,8 @@ function buildQuery(q, { dateRange }) {
 }
 
 function buildSortQuery(order) {
-    var sort = ['_score', '_id'];
+    let sort = ['_score', '_id'];
+
     switch (order) {
         case SORT_NEWEST:
             sort = [{ date: { order: 'desc' } }, ...sort];
@@ -43,6 +44,7 @@ function buildSortQuery(order) {
             sort = [{ date: { order: 'asc' } }, ...sort];
             break;
     }
+
     return sort;
 }
 
@@ -163,8 +165,6 @@ export default function buildSearchQuery({
 
     const postFilter = buildFilter(fields);
     const aggs = buildAggs(fields);
-
-    const postFilterLength = Object.keys(postFilter).length;
 
     return {
         from: (page - 1) * size,

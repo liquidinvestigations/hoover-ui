@@ -76,12 +76,7 @@ const SectionContent = withStyles(styles)(
 );
 
 class Document extends Component {
-    state = { tab: 0 };
-
-    handleTabChange = (event, value) => this.setState({ tab: value });
-
     render() {
-        const { tab } = this.state;
         const { docUrl, collection, fullPage, classes, isFetching } = this.props;
 
         let doc = this.props.data;
@@ -121,6 +116,7 @@ class Document extends Component {
         const ocrData = Object.keys(data.ocrtext || {}).map((tag, index) => {
             return { tag: tag, text: data.ocrtext[tag] };
         });
+
         headerLinks.push(
             ...ocrData.map(({ tag }) => {
                 return {
@@ -132,10 +128,10 @@ class Document extends Component {
         );
 
         return (
-            <div className={classes.root}>
+            <div>
                 {headerLinks.length > 0 && (
                     <Toolbar classes={{ root: classes.toolbar }}>
-                        {headerLinks.map(({ text, icon, ...props }, index) => (
+                        {headerLinks.map(({ text, icon, ...props }) => (
                             <Tooltip title={text} key={props.href}>
                                 <IconButton
                                     size="small"
@@ -205,89 +201,101 @@ class Document extends Component {
 class DocumentMetaSection extends Component {
     render() {
         const { doc, collection, classes } = this.props;
-        const data = doc.content;
+        const data = doc ? doc.content : null;
 
         return (
             <section className={classes.section}>
                 <SectionHeader title="Meta" />
 
                 <SectionContent>
-                    <List dense>
-                        <ListItem disableGutters>
-                            <ListItemText
-                                primary="Collection"
-                                secondary={collection}
-                            />
-                        </ListItem>
-
-                        <ListItem disableGutters>
-                            <ListItemText
-                                primary="Filename"
-                                secondary={data.filename}
-                            />
-                        </ListItem>
-
-                        <ListItem disableGutters>
-                            <ListItemText primary="Path" secondary={data.path} />
-                        </ListItem>
-
-                        <ListItem disableGutters>
-                            <ListItemText primary="Id" secondary={doc.id} />
-                        </ListItem>
-
-                        {data.filetype && (
+                    {data && (
+                        <List dense>
                             <ListItem disableGutters>
                                 <ListItemText
-                                    primary="Type"
-                                    secondary={data.filetype}
+                                    primary="Collection"
+                                    secondary={collection}
                                 />
                             </ListItem>
-                        )}
 
-                        {data.filetype !== 'folder' && data.md5 && (
-                            <ListItem disableGutters>
-                                <ListItemText primary="MD5" secondary={data.md5} />
-                            </ListItem>
-                        )}
-
-                        {data.filetype !== 'folder' && data.sha1 && (
-                            <ListItem disableGutters>
-                                <ListItemText primary="SHA1" secondary={data.sha1} />
-                            </ListItem>
-                        )}
-
-                        {data.lang && (
                             <ListItem disableGutters>
                                 <ListItemText
-                                    primary="Language"
-                                    secondary={
-                                        langs.where('1', data.lang).name || data.lang
-                                    }
+                                    primary="Filename"
+                                    secondary={data.filename}
                                 />
                             </ListItem>
-                        )}
-                        {data.date && (
+
                             <ListItem disableGutters>
-                                <ListItemText
-                                    primary="Modified"
-                                    secondary={data['date']}
-                                />
+                                <ListItemText primary="Path" secondary={data.path} />
                             </ListItem>
-                        )}
-                        {data['date-created'] && (
+
                             <ListItem disableGutters>
-                                <ListItemText
-                                    primary="Created"
-                                    secondary={data['date-created']}
-                                />
+                                <ListItemText primary="Id" secondary={doc.id} />
                             </ListItem>
-                        )}
-                        {data.pgp && (
-                            <ListItem disableGutters>
-                                <ListItemText primary="PGP" secondary={data.pgp} />
-                            </ListItem>
-                        )}
-                    </List>
+
+                            {data.filetype && (
+                                <ListItem disableGutters>
+                                    <ListItemText
+                                        primary="Type"
+                                        secondary={data.filetype}
+                                    />
+                                </ListItem>
+                            )}
+
+                            {data.filetype !== 'folder' && data.md5 && (
+                                <ListItem disableGutters>
+                                    <ListItemText
+                                        primary="MD5"
+                                        secondary={data.md5}
+                                    />
+                                </ListItem>
+                            )}
+
+                            {data.filetype !== 'folder' && data.sha1 && (
+                                <ListItem disableGutters>
+                                    <ListItemText
+                                        primary="SHA1"
+                                        secondary={data.sha1}
+                                    />
+                                </ListItem>
+                            )}
+
+                            {data.lang && (
+                                <ListItem disableGutters>
+                                    <ListItemText
+                                        primary="Language"
+                                        secondary={
+                                            langs.where('1', data.lang).name ||
+                                            data.lang
+                                        }
+                                    />
+                                </ListItem>
+                            )}
+                            {data.date && (
+                                <ListItem disableGutters>
+                                    <ListItemText
+                                        primary="Modified"
+                                        secondary={data['date']}
+                                    />
+                                </ListItem>
+                            )}
+                            {data['date-created'] && (
+                                <ListItem disableGutters>
+                                    <ListItemText
+                                        primary="Created"
+                                        secondary={data['date-created']}
+                                    />
+                                </ListItem>
+                            )}
+                            {data.pgp && (
+                                <ListItem disableGutters>
+                                    <ListItemText
+                                        primary="PGP"
+                                        secondary={data.pgp}
+                                    />
+                                </ListItem>
+                            )}
+                        </List>
+                    )}
                 </SectionContent>
             </section>
         );

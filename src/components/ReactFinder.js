@@ -105,6 +105,13 @@ export default class ReactFinder extends PureComponent {
     selectDefault() {
         const path = this._getSelectedValuePath(this.props.defaultValue);
 
+        if (!path.length) {
+            throw new Error(
+                'unable to find path for default value' +
+                    JSON.stringify(this.props.defaultValue, null, 2)
+            );
+        }
+
         let itemData = {
             children: this.props.data,
         };

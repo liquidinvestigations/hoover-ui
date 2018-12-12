@@ -251,7 +251,7 @@ export const fetchServerDoc = () => {
     };
 };
 
-export const fetchDoc = (url, { includeParents } = {}) => {
+export const fetchDoc = (url, { includeParents = false, parentLevels = 3 } = {}) => {
     return async (dispatch, getState) => {
         dispatch({
             type: 'FETCH_DOC',
@@ -263,13 +263,15 @@ export const fetchDoc = (url, { includeParents } = {}) => {
 
             if (includeParents) {
                 let current = data;
+                let level = 0;
 
-                while (current.parent_id) {
+                while (current.parent_id && level <= parentLevels) {
                     current.parent = await api.doc(
                         getBasePath(url) + current.parent_id
                     );
 
                     current = current.parent;
+                    level++;
                 }
             }
 
