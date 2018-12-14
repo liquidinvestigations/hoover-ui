@@ -144,6 +144,10 @@ div[tabindex="-1"]:focus {
         height: 100%;
     }
 
+    .fjs-item-content {
+        max-width: 200px;
+    }
+
     .fjs-col {
         min-height: 0;
         max-height: none;

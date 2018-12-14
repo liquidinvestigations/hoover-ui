@@ -14,6 +14,11 @@ import HotKeys from '../src/components/HotKeys';
 
 const styles = theme => ({
     container: theme.mixins.toolbar,
+    finderSplitPane: {
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+    },
 });
 
 class Doc extends Component {
@@ -87,20 +92,25 @@ class Doc extends Component {
 
         if (finder) {
             content = (
-                <SplitPane split="horizontal" defaultSize="25%">
-                    <div>
-                        <div className={classes.container} />
-                        <Finder isFetching={isFetching} data={data} url={url} />
-                    </div>
+                <div className={classes.finderSplitPane}>
+                    <div className={classes.container} />
+                    <SplitPane
+                        split="horizontal"
+                        defaultSize="25%"
+                        style={{ position: 'relative' }}>
+                        <div>
+                            <Finder isFetching={isFetching} data={data} url={url} />
+                        </div>
 
-                    <SplitPaneLayout
-                        container={false}
-                        left={meta}
-                        defaultSizeLeft={'30%'}
-                        defaultSizeMiddle={'70%'}>
-                        {doc}
-                    </SplitPaneLayout>
-                </SplitPane>
+                        <SplitPaneLayout
+                            container={false}
+                            left={meta}
+                            defaultSizeLeft={'30%'}
+                            defaultSizeMiddle={'70%'}>
+                            {doc}
+                        </SplitPaneLayout>
+                    </SplitPane>
+                </div>
             );
         } else {
             // remove this branch when https://github.com/CRJI/EIC/issues/83 is done
