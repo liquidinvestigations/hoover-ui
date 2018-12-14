@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { Component, createRef } from 'react';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import SplitPane from 'react-split-pane';
@@ -9,8 +9,8 @@ import Document, { Meta } from '../src/components/Document';
 import Locations from '../src/components/Locations';
 import Finder from '../src/components/Finder';
 import SplitPaneLayout from '../src/components/SplitPaneLayout';
-import { parseLocation } from '../src/utils';
-import { Typography } from '@material-ui/core';
+import { parseLocation, copyMetadata } from '../src/utils';
+import HotKeys from '../src/components/HotKeys';
 
 const styles = theme => ({
     container: theme.mixins.toolbar,
@@ -18,6 +18,21 @@ const styles = theme => ({
 
 class Doc extends Component {
     state = { finder: false };
+
+    keys = [
+        {
+            name: 'copyMetadata',
+            key: 'c',
+            help: 'Copy MD5 and path to clipboard',
+            handler: (e, showMessage) => {
+                if (this.props.data && this.props.data.content) {
+                    showMessage(copyMetadata(this.props.data));
+                }
+            },
+        },
+    ];
+
+    root = createRef();
 
     componentDidMount() {
         const { query, pathname } = parseLocation();
@@ -43,6 +58,12 @@ class Doc extends Component {
         }
     }
 
+    componentDidUpdate() {
+        if (this.root.current && !this.state.finder) {
+            this.root.current.focus();
+        }
+    }
+
     render() {
         const { data, url, collection, isFetching, error, classes } = this.props;
         const { finder } = this.state;
@@ -62,29 +83,29 @@ class Doc extends Component {
         const doc = <Document fullPage />;
         const meta = <Meta doc={data} collection={collection} />;
 
-        if (finder) {
-            return (
-                <div>
-                    <SplitPane split="horizontal" defaultSize="25%">
-                        <div>
-                            <div className={classes.container} />
-                            <Finder isFetching={isFetching} data={data} url={url} />
-                        </div>
+        let content = null;
 
-                        <SplitPaneLayout
-                            container={false}
-                            left={meta}
-                            defaultSizeLeft={'30%'}
-                            defaultSizeMiddle={'70%'}>
-                            {doc}
-                        </SplitPaneLayout>
-                    </SplitPane>
-                </div>
+        if (finder) {
+            content = (
+                <SplitPane split="horizontal" defaultSize="25%">
+                    <div>
+                        <div className={classes.container} />
+                        <Finder isFetching={isFetching} data={data} url={url} />
+                    </div>
+
+                    <SplitPaneLayout
+                        container={false}
+                        left={meta}
+                        defaultSizeLeft={'30%'}
+                        defaultSizeMiddle={'70%'}>
+                        {doc}
+                    </SplitPaneLayout>
+                </SplitPane>
             );
         } else {
             // remove this branch when https://github.com/CRJI/EIC/issues/83 is done
 
-            return (
+            content = (
                 <SplitPaneLayout
                     left={data && <Locations data={data} url={url} />}
                     right={doc}
@@ -94,6 +115,14 @@ class Doc extends Component {
                 </SplitPaneLayout>
             );
         }
+
+        return (
+            <HotKeys keys={this.keys} focused>
+                <div ref={this.root} tabIndex="-1">
+                    {content}
+                </div>
+            </HotKeys>
+        );
     }
 }
 

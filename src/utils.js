@@ -1,4 +1,5 @@
 import url from 'url';
+import copy from 'copy-text-to-clipboard';
 
 export function getBasePath(docUrl) {
     return url.parse(url.resolve(docUrl, './')).pathname;
@@ -51,3 +52,17 @@ export const formatThousands = n => n.toLocaleString('en');
 export function parseLocation() {
     return url.parse(window.location.href, true);
 }
+
+export const isInputFocused = () => {
+    const tagName = document.activeElement.tagName.toUpperCase();
+
+    return tagName === 'INPUT' || document.activeElement.contentEditable === 'true';
+};
+
+export const copyMetadata = doc => {
+    const string = [doc.content.md5, doc.content.path].join('\n');
+
+    return copy(string)
+        ? `Copied MD5 and path to clipboard`
+        : `Could not copy meta metadata – unsupported browser?`;
+};
