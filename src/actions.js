@@ -1,4 +1,4 @@
-import { castArray, mapValues, pickBy } from 'lodash';
+import { castArray, mapValues, pickBy, debounce } from 'lodash';
 import { DateTime } from 'luxon';
 import Router from 'next/router';
 import qs from 'qs';
@@ -43,6 +43,11 @@ export function fetchBatchLimits() {
     };
 }
 
+const refreshCollections = debounce(dispatch => {
+    dispatch(resetPagination());
+    dispatch(writeSearchQueryToUrl());
+}, 500);
+
 export function setCollectionsSelection(collections) {
     return (dispatch, getState) => {
         dispatch({
@@ -54,8 +59,7 @@ export function setCollectionsSelection(collections) {
 
         // FIXME
         if (router.pathname === '/') {
-            dispatch(resetPagination());
-            dispatch(writeSearchQueryToUrl());
+            refreshCollections(dispatch);
         }
     };
 }
