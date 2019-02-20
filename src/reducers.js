@@ -18,6 +18,7 @@ const INITIAL_SEARCH_STATE = {
         total: 0,
     },
     error: null,
+    wasQueryParsed: false,
 };
 
 function getSearchAfterByPage(state, results) {
@@ -45,7 +46,7 @@ function getSearchAfterByPage(state, results) {
 function search(state = INITIAL_SEARCH_STATE, action) {
     switch (action.type) {
         case 'PARSE_SEARCH_URL_QUERY':
-            return { ...state, query: action.query };
+            return { ...state, query: action.query, wasQueryParsed: true };
         case 'FETCH_SEARCH':
             return { ...state, isFetching: true, error: null };
         case 'UPDATE_SEARCH_QUERY':

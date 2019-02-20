@@ -130,12 +130,10 @@ class SearchPage extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (
-            prevProps.selectedCollections.length === 0 &&
-            this.props.selectedCollections.length &&
-            this.props.query.q &&
-            this.props.query.q.length
-        ) {
+        const isInitialQueryParse =
+            !prevProps.wasQueryParsed && this.props.wasQueryParsed;
+
+        if (isInitialQueryParse && this.props.query.q && this.props.query.q.length) {
             this.props.dispatch(search());
         }
     }
