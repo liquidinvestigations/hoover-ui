@@ -153,7 +153,7 @@ class SearchPage extends Component {
 
         return (
             <ErrorBoundary>
-                <HotKeys keys={this.keys}>
+                <HotKeys keys={this.keys} focused>
                     <SplitPaneLayout
                         left={<SearchLeftDrawer />}
                         right={<SearchRightDrawer />}>
