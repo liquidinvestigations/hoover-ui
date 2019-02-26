@@ -11,6 +11,7 @@ import Finder from '../src/components/Finder';
 import SplitPaneLayout from '../src/components/SplitPaneLayout';
 import { parseLocation, copyMetadata } from '../src/utils';
 import HotKeys from '../src/components/HotKeys';
+import Typography from '@material-ui/core/Typography';
 
 const styles = theme => ({
     container: theme.mixins.toolbar,

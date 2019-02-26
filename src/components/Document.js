@@ -199,6 +199,11 @@ class Document extends Component {
 }
 
 class DocumentMetaSection extends Component {
+    getLanguage(key) {
+        const found = langs.where('1', data.lang);
+        return found ? found.name : data.lang;
+    }
+
     render() {
         const { doc, collection, classes } = this.props;
         const data = doc ? doc.content : null;
@@ -263,10 +268,7 @@ class DocumentMetaSection extends Component {
                                 <ListItem disableGutters>
                                     <ListItemText
                                         primary="Language"
-                                        secondary={
-                                            langs.where('1', data.lang).name ||
-                                            data.lang
-                                        }
+                                        secondary={this.getLanguage(data.lang)}
                                     />
                                 </ListItem>
                             )}
