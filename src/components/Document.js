@@ -13,11 +13,11 @@ import Typography from '@material-ui/core/Typography';
 import IconCloudDownload from '@material-ui/icons/CloudDownload';
 import IconLaunch from '@material-ui/icons/Launch';
 import cn from 'classnames';
-import langs from 'langs';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import url from 'url';
 import Loading from './Loading';
+import { getLanguageName } from '../utils';
 
 const styles = theme => ({
     toolbar: {
@@ -199,11 +199,6 @@ class Document extends Component {
 }
 
 class DocumentMetaSection extends Component {
-    getLanguage(key) {
-        const found = langs.where('1', data.lang);
-        return found ? found.name : data.lang;
-    }
-
     render() {
         const { doc, collection, classes } = this.props;
         const data = doc ? doc.content : null;
@@ -268,7 +263,7 @@ class DocumentMetaSection extends Component {
                                 <ListItem disableGutters>
                                     <ListItemText
                                         primary="Language"
-                                        secondary={this.getLanguage(data.lang)}
+                                        secondary={getLanguageName(data.lang)}
                                     />
                                 </ListItem>
                             )}

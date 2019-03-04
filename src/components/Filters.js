@@ -13,11 +13,10 @@ import AggregationFilter from './AggregationFilter';
 import DateRangeFilter from './DateRangeFilter';
 
 import { DEFAULT_FACET_SIZE } from '../constants';
-
-import langs from 'langs';
+import { getLanguageName } from '../utils';
 
 const formatYear = bucket => DateTime.fromISO(bucket.key_as_string).year.toString();
-const formatLang = bucket => langs.where('1', bucket.key).name;
+const formatLang = bucket => getLanguageName(bucket.key);
 const timeBucketSorter = (a, b) => b.key - a.key;
 
 class Filters extends Component {

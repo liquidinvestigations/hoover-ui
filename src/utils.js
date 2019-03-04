@@ -1,5 +1,11 @@
 import url from 'url';
 import copy from 'copy-text-to-clipboard';
+import langs from 'langs';
+
+export function getLanguageName(key) {
+    const found = langs.where('1', key);
+    return found ? found.name : key;
+}
 
 export function getBasePath(docUrl) {
     return url.parse(url.resolve(docUrl, './')).pathname;
