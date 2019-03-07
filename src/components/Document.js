@@ -12,6 +12,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import IconCloudDownload from '@material-ui/icons/CloudDownload';
 import IconLaunch from '@material-ui/icons/Launch';
+import IconPrint from '@material-ui/icons/Print';
 import cn from 'classnames';
 import { Component } from 'react';
 import { connect } from 'react-redux';
@@ -77,7 +78,14 @@ const SectionContent = withStyles(styles)(
 
 class Document extends Component {
     render() {
-        const { docUrl, collection, fullPage, classes, isFetching } = this.props;
+        const {
+            docUrl,
+            collection,
+            fullPage,
+            classes,
+            isFetching,
+            toolbar,
+        } = this.props;
 
         let doc = this.props.data;
 
@@ -106,6 +114,13 @@ class Document extends Component {
 
         if (data.filetype !== 'folder') {
             headerLinks.push({
+                href: `${docUrl}?print=true`,
+                text: `Print metadata and content`,
+                icon: <IconPrint />,
+                target: '_blank',
+            });
+
+            headerLinks.push({
                 href: `${docUrl}/raw/${data.filename}`,
                 text: `Download original file`,
                 icon: <IconCloudDownload />,
@@ -129,7 +144,7 @@ class Document extends Component {
 
         return (
             <div>
-                {headerLinks.length > 0 && (
+                {headerLinks.length > 0 && toolbar !== false && (
                     <Toolbar classes={{ root: classes.toolbar }}>
                         {headerLinks.map(({ text, icon, ...props }) => (
                             <Tooltip title={text} key={props.href}>

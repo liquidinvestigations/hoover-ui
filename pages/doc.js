@@ -23,7 +23,7 @@ const styles = theme => ({
 });
 
 class Doc extends Component {
-    state = { finder: false };
+    state = { finder: false, printMode: false };
 
     keys = [
         {
@@ -57,22 +57,36 @@ class Doc extends Component {
             }
         };
 
+        const newState = {};
+
         if (query.finder && query.finder !== 'false') {
-            this.setState({ finder: true }, fetch);
+            newState.finder = true;
+        }
+
+        if (query.print && query.print !== 'false') {
+            newState.printMode = true;
+        }
+
+        if (Object.keys(newState).length) {
+            this.setState(newState, fetch);
         } else {
             fetch();
         }
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps, prevState) {
         if (this.root.current && !this.state.finder) {
             this.root.current.focus();
+        }
+
+        if (this.state.printMode && prevProps.isFetching && !this.props.isFetching) {
+            window.print();
         }
     }
 
     render() {
         const { data, url, collection, isFetching, error, classes } = this.props;
-        const { finder } = this.state;
+        const { finder, printMode } = this.state;
 
         if (!url) {
             return null;
@@ -86,7 +100,7 @@ class Doc extends Component {
             );
         }
 
-        const doc = <Document fullPage />;
+        const doc = <Document fullPage toolbar={!printMode} />;
         const meta = <Meta doc={data} collection={collection} />;
 
         let content = null;
@@ -111,6 +125,13 @@ class Doc extends Component {
                             {doc}
                         </SplitPaneLayout>
                     </SplitPane>
+                </div>
+            );
+        } else if (printMode) {
+            content = (
+                <div>
+                    {meta}
+                    {doc}
                 </div>
             );
         } else {
