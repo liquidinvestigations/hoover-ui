@@ -79,7 +79,7 @@ class Doc extends Component {
             this.root.current.focus();
         }
 
-        if (this.state.printMode && prevProps.isFetching && !this.props.isFetching) {
+        if (this.state.printMode && this.props.data && !prevProps.data) {
             window.print();
         }
     }
