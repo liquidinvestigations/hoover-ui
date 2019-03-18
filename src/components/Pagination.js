@@ -41,7 +41,7 @@ export class Pagination extends Component {
         const total = results.hits.total;
         const pageCount = Math.ceil(total / size);
 
-        const from = total === 0 ? 0 : page * size - 9;
+        const from = total === 0 ? 0 : page * size - (size - 1);
         const to = Math.min(total, page * size);
 
         const hasNext = page < pageCount;
