@@ -43,7 +43,7 @@ export default class SearchResults extends Component {
                 key={hit._url}
                 hit={hit}
                 url={documentViewUrl(hit)}
-                n={start + i}
+                index={start + i}
             />
         ));
 
