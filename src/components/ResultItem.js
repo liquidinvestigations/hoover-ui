@@ -77,7 +77,7 @@ class ResultItem extends Component {
     }
 
     render() {
-        const { hit, url, classes, doc } = this.props;
+        const { hit, url, classes, doc, index } = this.props;
 
         const isSelected = url === doc.url;
         const unsearchable = !!doc.url;
@@ -123,7 +123,11 @@ class ResultItem extends Component {
                 }}>
                 <Card>
                     <CardHeader
-                        title={fields.filename}
+                        title={
+                            <span>
+                                {index}. {fields.filename}
+                            </span>
+                        }
                         action={icon}
                         subheader={truncatePath(fields.path)}
                     />
