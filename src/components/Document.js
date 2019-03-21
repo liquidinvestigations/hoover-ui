@@ -203,13 +203,11 @@ class Document extends Component {
                     />
                 ))}
 
-                {!fullPage && (
-                    <DocumentMetaSection
-                        doc={doc}
-                        collection={collection}
-                        classes={classes}
-                    />
-                )}
+                <DocumentMetaSection
+                    doc={doc}
+                    collection={collection}
+                    classes={classes}
+                />
             </div>
         );
     }

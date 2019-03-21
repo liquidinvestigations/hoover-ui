@@ -20,7 +20,17 @@ import Attachment from '@material-ui/icons/Attachment';
 import LinkOff from '@material-ui/icons/LinkOff';
 import IconCloudDownload from '@material-ui/icons/CloudDownloadOutlined';
 
-export default class Locations extends Component {
+import { withStyles } from '@material-ui/core/styles';
+
+const style = theme => ({
+    childFilename: {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+    },
+});
+
+class Locations extends Component {
     state = { locations: [] };
 
     async componentDidMount() {
@@ -36,7 +46,7 @@ export default class Locations extends Component {
 
     render() {
         const { locations } = this.state;
-        const { url: docUrl, data } = this.props;
+        const { url: docUrl, data, classes } = this.props;
 
         if (!locations && data.has_locations) {
             return <Loading />;
@@ -96,6 +106,9 @@ export default class Locations extends Component {
                                         </ListItemIcon>
 
                                         <ListItemText
+                                            classes={{
+                                                primary: classes.childFilename,
+                                            }}
                                             primary={child.filename}
                                             secondary={[
                                                 child.content_type,
@@ -153,11 +166,8 @@ export default class Locations extends Component {
                                             <Folder />
                                         </ListItemIcon>
 
-                                        <Typography>
-                                            {loc.parent_path}/
-                                            <em style={{ color: '#777' }}>
-                                                {loc.filename}
-                                            </em>
+                                        <Typography classes={{}}>
+                                            {loc.parent_path}/<em>{loc.filename}</em>
                                         </Typography>
                                     </ListItem>
                                 </Link>
@@ -169,3 +179,5 @@ export default class Locations extends Component {
         );
     }
 }
+
+export default withStyles(style)(Locations);
