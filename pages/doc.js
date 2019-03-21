@@ -142,7 +142,7 @@ class Doc extends Component {
                     left={data && <Locations data={data} url={url} />}
                     right={doc}
                     defaultSizeLeft={'25%'}
-                    defaultSizeMiddle={'70%'}>
+                    defaultSizeMiddle={'25%'}>
                     {meta}
                 </SplitPaneLayout>
             );
