@@ -130,7 +130,7 @@ class Doc extends Component {
         } else if (printMode) {
             content = (
                 <div>
-                    {meta}
+                    <div className={classes.container} />
                     {doc}
                 </div>
             );
