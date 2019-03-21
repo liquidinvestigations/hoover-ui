@@ -163,15 +163,13 @@ class Document extends Component {
 
                 <DocumentEmailSection doc={doc} classes={classes} />
 
-                {!fullPage && (
-                    <DocumentFilesSection
-                        title="Files"
-                        data={files}
-                        fullPage={fullPage}
-                        baseUrl={collectionBaseUrl}
-                        classes={classes}
-                    />
-                )}
+                <DocumentFilesSection
+                    title="Files"
+                    data={files}
+                    fullPage={fullPage}
+                    baseUrl={collectionBaseUrl}
+                    classes={classes}
+                />
 
                 <DocumentHTMLSection
                     html={doc.safe_html}
