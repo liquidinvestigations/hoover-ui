@@ -40,6 +40,17 @@ class Filters extends Component {
 
         return (
             <List>
+                <Filter
+                    title="Date range"
+                    defaultOpen={!!(query.dateRange.from || query.dateRange.to)}>
+                    <DateRangeFilter
+                        disabled={isFetching}
+                        onChange={this.filter('dateRange')}
+                        defaultFrom={query.dateRange.from}
+                        defaultTo={query.dateRange.to}
+                    />
+                </Filter>
+
                 <Filter title="File type" defaultOpen={!!query.fileType.length}>
                     <AggregationFilter
                         disabled={isFetching}
@@ -81,17 +92,6 @@ class Filters extends Component {
                         onChange={this.filter('emailDomains')}
                         size={query.facets.emailDomains || DEFAULT_FACET_SIZE}
                         onLoadMore={this.loadMore('emailDomains')}
-                    />
-                </Filter>
-
-                <Filter
-                    title="Date range"
-                    defaultOpen={!!(query.dateRange.from || query.dateRange.to)}>
-                    <DateRangeFilter
-                        disabled={isFetching}
-                        onChange={this.filter('dateRange')}
-                        defaultFrom={query.dateRange.from}
-                        defaultTo={query.dateRange.to}
                     />
                 </Filter>
 

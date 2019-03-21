@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import IconCloudDownload from '@material-ui/icons/CloudDownload';
 import IconLaunch from '@material-ui/icons/Launch';
 import IconPrint from '@material-ui/icons/Print';
+import IconChromeReaderMode from '@material-ui/icons/ChromeReaderMode';
 import cn from 'classnames';
 import { Component } from 'react';
 import { connect } from 'react-redux';
@@ -137,7 +138,7 @@ class Document extends Component {
                 return {
                     href: `${docUrl}/ocr/${tag}/`,
                     text: `OCR ${tag}`,
-                    icon: <IconCloudDownload />,
+                    icon: <IconChromeReaderMode />,
                 };
             })
         );
@@ -161,6 +162,14 @@ class Document extends Component {
                 )}
 
                 <DocumentEmailSection doc={doc} classes={classes} />
+
+                <DocumentFilesSection
+                    title="Files"
+                    data={files}
+                    fullPage={fullPage}
+                    baseUrl={collectionBaseUrl}
+                    classes={classes}
+                />
 
                 <DocumentHTMLSection
                     html={doc.safe_html}
@@ -195,16 +204,6 @@ class Document extends Component {
                     <DocumentMetaSection
                         doc={doc}
                         collection={collection}
-                        classes={classes}
-                    />
-                )}
-
-                {!fullPage && (
-                    <DocumentFilesSection
-                        title="Files"
-                        data={files}
-                        fullPage={fullPage}
-                        baseUrl={collectionBaseUrl}
                         classes={classes}
                     />
                 )}

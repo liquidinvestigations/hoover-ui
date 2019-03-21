@@ -29,7 +29,7 @@ function getSearchAfterByPage(state, results) {
 
     let result = { ...searchAfterByPage };
 
-    if (results.hits.total > 0) {
+    if (results.hits.hits.length) {
         const lastHit = results.hits.hits.slice(-1)[0];
 
         result[page + 1] = ['' + lastHit._score, lastHit._id];
