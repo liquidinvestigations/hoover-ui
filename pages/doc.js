@@ -120,8 +120,8 @@ class Doc extends Component {
                         <SplitPaneLayout
                             container={false}
                             left={meta}
-                            defaultSizeLeft={'30%'}
-                            defaultSizeMiddle={'70%'}>
+                            defaultSizeLeft="30%"
+                            defaultSizeMiddle="70%">
                             {doc}
                         </SplitPaneLayout>
                     </SplitPane>
@@ -130,7 +130,7 @@ class Doc extends Component {
         } else if (printMode) {
             content = (
                 <div>
-                    {meta}
+                    <div className={classes.container} />
                     {doc}
                 </div>
             );
@@ -140,10 +140,8 @@ class Doc extends Component {
             content = (
                 <SplitPaneLayout
                     left={data && <Locations data={data} url={url} />}
-                    right={doc}
-                    defaultSizeLeft={'25%'}
-                    defaultSizeMiddle={'25%'}>
-                    {meta}
+                    defaultSizeLeft="25%">
+                    {doc}
                 </SplitPaneLayout>
             );
         }

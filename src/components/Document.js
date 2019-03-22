@@ -103,6 +103,7 @@ class Document extends Component {
         const data = doc.content;
         const files = doc.children || [];
         const headerLinks = [];
+        const isFolder = data.filetype === 'folder';
 
         if (!fullPage) {
             headerLinks.push({
@@ -163,13 +164,15 @@ class Document extends Component {
 
                 <DocumentEmailSection doc={doc} classes={classes} />
 
-                <DocumentFilesSection
-                    title="Files"
-                    data={files}
-                    fullPage={fullPage}
-                    baseUrl={collectionBaseUrl}
-                    classes={classes}
-                />
+                {(!fullPage || !isFolder) && (
+                    <DocumentFilesSection
+                        title="Files"
+                        data={files}
+                        fullPage={fullPage}
+                        baseUrl={collectionBaseUrl}
+                        classes={classes}
+                    />
+                )}
 
                 <DocumentHTMLSection
                     html={doc.safe_html}
@@ -200,13 +203,11 @@ class Document extends Component {
                     />
                 ))}
 
-                {!fullPage && (
-                    <DocumentMetaSection
-                        doc={doc}
-                        collection={collection}
-                        classes={classes}
-                    />
-                )}
+                <DocumentMetaSection
+                    doc={doc}
+                    collection={collection}
+                    classes={classes}
+                />
             </div>
         );
     }
