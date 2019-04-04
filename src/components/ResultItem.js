@@ -72,7 +72,7 @@ class ResultItem extends Component {
 
     componentDidUpdate(prevProps) {
         if (this.props.url === this.props.doc.url && 'scrollIntoView' in this.node) {
-            this.node.scrollIntoView({ behavior: 'smooth' });
+            this.node.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     }
 
