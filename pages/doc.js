@@ -94,8 +94,10 @@ class Doc extends Component {
 
         if (error) {
             return (
-                <Typography style={{ margin: '5rem 2rem' }}>
-                    {error.message}
+                <Typography style={{ margin: '5rem 3rem' }} color="error">
+                    {error.message.split('\n').map((e, i) => (
+                        <p key={i}>{e}</p>
+                    ))}
                 </Typography>
             );
         }
