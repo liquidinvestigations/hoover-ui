@@ -20,6 +20,7 @@ import { connect } from 'react-redux';
 import url from 'url';
 import Loading from './Loading';
 import { getLanguageName } from '../utils';
+import PropTypes from 'prop-types';
 
 const styles = theme => ({
     toolbar: {
@@ -78,6 +79,16 @@ const SectionContent = withStyles(styles)(
 );
 
 class Document extends Component {
+    static propTypes = {
+        showToolbar: PropTypes.bool,
+        showMeta: PropTypes.bool,
+    };
+
+    static defaultProps = {
+        showToolbar: true,
+        showMeta: true,
+    };
+
     render() {
         const {
             docUrl,
@@ -85,7 +96,8 @@ class Document extends Component {
             fullPage,
             classes,
             isFetching,
-            toolbar,
+            showToolbar,
+            showMeta,
         } = this.props;
 
         let doc = this.props.data;
@@ -146,7 +158,7 @@ class Document extends Component {
 
         return (
             <div>
-                {headerLinks.length > 0 && toolbar !== false && (
+                {headerLinks.length > 0 && showToolbar !== false && (
                     <Toolbar classes={{ root: classes.toolbar }}>
                         {headerLinks.map(({ text, icon, ...props }) => (
                             <Tooltip title={text} key={props.href}>
@@ -203,11 +215,13 @@ class Document extends Component {
                     />
                 ))}
 
-                <DocumentMetaSection
-                    doc={doc}
-                    collection={collection}
-                    classes={classes}
-                />
+                {showMeta && (
+                    <DocumentMetaSection
+                        doc={doc}
+                        collection={collection}
+                        classes={classes}
+                    />
+                )}
             </div>
         );
     }

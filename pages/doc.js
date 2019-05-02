@@ -102,7 +102,9 @@ class Doc extends Component {
             );
         }
 
-        const doc = <Document fullPage toolbar={!printMode} />;
+        const doc = (
+            <Document fullPage showToolbar={!printMode} showMeta={!printMode} />
+        );
         const meta = <Meta doc={data} collection={collection} />;
 
         let content = null;
