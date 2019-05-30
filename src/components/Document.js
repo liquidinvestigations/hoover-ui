@@ -415,12 +415,8 @@ class DocumentMetaSection extends Component {
 
 class DocumentEmailSection extends Component {
     render() {
-        let { classes, doc } = this.props;
-
-        doc = doc || {};
-
-        let data = doc.content;
-        let files = doc.children || [];
+        const { classes, doc = {} } = this.props;
+        const data = doc.content;
 
         if (data.filetype !== 'email') {
             return null;
@@ -442,7 +438,7 @@ class DocumentEmailSection extends Component {
                                 <TableCell>To</TableCell>
                                 <TableCell>
                                     <pre className={classes.preWrap}>
-                                        {data.to.filter(Boolean).join(', ')}
+                                        {(data.to || []).filter(Boolean).join(', ')}
                                     </pre>
                                 </TableCell>
                             </TableRow>

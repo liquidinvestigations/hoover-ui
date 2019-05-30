@@ -10,6 +10,13 @@ class Menu extends Component {
         open: false,
     };
 
+    async componentDidMount() {
+        const user = await api.whoami();
+        if (user) {
+            this.setState({ user });
+        }
+    }
+
     links() {
         const { router, whoami } = this.props;
 
@@ -21,7 +28,7 @@ class Menu extends Component {
             },
             {
                 name: 'about',
-                url: 'https://github.com/mgax/hoover',
+                url: 'https://github.com/hoover/search',
             },
             {
                 name: 'terms',

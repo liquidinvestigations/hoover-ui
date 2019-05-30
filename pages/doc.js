@@ -23,7 +23,7 @@ const styles = theme => ({
 });
 
 class Doc extends Component {
-    state = { finder: false, printMode: false };
+    state = { printMode: false };
 
     keys = [
         {
@@ -47,21 +47,15 @@ class Doc extends Component {
             if (query.path) {
                 this.props.dispatch(
                     fetchDoc(query.path, {
-                        includeParents: this.state.finder,
+                        includeParents: true,
                     })
                 );
-            } else if (this.state.finder) {
-                this.props.dispatch(fetchDoc(pathname, { includeParents: true }));
             } else {
-                this.props.dispatch(fetchServerDoc());
+                this.props.dispatch(fetchDoc(pathname, { includeParents: true }));
             }
         };
 
         const newState = {};
-
-        if (query.finder && query.finder !== 'false') {
-            newState.finder = true;
-        }
 
         if (query.print && query.print !== 'false') {
             newState.printMode = true;
@@ -75,10 +69,6 @@ class Doc extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (this.root.current && !this.state.finder) {
-            this.root.current.focus();
-        }
-
         if (this.state.printMode && this.props.data && !prevProps.data) {
             window.print();
         }
@@ -86,7 +76,7 @@ class Doc extends Component {
 
     render() {
         const { data, url, collection, isFetching, error, classes } = this.props;
-        const { finder, printMode } = this.state;
+        const { printMode } = this.state;
 
         if (!url) {
             return null;
@@ -102,36 +92,13 @@ class Doc extends Component {
             );
         }
 
-        const doc = (
-            <Document fullPage showToolbar={!printMode} showMeta={!printMode} />
-        );
+        const doc = <Document fullPage showToolbar={!printMode} showMeta={false} />;
+
         const meta = <Meta doc={data} collection={collection} />;
 
         let content = null;
 
-        if (finder) {
-            content = (
-                <div className={classes.finderSplitPane}>
-                    <div className={classes.container} />
-                    <SplitPane
-                        split="horizontal"
-                        defaultSize="25%"
-                        style={{ position: 'relative' }}>
-                        <div>
-                            <Finder isFetching={isFetching} data={data} url={url} />
-                        </div>
-
-                        <SplitPaneLayout
-                            container={false}
-                            left={meta}
-                            defaultSizeLeft="30%"
-                            defaultSizeMiddle="70%">
-                            {doc}
-                        </SplitPaneLayout>
-                    </SplitPane>
-                </div>
-            );
-        } else if (printMode) {
+        if (printMode) {
             content = (
                 <div>
                     <div className={classes.container} />
@@ -139,14 +106,29 @@ class Doc extends Component {
                 </div>
             );
         } else {
-            // remove this branch when https://github.com/CRJI/EIC/issues/83 is done
-
             content = (
-                <SplitPaneLayout
-                    left={data && <Locations data={data} url={url} />}
-                    defaultSizeLeft="25%">
-                    {doc}
-                </SplitPaneLayout>
+                <div className={classes.finderSplitPane}>
+                    <div className={classes.container} />
+                    <SplitPane
+                        split="horizontal"
+                        defaultSize="30%"
+                        style={{ position: 'relative' }}>
+                        <Finder isFetching={isFetching} data={data} url={url} />
+
+                        <SplitPaneLayout
+                            container={false}
+                            left={
+                                <>
+                                    {meta}
+                                    {data && <Locations data={data} url={url} />}
+                                </>
+                            }
+                            defaultSizeLeft="25%"
+                            defaultSizeMiddle="70%">
+                            {doc}
+                        </SplitPaneLayout>
+                    </SplitPane>
+                </div>
             );
         }
 
