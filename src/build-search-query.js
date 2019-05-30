@@ -38,10 +38,10 @@ function buildSortQuery(order) {
 
     switch (order) {
         case SORT_NEWEST:
-            sort = [{ date: { order: 'desc' } }, ...sort];
+            sort = [{ date: { order: 'desc', missing: '_last' } }, ...sort];
             break;
         case SORT_OLDEST:
-            sort = [{ date: { order: 'asc' } }, ...sort];
+            sort = [{ date: { order: 'asc', missing: '_last' } }, ...sort];
             break;
     }
 

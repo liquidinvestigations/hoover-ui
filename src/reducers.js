@@ -1,4 +1,10 @@
-import { DEFAULT_FACET_SIZE, SORT_RELEVANCE } from './constants';
+import {
+    DEFAULT_FACET_SIZE,
+    SORT_RELEVANCE,
+    SORT_OLDEST,
+    ES_LONG_MIN,
+    ES_LONG_MAX,
+} from './constants';
 
 const INITIAL_SEARCH_STATE = {
     isFetching: false,
@@ -32,11 +38,20 @@ function getSearchAfterByPage(state, results) {
     if (results.hits.hits.length) {
         const lastHit = results.hits.hits.slice(-1)[0];
 
-        result[page + 1] = ['' + lastHit._score, lastHit._id];
-        if (order !== SORT_RELEVANCE) {
-            const date = new Date(lastHit._source.date);
+        result[page + 1] = [lastHit._score, lastHit._id];
 
-            result[page + 1] = ['' + date.getTime(), ...result[page + 1]];
+        if (order !== SORT_RELEVANCE) {
+            let dateValue;
+
+            if (lastHit._source.date) {
+                dateValue = new Date(lastHit._source.date).getTime();
+            } else {
+                // if date is missing, ES will use Long.MIN_VALUE or Long.MAX_VALUE
+                // see https://github.com/elastic/elasticsearch-js/issues/662
+                dateValue = order === SORT_OLDEST ? ES_LONG_MAX : ES_LONG_MIN;
+            }
+
+            result[page + 1] = ['' + dateValue, ...result[page + 1]];
         }
     }
 
