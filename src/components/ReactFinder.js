@@ -25,12 +25,16 @@ export default class ReactFinder extends PureComponent {
     container = createRef();
 
     componentDidMount() {
-        this.setState({ key: generateKey() }, () => this.init());
+        this.setState({ key: generateKey() });
     }
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.data !== this.props.data) {
-            this.setState({ key: generateKey() }, () => this.init());
+            this.setState({ key: generateKey() });
+        }
+
+        if (prevState.key !== this.state.key) {
+            this.init();
         }
     }
 
@@ -103,12 +107,12 @@ export default class ReactFinder extends PureComponent {
     }
 
     selectDefault() {
-        const path = this._getSelectedValuePath(this.props.defaultValue);
+        const { defaultValue } = this.props;
+        const path = this._getSelectedValuePath(defaultValue);
 
         if (!path.length) {
             throw new Error(
-                'unable to find path for default value' +
-                    JSON.stringify(this.props.defaultValue, null, 2)
+                `unable to find path for default value with id = ${defaultValue.id}`
             );
         }
 

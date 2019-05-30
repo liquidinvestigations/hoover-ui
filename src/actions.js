@@ -255,6 +255,27 @@ export const fetchServerDoc = () => {
     };
 };
 
+export const fetchDocLocations = url => {
+    return async (dispatch, getState) => {
+        dispatch({
+            type: 'FETCH_DOC_LOCATIONS',
+            url,
+        });
+
+        try {
+            dispatch({
+                type: 'FETCH_DOC_LOCATIONS_SUCCESS',
+                data: (await api.locationsFor(url)).locations,
+            });
+        } catch (error) {
+            dispatch({
+                type: 'FETCH_DOC_LOCATIONS_FAILURE',
+                error,
+            });
+        }
+    };
+};
+
 export const fetchDoc = (url, { includeParents = false, parentLevels = 3 } = {}) => {
     return async (dispatch, getState) => {
         dispatch({

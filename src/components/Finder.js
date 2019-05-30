@@ -52,8 +52,6 @@ class Finder extends Component {
     handleColumnCreated = (...args) => console.log('column-created', ...args);
 
     handleLeafSelected = item => {
-        console.log('leaf-selected', item);
-
         this.navigateTo(item);
     };
 
@@ -62,7 +60,6 @@ class Finder extends Component {
     };
 
     handleInteriorSelected = item => {
-        console.log('interior-selected', item);
         this.navigateTo(item);
     };
 

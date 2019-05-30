@@ -17,7 +17,6 @@ class Menu extends Component {
 
     async componentDidMount() {
         const user = await api.whoami();
-
         if (user) {
             this.setState({ user });
         }
@@ -38,7 +37,7 @@ class Menu extends Component {
             },
             {
                 name: 'about',
-                url: 'https://github.com/mgax/hoover',
+                url: 'https://github.com/hoover/search',
             },
             {
                 name: 'terms',

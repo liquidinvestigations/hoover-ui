@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import buildSearchQuery from './build-search-query';
+import { memoize } from 'lodash';
 
 class Api {
     async fetchJson(url, opts = {}) {
@@ -39,13 +40,13 @@ class Api {
         return await this.fetchJson('/limits');
     }
 
-    async locationsFor(docUrl) {
+    locationsFor = memoize(async docUrl => {
         return await this.fetchJson(`${docUrl}/locations`);
-    }
+    });
 
-    async doc(docUrl) {
+    doc = memoize(async docUrl => {
         return await this.fetchJson(`${docUrl}/json`);
-    }
+    });
 
     async whoami() {
         return await this.fetchJson('/whoami');
