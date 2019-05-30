@@ -27,7 +27,9 @@ class Filters extends Component {
     };
 
     filter = key => value =>
-        this.props.dispatch(updateSearchQuery({ [key]: value }));
+        this.props.dispatch(
+            updateSearchQuery({ [key]: value }, { resetPagination: true })
+        );
 
     loadMore = key => () => this.props.dispatch(expandFacet(key));
 
