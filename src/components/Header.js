@@ -66,10 +66,9 @@ class Header extends Component {
                             variant="h6"
                             color="inherit"
                             className={classes.flex}>
-                            <Link href="/">
-                                <a className={classes.noLink + ' the-title'}
-                                    dangerouslySetInnerHTML={{__html: whoami.title}} />
-                            </Link>
+                            <a href="/"
+                                className={classes.noLink + ' the-title'}
+                                dangerouslySetInnerHTML={{__html: whoami.title}} />
                         </Typography>
                         <Menu whoami={whoami} />
                     </Toolbar>
