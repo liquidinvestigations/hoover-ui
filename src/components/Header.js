@@ -67,7 +67,7 @@ class Header extends Component {
                             color="inherit"
                             className={classes.flex}>
                             <Link href="/">
-                                <a className={classes.noLink}
+                                <a className={classes.noLink + ' the-title'}
                                     dangerouslySetInnerHTML={{__html: whoami.title}} />
                             </Link>
                         </Typography>
