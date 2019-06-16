@@ -2,6 +2,7 @@ import { Component } from 'react';
 import PropTypes from 'prop-types';
 import Menu from './Menu';
 import Link from 'next/link';
+import api from '../api';
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -36,8 +37,26 @@ class Header extends Component {
         classes: PropTypes.object.isRequired,
     };
 
+    state = {
+        whoami: {
+            username: '',
+            admin: false,
+            urls: {},
+            title: '',
+        },
+    };
+
+    async componentDidMount() {
+        const whoami = await api.whoami();
+
+        if (whoami) {
+            this.setState({ whoami });
+        }
+    }
+
     render() {
         const { classes } = this.props;
+        const { whoami } = this.state;
 
         return (
             <div className={classes.root}>
@@ -48,10 +67,11 @@ class Header extends Component {
                             color="inherit"
                             className={classes.flex}>
                             <Link href="/">
-                                <a className={classes.noLink}>Hoover</a>
+                                <a className={classes.noLink}
+                                    dangerouslySetInnerHTML={{__html: whoami.title}} />
                             </Link>
                         </Typography>
-                        <Menu />
+                        <Menu whoami={whoami} />
                     </Toolbar>
                 </AppBar>
             </div>
