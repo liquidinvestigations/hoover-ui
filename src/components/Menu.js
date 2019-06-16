@@ -7,28 +7,11 @@ import Link from 'next/link';
 
 class Menu extends Component {
     state = {
-        user: {
-            username: '',
-            admin: false,
-            urls: {},
-        },
         open: false,
     };
 
-    async componentDidMount() {
-        const user = await api.whoami();
-
-        if (user) {
-            this.setState({ user });
-        }
-    }
-
     links() {
-        const {
-            user: { urls, username },
-        } = this.state;
-
-        const { router } = this.props;
+        const { router, whoami } = this.props;
 
         return [
             {
@@ -52,36 +35,37 @@ class Menu extends Component {
             // },
             {
                 name: 'login',
-                url: urls.login,
+                url: whoami.urls.login,
                 type: 'not-logged-in',
             },
             {
                 name: 'change password',
-                url: urls.password_change,
+                url: whoami.urls.password_change,
                 type: 'logged-in',
             },
             {
                 name: 'admin',
-                url: urls.admin,
+                url: whoami.urls.admin,
                 type: 'admin',
             },
             {
-                name: `logout (${username})`,
-                url: urls.logout,
+                name: `logout (${whoami.username})`,
+                url: whoami.urls.logout,
                 type: 'logged-in',
             },
         ].map(l => ({ ...l, active: router.asPath === l.url }));
     }
 
     shouldShow = link => {
+        const { whoami } = this.props;
         if (link.type == 'admin') {
-            return this.state.user.admin;
+            return whoami.admin;
         }
         if (link.type == 'logged-in') {
-            return this.state.user.username;
+            return whoami.username;
         }
         if (link.type == 'not-logged-in') {
-            return !this.state.user.username;
+            return !whoami.username;
         }
         return true;
     };
