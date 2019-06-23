@@ -17,11 +17,6 @@ export default withTheme()(({ children, theme }) => (
                 }
             />
 
-            <link
-                rel="stylesheet"
-                href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,500|Roboto+Condensed:300,400,500"
-            />
-
             <meta name="theme-color" content={theme.palette.primary.main} />
 
             <script
