@@ -50,7 +50,7 @@
     "react-placeholder": "^3.0.1",
     "react-redux": "^5.1.1",
     "react-split-pane": "^0.1.84",
-    "redux": "^4.0.1",
+    "redux": "^4.0.4",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0"
   },
