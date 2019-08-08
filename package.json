@@ -49,7 +49,7 @@
     "react-modal": "^3.6.1",
     "react-placeholder": "^3.0.1",
     "react-redux": "^5.1.1",
-    "react-split-pane": "^0.1.84",
+    "react-split-pane": "^0.1.87",
     "redux": "^4.0.1",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0"
