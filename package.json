@@ -42,7 +42,7 @@
     "next": "^8.0.1",
     "node-sass": "^4.11.0",
     "qs": "^6.6.0",
-    "react": "^16.8.2",
+    "react": "^16.8.6",
     "react-dom": "^16.8.2",
     "react-hotkeys": "^1.1.4",
     "react-jss": "^8.6.1",
