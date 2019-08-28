@@ -32,6 +32,18 @@ const styles = theme => ({
     },
 });
 
+function embedHypothesis(scriptUrl) {
+  window.hypothesisConfig = function() {
+    return {
+      showHighlights:true,
+      appType:'bookmarklet',
+    };
+  };
+  var scriptNode = document.createElement('script');
+  scriptNode.setAttribute('src', scriptUrl);
+  document.body.appendChild(scriptNode);
+}
+
 class Header extends Component {
     static propTypes = {
         classes: PropTypes.object.isRequired,
@@ -51,6 +63,9 @@ class Header extends Component {
 
         if (whoami) {
             this.setState({ whoami });
+            if (whoami.urls.hypothesis_embed) {
+              embedHypothesis(whoami.urls.hypothesis_embed);
+            }
         }
     }
 
