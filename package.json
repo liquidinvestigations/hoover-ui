@@ -46,7 +46,7 @@
     "react-dom": "^16.8.2",
     "react-hotkeys": "^1.1.4",
     "react-jss": "^8.6.1",
-    "react-modal": "^3.6.1",
+    "react-modal": "^3.10.1",
     "react-placeholder": "^3.0.2",
     "react-redux": "^5.1.1",
     "react-split-pane": "^0.1.87",
