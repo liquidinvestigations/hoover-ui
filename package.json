@@ -38,7 +38,7 @@
     "lodash": "^4.17.13",
     "lodash-webpack-plugin": "^0.11.5",
     "luxon": "^1.8.2",
-    "material-ui-pickers": "^2.0.4",
+    "material-ui-pickers": "^2.2.4",
     "next": "^8.0.1",
     "node-sass": "^4.11.0",
     "qs": "^6.6.0",
