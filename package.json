@@ -31,7 +31,7 @@
     "express": "^4.16.4",
     "fast-deep-equal": "^2.0.1",
     "finderjs": "^1.2.1",
-    "http-proxy-middleware": "^0.18.0",
+    "http-proxy-middleware": "^0.19.1",
     "isomorphic-fetch": "^2.2.1",
     "jss": "^9.8.7",
     "langs": "^2.0.0",
