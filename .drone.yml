@@ -41,6 +41,9 @@ steps:
     password:
       from_secret: docker_password
   when:
+    branch:
+      exclude:
+        - dependabot/*
     event:
     - push
 
