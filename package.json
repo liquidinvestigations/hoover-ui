@@ -43,7 +43,7 @@
     "node-sass": "^4.12.0",
     "qs": "^6.8.0",
     "react": "^16.9.0",
-    "react-dom": "^16.8.2",
+    "react-dom": "^16.10.2",
     "react-hotkeys": "^2.0.0",
     "react-jss": "^8.6.1",
     "react-modal": "^3.10.1",
