@@ -160,15 +160,15 @@ class ResultItem extends Component {
                                     </Typography>
                                 )}
 
-                                  <Typography variant="caption">
-                                      <Tooltip title="Download original file">
-                                          <a
-                                              target="_blank"
-                                              href={downloadUrl}>
-                                              <IconCloudDownload color="action" />
-                                          </a>
-                                      </Tooltip>
-                                  </Typography>
+                                <Typography variant="caption">
+                                    <Tooltip title="Download original file">
+                                        <a
+                                            target="_blank"
+                                            href={downloadUrl}>
+                                            <IconCloudDownload color="action" />
+                                        </a>
+                                    </Tooltip>
+                                </Typography>
                             </Grid>
                             <Grid item md={8}>
                                 <div className={classes.text}>{text}</div>
