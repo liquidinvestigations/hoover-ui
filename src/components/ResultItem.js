@@ -11,6 +11,8 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import AttachIcon from '@material-ui/icons/AttachFile';
 import { withStyles } from '@material-ui/core/styles';
+import IconCloudDownload from '@material-ui/icons/CloudDownloadOutlined';
+import Tooltip from '@material-ui/core/Tooltip';
 
 import { makeUnsearchable, truncatePath } from '../utils';
 
@@ -105,6 +107,8 @@ class ResultItem extends Component {
             wordCount = fields['word-count'] + ' words';
         }
 
+        let downloadUrl = `${this.props.url}/raw/${fields.filename}`;
+
         return (
             <div
                 ref={node => (this.node = node)}
@@ -155,6 +159,16 @@ class ResultItem extends Component {
                                         ).toLocaleString(DateTime.DATE_FULL)}
                                     </Typography>
                                 )}
+
+                                <Typography variant="caption">
+                                    <Tooltip title="Download original file">
+                                        <a
+                                            target="_blank"
+                                            href={downloadUrl}>
+                                            <IconCloudDownload color="action" />
+                                        </a>
+                                    </Tooltip>
+                                </Typography>
                             </Grid>
                             <Grid item md={8}>
                                 <div className={classes.text}>{text}</div>
