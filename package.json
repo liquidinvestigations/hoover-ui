@@ -39,7 +39,7 @@
     "lodash-webpack-plugin": "^0.11.5",
     "luxon": "^1.17.3",
     "material-ui-pickers": "^2.2.4",
-    "next": "^9.0.6",
+    "next": "^9.1.7",
     "node-sass": "^4.12.0",
     "qs": "^6.8.0",
     "react": "^16.12.0",
