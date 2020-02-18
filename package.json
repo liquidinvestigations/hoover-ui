@@ -48,7 +48,7 @@
     "react-jss": "^8.6.1",
     "react-modal": "^3.10.1",
     "react-placeholder": "^3.0.2",
-    "react-redux": "^7.1.1",
+    "react-redux": "^7.2.0",
     "react-split-pane": "^0.1.87",
     "redux": "^4.0.4",
     "redux-logger": "^3.0.6",
