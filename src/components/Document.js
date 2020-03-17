@@ -117,6 +117,8 @@ class Document extends Component {
         const headerLinks = [];
         const isFolder = data.filetype === 'folder';
 
+        const docRawUrl = `${docUrl}/raw/${data.filename}`
+
         if (!fullPage) {
             headerLinks.push({
                 href: docUrl,
@@ -135,7 +137,7 @@ class Document extends Component {
             });
 
             headerLinks.push({
-                href: `${docUrl}/raw/${data.filename}`,
+                href: docRawUrl,
                 text: `Download original file`,
                 icon: <IconCloudDownload />,
                 target: fullPage ? null : '_blank',
@@ -185,6 +187,14 @@ class Document extends Component {
                         classes={classes}
                     />
                 )}
+
+
+                <DocumentPreviewSection
+                    title="Preview"
+                    classes={classes}
+                    type={doc.content["content-type"]}
+                    url={docRawUrl}
+                />
 
                 <DocumentHTMLSection
                     html={doc.safe_html}
@@ -434,6 +444,33 @@ class DocumentFilesSection extends Component {
                     </SectionContent>
                 </section>
             )
+        );
+    }
+}
+
+class DocumentPreviewSection extends Component {
+    render() {
+        const { classes, type, url, title } = this.props;
+        if (!type || !url) return null;
+        if (type != "application/pdf" &&
+                !type.startsWith("audio/") &&
+                !type.startsWith("video/"))
+            return null;
+
+        return (
+            <section className={classes.section}>
+                <SectionHeader title={title} />
+                <SectionContent>
+                    <div className={classes.content}>
+                        <embed
+                            src={url}
+                            type={type}
+                            height="80%"
+                            width="100%"
+                        />
+                    </div>
+                </SectionContent>
+            </section>
         );
     }
 }
