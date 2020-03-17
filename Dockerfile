@@ -7,3 +7,4 @@ ADD package*.json /opt/hoover/ui/
 RUN npm install
 
 ADD . /opt/hoover/ui/
+ENV NEXT_TELEMETRY_DISABLED=1
