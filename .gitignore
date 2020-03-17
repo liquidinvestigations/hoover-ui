@@ -1,8 +1,8 @@
-build
-.idea
-.next
-node_modules
-.node-version
-.npmrc
-.env
-.coverage
+/build
+/.idea
+/.next
+/node_modules
+/.node-version
+/.npmrc
+/.env
+/.coverage
