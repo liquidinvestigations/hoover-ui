@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "node server.js",
-    "build": "next build && next export -o build",
+    "build": "next build && next export -o build && cp -a viewer build",
     "start": "NODE_ENV=production node server.js",
     "test": "NODE_ENV=test jest",
     "test:update": "NODE_ENV=test jest -u",

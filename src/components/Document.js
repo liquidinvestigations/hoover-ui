@@ -46,6 +46,11 @@ const styles = theme => ({
         fontSize: 12,
     },
 
+    preview: {
+        overflow: 'hidden',
+        height: '50vh',
+    },
+
     scrollX: {
         overflowX: 'scroll',
         '> table': {
@@ -192,6 +197,7 @@ class Document extends Component {
                 <DocumentPreviewSection
                     title="Preview"
                     classes={classes}
+                    docTitle={doc.content.filename}
                     type={doc.content["content-type"]}
                     url={docRawUrl}
                 />
@@ -450,24 +456,37 @@ class DocumentFilesSection extends Component {
 
 class DocumentPreviewSection extends Component {
     render() {
-        const { classes, type, url, title } = this.props;
+        const { classes, type, url, title, docTitle } = this.props;
         if (!type || !url) return null;
-        if (type != "application/pdf" &&
-                !type.startsWith("audio/") &&
-                !type.startsWith("video/"))
+
+        let preview = null;
+        if (type == "application/pdf") {
+            const pdfViewerUrl = `/viewer/web/viewer.html?file=${encodeURIComponent(url)}`;
+            preview = ( <iframe
+                            src={pdfViewerUrl}
+                            height="100%"
+                            width="100%"
+                            allowfullscreen="true"
+                        /> );
+        } else if (type.startsWith("audio/") || type.startsWith("video/")) {
+            preview = ( <embed
+                            src={url}
+                            type={type}
+                            height="100%"
+                            width="100%"
+                            title={docTitle}
+                        /> );
+
+        } else {
             return null;
+        }
 
         return (
             <section className={classes.section}>
                 <SectionHeader title={title} />
                 <SectionContent>
-                    <div className={classes.content}>
-                        <embed
-                            src={url}
-                            type={type}
-                            height="80%"
-                            width="100%"
-                        />
+                    <div id="hoover-doc-preview-container" className={classes.preview}>
+                      {preview}
                     </div>
                 </SectionContent>
             </section>
