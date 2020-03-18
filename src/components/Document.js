@@ -122,7 +122,7 @@ class Document extends Component {
         const headerLinks = [];
         const isFolder = data.filetype === 'folder';
 
-        const docRawUrl = `${docUrl}/raw/${data.filename}`
+        const docRawUrl = `/${docUrl}/raw/${data.filename}`
 
         if (!fullPage) {
             headerLinks.push({
