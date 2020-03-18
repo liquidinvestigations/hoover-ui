@@ -122,7 +122,7 @@ class Document extends Component {
         const headerLinks = [];
         const isFolder = data.filetype === 'folder';
 
-        const docRawUrl = `/${docUrl}/raw/${data.filename}`
+        const docRawUrl = `${docUrl}/raw/${data.filename}`
 
         if (!fullPage) {
             headerLinks.push({
@@ -462,12 +462,17 @@ class DocumentPreviewSection extends Component {
         let preview = null;
         if (type == "application/pdf") {
             const pdfViewerUrl = `/viewer/web/viewer.html?file=${encodeURIComponent(url)}`;
-            preview = ( <iframe
+            preview = ( <div>
+                        <p>
+                          Annotate this document in the <a target="_blank" href={pdfViewerUrl}>PDF viewer</a>.
+                        </p>
+                        <iframe
                             src={pdfViewerUrl}
                             height="100%"
                             width="100%"
                             allowfullscreen="true"
-                        /> );
+                        />
+                        </div> );
         } else if (type.startsWith("audio/") || type.startsWith("video/")) {
             preview = ( <embed
                             src={url}

@@ -6,7 +6,7 @@ import url from 'url';
 import Pagination from './Pagination';
 import ResultItem from './ResultItem';
 
-const documentViewUrl = item => `doc/${item._collection}/${item._id}`;
+const documentViewUrl = item => `/doc/${item._collection}/${item._id}`;
 
 export default class SearchResults extends Component {
     static propTypes = {
