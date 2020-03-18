@@ -462,25 +462,28 @@ class DocumentPreviewSection extends Component {
         let preview = null;
         if (type == "application/pdf") {
             const pdfViewerUrl = `/viewer/web/viewer.html?file=${encodeURIComponent(url)}`;
-            preview = ( <div>
-                        <p>
-                          Annotate this document in the <a target="_blank" href={pdfViewerUrl}>PDF viewer</a>.
-                        </p>
-                        <iframe
-                            src={pdfViewerUrl}
-                            height="100%"
-                            width="100%"
-                            allowfullscreen="true"
-                        />
-                        </div> );
-        } else if (type.startsWith("audio/") || type.startsWith("video/")) {
-            preview = ( <embed
+            preview = ( <>
+                          <p> Annotate this document in the <a target="_blank" href={pdfViewerUrl}>PDF viewer</a>. </p>
+                          <div id="hoover-pdf-viewer-container" className={classes.preview}>
+                            <iframe
+                                src={pdfViewerUrl}
+                                height="100%"
+                                width="100%"
+                                allowfullscreen="true"
+                            />
+                          </div>
+                        </> );
+        } else if (type.startsWith("image/") || type.startsWith("audio/") || type.startsWith("video/")) {
+            preview = ( <div id="hoover-media-viewer-container" className={classes.preview}>
+                        <embed
+                            style="object-fit: contain;"
                             src={url}
                             type={type}
                             height="100%"
                             width="100%"
                             title={docTitle}
-                        /> );
+                        />
+                        </div> );
 
         } else {
             return null;
@@ -490,7 +493,7 @@ class DocumentPreviewSection extends Component {
             <section className={classes.section}>
                 <SectionHeader title={title} />
                 <SectionContent>
-                    <div id="hoover-doc-preview-container" className={classes.preview}>
+                    <div>
                       {preview}
                     </div>
                 </SectionContent>
