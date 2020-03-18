@@ -55,12 +55,12 @@ document.addEventListener('webviewerloaded', function(event) {
     var url = null;
     fetch('/whoami')
       .then((response) => {
-        return response.json().urls.hypothesis_embed;
+        return response.json()
       })
-      .then((url) => {
+      .then((whoami) => {
         // Load the Hypothesis client.
         var embedScript = document.createElement('script');
-        embedScript.src = url;
+        embedScript.src = whoami.urls.hypothesis_embed;
         document.body.appendChild(embedScript);
       });
 
