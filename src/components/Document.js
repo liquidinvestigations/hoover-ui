@@ -476,7 +476,7 @@ class DocumentPreviewSection extends Component {
         } else if (type.startsWith("image/") || type.startsWith("audio/") || type.startsWith("video/")) {
             preview = ( <div id="hoover-media-viewer-container" className={classes.preview}>
                         <embed
-                            style="object-fit: contain;"
+                            style={{"object-fit": "contain"}}
                             src={url}
                             type={type}
                             height="100%"
