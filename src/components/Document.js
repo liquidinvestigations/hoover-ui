@@ -22,7 +22,7 @@ import Loading from './Loading';
 import { getLanguageName } from '../utils';
 import PropTypes from 'prop-types';
 
-const styles = theme => ({
+const styles = (theme) => ({
     toolbar: {
         backgroundColor: theme.palette.grey[100],
         borderBottomColor: theme.palette.grey[400],
@@ -75,13 +75,13 @@ const SectionHeader = withStyles(styles)(({ classes, title }) => (
     </div>
 ));
 
-const SectionContent = withStyles(styles)(
-    ({ classes, children, scrollX, ...props }) => (
-        <div className={cn(classes.sectionContent, { [classes.scrollX]: scroll })}>
-            {children}
-        </div>
-    )
-);
+const SectionContent = withStyles(
+    styles
+)(({ classes, children, scrollX, ...props }) => (
+    <div className={cn(classes.sectionContent, { [classes.scrollX]: scroll })}>
+        {children}
+    </div>
+));
 
 class Document extends Component {
     static propTypes = {
@@ -122,7 +122,7 @@ class Document extends Component {
         const headerLinks = [];
         const isFolder = data.filetype === 'folder';
 
-        const docRawUrl = `${docUrl}/raw/${data.filename}`
+        const docRawUrl = `${docUrl}/raw/${data.filename}`;
 
         if (!fullPage) {
             headerLinks.push({
@@ -193,12 +193,11 @@ class Document extends Component {
                     />
                 )}
 
-
                 <DocumentPreviewSection
                     title="Preview"
                     classes={classes}
                     docTitle={doc.content.filename}
-                    type={doc.content["content-type"]}
+                    type={doc.content['content-type']}
                     url={docRawUrl}
                 />
 
@@ -460,31 +459,57 @@ class DocumentPreviewSection extends Component {
         if (!type || !url) return null;
 
         let preview = null;
-        if (type == "application/pdf") {
-            const pdfViewerUrl = `/viewer/web/viewer.html?file=${encodeURIComponent(url)}`;
-            preview = ( <>
-                          <p> Annotate this document in the <a target="_blank" href={pdfViewerUrl}>PDF viewer</a>. </p>
-                          <div id="hoover-pdf-viewer-container" className={classes.preview}>
-                            <iframe
-                                src={pdfViewerUrl}
-                                height="100%"
-                                width="100%"
-                                allowfullscreen="true"
-                            />
-                          </div>
-                        </> );
-        } else if (type.startsWith("image/") || type.startsWith("audio/") || type.startsWith("video/")) {
-            preview = ( <div id="hoover-media-viewer-container" className={classes.preview}>
-                        <embed
-                            style={{"object-fit": "contain"}}
-                            src={url}
-                            type={type}
+        if (type == 'application/pdf') {
+            const pdfViewerUrl = `/viewer/web/viewer.html?file=${encodeURIComponent(
+                url
+            )}`;
+            preview = (
+                <>
+                    <p>
+                        {' '}
+                        Annotate this document in the{' '}
+                        <a target="_blank" href={pdfViewerUrl}>
+                            PDF viewer
+                        </a>
+                        .{' '}
+                    </p>
+                    <div
+                        id="hoover-pdf-viewer-container"
+                        className={classes.preview}>
+                        <iframe
+                            src={pdfViewerUrl}
                             height="100%"
                             width="100%"
-                            title={docTitle}
+                            allowfullscreen="true"
                         />
-                        </div> );
-
+                    </div>
+                </>
+            );
+        } else if (
+            type.endsWith('/jpg') ||
+            type.endsWith('/pjpeg') ||
+            type.endsWith('/png') ||
+            type.endsWith('/x-troff-msvideo') ||
+            type.endsWith('/msvideo') ||
+            type.endsWith('/x-msvideo') ||
+            type.endsWith('/mp4') ||
+            type.endsWith('/x-msvideo') ||
+            type.endsWith('/mpeg3') ||
+            type.endsWith('/x-mpeg-3') ||
+            type.endsWith('/mpeg')
+        ) {
+            preview = (
+                <div id="hoover-media-viewer-container" className={classes.preview}>
+                    <embed
+                        style={{ 'object-fit': 'contain' }}
+                        src={url}
+                        type={type}
+                        height="100%"
+                        width="100%"
+                        title={docTitle}
+                    />
+                </div>
+            );
         } else {
             return null;
         }
@@ -493,9 +518,7 @@ class DocumentPreviewSection extends Component {
             <section className={classes.section}>
                 <SectionHeader title={title} />
                 <SectionContent>
-                    <div>
-                      {preview}
-                    </div>
+                    <div>{preview}</div>
                 </SectionContent>
             </section>
         );
