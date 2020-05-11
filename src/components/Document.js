@@ -486,8 +486,8 @@ class DocumentPreviewSection extends Component {
                 </>
             );
         } else if (
-            type.endsWith('/jpg') ||
             type.endsWith('/pjpeg') ||
+            type.endsWith('/jpg') ||
             type.endsWith('/png') ||
             type.endsWith('/x-troff-msvideo') ||
             type.endsWith('/msvideo') ||
