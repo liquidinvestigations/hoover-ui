@@ -54,6 +54,16 @@ function timeMs() {
     return new Date().getTime();
 }
 
+function combineHighlights(highlight) {
+    var list = [];
+    for (const key in highlight) {
+        if (highlight.hasOwnProperty(key)) {
+            list = list.concat(highlight[key]);
+        }
+    }
+    return list;
+}
+
 const documentViewUrl = item => `doc/${item._collection}/${item._id}`;
 
 class ResultItem extends Component {
@@ -91,7 +101,7 @@ class ResultItem extends Component {
             <AttachIcon style={{ fontSize: 18 }} />
         ) : null;
 
-        const text = (highlight.text || []).map((hi, n) => (
+        const text = combineHighlights(highlight).map((hi, n) => (
             <div key={`${hit._url}${n}`}>
                 <span
                     dangerouslySetInnerHTML={{
