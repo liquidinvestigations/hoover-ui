@@ -183,17 +183,6 @@ class Document extends Component {
 
                 <DocumentEmailSection doc={doc} classes={classes} />
 
-                {(!fullPage || !isFolder) && (
-                    <DocumentFilesSection
-                        title="Files"
-                        data={files}
-                        fullPage={fullPage}
-                        baseUrl={collectionBaseUrl}
-                        classes={classes}
-                    />
-                )}
-
-
                 <DocumentPreviewSection
                     title="Preview"
                     classes={classes}
@@ -230,6 +219,16 @@ class Document extends Component {
                         classes={classes}
                     />
                 ))}
+
+                {(!fullPage || !isFolder) && (
+                    <DocumentFilesSection
+                        title="Files"
+                        data={files}
+                        fullPage={fullPage}
+                        baseUrl={collectionBaseUrl}
+                        classes={classes}
+                    />
+                )}
 
                 {showMeta && (
                     <DocumentMetaSection
