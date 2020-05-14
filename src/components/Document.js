@@ -1,8 +1,18 @@
+import Collapse from '@material-ui/core/Collapse';
+import Divider from '@material-ui/core/Divider';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
+import IconChromeReaderMode from '@material-ui/icons/ChromeReaderMode';
+import IconClear from '@material-ui/icons/Clear';
+import IconCloudDownload from '@material-ui/icons/CloudDownload';
+import IconLaunch from '@material-ui/icons/Launch';
+import IconPrint from '@material-ui/icons/Print';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import { withStyles } from '@material-ui/core/styles';
+import Loading from './Loading';
+import PropTypes from 'prop-types';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -10,17 +20,12 @@ import TableRow from '@material-ui/core/TableRow';
 import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import IconCloudDownload from '@material-ui/icons/CloudDownload';
-import IconLaunch from '@material-ui/icons/Launch';
-import IconPrint from '@material-ui/icons/Print';
-import IconChromeReaderMode from '@material-ui/icons/ChromeReaderMode';
 import cn from 'classnames';
-import { Component } from 'react';
-import { connect } from 'react-redux';
 import url from 'url';
-import Loading from './Loading';
+import { Component, Fragment } from 'react';
+import { connect } from 'react-redux';
 import { getLanguageName } from '../utils';
-import PropTypes from 'prop-types';
+import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
     toolbar: {
@@ -33,7 +38,7 @@ const styles = theme => ({
 
     sectionHeader: {
         backgroundColor: theme.palette.grey[200],
-        color: theme.palette.text.secondary,
+        color: theme.palette.text.action,
         padding: '1rem',
     },
 
@@ -67,21 +72,89 @@ const styles = theme => ({
     section: {
         backgroundColor: 'white',
     },
+
+    expand: {
+        transform: 'rotate(0deg)',
+        transition: theme.transitions.create('transform', {
+            duration: theme.transitions.duration.shortest,
+        }),
+        marginLeft: 'auto',
+        [theme.breakpoints.up('sm')]: {
+            marginRight: -8,
+        },
+    },
+
+    expandOpen: {
+        transform: 'rotate(180deg)',
+    },
 });
 
-const SectionHeader = withStyles(styles)(({ classes, title }) => (
-    <div className={classes.sectionHeader}>
-        <Typography variant="h6">{title}</Typography>
-    </div>
-));
+class Section extends Component {
+    static propTypes = {
+        classes: PropTypes.object.isRequired,
+        defaultOpen: PropTypes.bool,
+        scrollX: PropTypes.bool,
+    };
 
-const SectionContent = withStyles(styles)(
-    ({ classes, children, scrollX, ...props }) => (
-        <div className={cn(classes.sectionContent, { [classes.scrollX]: scroll })}>
-            {children}
-        </div>
-    )
-);
+    static defaultProps = {
+        defaultOpen: true,
+        scrollX: false,
+    };
+
+    constructor(props) {
+        super(props);
+        this.state = { open: props.defaultOpen || false };
+    }
+
+    toggle = () => this.setState({ open: !this.state.open });
+
+    render() {
+        const {
+            title,
+            children,
+            classes,
+            defaultOpen,
+            scrollX,
+        } = this.props;
+
+        const { open } = this.state;
+
+        return (
+            <Fragment>
+                <ListItem onClick={this.toggle} button dense className={classes.sectionHeader}>
+                    <Grid container alignItems="baseline" justify="space-between">
+                        <Grid item>
+                            <Typography variant="h6">
+                                {title}
+                            </Typography>
+                        </Grid>
+
+                        <Grid item>
+                            <IconButton
+                                className={cn(classes.expand, {
+                                    [classes.expandOpen]: open,
+                                })}
+                                onClick={this.toggle}
+                                aria-expanded={open}
+                                aria-label="Show more">
+                                <ExpandMoreIcon
+                                    color={'action'}
+                                />
+                            </IconButton>
+                        </Grid>
+                    </Grid>
+                </ListItem>
+
+                <Collapse in={open}>
+                    <div className={cn(classes.sectionContent, { [classes.scrollX]: scrollX })}>
+                        {children}
+                    </div>
+                    <Divider />
+                </Collapse>
+            </Fragment>
+        );
+    }
+}
 
 class Document extends Component {
     static propTypes = {
@@ -213,10 +286,11 @@ class Document extends Component {
 
                 {ocrData.map(({ tag, text }) => (
                     <DocumentTextSection
-                        title={tag}
+                        title={"OCR " + tag}
                         text={text}
                         fullPage={this.props.fullPage}
                         classes={classes}
+                        omitIfEmpty={false}
                     />
                 ))}
 
@@ -248,10 +322,7 @@ class DocumentMetaSection extends Component {
         const data = doc ? doc.content : null;
 
         return (
-            <section className={classes.section}>
-                <SectionHeader title="Meta" />
-
-                <SectionContent>
+                <Section title="Meta" classes={classes}>
                     {data && (
                         <List dense>
                             <ListItem disableGutters>
@@ -337,8 +408,7 @@ class DocumentMetaSection extends Component {
                             )}
                         </List>
                     )}
-                </SectionContent>
-            </section>
+                </Section>
         );
     }
 }
@@ -357,9 +427,7 @@ class DocumentEmailSection extends Component {
         }
 
         return (
-            <section className={this.props.classes.section}>
-                <SectionHeader title="Email" />
-                <SectionContent>
+                <Section title="Email" classes={classes}>
                     <Table>
                         <TableBody>
                             <TableRow>
@@ -396,8 +464,7 @@ class DocumentEmailSection extends Component {
                             </TableRow>
                         </TableBody>
                     </Table>
-                </SectionContent>
-            </section>
+                </Section>
         );
     }
 }
@@ -440,14 +507,11 @@ class DocumentFilesSection extends Component {
 
         return (
             files.length > 0 && (
-                <section className={classes.section}>
-                    <SectionHeader title={title} />
-                    <SectionContent scrollX>
+                    <Section title={title} scrollX={true} classes={classes}>
                         <Table>
                             <TableBody>{files}</TableBody>
                         </Table>
-                    </SectionContent>
-                </section>
+                    </Section>
             )
         );
     }
@@ -489,32 +553,43 @@ class DocumentPreviewSection extends Component {
         }
 
         return (
-            <section className={classes.section}>
-                <SectionHeader title={title} />
-                <SectionContent>
+                <Section title={title} classes={classes}>
                     <div>
                       {preview}
                     </div>
-                </SectionContent>
-            </section>
+                </Section>
         );
     }
 }
 
 class DocumentTextSection extends Component {
+    static propTypes = {
+        omitIfEmpty: PropTypes.bool,
+    };
+
+    static defaultProps = {
+        omitIfEmpty: true,
+    };
+
     render() {
-        const { classes, text, title } = this.props;
-        if (!text) return null;
+        const { classes, title, omitIfEmpty} = this.props;
+        var text = this.props.text;
+
+        if (!text) {
+            if (omitIfEmpty)
+                return null;
+
+            text = ( <i> (empty) </i> );
+        } else {
+            text = ( <pre className={classes.preWrap}>{text.trim()}</pre> )
+        }
 
         return (
-            <section className={classes.section}>
-                <SectionHeader title={title} />
-                <SectionContent>
+                <Section title={title} classes={classes}>
                     <div className={classes.content}>
-                        <pre className={classes.preWrap}>{text.trim()}</pre>
+                        {text}
                     </div>
-                </SectionContent>
-            </section>
+                </Section>
         );
     }
 }
@@ -524,16 +599,15 @@ class DocumentHTMLSection extends Component {
         let html = this.props.html;
         if (!html) return null;
 
-        let title = this.props.title;
+        const {classes, title} = this.props;
 
         return (
             <div>
-                <SectionHeader title={title} />
-                <SectionContent>
+                <Section title={title} classes={classes}>
                     <div className={classes.content}>
                         <span dangerouslySetInnerHTML={{ __html: html }} />
                     </div>
-                </SectionContent>
+                </Section>
             </div>
         );
     }
