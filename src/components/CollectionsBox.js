@@ -18,6 +18,10 @@ const styles = theme => ({
     formControlLabel: {
         width: '100%',
     },
+    progress: {
+        color: '#999',
+        'font-size': '7.5pt',
+    },
 });
 
 export class CollectionsBox extends Component {
@@ -96,10 +100,12 @@ export class CollectionsBox extends Component {
                     />
                 }
                 label={
-                    col.title +
-                    (counts && counts[col.name]
-                        ? ` (${formatThousands(counts[col.name])})`
-                        : '')
+                    <>
+                        <span>
+                            {col.title + (counts && counts[col.name] ? ` (${formatThousands(counts[col.name])})` : '')}
+                        </span>
+                        <i className={classes.progress}><br/>{col.stats.progress_str}</i>
+                    </>
                 }
             />
         ));
