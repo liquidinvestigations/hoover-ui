@@ -136,6 +136,7 @@ div[tabindex="-1"]:focus {
 
 .finder {
     height: 100%;
+    overflow-x: auto;
 
     .fjs-container {
         font-family: $font-family-sans-serif;
