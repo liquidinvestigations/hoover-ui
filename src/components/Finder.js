@@ -35,7 +35,6 @@ const buildTree = (leaf, basePath) => {
             parent: item.parent ? createNode(item.parent) : null,
             children: item.children ? item.children.map(createNode) : null,
         });
-        console.log(node);
 
         return node;
     };
@@ -76,10 +75,11 @@ class Finder extends Component {
 
     navigateTo(item) {
         if (item.href) {
-            this.props.router.push({
-                pathname: '/doc',
-                query: { path: item.href },
-            });
+            this.props.router.push(
+                item.href,
+                undefined,
+                {shallow: true},
+            );
         }
     }
 

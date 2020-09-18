@@ -143,12 +143,11 @@ export function routeChanged(newUrl) {
         if (parsed.pathname === '/' && collectionsWasFetched) {
             dispatch(search());
         } else if (
-            parsed.pathname.match(/\/doc\/?/) &&
-            parsed.query.path &&
-            parsed.query.path !== doc.url &&
+            parsed.pathname.match(/doc\/?/) &&
+            parsed.pathname !== doc.url &&
             !initial
         ) {
-            dispatch(fetchDoc(parsed.query.path, { includeParents: true }));
+            dispatch(fetchDoc(parsed.pathname, { includeParents: true }));
         }
     };
 }
