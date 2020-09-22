@@ -195,7 +195,9 @@ class Document extends Component {
         const headerLinks = [];
         const isFolder = data.filetype === 'folder';
 
-        const docRawUrl = `${docUrl}/raw/${data.filename}`
+        
+        const digest = (doc.digest || doc.id[0] != '_' && doc.id);
+        const docRawUrl = `${collectionBaseUrl}${digest}/raw/${data.filename}`
 
         if (!fullPage) {
             headerLinks.push({
@@ -294,15 +296,13 @@ class Document extends Component {
                     />
                 ))}
 
-                {(!fullPage || !isFolder) && (
-                    <DocumentFilesSection
-                        title="Files"
-                        data={files}
-                        fullPage={fullPage}
-                        baseUrl={collectionBaseUrl}
-                        classes={classes}
-                    />
-                )}
+                <DocumentFilesSection
+                    title="Files"
+                    data={files}
+                    fullPage={fullPage}
+                    baseUrl={collectionBaseUrl}
+                    classes={classes}
+                />
 
                 {showMeta && (
                     <DocumentMetaSection
@@ -343,9 +343,11 @@ class DocumentMetaSection extends Component {
                                 <ListItemText primary="Path" secondary={data.path} />
                             </ListItem>
 
-                            <ListItem disableGutters>
-                                <ListItemText primary="Id" secondary={doc.id} />
-                            </ListItem>
+                            {doc.digest && (
+                                <ListItem disableGutters>
+                                    <ListItemText primary="Id" secondary={doc.digest} />
+                                </ListItem>
+                            )}
 
                             {data.filetype && (
                                 <ListItem disableGutters>
@@ -469,27 +471,25 @@ class DocumentFilesSection extends Component {
     render() {
         const { data, baseUrl, title, fullPage, classes } = this.props;
 
-        const files = data.map(({ id, filename, content_type, size }, index) => {
+        const files = data.map(({ id, digest, file, filename, content_type, size }, index) => {
             return (
-                <TableRow key={id || filename}>
+                <TableRow key={file}>
                     <TableCell className="text-muted">{content_type}</TableCell>
                     <TableCell className="text-muted">{size}</TableCell>
                     <TableCell>
-                        {id ? (
+                        {digest && (
                             <a
-                                href={url.resolve(baseUrl, `${id}/raw/${filename}`)}
+                                href={url.resolve(baseUrl, `${digest}/raw/${filename}`)}
                                 target={fullPage ? null : '_blank'}
                                 title="Original file">
                                 <IconCloudDownload />
                             </a>
-                        ) : (
-                            <p>-- broken link --</p>
                         )}
                     </TableCell>
                     <TableCell>
                         {id ? (
                             <a
-                                href={url.resolve(baseUrl, id)}
+                                href={url.resolve(baseUrl, file||id)}
                                 target={fullPage ? null : '_blank'}>
                                 {filename}
                             </a>

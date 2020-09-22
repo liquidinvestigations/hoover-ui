@@ -10,7 +10,7 @@ const filenameFor = item => {
         return item.filename;
     } else {
         const { filename, path } = item.content;
-        return filename || last(path.split('/').filter(Boolean)) || path || item.id;
+        return filename || last(path.split('/').filter(Boolean)) || path || '/';
     }
 };
 
@@ -18,13 +18,24 @@ const buildTree = (leaf, basePath) => {
     const nodesById = {};
 
     const createNode = item => {
-        const node = (nodesById[item.id] = nodesById[item.id] || {
-            id: item.id,
+        const id = (item.file || item.id);
+	var filetype = item.filetype;
+	
+	if (!filetype && item.content) {
+	    filetype = item.content.filetype;
+	}
+	
+        const node = (nodesById[id] = nodesById[id] || {
+	    id,
+            digest: item.digest,
+            file: item.file,
             label: filenameFor(item),
-            href: [basePath, item.id].join(''),
+            filetype,
+            href: [basePath, id].join(''),
             parent: item.parent ? createNode(item.parent) : null,
             children: item.children ? item.children.map(createNode) : null,
         });
+        console.log(node);
 
         return node;
     };
