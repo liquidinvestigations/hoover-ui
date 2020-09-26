@@ -12,6 +12,7 @@ import SplitPaneLayout from '../src/components/SplitPaneLayout';
 import { parseLocation, copyMetadata } from '../src/utils';
 import HotKeys from '../src/components/HotKeys';
 import Typography from '@material-ui/core/Typography';
+import url_util from 'url';
 
 const styles = theme => ({
     container: theme.mixins.toolbar,
@@ -92,9 +93,28 @@ class Doc extends Component {
             );
         }
 
-        const doc = <Document fullPage showToolbar={!printMode} showMeta={false} />;
+        let digestUrl = url;
+        let urlIsSha = false;
+        // Ugly and unstable
+        const digest = data && (data.digest || data.id[0] != '_' && data.id);
+        if (digest) {
+            digestUrl = url_util.resolve(url, './');
+            digestUrl += digest;
+            urlIsSha = (url === digestUrl);
+        }
 
-        const meta = <Meta doc={data} collection={collection} />;
+        const doc = <Document fullPage showToolbar={!printMode} showMeta />;
+
+        const finder = <Finder isFetching={isFetching} data={data} url={url} />;
+
+        // This could be put in another component
+        const infoPane = (<SplitPaneLayout
+            container={false}
+            left={digest && <Locations data={data} url={digestUrl} />}
+            defaultSizeLeft="25%"
+            defaultSizeMiddle="70%">
+            {doc}
+        </SplitPaneLayout>);
 
         let content = null;
 
@@ -109,25 +129,17 @@ class Doc extends Component {
             content = (
                 <div className={classes.finderSplitPane}>
                     <div className={classes.container} />
-                    <SplitPane
-                        split="horizontal"
-                        defaultSize="30%"
-                        style={{ position: 'relative' }}>
-                        <Finder isFetching={isFetching} data={data} url={url} />
-
-                        <SplitPaneLayout
-                            container={false}
-                            left={
-                                <>
-                                    {meta}
-                                    {data && <Locations data={data} url={url} />}
-                                </>
-                            }
-                            defaultSizeLeft="25%"
-                            defaultSizeMiddle="70%">
-                            {doc}
-                        </SplitPaneLayout>
-                    </SplitPane>
+                    {!urlIsSha ?
+                        <SplitPane
+                            split="horizontal"
+                            defaultSize="30%"
+                            style={{ position: 'relative' }}>
+                            {finder}
+                            {infoPane}
+                        </SplitPane>
+                        :
+                        infoPane
+                    }
                 </div>
             );
         }
