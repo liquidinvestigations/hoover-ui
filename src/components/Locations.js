@@ -51,14 +51,11 @@ class Locations extends Component {
                     {locations.length > 1 && (
                         <>
                             {locations.map((loc, index) => (
-                                <Link
-                                    href={{
-                                        pathname: '/doc',
-                                        query: {
-                                            path: `${basePath}${loc.parent_id}`,
-                                        },
-                                    }}
-                                    key={index}>
+                                <a
+                                    href={`${basePath}${loc.id}`}
+                                    target='_blank'
+                                    key={index}
+                                >
                                     <ListItem button>
                                         <ListItemIcon>
                                             <Folder />
@@ -68,7 +65,7 @@ class Locations extends Component {
                                             {loc.parent_path}/<em>{loc.filename}</em>
                                         </Typography>
                                     </ListItem>
-                                </Link>
+                                </a>
                             ))}
                         </>
                     )}
