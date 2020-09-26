@@ -3,7 +3,7 @@ import ReactFinder from './ReactFinder';
 import ErrorBoundary from './ErrorBoundary';
 import last from 'lodash/last';
 import { withRouter } from 'next/router';
-import { getBasePath } from '../utils';
+import { getBasePath, getIconImageElement } from '../utils';
 
 const filenameFor = item => {
     if (item.filename) {
@@ -59,6 +59,24 @@ class Finder extends Component {
         return !nextProps.isFetching;
     }
 
+    handleCreateItemContent = (cfg, item) => {
+        var frag = document.createDocumentFragment();
+        var label = document.createElement('span');
+        var iconPrepend = getIconImageElement(item.filetype);
+
+        // the icon before the label
+        iconPrepend = getIconImageElement(item.filetype);
+
+        // text label
+        label.appendChild(document.createTextNode(item.label));
+        label.className = "tree-view-label";
+            
+        frag.appendChild(iconPrepend);
+        frag.appendChild(label);
+
+        return frag;
+    }
+
     handleColumnCreated = (...args) => console.log('column-created', ...args);
 
     handleLeafSelected = item => {
@@ -98,6 +116,7 @@ class Finder extends Component {
                         onItemSelected={this.handleItemSelected}
                         onInteriorSelected={this.handleInteriorSelected}
                         onColumnCreated={this.handleColumnCreated}
+                        createItemContent={this.handleCreateItemContent}
                     />
                 </ErrorBoundary>
             </div>

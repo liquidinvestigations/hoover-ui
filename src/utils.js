@@ -2,6 +2,25 @@ import url from 'url';
 import copy from 'copy-text-to-clipboard';
 import langs from 'langs';
 
+export function getIconImageElement(filetype) {
+	var srcMap = {
+	    folder: '/icons/folder-line.svg', 
+	    archive: '/icons/file-zip-line.svg',
+	    email: '/icons/mail-line.svg',
+	    pdf: '/icons/file-pdf-line.svg',
+	    doc: '/icons/file-word-line.svg',
+	    xls: '/icons/file-excel-line.svg',
+	    'email-archive': '/icons/file-zip-line.svg',
+	    ppt: '/icons/slideshow-line.svg',
+	    default: '/icons/file-line.svg' 
+	}
+	var img = document.createElement('img');
+	
+	img.src = (srcMap[filetype] || srcMap.default);
+	
+	return img;
+}
+
 export function getLanguageName(key) {
     const found = langs.where('1', key);
     return found ? found.name : key;
