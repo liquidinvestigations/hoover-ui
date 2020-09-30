@@ -42,18 +42,10 @@ class Doc extends Component {
     root = createRef();
 
     componentDidMount() {
-        const { query, pathname } = parseLocation();
+        const { query, path } = parseLocation();
 
         const fetch = () => {
-            if (query.path) {
-                this.props.dispatch(
-                    fetchDoc(query.path, {
-                        includeParents: true,
-                    })
-                );
-            } else {
-                this.props.dispatch(fetchDoc(pathname, { includeParents: true }));
-            }
+            this.props.dispatch(fetchDoc(path, { includeParents: true }));
         };
 
         const newState = {};

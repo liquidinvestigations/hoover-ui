@@ -4,6 +4,7 @@ import { memoize } from 'lodash';
 
 class Api {
     async fetchJson(url, opts = {}) {
+        console.log(url, opts);
         const res = await fetch(url, {
             ...opts,
             credentials: 'same-origin',
@@ -44,7 +45,11 @@ class Api {
         return await this.fetchJson(`${docUrl}/locations`);
     });
 
-    doc = memoize(async docUrl => {
+    doc_url = memoize(async ({ docUrl, opts }) => {
+        return await this.fetchJson(`${docUrl}/json`, opts);
+    });
+
+    doc = memoize(async (docUrl) => {
         return await this.fetchJson(`${docUrl}/json`);
     });
 

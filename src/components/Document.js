@@ -24,8 +24,9 @@ import cn from 'classnames';
 import url from 'url';
 import { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
-import { getLanguageName } from '../utils';
+import { getLanguageName, parseLocation } from '../utils';
 import { withStyles } from '@material-ui/core/styles';
+import api from '../api';
 
 const styles = theme => ({
     toolbar: {
@@ -157,6 +158,16 @@ class Section extends Component {
 }
 
 class Document extends Component {
+    constructor(props) {
+        super(props);
+    
+        this.state = {
+            children_page: 1
+        }
+
+        this.getNextPage = this.getNextPage.bind(this);
+    }
+    
     static propTypes = {
         showToolbar: PropTypes.bool,
         showMeta: PropTypes.bool,
@@ -166,6 +177,43 @@ class Document extends Component {
         showToolbar: true,
         showMeta: true,
     };
+
+    
+    async getPage(url, query) {
+        try {
+            var data = await api.doc_url({
+                docUrl: url, 
+                opts: {
+                    method: 'POST',
+                    body: JSON.stringify(query)
+                }
+            });
+        
+            console.log(url);
+            console.log(await data.children);
+
+            //data.children = await data.children.concat(this.props.data.children);
+
+            this.setState({ data });
+        } catch(error) {
+            console.log(error);
+        }
+    }
+
+    getNextPage() {
+        if (!this.props.data.incomplete_children_list) {
+            return;
+        }
+
+        var children_page = this.state.children_page + 1;
+        var { path } = parseLocation(); 
+
+        console.log(children_page);
+
+        this.getPage(path, { children_page });
+
+        this.setState({ children_page })
+    }
 
     render() {
         const {
@@ -179,6 +227,10 @@ class Document extends Component {
         } = this.props;
 
         let doc = this.props.data;
+        let incomplete_children = doc && doc.incomplete_children_list;
+
+        console.log("RENDER");
+        console.log(doc);
 
         if (isFetching) {
             return <Loading />;
@@ -302,6 +354,8 @@ class Document extends Component {
                     fullPage={fullPage}
                     baseUrl={collectionBaseUrl}
                     classes={classes}
+                    getNextPage={this.getNextPage}
+                    incomplete={incomplete_children}
                 />
 
                 {showMeta && (
@@ -469,7 +523,7 @@ class DocumentEmailSection extends Component {
 
 class DocumentFilesSection extends Component {
     render() {
-        const { data, baseUrl, title, fullPage, classes } = this.props;
+        const { data, baseUrl, title, fullPage, classes, incomplete } = this.props;
 
         const files = data.map(({ id, digest, file, filename, content_type, size }, index) => {
             return (
@@ -505,7 +559,14 @@ class DocumentFilesSection extends Component {
             files.length > 0 && (
                     <Section title={title} scrollX={true} classes={classes}>
                         <Table>
-                            <TableBody>{files}</TableBody>
+                            <TableBody>
+                                {files}
+                                {incomplete &&
+                                    <TableRow><TableCell onClick={this.props.getNextPage}>
+                                        "Test"
+                                    </TableCell></TableRow>
+                                }
+                            </TableBody>
                         </Table>
                     </Section>
             )

@@ -285,6 +285,9 @@ export const fetchDoc = (url, { includeParents = false, parentLevels = 3 } = {})
         try {
             const data = await api.doc(url);
 
+            console.log(url);
+            console.log(data);
+                
             if (includeParents) {
                 let current = data;
                 let level = 0;
