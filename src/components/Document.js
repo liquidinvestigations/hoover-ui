@@ -179,22 +179,17 @@ class Document extends Component {
     };
 
     
-    async getPage(url, query) {
+    async getPage(url) {
         try {
-            var data = await api.doc_url({
-                docUrl: url, 
-                opts: {
-                    method: 'POST',
-                    body: JSON.stringify(query)
-                }
-            });
-        
+            var data = await api.doc_url(url);
+       
+            console.log("GetPage");
             console.log(url);
             console.log(await data.children);
 
             //data.children = await data.children.concat(this.props.data.children);
 
-            this.setState({ data });
+            //this.setState({ data });
         } catch(error) {
             console.log(error);
         }
@@ -210,7 +205,7 @@ class Document extends Component {
 
         console.log(children_page);
 
-        this.getPage(path, { children_page });
+        this.getPage(path + '/json?children_page=' + children_page);
 
         this.setState({ children_page })
     }

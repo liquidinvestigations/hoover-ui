@@ -45,8 +45,8 @@ class Api {
         return await this.fetchJson(`${docUrl}/locations`);
     });
 
-    doc_url = memoize(async ({ docUrl, opts }) => {
-        return await this.fetchJson(`${docUrl}/json`, opts);
+    doc_url = memoize(async (docUrl) => {
+        return await this.fetchJson(`${docUrl}`);
     });
 
     doc = memoize(async (docUrl) => {
