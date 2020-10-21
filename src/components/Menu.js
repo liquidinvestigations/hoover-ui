@@ -21,27 +21,21 @@ class Menu extends Component {
             },
             {
                 name: 'about',
-                url: 'https://github.com/mgax/hoover',
+                url: 'https://github.com/liquidinvestigations/hoover-search',
             },
+            //{
+            //    name: 'terms',
+            //    url: '/terms',
+            //    next: true,
+            //},
             {
-                name: 'terms',
-                url: '/terms',
-                next: true,
+                name: 'documentation',
+                url: 'https://github.com/liquidinvestigations/docs/wiki/User---Hoover',
             },
-            // {
-            //     name: 'documentation',
-            //     url:
-            //         'https://dl.dropboxusercontent.com/u/103063/static/hoover/HooverDocumentaiton.pdf',
-            // },
             {
                 name: 'login',
                 url: whoami.urls.login,
                 type: 'not-logged-in',
-            },
-            {
-                name: 'change password',
-                url: whoami.urls.password_change,
-                type: 'logged-in',
             },
             {
                 name: 'admin',
