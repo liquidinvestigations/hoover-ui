@@ -22,5 +22,7 @@ module.exports = withCss(
         distDir: 'build',
         poweredByHeader: false,
         reactStrictMode: true,
+        compress: false,
+        target: 'serverless',
     })
 );
