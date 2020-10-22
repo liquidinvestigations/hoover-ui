@@ -166,7 +166,6 @@ function doc(state = INITIAL_DOC_STATE, action) {
                 error: null,
             };
         case 'FETCH_DOC_SUCCESS':
-        case 'FETCH_SERVER_DOC':
             return {
                 ...state,
                 isFetching: false,

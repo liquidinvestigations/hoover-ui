@@ -241,18 +241,8 @@ export const expandFacet = key => {
 };
 
 export const fetchServerDoc = () => {
-    const doc = window.HOOVER_HYDRATE_DOC;
     const docUrl = window.location.href.split('?')[0];
-
-    if (!doc) {
-        return fetchDoc(docUrl);
-    }
-
-    return {
-        type: 'FETCH_SERVER_DOC',
-        data: doc,
-        url: docUrl,
-    };
+    return fetchDoc(docUrl);
 };
 
 export const fetchDoc = (url, { includeParents = false, parentLevels = 3 } = {}) => {
