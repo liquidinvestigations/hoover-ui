@@ -4,9 +4,8 @@
   "description": "React.js port of the hoover ui",
   "main": "index.js",
   "scripts": {
-    "dev": "node server.js",
-    "build": "next build && next export -o build && cp -av viewer build",
-    "start": "NODE_ENV=production node server.js",
+    "dev": "next dev -p 8000",
+    "prod": "next build && next start -p 8000",
     "test": "NODE_ENV=test jest",
     "test:update": "NODE_ENV=test jest -u",
     "test:watch": "NODE_ENV=test jest --watch",
