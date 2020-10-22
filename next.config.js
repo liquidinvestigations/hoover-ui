@@ -19,6 +19,7 @@ module.exports = withCss(
 
             return config;
         },
-        dirtDir: 'build',
+        distDir: 'build',
+        poweredByHeader: false,
     })
 );
