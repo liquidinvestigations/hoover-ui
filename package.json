@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "next build",
-    "dev": "next dev -p 8000",
-    "prod": "next build && next start -p 8000",
+    "dev": "next dev -p 8000 -H 0.0.0.0",
+    "prod": "next build && next start -p 8000 -H 0.0.0.0",
     "test": "NODE_ENV=test jest",
     "test:update": "NODE_ENV=test jest -u",
     "test:watch": "NODE_ENV=test jest --watch",
