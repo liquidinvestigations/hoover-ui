@@ -5,3 +5,4 @@ styles
 *.json
 *.snap
 node_modules
+build

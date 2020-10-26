@@ -18,12 +18,6 @@ export default withTheme()(({ children, theme }) => (
             />
 
             <meta name="theme-color" content={theme.palette.primary.main} />
-
-            <script
-                dangerouslySetInnerHTML={{
-                    __html: `/* HOOVER HYDRATION PLACEHOLDER */\n<!-- HOOVER SCRIPT PLACEHOLDER -->`,
-                }}
-            />
         </Head>
 
         <ProgressIndicator type="linear" />

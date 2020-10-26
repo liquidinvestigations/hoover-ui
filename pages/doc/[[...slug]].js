@@ -3,14 +3,14 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import SplitPane from 'react-split-pane';
 
-import { fetchDoc, fetchServerDoc } from '../src/actions';
+import { fetchDoc, fetchServerDoc } from '../../src/actions';
 
-import Document, { Meta } from '../src/components/Document';
-import Locations from '../src/components/Locations';
-import Finder from '../src/components/Finder';
-import SplitPaneLayout from '../src/components/SplitPaneLayout';
-import { parseLocation, copyMetadata } from '../src/utils';
-import HotKeys from '../src/components/HotKeys';
+import Document, { Meta } from '../../src/components/Document';
+import Locations from '../../src/components/Locations';
+import Finder from '../../src/components/Finder';
+import SplitPaneLayout from '../../src/components/SplitPaneLayout';
+import { parseLocation, copyMetadata } from '../../src/utils';
+import HotKeys from '../../src/components/HotKeys';
 import Typography from '@material-ui/core/Typography';
 
 const styles = theme => ({
