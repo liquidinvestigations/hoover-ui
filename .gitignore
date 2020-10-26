@@ -6,3 +6,4 @@
 /.npmrc
 /.env
 /.coverage
+/.env.local

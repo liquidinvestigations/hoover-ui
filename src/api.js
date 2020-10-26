@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import buildSearchQuery from './build-search-query';
+import { getBasePath } from './utils';
 
 class Api {
     async fetchJson(url, opts = {}) {
@@ -32,27 +33,27 @@ class Api {
     }
 
     async collections() {
-        return await this.fetchJson('/collections');
+        return await this.fetchJson('/api/v0/collections');
     }
 
     async limits() {
-        return await this.fetchJson('/limits');
+        return await this.fetchJson('/api/v0/limits');
     }
 
     async locationsFor(docUrl) {
-        return await this.fetchJson(`${docUrl}/locations`);
+        return await this.fetchJson(`/api/v0/${docUrl}/locations`);
     }
 
     async doc(docUrl) {
-        return await this.fetchJson(`${docUrl}/json`);
+        return await this.fetchJson(`/api/v0/${docUrl}/json`);
     }
 
     async whoami() {
-        return await this.fetchJson('/whoami');
+        return await this.fetchJson('/api/v0/whoami');
     }
 
     async batch(query) {
-        return await this.fetchJson('/batch', {
+        return await this.fetchJson('/api/v0/batch', {
             method: 'POST',
             body: JSON.stringify(query),
         });
@@ -61,7 +62,7 @@ class Api {
     async search(params) {
         const query = buildSearchQuery(params);
 
-        return await this.fetchJson('/search', {
+        return await this.fetchJson('/api/v0/search', {
             method: 'POST',
             body: JSON.stringify(query),
         });
