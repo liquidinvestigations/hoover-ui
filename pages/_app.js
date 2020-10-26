@@ -1,4 +1,4 @@
-import App, { Container } from 'next/app';
+import App from 'next/app';
 import React from 'react';
 
 import { MuiThemeProvider } from '@material-ui/core/styles';
@@ -42,27 +42,25 @@ class HooverApp extends App {
         const { Component, pageProps, reduxStore } = this.props;
 
         return (
-            <Container>
-                <JssProvider
-                    registry={this.pageContext.sheetsRegistry}
-                    generateClassName={this.pageContext.generateClassName}>
-                    <MuiThemeProvider
-                        theme={this.pageContext.theme}
-                        sheetsManager={this.pageContext.sheetsManager}>
-                        <CssBaseline />
-                        <Provider store={reduxStore}>
-                            <MuiPickersUtilsProvider utils={LuxonUtils}>
-                                <Layout>
-                                    <Component
-                                        pageContext={this.pageContext}
-                                        {...pageProps}
-                                    />
-                                </Layout>
-                            </MuiPickersUtilsProvider>
-                        </Provider>
-                    </MuiThemeProvider>
-                </JssProvider>
-            </Container>
+            <JssProvider
+                registry={this.pageContext.sheetsRegistry}
+                generateClassName={this.pageContext.generateClassName}>
+                <MuiThemeProvider
+                    theme={this.pageContext.theme}
+                    sheetsManager={this.pageContext.sheetsManager}>
+                    <CssBaseline />
+                    <Provider store={reduxStore}>
+                        <MuiPickersUtilsProvider utils={LuxonUtils}>
+                            <Layout>
+                                <Component
+                                    pageContext={this.pageContext}
+                                    {...pageProps}
+                                />
+                            </Layout>
+                        </MuiPickersUtilsProvider>
+                    </Provider>
+                </MuiThemeProvider>
+            </JssProvider>
         );
     }
 }
