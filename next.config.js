@@ -24,6 +24,5 @@ module.exports = withCss(
         // TODO on some sunny day, enable
         reactStrictMode: false,
         compress: false,
-        target: 'serverless',
     })
 );

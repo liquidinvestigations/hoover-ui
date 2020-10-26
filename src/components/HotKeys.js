@@ -104,7 +104,7 @@ export default class extends PureComponent {
 
         return (
             <div>
-                <HotKeys keyMap={keyMap} handlers={handlers} focused={focused}>
+                <HotKeys keyMap={keyMap} handlers={handlers} focused={focused.toString()}>
                     {children}
                 </HotKeys>
 
