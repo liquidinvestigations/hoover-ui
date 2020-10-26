@@ -24,7 +24,7 @@ import cn from 'classnames';
 import url from 'url';
 import { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
-import { getLanguageName } from '../utils';
+import { getLanguageName, getRawUrl } from '../utils';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
@@ -195,7 +195,8 @@ class Document extends Component {
         const headerLinks = [];
         const isFolder = data.filetype === 'folder';
 
-        const docRawUrl = `${docUrl}/raw/${data.filename}`
+        // FIXME - move this logic to src/api.js
+        const docRawUrl = `/api/v0/${docUrl}/raw/${data.filename}`;
 
         if (!fullPage) {
             headerLinks.push({
@@ -229,7 +230,7 @@ class Document extends Component {
         headerLinks.push(
             ...ocrData.map(({ tag }) => {
                 return {
-                    href: `${docUrl}/ocr/${tag}/`,
+                    href: `/api/v0/${docUrl}/ocr/${tag}/`,
                     text: `OCR ${tag}`,
                     icon: <IconChromeReaderMode />,
                 };
@@ -519,6 +520,38 @@ class DocumentFilesSection extends Component {
 
 class DocumentPreviewSection extends Component {
     render() {
+        // List copy/pasted from https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+        // and then ran through ` grep -o '[^ /]\+/[^ ]\+' | sort ` - only image, audio, video are here
+        const PREVIEWABLE_MIME_TYPE_SUFFEXES = [
+            '/3gpp',
+            '/3gpp2',
+            '/aac',
+            '/bmp',
+            '/gif',
+            '/jpeg',
+            '/jpg',
+            '/midi',
+            '/mp2t',
+            '/mp4',
+            '/mpeg',
+            '/mpeg3',
+            '/msvideo',
+            '/ogg',
+            '/opus',
+            '/pjpeg',
+            '/png',
+            '/svg+xml',
+            '/tiff',
+            '/video',
+            '/vnd.microsoft.icon',
+            '/wav',
+            '/webm',
+            '/webp',
+            '/x-midi',
+            '/x-mpeg-3',
+            '/x-msvideo',
+            '/x-troff-msvideo',
+        ];
         const { classes, type, url, title, docTitle } = this.props;
         if (!type || !url) return null;
 
@@ -536,7 +569,7 @@ class DocumentPreviewSection extends Component {
                             />
                           </div>
                         </> );
-        } else if (type.startsWith("image/") || type.startsWith("audio/") || type.startsWith("video/")) {
+        } else if (PREVIEWABLE_MIME_TYPE_SUFFEXES.some(x => type.endsWith(x))) {
             preview = ( <div id="hoover-media-viewer-container" className={classes.preview}>
                         <embed
                             style={{"object-fit": "contain"}}

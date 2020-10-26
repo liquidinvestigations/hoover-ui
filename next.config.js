@@ -21,7 +21,8 @@ module.exports = withCss(
         },
         distDir: 'build',
         poweredByHeader: false,
-        reactStrictMode: true,
+        // TODO on some sunny day, enable
+        reactStrictMode: false,
         compress: false,
         target: 'serverless',
     })
