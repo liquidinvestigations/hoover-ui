@@ -51,3 +51,4 @@ Upgrading the node version requires a version bump in the following files:
 -   package.json (`engine`)
 -   .travis.yml
 -   Dockerfile
+
