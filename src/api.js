@@ -1,6 +1,5 @@
 import fetch from 'isomorphic-fetch';
 import buildSearchQuery from './build-search-query';
-import { getBasePath } from './utils';
 
 class Api {
     async fetchJson(url, opts = {}) {

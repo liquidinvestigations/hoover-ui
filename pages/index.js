@@ -1,3 +1,6 @@
 import SearchPage from '../src/components/SearchPage';
 
-export default () => <SearchPage />;
+const IndexPage = () => <SearchPage />;
+
+export default IndexPage;
+

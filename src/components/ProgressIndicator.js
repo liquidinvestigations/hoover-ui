@@ -13,9 +13,9 @@ const styles = theme => ({
     },
     circular: {
         position: 'fixed',
-        top: theme.spacing.unit,
-        paddingLeft: theme.spacing.unit,
-        paddingRight: theme.spacing.unit,
+        top: theme.spacing(1),
+        paddingLeft: theme.spacing(1),
+        paddingRight: theme.spacing(1),
     },
 });
 

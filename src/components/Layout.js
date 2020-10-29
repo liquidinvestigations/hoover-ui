@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Header from './Header';
 import ProgressIndicator from './ProgressIndicator';
 
-export default withTheme()(({ children, theme }) => (
+export default withTheme(({ children, theme }) => (
     <div>
         <Head>
             <meta charSet="utf-8" />

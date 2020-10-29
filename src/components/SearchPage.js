@@ -28,18 +28,18 @@ import { isInputFocused, copyMetadata } from '../utils';
 
 const styles = theme => ({
     error: {
-        paddingTop: theme.spacing.unit * 2,
+        paddingTop: theme.spacing(3),
     },
     main: {
-        paddingLeft: theme.spacing.unit * 3,
-        paddingRight: theme.spacing.unit * 3,
+        paddingLeft: theme.spacing(3),
+        paddingRight: theme.spacing(3),
     },
     paper: {
         position: 'absolute',
-        width: theme.spacing.unit * 50,
+        width: theme.spacing(50),
         backgroundColor: theme.palette.background.paper,
         boxShadow: theme.shadows[5],
-        padding: theme.spacing.unit * 4,
+        padding: theme.spacing(4),
     },
 });
 

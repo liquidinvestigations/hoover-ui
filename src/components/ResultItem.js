@@ -21,7 +21,7 @@ import { fetchDoc } from '../actions';
 const styles = theme => ({
     card: {
         cursor: 'pointer',
-        marginTop: theme.spacing.unit,
+        marginTop: theme.spacing(1),
         borderLeft: '3px solid transparent',
         transition: theme.transitions.create('border', {
             duration: theme.transitions.duration.short,
@@ -31,15 +31,15 @@ const styles = theme => ({
         borderLeft: `3px solid ${theme.palette.secondary.main}`,
     },
     spaceBottom: {
-        marginBottom: theme.spacing.unit,
+        marginBottom: theme.spacing(1),
     },
     spaceTop: {
-        marginTop: theme.spacing.unit,
+        marginTop: theme.spacing(1),
     },
     path: {
         // overflow: 'hidden',
         // whiteSpace: 'nowrap',
-        marginTop: theme.spacing.unit * 2,
+        marginTop: theme.spacing(2),
     },
     text: {
         cursor: 'text',

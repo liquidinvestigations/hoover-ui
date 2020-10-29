@@ -81,7 +81,7 @@ class Filter extends Component {
                                 color={
                                     defaultOpen && colorIfFiltered
                                         ? 'secondary'
-                                        : 'default'
+                                        : 'initial'
                                 }>
                                 {title}
                             </Typography>
