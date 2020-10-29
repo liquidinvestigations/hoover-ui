@@ -6,7 +6,7 @@ import Filters from './Filters';
 import Filter from './Filter';
 import CollectionsBox from './CollectionsBox';
 
-export default () => (
+const SearchLeftDrawer = () => (
     <Fragment>
         <List dense>
             <Filter title="Collections" colorIfFiltered={false}>
@@ -17,3 +17,5 @@ export default () => (
         <Filters />
     </Fragment>
 );
+
+export default SearchLeftDrawer;

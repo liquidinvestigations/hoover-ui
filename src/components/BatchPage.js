@@ -20,8 +20,8 @@ import Typography from '@material-ui/core/Typography';
 const styles = theme => ({
     toolbar: theme.mixins.toolbar,
     main: {
-        paddingLeft: theme.spacing.unit * 3,
-        paddingRight: theme.spacing.unit * 3,
+        paddingLeft: theme.spacing(3),
+        paddingRight: theme.spacing(3),
     },
 });
 

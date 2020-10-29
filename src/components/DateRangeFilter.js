@@ -14,12 +14,12 @@ import IconArrowLeft from '@material-ui/icons/ArrowLeft';
 import IconArrowRight from '@material-ui/icons/ArrowRight';
 import IconEvent from '@material-ui/icons/Event';
 
-import { DatePicker } from 'material-ui-pickers';
+import { KeyboardDatePicker } from '@material-ui/pickers'
 
 const styles = theme => ({
     textField: {
-        marginLeft: theme.spacing.unit,
-        marginRight: theme.spacing.unit,
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
         width: 200,
     },
 });
@@ -75,28 +75,26 @@ class DateRangeFilter extends Component {
         return (
             <List>
                 <ListItem>
-                    <DatePicker
+                    <KeyboardDatePicker
                         value={from}
                         format={DATE_FORMAT}
                         onChange={this.handleFromChange}
                         maxDate={to}
-                        openToYearSelection
+                        openTo="year"
                         autoOk
-                        keyboard
                         fullWidth
                         {...icons}
                     />
                 </ListItem>
 
                 <ListItem>
-                    <DatePicker
+                    <KeyboardDatePicker
                         value={to}
                         format={DATE_FORMAT}
                         minDate={from}
                         onChange={this.handleToChange}
-                        openToYearSelection
+                        openTo="year"
                         autoOk
-                        keyboard
                         fullWidth
                         {...icons}
                     />

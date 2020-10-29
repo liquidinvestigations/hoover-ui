@@ -4,7 +4,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import IconChromeReaderMode from '@material-ui/icons/ChromeReaderMode';
-import IconClear from '@material-ui/icons/Clear';
 import IconCloudDownload from '@material-ui/icons/CloudDownload';
 import IconLaunch from '@material-ui/icons/Launch';
 import IconPrint from '@material-ui/icons/Print';
@@ -24,7 +23,7 @@ import cn from 'classnames';
 import url from 'url';
 import { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
-import { getLanguageName, getRawUrl } from '../utils';
+import { getLanguageName } from '../utils';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
@@ -64,7 +63,7 @@ const styles = theme => ({
     },
 
     button: {
-        margin: theme.spacing.unit,
+        margin: theme.spacing(1),
     },
 
     preWrap: { whiteSpace: 'pre-wrap' },
