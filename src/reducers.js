@@ -164,7 +164,10 @@ function doc(state = INITIAL_DOC_STATE, action) {
                 collection: parseCollection(action.url),
                 data: null,
                 error: null,
+                locations: [],
             };
+        case 'FETCH_DOC_LOCATIONS_SUCCESS':
+            return { ...state, locations: action.data };
         case 'FETCH_DOC_SUCCESS':
             return {
                 ...state,
