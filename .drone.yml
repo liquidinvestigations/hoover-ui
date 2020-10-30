@@ -3,17 +3,17 @@ name: test
 
 steps:
 - name: npm install
-  image: node:9
+  image: node:10
   commands:
   - npm install
 
 - name: npm run build
-  image: node:9
+  image: node:10
   commands:
   - npm run build
 
 - name: npm test
-  image: node:9
+  image: node:10
   commands:
   - npm test
 ---
