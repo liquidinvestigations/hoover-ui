@@ -1,4 +1,4 @@
-FROM node:13
+FROM node:10
 
 RUN mkdir -p /opt/hoover/ui
 WORKDIR /opt/hoover/ui
