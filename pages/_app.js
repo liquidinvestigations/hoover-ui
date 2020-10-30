@@ -14,6 +14,7 @@ import { Provider } from 'react-redux';
 import Layout from '../src/components/Layout';
 import routerEvents from '../src/router-events';
 import { routeChanged } from '../src/actions';
+import { JSS_CSS } from "../src/constants";
 
 import '../styles/main.scss';
 
@@ -24,7 +25,7 @@ class HooverApp extends App {
 
     componentDidMount() {
         // Remove the server-side injected CSS.
-        const jssStyles = document.querySelector('#jss-server-side');
+        const jssStyles = document.querySelector(`#${JSS_CSS}`);
         if (jssStyles && jssStyles.parentNode) {
             jssStyles.parentNode.removeChild(jssStyles);
         }

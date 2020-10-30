@@ -9,3 +9,4 @@ export const DATE_FORMAT = 'yyyy-MM-dd';
 export const DEFAULT_FACET_SIZE = 10;
 export const ES_LONG_MAX = '9223372036854775807';
 export const ES_LONG_MIN = '-9223372036854775808';
+export const JSS_CSS = 'jss-server-side';

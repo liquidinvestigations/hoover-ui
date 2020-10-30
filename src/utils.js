@@ -74,3 +74,6 @@ export const copyMetadata = doc => {
 };
 
 export const documentViewUrl = item => `/doc/${item._collection}/${item._id}`;
+
+export const removeCommentsAndSpacing = (str = '') =>
+    str.replace(/\/\*.*\*\//g, ' ').replace(/\s+/g, ' ');
