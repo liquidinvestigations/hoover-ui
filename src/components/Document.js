@@ -194,7 +194,8 @@ class Document extends Component {
         const files = doc.children || [];
         const headerLinks = [];
         const isFolder = data.filetype === 'folder';
-        const docRawUrl = api.downloadUrl(docUrl, data.filename);
+        const digest = (doc.digest || doc.id[0] !== '_' && doc.id);
+        const docRawUrl = api.downloadUrl(`${collectionBaseUrl}${digest}`, data.filename);
 
         if (!fullPage) {
             headerLinks.push({
@@ -293,15 +294,13 @@ class Document extends Component {
                     />
                 ))}
 
-                {(!fullPage || !isFolder) && (
-                    <DocumentFilesSection
-                        title="Files"
-                        data={files}
-                        fullPage={fullPage}
-                        baseUrl={collectionBaseUrl}
-                        classes={classes}
-                    />
-                )}
+                <DocumentFilesSection
+                    title="Files"
+                    data={files}
+                    fullPage={fullPage}
+                    baseUrl={collectionBaseUrl}
+                    classes={classes}
+                />
 
                 {showMeta && (
                     <DocumentMetaSection
@@ -342,9 +341,11 @@ class DocumentMetaSection extends Component {
                                 <ListItemText primary="Path" secondary={data.path} />
                             </ListItem>
 
-                            <ListItem disableGutters>
-                                <ListItemText primary="Id" secondary={doc.id} />
-                            </ListItem>
+                            {doc.digest && (
+                                <ListItem disableGutters>
+                                    <ListItemText primary="Id" secondary={doc.digest} />
+                                </ListItem>
+                            )}
 
                             {data.filetype && (
                                 <ListItem disableGutters>
@@ -414,12 +415,8 @@ class DocumentMetaSection extends Component {
 
 class DocumentEmailSection extends Component {
     render() {
-        let { classes, doc } = this.props;
-
-        doc = doc || {};
-
-        let data = doc.content;
-        let files = doc.children || [];
+        const { classes, doc = {} } = this.props;
+        const data = doc.content;
 
         if (data.filetype !== 'email') {
             return null;
@@ -441,7 +438,7 @@ class DocumentEmailSection extends Component {
                                 <TableCell>To</TableCell>
                                 <TableCell>
                                     <pre className={classes.preWrap}>
-                                        {data.to.filter(Boolean).join(', ')}
+                                        {(data.to || []).filter(Boolean).join(', ')}
                                     </pre>
                                 </TableCell>
                             </TableRow>
@@ -472,27 +469,25 @@ class DocumentFilesSection extends Component {
     render() {
         const { data, baseUrl, title, fullPage, classes } = this.props;
 
-        const files = data.map(({ id, filename, content_type, size }, index) => {
+        const files = data.map(({ id, digest, file, filename, content_type, size }, index) => {
             return (
-                <TableRow key={id || filename}>
+                <TableRow key={file}>
                     <TableCell className="text-muted">{content_type}</TableCell>
                     <TableCell className="text-muted">{size}</TableCell>
                     <TableCell>
-                        {id ? (
+                        {digest && (
                             <a
-                                href={url.resolve(baseUrl, `${id}/raw/${filename}`)}
+                                href={url.resolve(baseUrl, `${digest}/raw/${filename}`)}
                                 target={fullPage ? null : '_blank'}
                                 title="Original file">
                                 <IconCloudDownload />
                             </a>
-                        ) : (
-                            <p>-- broken link --</p>
                         )}
                     </TableCell>
                     <TableCell>
                         {id ? (
                             <a
-                                href={url.resolve(baseUrl, id)}
+                                href={url.resolve(baseUrl, file || id)}
                                 target={fullPage ? null : '_blank'}>
                                 {filename}
                             </a>

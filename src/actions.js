@@ -143,12 +143,11 @@ export function routeChanged(newUrl) {
         if (parsed.pathname === '/' && collectionsWasFetched) {
             dispatch(search());
         } else if (
-            parsed.pathname.match(/\/doc\/?/) &&
-            parsed.query.path &&
-            parsed.query.path !== doc.url &&
+            parsed.pathname.match(/doc\/?/) &&
+            parsed.pathname !== doc.url &&
             !initial
         ) {
-            dispatch(fetchDoc(parsed.query.path, { includeParents: true }));
+            dispatch(fetchDoc(parsed.pathname, { includeParents: true }));
         }
     };
 }
@@ -237,6 +236,27 @@ export const expandFacet = key => {
         });
 
         dispatch(writeSearchQueryToUrl());
+    };
+};
+
+export const fetchDocLocations = url => {
+    return async (dispatch, getState) => {
+        dispatch({
+            type: 'FETCH_DOC_LOCATIONS',
+            url,
+        });
+
+        try {
+            dispatch({
+                type: 'FETCH_DOC_LOCATIONS_SUCCESS',
+                data: (await api.locationsFor(url)).locations,
+            });
+        } catch (error) {
+            dispatch({
+                type: 'FETCH_DOC_LOCATIONS_FAILURE',
+                error,
+            });
+        }
     };
 };
 
