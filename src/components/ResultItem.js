@@ -14,9 +14,9 @@ import { withStyles } from '@material-ui/core/styles';
 import IconCloudDownload from '@material-ui/icons/CloudDownloadOutlined';
 import Tooltip from '@material-ui/core/Tooltip';
 
-import { makeUnsearchable, truncatePath } from '../utils';
-
+import api from "../api";
 import { fetchDoc } from '../actions';
+import { makeUnsearchable, truncatePath } from '../utils';
 
 const styles = theme => ({
     card: {
@@ -63,8 +63,6 @@ function combineHighlights(highlight) {
     }
     return list;
 }
-
-const documentViewUrl = item => `doc/${item._collection}/${item._id}`;
 
 class ResultItem extends Component {
     static propTypes = {
@@ -117,7 +115,7 @@ class ResultItem extends Component {
             wordCount = fields['word-count'] + ' words';
         }
 
-        let downloadUrl = `${this.props.url}/raw/${fields.filename}`;
+        let downloadUrl = api.downloadUrl(this.props.url, fields.filename);
 
         return (
             <div
