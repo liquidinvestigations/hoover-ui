@@ -72,3 +72,5 @@ export const copyMetadata = doc => {
         ? `Copied MD5 and path to clipboard`
         : `Could not copy meta metadata – unsupported browser?`;
 };
+
+export const documentViewUrl = item => `/doc/${item._collection}/${item._id}`;

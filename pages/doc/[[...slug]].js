@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import SplitPane from 'react-split-pane';
 
-import { fetchDoc, fetchServerDoc } from '../../src/actions';
+import { fetchDoc } from '../../src/actions';
 
 import Document, { Meta } from '../../src/components/Document';
 import Locations from '../../src/components/Locations';
@@ -53,7 +53,7 @@ class Doc extends Component {
             } else if (this.state.finder) {
                 this.props.dispatch(fetchDoc(pathname, { includeParents: true }));
             } else {
-                this.props.dispatch(fetchServerDoc());
+                this.props.dispatch(fetchDoc(pathname));
             }
         };
 

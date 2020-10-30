@@ -21,6 +21,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import cn from 'classnames';
 import url from 'url';
+import api from '../api';
 import { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import { getLanguageName } from '../utils';
@@ -193,9 +194,7 @@ class Document extends Component {
         const files = doc.children || [];
         const headerLinks = [];
         const isFolder = data.filetype === 'folder';
-
-        // FIXME - move this logic to src/api.js
-        const docRawUrl = `/api/v0/${docUrl}/raw/${data.filename}`;
+        const docRawUrl = api.downloadUrl(docUrl, data.filename);
 
         if (!fullPage) {
             headerLinks.push({
@@ -229,7 +228,7 @@ class Document extends Component {
         headerLinks.push(
             ...ocrData.map(({ tag }) => {
                 return {
-                    href: `/api/v0/${docUrl}/ocr/${tag}/`,
+                    href: api.ocrUrl(docUrl, tag),
                     text: `OCR ${tag}`,
                     icon: <IconChromeReaderMode />,
                 };

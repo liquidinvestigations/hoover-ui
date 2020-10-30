@@ -124,11 +124,9 @@ class Locations extends Component {
                                                     <Tooltip title="Download original file">
                                                         <a
                                                             target="_blank"
-                                                            href={url.resolve(
-                                                                baseUrl,
-                                                                `${child.id}/raw/${
-                                                                    child.filename
-                                                                }`
+                                                            href={api.downloadUrl(
+                                                                url.resolve(baseUrl, child.id),
+                                                                child.filename
                                                             )}>
                                                             <IconCloudDownload color="action" />
                                                         </a>

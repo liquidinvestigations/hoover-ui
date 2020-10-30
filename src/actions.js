@@ -4,7 +4,7 @@ import Router from 'next/router';
 import qs from 'qs';
 import url from 'url';
 import api from './api';
-import { getBasePath } from './utils';
+import { documentViewUrl, getBasePath } from './utils';
 import { DATE_FORMAT, SORT_OPTIONS } from './constants';
 
 export function fetchCollections() {
@@ -240,11 +240,6 @@ export const expandFacet = key => {
     };
 };
 
-export const fetchServerDoc = () => {
-    const docUrl = window.location.href.split('?')[0];
-    return fetchDoc(docUrl);
-};
-
 export const fetchDoc = (url, { includeParents = false, parentLevels = 3 } = {}) => {
     return async (dispatch, getState) => {
         dispatch({
@@ -299,7 +294,7 @@ export function fetchNextDoc() {
         }
 
         const hits = results.hits.hits || [];
-        const urls = hits.map(h => url.parse(h._url).pathname.slice(1));
+        const urls = hits.map(documentViewUrl);
         const currentIndex = urls.indexOf(docUrl);
 
         const found = urls[currentIndex + 1];
@@ -324,7 +319,7 @@ export function fetchPreviousDoc() {
         }
 
         const hits = results.hits.hits || [];
-        const urls = hits.map(h => url.parse(h._url).pathname.slice(1));
+        const urls = hits.map(documentViewUrl);
         const currentIndex = urls.indexOf(docUrl);
 
         const found = urls[currentIndex - 1];
