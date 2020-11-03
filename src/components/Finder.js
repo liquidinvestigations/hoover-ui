@@ -64,7 +64,7 @@ class Finder extends Component {
         label.appendChild(document.createTextNode(item.label));
         label.className = 'tree-view-label';
 
-        const icon = getIconImageElement(item.filetype);
+        const icon = getIconImageElement(item.fileType);
 
         const fragment = document.createDocumentFragment();
         fragment.appendChild(icon);

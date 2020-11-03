@@ -1,13 +1,15 @@
+import { Component } from 'react';
+import { connect } from 'react-redux';
+import Link from "next/link";
+import url from 'url';
+import path from 'path';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Typography from '@material-ui/core/Typography';
 import Folder from '@material-ui/icons/Folder';
-import { Component } from 'react';
-import url from 'url';
 import Loading from './Loading';
 import { fetchDocLocations } from '../actions';
-import { connect } from 'react-redux';
 
 class Locations extends Component {
     componentDidMount() {
@@ -44,24 +46,22 @@ class Locations extends Component {
                         <Typography variant="h6">Locations</Typography>
                     </ListItem>
 
-                    {locations.length > 1 && (
+                    {locations.length && (
                         <>
-                            {locations.map((loc, index) => (
-                                <a
-                                    href={`${basePath}${loc.id}`}
-                                    target='_blank'
-                                    key={index}
-                                >
-                                    <ListItem button>
-                                        <ListItemIcon>
-                                            <Folder />
-                                        </ListItemIcon>
+                            {locations.map(loc => (
+                                <Link key={loc.id} href={`${basePath}${loc.id}`}>
+                                    <a>
+                                        <ListItem button>
+                                            <ListItemIcon>
+                                                <Folder />
+                                            </ListItemIcon>
 
-                                        <Typography classes={{}}>
-                                            {loc.parent_path}/<em>{loc.filename}</em>
-                                        </Typography>
-                                    </ListItem>
-                                </a>
+                                            <Typography classes={{}}>
+                                                {path.normalize(loc.parent_path)}/<em>{loc.filename}</em>
+                                            </Typography>
+                                        </ListItem>
+                                    </a>
+                                </Link>
                             ))}
                         </>
                     )}
