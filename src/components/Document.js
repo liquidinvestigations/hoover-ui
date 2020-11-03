@@ -1,31 +1,42 @@
-import Collapse from '@material-ui/core/Collapse';
-import Divider from '@material-ui/core/Divider';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import IconChromeReaderMode from '@material-ui/icons/ChromeReaderMode';
-import IconCloudDownload from '@material-ui/icons/CloudDownload';
-import IconLaunch from '@material-ui/icons/Launch';
-import IconPrint from '@material-ui/icons/Print';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Loading from './Loading';
-import PropTypes from 'prop-types';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import Toolbar from '@material-ui/core/Toolbar';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
-import cn from 'classnames';
-import url from 'url';
-import api from '../api';
 import { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
-import { getLanguageName } from '../utils';
+import Link from "next/link";
+import PropTypes from 'prop-types';
+import cn from 'classnames';
+import url from 'url';
+
+import {
+    Collapse,
+    Divider,
+    Grid,
+    IconButton,
+    List,
+    ListItem,
+    ListItemText,
+    Table,
+    TableBody,
+    TableCell,
+    TableRow,
+    Toolbar,
+    Tooltip,
+    Typography,
+} from '@material-ui/core';
+
+import {
+    ExpandMore as ExpandMoreIcon,
+    ChromeReaderMode as IconChromeReaderMode,
+    CloudDownload as IconCloudDownload,
+    Launch as IconLaunch,
+    Print as IconPrint
+} from '@material-ui/icons';
+
 import { withStyles } from '@material-ui/core/styles';
+
+import { getLanguageName } from '../utils';
+import Loading from './Loading';
+import api from '../api';
+import path from "path";
+import URL from "url";
 
 const styles = theme => ({
     toolbar: {
@@ -193,9 +204,19 @@ class Document extends Component {
         const data = doc.content;
         const files = doc.children || [];
         const headerLinks = [];
-        const isFolder = data.filetype === 'folder';
-        const digest = (doc.digest || doc.id[0] !== '_' && doc.id);
-        const docRawUrl = api.downloadUrl(`${collectionBaseUrl}${digest}`, data.filename);
+
+        let digest = doc.id;
+        let docRawUrl = api.downloadUrl(`${collectionBaseUrl}${digest}`, data.filename);
+
+        if (doc.id.startsWith('_file_')) {
+            digest = doc.digest;
+            docRawUrl = api.downloadUrl(`${collectionBaseUrl}${digest}`, data.filename);
+        }
+
+        if (doc.id.startsWith('_directory_')) {
+            digest = null;
+            docRawUrl = null;
+        }
 
         if (!fullPage) {
             headerLinks.push({
@@ -471,13 +492,13 @@ class DocumentFilesSection extends Component {
 
         const files = data.map(({ id, digest, file, filename, content_type, size }, index) => {
             return (
-                <TableRow key={file}>
+                <TableRow key={index}>
                     <TableCell className="text-muted">{content_type}</TableCell>
                     <TableCell className="text-muted">{size}</TableCell>
                     <TableCell>
                         {digest && (
                             <a
-                                href={url.resolve(baseUrl, `${digest}/raw/${filename}`)}
+                                href={api.downloadUrl(url.resolve(baseUrl, digest), filename)}
                                 target={fullPage ? null : '_blank'}
                                 title="Original file">
                                 <IconCloudDownload />
@@ -486,11 +507,9 @@ class DocumentFilesSection extends Component {
                     </TableCell>
                     <TableCell>
                         {id ? (
-                            <a
-                                href={url.resolve(baseUrl, file || id)}
-                                target={fullPage ? null : '_blank'}>
+                            <Link href={url.resolve(baseUrl, file || id)}>
                                 {filename}
-                            </a>
+                            </Link>
                         ) : (
                             <span>{filename}</span>
                         )}

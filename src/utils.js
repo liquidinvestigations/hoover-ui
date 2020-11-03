@@ -1,19 +1,27 @@
 import React from 'react';
 import url from 'url';
+import path from 'path';
 import copy from 'copy-text-to-clipboard';
 import langs from 'langs';
 
+import file from '../icons/file-line.svg';
+import folder from '../icons/folder-line.svg';
+import archive from '../icons/file-zip-line.svg';
+import email from '../icons/mail-line.svg';
+import pdf from '../icons/file-pdf-line.svg';
+import doc from '../icons/file-word-line.svg';
+import xls from '../icons/file-excel-line.svg';
+
 export function getIconImageElement(fileType) {
     const srcMap = {
-        folder: '/icons/folder-line.svg',
-        archive: '/icons/file-zip-line.svg',
-        email: '/icons/mail-line.svg',
-        pdf: '/icons/file-pdf-line.svg',
-        doc: '/icons/file-word-line.svg',
-        xls: '/icons/file-excel-line.svg',
-        'email-archive': '/icons/file-zip-line.svg',
-        ppt: '/icons/slideshow-line.svg',
-        default: '/icons/file-line.svg'
+        folder,
+        archive,
+        email,
+        pdf,
+        doc,
+        xls,
+        'email-archive': archive,
+        default: file
     }
     const img = document.createElement('img');
     img.src = (srcMap[fileType] || srcMap.default);
@@ -59,16 +67,17 @@ export function makeUnsearchable(text) {
 }
 
 export function truncatePath(str) {
-    if (str.length < 100) {
-        return str;
+    const pathString = path.normalize(str);
+    if (pathString.length < 100) {
+        return pathString;
     }
-    const parts = str.split('/');
+    const parts = pathString.split('/');
 
-    return [
+    return path.join(
         ...parts.slice(0, parts.length / 3),
         '…',
         ...parts.slice(-(parts.length / 3)),
-    ].join('/');
+    );
 }
 
 export const formatThousands = n => n.toLocaleString('en');
@@ -91,7 +100,7 @@ export const copyMetadata = doc => {
         : `Could not copy meta metadata – unsupported browser?`;
 };
 
-export const documentViewUrl = item => `/doc/${item._collection}/${item._id}`;
+export const documentViewUrl = item => path.join('/doc', item._collection, item._id);
 
 export const removeCommentsAndSpacing = (str = '') =>
     str.replace(/\/\*.*\*\//g, ' ').replace(/\s+/g, ' ');

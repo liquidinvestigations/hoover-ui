@@ -1,6 +1,7 @@
 import React, { Component, createRef } from 'react';
 import { connect } from 'react-redux';
 import URL from 'url';
+import path from 'path';
 import { withStyles } from '@material-ui/core/styles';
 import SplitPane from 'react-split-pane';
 
@@ -93,15 +94,19 @@ class Doc extends Component {
             );
         }
 
+        let digest = data?.id;
         let digestUrl = url;
-        let urlIsSha = false;
+        let urlIsSha = true;
 
-        // Ugly and unstable
-        const digest = data && (data.digest || data.id[0] !== '_' && data.id);
-        if (digest) {
-            digestUrl = URL.resolve(url, './');
-            digestUrl += digest;
-            urlIsSha = (url === digestUrl);
+        if (data?.id.startsWith('_file_')) {
+            digest = data.digest;
+            digestUrl = path.join(URL.resolve(url, './'), digest);
+            urlIsSha = false;
+        }
+
+        if (data?.id.startsWith('_directory_')) {
+            digest = null;
+            urlIsSha = false;
         }
 
         const doc = (
@@ -121,13 +126,16 @@ class Doc extends Component {
         );
 
         const infoPane = (
-            <SplitPaneLayout
-                container={false}
-                left={digest && <Locations data={data} url={digestUrl} />}
-                defaultSizeLeft="25%"
-                defaultSizeMiddle="70%">
-                {doc}
-            </SplitPaneLayout>
+            !!digest ?
+                <SplitPaneLayout
+                    container={false}
+                    left={<Locations data={data} url={digestUrl}/>}
+                    defaultSizeLeft="25%"
+                    defaultSizeMiddle="70%">
+                    {doc}
+                </SplitPaneLayout>
+                :
+                doc
         );
 
         let content = null;
