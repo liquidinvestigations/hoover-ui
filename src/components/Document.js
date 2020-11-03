@@ -1,8 +1,9 @@
 import { Component, Fragment } from 'react';
-import { connect } from 'react-redux';
-import Link from "next/link";
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import Link from 'next/link';
 import cn from 'classnames';
+import path from 'path';
 import url from 'url';
 
 import {
@@ -35,8 +36,6 @@ import { withStyles } from '@material-ui/core/styles';
 import { getLanguageName } from '../utils';
 import Loading from './Loading';
 import api from '../api';
-import path from "path";
-import URL from "url";
 
 const styles = theme => ({
     toolbar: {
@@ -359,7 +358,7 @@ class DocumentMetaSection extends Component {
                             </ListItem>
 
                             <ListItem disableGutters>
-                                <ListItemText primary="Path" secondary={data.path} />
+                                <ListItemText primary="Path" secondary={path.normalize(data.path)} />
                             </ListItem>
 
                             {doc.digest && (
