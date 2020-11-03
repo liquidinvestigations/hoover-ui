@@ -72,7 +72,7 @@ class Doc extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.printMode && this.props.data && !prevProps.data) {
-            window.print();
+            window.setTimeout(window.print);
         }
     }
 
