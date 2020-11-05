@@ -41,9 +41,11 @@ const api = {
 
     limits: () => api.fetchJson(api.buildUrl('limits')),
 
-    locationsFor: memoize(docUrl => api.fetchJson(api.buildUrl(docUrl, 'locations'))),
+    // TODO fix the GET query param here (use some URL functions?)
+    locationsFor: memoize((docUrl, pageIndex) => api.fetchJson(api.buildUrl(docUrl, 'locations') + '?page=' + pageIndex)),
 
-    doc: memoize(docUrl => api.fetchJson(api.buildUrl(docUrl, 'json'))),
+    // TODO fix the GET query param here too
+    doc: memoize((docUrl, pageIndex) => api.fetchJson(api.buildUrl(docUrl, 'json') + '?children_page=' + pageIndex)),
 
     whoami: () => api.fetchJson(api.buildUrl('whoami')),
 
