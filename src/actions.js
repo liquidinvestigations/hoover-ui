@@ -249,7 +249,7 @@ export const fetchDocLocations = url => {
         try {
             dispatch({
                 type: 'FETCH_DOC_LOCATIONS_SUCCESS',
-                data: (await api.locationsFor(url)).locations,
+                data: (await api.locationsFor(url, 1)).locations,
             });
         } catch (error) {
             dispatch({
@@ -268,7 +268,7 @@ export const fetchDoc = (url, { includeParents = false, parentLevels = 3 } = {})
         });
 
         try {
-            const data = await api.doc(url);
+            const data = await api.doc(url, 1);
 
             if (includeParents) {
                 let current = data;
@@ -276,7 +276,8 @@ export const fetchDoc = (url, { includeParents = false, parentLevels = 3 } = {})
 
                 while (current.parent_id && level <= parentLevels) {
                     current.parent = await api.doc(
-                        getBasePath(url) + current.parent_id
+                        getBasePath(url) + current.parent_id,
+                        current.parent_children_page
                     );
 
                     current = current.parent;
