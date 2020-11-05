@@ -67,10 +67,7 @@ const styles = theme => ({
     },
 
     scrollX: {
-        overflowX: 'scroll',
-        '> table': {
-            overflowX: 'scroll',
-        },
+        overflowX: 'auto',
     },
 
     button: {

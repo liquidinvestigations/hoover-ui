@@ -75,7 +75,7 @@ class Header extends Component {
 
         return (
             <div className={classes.root}>
-                <AppBar position="absolute">
+                <AppBar position="sticky">
                     <Toolbar>
                         <Typography
                             variant="h6"
