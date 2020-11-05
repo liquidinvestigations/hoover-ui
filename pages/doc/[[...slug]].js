@@ -16,11 +16,20 @@ import HotKeys from '../../src/components/HotKeys';
 import Typography from '@material-ui/core/Typography';
 
 const styles = theme => ({
-    container: theme.mixins.toolbar,
     finderSplitPane: {
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
+        overflow: 'hidden',
+        height: 'calc(100vh - 56px)',
+        position: 'relative',
+        backfaceVisibility: 'hidden',
+        willChange: 'overflow',
+
+        '@media (min-width: 0px) and (orientation: landscape)': {
+            height: 'calc(100vh - 48px)',
+        },
+
+        '@media (min-width: 600px)': {
+            height: 'calc(100vh - 64px)',
+        }
     },
 });
 
@@ -143,14 +152,12 @@ class Doc extends Component {
         if (printMode) {
             content = (
                 <div>
-                    <div className={classes.container} />
                     {doc}
                 </div>
             );
         } else {
             content = (
                 <div className={classes.finderSplitPane}>
-                    <div className={classes.container} />
                     {!urlIsSha ?
                         <SplitPane
                             split="horizontal"

@@ -19,15 +19,20 @@ const styles = theme => ({
         overflowY: 'auto',
         height: 'auto',
     },
-
-    toolbar: theme.mixins.toolbar,
-
     container: {
         overflow: 'hidden',
-        height: '100vh',
+        height: 'calc(100vh - 56px)',
         position: 'relative',
         backfaceVisibility: 'hidden',
         willChange: 'overflow',
+
+        '@media (min-width: 0px) and (orientation: landscape)': {
+            height: 'calc(100vh - 48px)',
+        },
+
+        '@media (min-width: 600px)': {
+            height: 'calc(100vh - 64px)',
+        }
     },
 });
 
@@ -49,7 +54,6 @@ export default withStyles(styles)(
                 pane1ClassName={classes.left}
                 pane2ClassName={right ? null : classes.middle}>
                 <div>
-                    <div className={container ? classes.toolbar : null} />
                     {left}
                 </div>
                 {right ? (
@@ -60,22 +64,17 @@ export default withStyles(styles)(
                         pane1ClassName={classes.middle}
                         pane2ClassName={classes.right}>
                         <div>
-                            <div className={container ? classes.toolbar : null} />
                             {children}
                         </div>
 
                         {right && (
                             <div>
-                                <div
-                                    className={container ? classes.toolbar : null}
-                                />
                                 {right}
                             </div>
                         )}
                     </SplitPane>
                 ) : (
                     <div>
-                        <div className={container ? classes.toolbar : null} />
                         {children}
                     </div>
                 )}
