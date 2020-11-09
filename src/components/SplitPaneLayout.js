@@ -1,17 +1,20 @@
+import React from 'react'
 import SplitPane from 'react-split-pane';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
     left: {
         overflowX: 'hidden',
         overflowY: 'auto',
         height: 'auto',
     },
+
     right: {
         overflowX: 'hidden',
         overflowY: 'auto',
         height: 'auto',
     },
+
     middle: {
         backgroundColor: theme.palette.background.default,
         minWidth: 0, // So the Typography noWrap works
@@ -19,6 +22,7 @@ const styles = theme => ({
         overflowY: 'auto',
         height: 'auto',
     },
+
     container: {
         overflow: 'hidden',
         height: 'calc(100vh - 56px)',
@@ -34,18 +38,13 @@ const styles = theme => ({
             height: 'calc(100vh - 64px)',
         }
     },
-});
+}))
 
-export default withStyles(styles)(
-    ({
-        left,
-        children,
-        right,
-        classes,
-        defaultSizeLeft = '20%',
-        defaultSizeMiddle = '60%',
-        container = true,
-    } = {}) => (
+export default function SplitPaneLayout({ left, children, right,  defaultSizeLeft = '20%',
+                                            defaultSizeMiddle = '60%', container = true, } = {}) {
+    const classes = useStyles()
+
+    return (
         <div className={container ? classes.container : null}>
             <SplitPane
                 split="vertical"
@@ -81,4 +80,4 @@ export default withStyles(styles)(
             </SplitPane>
         </div>
     )
-);
+}

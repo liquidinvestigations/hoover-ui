@@ -239,17 +239,23 @@ export const expandFacet = key => {
     };
 };
 
-export const fetchDocLocations = url => {
+export const fetchDocLocations = (url, { pageIndex = 1 } = {}) => {
     return async (dispatch, getState) => {
+        const { doc: { url: docUrl, locations } } = getState()
+        const prevLocations = url === docUrl ? locations : []
+
         dispatch({
             type: 'FETCH_DOC_LOCATIONS',
             url,
         });
 
         try {
+            const response = await api.locationsFor(url, pageIndex)
             dispatch({
                 type: 'FETCH_DOC_LOCATIONS_SUCCESS',
-                data: (await api.locationsFor(url, 1)).locations,
+                data: [...prevLocations, ...response.locations],
+                page: response.page,
+                hasNextPage: response.has_next_page,
             });
         } catch (error) {
             dispatch({
@@ -260,7 +266,7 @@ export const fetchDocLocations = url => {
     };
 };
 
-export const fetchDoc = (url, { includeParents = false, parentLevels = 3 } = {}) => {
+export const fetchDoc = (url, { includeParents = false, parentLevels = 3, filesPageIndex = 1 } = {}) => {
     return async (dispatch, getState) => {
         dispatch({
             type: 'FETCH_DOC',
@@ -268,7 +274,7 @@ export const fetchDoc = (url, { includeParents = false, parentLevels = 3 } = {})
         });
 
         try {
-            const data = await api.doc(url, 1);
+            const data = await api.doc(url, filesPageIndex);
 
             if (includeParents) {
                 let current = data;

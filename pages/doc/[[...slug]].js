@@ -7,7 +7,7 @@ import SplitPane from 'react-split-pane';
 
 import { fetchDoc } from '../../src/actions';
 
-import Document, { Meta } from '../../src/components/Document';
+import Document  from '../../src/components/document/Document';
 import Locations from '../../src/components/Locations';
 import Finder from '../../src/components/Finder';
 import SplitPaneLayout from '../../src/components/SplitPaneLayout';
@@ -31,6 +31,11 @@ const styles = theme => ({
             height: 'calc(100vh - 64px)',
         }
     },
+    horizontalSplitPane: {
+        overflowX: 'hidden',
+        overflowY: 'auto',
+        height: 'auto',
+    }
 });
 
 class Doc extends Component {
@@ -55,15 +60,11 @@ class Doc extends Component {
         const { query, pathname } = parseLocation();
 
         const fetch = () => {
+            let path = pathname;
             if (query.path) {
-                this.props.dispatch(
-                    fetchDoc(query.path, {
-                        includeParents: true,
-                    })
-                );
-            } else {
-                this.props.dispatch(fetchDoc(pathname, { includeParents: true }));
+                path = query.path;
             }
+            this.props.dispatch(fetchDoc(path, { includeParents: true }));
         };
 
         const newState = {};
@@ -162,7 +163,9 @@ class Doc extends Component {
                         <SplitPane
                             split="horizontal"
                             defaultSize="30%"
-                            style={{ position: 'relative' }}>
+                            style={{ position: 'relative' }}
+                            pane1ClassName={classes.horizontalSplitPane}
+                            pane2ClassName={classes.horizontalSplitPane}>
                             {finder}
                             {infoPane}
                         </SplitPane>

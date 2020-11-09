@@ -166,8 +166,19 @@ function doc(state = INITIAL_DOC_STATE, action) {
                 error: null,
                 locations: [],
             };
+        case 'FETCH_DOC_LOCATIONS':
+            return {
+                ...state,
+                isFetchingLocationsPage: true
+            };
         case 'FETCH_DOC_LOCATIONS_SUCCESS':
-            return { ...state, locations: action.data };
+            return {
+                ...state,
+                locations: action.data,
+                locationsPage: action.page,
+                locationsHasNextPage: action.hasNextPage,
+                isFetchingLocationsPage: false
+            };
         case 'FETCH_DOC_SUCCESS':
             return {
                 ...state,

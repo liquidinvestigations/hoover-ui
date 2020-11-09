@@ -1,12 +1,21 @@
 import path from 'path';
 import fetch from 'isomorphic-fetch';
 import { memoize } from 'lodash';
+import { stringify } from 'querystring'
 import buildSearchQuery from './build-search-query';
 
 const api = {
     prefix: '/api/v0/',
 
-    buildUrl: (...paths) => path.join(api.prefix, ...paths),
+    buildUrl: (...paths) => {
+        const queryObj = paths.reduce((prev, curr, index) => {
+            if (typeof curr === 'object') {
+                paths.splice(index, 1)
+                return Object.assign(prev || {}, curr)
+            }
+        })
+        return path.join(api.prefix, ...paths) + (queryObj ? `?${stringify(queryObj)}` : '')
+    },
 
     fetchJson: async (url, opts = {}) => {
         const res = await fetch(url, {
@@ -41,11 +50,13 @@ const api = {
 
     limits: () => api.fetchJson(api.buildUrl('limits')),
 
-    // TODO fix the GET query param here (use some URL functions?)
-    locationsFor: memoize((docUrl, pageIndex) => api.fetchJson(api.buildUrl(docUrl, 'locations') + '?page=' + pageIndex)),
+    locationsFor: memoize((docUrl, pageIndex) => api.fetchJson(
+        api.buildUrl(docUrl, 'locations', { page: pageIndex })
+    ), (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`),
 
-    // TODO fix the GET query param here too
-    doc: memoize((docUrl, pageIndex) => api.fetchJson(api.buildUrl(docUrl, 'json') + '?children_page=' + pageIndex)),
+    doc: memoize((docUrl, pageIndex) => api.fetchJson(
+        api.buildUrl(docUrl, 'json', { children_page: pageIndex })
+    ), (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`),
 
     whoami: () => api.fetchJson(api.buildUrl('whoami')),
 
