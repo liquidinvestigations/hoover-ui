@@ -93,7 +93,7 @@ export const isInputFocused = () => {
 };
 
 export const copyMetadata = doc => {
-    const string = [doc.content.md5, doc.content.path].join('\n');
+    const string = [doc.content.md5, path.normalize(doc.content.path)].join('\n');
 
     return copy(string)
         ? `Copied MD5 and path to clipboard`
