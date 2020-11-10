@@ -141,6 +141,7 @@ export function routeChanged(newUrl) {
 
         // hacky
         if (parsed.pathname === '/' && collectionsWasFetched) {
+            dispatch(parseSearchUrlQuery());
             dispatch(search());
         } else if (
             parsed.pathname.match(/doc\/?/) &&
@@ -236,33 +237,6 @@ export const expandFacet = key => {
         });
 
         dispatch(writeSearchQueryToUrl());
-    };
-};
-
-export const fetchDocLocations = (url, { pageIndex = 1 } = {}) => {
-    return async (dispatch, getState) => {
-        const { doc: { url: docUrl, locations } } = getState()
-        const prevLocations = url === docUrl ? locations : []
-
-        dispatch({
-            type: 'FETCH_DOC_LOCATIONS',
-            url,
-        });
-
-        try {
-            const response = await api.locationsFor(url, pageIndex)
-            dispatch({
-                type: 'FETCH_DOC_LOCATIONS_SUCCESS',
-                data: [...prevLocations, ...response.locations],
-                page: response.page,
-                hasNextPage: response.has_next_page,
-            });
-        } catch (error) {
-            dispatch({
-                type: 'FETCH_DOC_LOCATIONS_FAILURE',
-                error,
-            });
-        }
     };
 };
 

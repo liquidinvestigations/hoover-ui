@@ -35,8 +35,5 @@ module.exports = withCss(
         // TODO on some sunny day, enable
         reactStrictMode: false,
         compress: false,
-        rewrites: () => [
-            { source: '/api/:path*', destination: 'https://hoover.fuze.xn--vj-qja.ro/api/:path*' }
-        ]
     })
 );

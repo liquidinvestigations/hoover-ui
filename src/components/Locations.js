@@ -1,29 +1,32 @@
-import React, { useEffect } from 'react'
-import { connect } from 'react-redux';
-import Link from "next/link";
-import url from 'url';
-import path from 'path';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Typography from '@material-ui/core/Typography';
-import Folder from '@material-ui/icons/Folder';
-import Loading from './Loading';
-import { fetchDocLocations } from '../actions';
+import React, { useEffect, useState } from 'react'
+import Link from 'next/link'
+import url from 'url'
+import { List, ListItem, ListItemIcon, Typography } from '@material-ui/core'
+import { Folder } from '@material-ui/icons'
+import Loading from './Loading'
+import api from '../api'
 
-function Locations({ url: docUrl, data, dispatch, locations, locationsPage,
-                       locationsHasNextPage, isFetchingLocationsPage }) {
+export default function Locations({ url: docUrl, data }) {
+    const [locations, setLocations] = useState([])
+    const [page, setPage] = useState(1)
+    const [hasNextPage, setHasNextPage] = useState(false)
+    const [isFetchingLocationsPage, setFetchingLocationsPage] = useState(false)
 
-    const fetch = (pageIndex = 1) => dispatch(fetchDocLocations(docUrl, { pageIndex }))
-
-    const loadMore = event => {
-        event.preventDefault()
-        fetch(locationsPage + 1)
-    }
-
-    useEffect(() => {
-        fetch()
+    useEffect(async () => {
+        const response = await api.locationsFor(docUrl, page)
+        setLocations(response.locations)
+        setHasNextPage(response.has_next_page)
     }, [docUrl])
+
+    const loadMore = async event => {
+        event.preventDefault()
+        setFetchingLocationsPage(true)
+        const response = await api.locationsFor(docUrl, page + 1)
+        setPage(page + 1)
+        setLocations([...locations, ...response.locations])
+        setHasNextPage(response.has_next_page)
+        setFetchingLocationsPage(false)
+    }
 
     if (!locations.length && data.has_locations) {
         return <Loading />;
@@ -35,49 +38,33 @@ function Locations({ url: docUrl, data, dispatch, locations, locationsPage,
     const basePath = url.parse(baseUrl).pathname;
 
     return (
-        <>
-            <List component="nav" dense>
-                <ListItem dense>
-                    <Typography variant="h6">Locations</Typography>
-                </ListItem>
+        <List component="nav" dense>
+            <ListItem dense>
+                <Typography variant="h6">Locations</Typography>
+            </ListItem>
 
-                {locations.length && (
-                    <>
-                        {locations.map(loc => (
-                            <Link key={loc.id} href={`${basePath}${loc.id}`}>
-                                <a>
-                                    <ListItem button>
-                                        <ListItemIcon>
-                                            <Folder />
-                                        </ListItemIcon>
+            {locations.length && (
+                <>
+                    {locations.map(loc => (
+                        <Link key={loc.id} href={`${basePath}${loc.id}`}>
+                            <a>
+                                <ListItem button>
+                                    <ListItemIcon>
+                                        <Folder />
+                                    </ListItemIcon>
 
-                                        <Typography classes={{}}>
-                                            {path.normalize(loc.parent_path)}/<em>{loc.filename}</em>
-                                        </Typography>
-                                    </ListItem>
-                                </a>
-                            </Link>
-                        ))}
-                    </>
-                )}
-                {locationsHasNextPage && <ListItem dense>
-                    {isFetchingLocationsPage ? <Loading /> : <a href="#" onClick={loadMore}>load more...</a>}
-                </ListItem>}
-            </List>
-        </>
+                                    <Typography classes={{}}>
+                                        {loc.parent_path}/<em>{loc.filename}</em>
+                                    </Typography>
+                                </ListItem>
+                            </a>
+                        </Link>
+                    ))}
+                </>
+            )}
+            {hasNextPage && <ListItem dense>
+                {isFetchingLocationsPage ? <Loading /> : <a href="#" onClick={loadMore}>load more...</a>}
+            </ListItem>}
+        </List>
     )
 }
-
-const mapStateToProps = ({ doc: {
-    locations,
-    locationsPage,
-    locationsHasNextPage,
-    isFetchingLocationsPage,
-}}) => ({
-    locations,
-    locationsPage,
-    locationsHasNextPage,
-    isFetchingLocationsPage,
-})
-
-export default connect(mapStateToProps)(Locations)

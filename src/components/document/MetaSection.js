@@ -1,6 +1,5 @@
 import React from 'react'
 import Link from 'next/link'
-import path from 'path'
 import url from 'url'
 import { List, ListItem, ListItemText } from '@material-ui/core'
 import { getLanguageName } from '../../utils'
@@ -28,7 +27,15 @@ export default function MetaSection({ doc, collection, baseUrl }) {
                     </ListItem>
 
                     <ListItem disableGutters>
-                        <ListItemText primary="Path" secondary={path.normalize(data.path)} />
+                        <ListItemText primary="Path" secondary={
+                            <>
+                                {data.path}
+                                <br />
+                                <Link href={`/?q=path-parts:"${data.path}"`}>
+                                    <a>search here</a>
+                                </Link>
+                            </>
+                        } />
                     </ListItem>
 
                     {doc.digest && (

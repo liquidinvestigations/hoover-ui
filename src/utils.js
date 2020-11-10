@@ -67,11 +67,10 @@ export function makeUnsearchable(text) {
 }
 
 export function truncatePath(str) {
-    const pathString = path.normalize(str);
-    if (pathString.length < 100) {
-        return pathString;
+    if (str.length < 100) {
+        return str;
     }
-    const parts = pathString.split('/');
+    const parts = str.split('/');
 
     return path.join(
         ...parts.slice(0, parts.length / 3),
@@ -93,7 +92,7 @@ export const isInputFocused = () => {
 };
 
 export const copyMetadata = doc => {
-    const string = [doc.content.md5, path.normalize(doc.content.path)].join('\n');
+    const string = [doc.content.md5, doc.content.path].join('\n');
 
     return copy(string)
         ? `Copied MD5 and path to clipboard`
