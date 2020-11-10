@@ -1,14 +1,29 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import url from 'url'
 import { Table, TableBody, TableCell, TableRow } from '@material-ui/core'
 import { CloudDownload as IconCloudDownload } from '@material-ui/icons'
 import api from '../../api'
 import Section from './Section'
+import Loading from '../Loading'
 
-export default function FilesSection({ data, baseUrl, title, fullPage }) {
+export default function FilesSection({ data, page, hasNextPage, baseUrl, docUrl, title, fullPage }) {
+    const [files, setFiles] = useState(data)
+    const [currentPage, setCurrentPage] = useState(page)
+    const [currentHasNextPage, setCurrentHasNextPage] = useState(hasNextPage)
+    const [isFetchingChildrenPage, setFetchingChildrenPage] = useState(false)
 
-    const files = data.map(({ id, digest, file, filename, content_type, size }, index) => {
+    const loadMore = async event => {
+        event.preventDefault()
+        setFetchingChildrenPage(true)
+        const nextDoc = await api.doc(docUrl, currentPage + 1)
+        setCurrentPage(nextDoc.children_page)
+        setCurrentHasNextPage(nextDoc.children_has_next_page)
+        setFiles([...files, ...nextDoc.children])
+        setFetchingChildrenPage(false)
+    }
+
+    const filesRows = files.map(({ id, digest, file, filename, content_type, size }, index) => {
         return (
             <TableRow key={index}>
                 <TableCell className="text-muted">{content_type}</TableCell>
@@ -37,10 +52,23 @@ export default function FilesSection({ data, baseUrl, title, fullPage }) {
     })
 
     return (
-        files.length > 0 && (
+        filesRows.length > 0 && (
             <Section title={title} scrollX={true}>
                 <Table>
-                    <TableBody>{files}</TableBody>
+                    <TableBody>
+                        {filesRows}
+                        {currentHasNextPage &&
+                            <TableRow>
+                                <TableCell colSpan={4} style={{borderBottom: 'none'}}>
+                                    {isFetchingChildrenPage ?
+                                        <Loading/>
+                                        :
+                                        <a href="#" onClick={loadMore}>load more...</a>
+                                    }
+                                </TableCell>
+                            </TableRow>
+                        }
+                    </TableBody>
                 </Table>
             </Section>
         )

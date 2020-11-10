@@ -46,8 +46,6 @@ function Document({ docUrl, collection, data, fullPage, isFetching, showToolbar,
     }
 
     const collectionBaseUrl = url.resolve(docUrl, './');
-
-    const files = data.children || [];
     const headerLinks = [];
 
     let digest = data.id;
@@ -157,8 +155,11 @@ function Document({ docUrl, collection, data, fullPage, isFetching, showToolbar,
 
             <FilesSection
                 title="Files"
-                data={files}
+                data={data.children || []}
+                page={data.children_page}
+                hasNextPage={data.children_has_next_page}
                 fullPage={fullPage}
+                docUrl={docUrl}
                 baseUrl={collectionBaseUrl}
             />
 

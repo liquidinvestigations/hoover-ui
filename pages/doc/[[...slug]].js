@@ -4,7 +4,7 @@ import URL from 'url'
 import path from 'path'
 import cn from 'classnames'
 import { Typography } from '@material-ui/core'
-import { makeStyles, withStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import SplitPane from 'react-split-pane'
 
 import { fetchDoc } from '../../src/actions'
