@@ -13,7 +13,7 @@ import Document  from '../../src/components/document/Document'
 import Locations from '../../src/components/Locations'
 import Finder from '../../src/components/Finder'
 import SplitPaneLayout from '../../src/components/SplitPaneLayout'
-import { parseLocation, copyMetadata } from '../../src/utils'
+import { parseLocation, copyMetadata, isPrintMode } from '../../src/utils'
 import HotKeys from '../../src/components/HotKeys'
 
 const useStyles = makeStyles(theme => ({
@@ -88,31 +88,27 @@ function Doc({ data, dispatch, url, isFetching, error }) {
 
     const classes = useStyles()
 
-    const [printMode, setPrintMode] = useState(false)
+    const { query, pathname } = parseLocation()
+
+    const fetch = () => {
+        let path = pathname
+        if (query.path) {
+            path = query.path
+        }
+        dispatch(fetchDoc(path, { includeParents: true }))
+    }
 
     useEffect(() => {
-        const { query, pathname } = parseLocation()
-
-        const fetch = () => {
-            let path = pathname
-            if (query.path) {
-                path = query.path
-            }
-            dispatch(fetchDoc(path, { includeParents: true }))
-        }
-
-        if (query.print && query.print !== 'false') {
-            setPrintMode(true)
-        }
-
         fetch()
     }, [url])
+
+    const printMode = isPrintMode()
 
     useEffect(() => {
         if (printMode && !isFetching) {
             window.setTimeout(window.print)
         }
-    }, [printMode, isFetching])
+    }, [isFetching])
 
     let digest = data?.id
     let digestUrl = url

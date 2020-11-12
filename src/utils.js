@@ -11,6 +11,7 @@ import email from '../icons/mail-line.svg';
 import pdf from '../icons/file-pdf-line.svg';
 import doc from '../icons/file-word-line.svg';
 import xls from '../icons/file-excel-line.svg';
+import { SEARCH_CREATION_DATE, SEARCH_MODIFICATION_DATE } from './constants'
 
 export function getIconImageElement(fileType) {
     const srcMap = {
@@ -83,6 +84,30 @@ export const formatThousands = n => n.toLocaleString('en');
 
 export function parseLocation() {
     return url.parse(window.location.href, true);
+}
+
+export function isPrintMode() {
+    const { query } = parseLocation()
+    return query.print && query.print !== 'false';
+}
+
+export function searchPath(query, prefix) {
+    let quotedQuery = query.replace(/#/g, ' ').replace(/"/g, '')
+
+    if (/[\s\/]/g.test(quotedQuery)) {
+        quotedQuery = `"${quotedQuery}"`
+    }
+
+    if (prefix === SEARCH_CREATION_DATE || prefix === SEARCH_MODIFICATION_DATE) {
+        quotedQuery = quotedQuery.substring(0, 10)
+        quotedQuery = `[${quotedQuery} TO ${quotedQuery}]`
+    }
+
+    if (prefix) {
+        return `/?q=${prefix}:${quotedQuery}`
+    } else {
+        return `/?q=${prefix}:${quotedQuery}`
+    }
 }
 
 export const isInputFocused = () => {

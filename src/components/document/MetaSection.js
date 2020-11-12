@@ -2,15 +2,26 @@ import React from 'react'
 import Link from 'next/link'
 import url from 'url'
 import { List, ListItem, ListItemText } from '@material-ui/core'
-import { getLanguageName } from '../../utils'
+import { getLanguageName, isPrintMode, parseLocation, searchPath } from '../../utils'
 import Section from './Section'
+import {
+    SEARCH_CREATION_DATE,
+    SEARCH_FILENAME,
+    SEARCH_FROM,
+    SEARCH_MD5,
+    SEARCH_MODIFICATION_DATE,
+    SEARCH_PATH_PARTS,
+    SEARCH_SHA1
+} from '../../constants'
 
 export default function MetaSection({ doc, collection, baseUrl }) {
+    const printMode = isPrintMode()
+
     const data = doc ? doc.content : null;
 
     return (
         <Section title="Meta">
-            {data && (
+            {data &&
                 <List dense>
                     <ListItem disableGutters>
                         <ListItemText
@@ -21,24 +32,33 @@ export default function MetaSection({ doc, collection, baseUrl }) {
 
                     <ListItem disableGutters>
                         <ListItemText
-                            primary="Filename"
+                            primary={
+                                printMode ?
+                                    'Filename'
+                                    :
+                                    <Link href={searchPath(data.filename, SEARCH_FILENAME)}>
+                                        <a title="search this filename">Filename</a>
+                                    </Link>
+                            }
                             secondary={data.filename}
                         />
                     </ListItem>
 
                     <ListItem disableGutters>
-                        <ListItemText primary="Path" secondary={
-                            <>
-                                {data.path}
-                                <br />
-                                <Link href={`/?q=path-parts:"${data.path}"`}>
-                                    <a>search here</a>
-                                </Link>
-                            </>
-                        } />
+                        <ListItemText
+                            primary={
+                                printMode ?
+                                    'Path'
+                                    :
+                                    <Link href={searchPath(data.path, SEARCH_PATH_PARTS)}>
+                                        <a title="search this path">Path</a>
+                                    </Link>
+                            }
+                            secondary={data.path}
+                        />
                     </ListItem>
 
-                    {doc.digest && (
+                    {doc.digest &&
                         <ListItem disableGutters>
                             <ListItemText primary="Id" secondary={
                                 <Link href={url.resolve(baseUrl,doc.digest)}>
@@ -46,69 +66,97 @@ export default function MetaSection({ doc, collection, baseUrl }) {
                                 </Link>
                             } />
                         </ListItem>
-                    )}
+                    }
 
-                    {data.filetype && (
+                    {data.filetype &&
                         <ListItem disableGutters>
                             <ListItemText
                                 primary="Type"
                                 secondary={data.filetype}
                             />
                         </ListItem>
-                    )}
+                    }
 
-                    {data.filetype !== 'folder' && data.md5 && (
+                    {data.filetype !== 'folder' && data.md5 &&
                         <ListItem disableGutters>
                             <ListItemText
-                                primary="MD5"
+                                primary={
+                                    printMode ?
+                                        'MD5'
+                                        :
+                                        <Link href={searchPath(data.md5, SEARCH_MD5)}>
+                                            <a title="search this MD5 checksum">MD5</a>
+                                        </Link>
+                                }
                                 secondary={data.md5}
                             />
                         </ListItem>
-                    )}
+                    }
 
-                    {data.filetype !== 'folder' && data.sha1 && (
+                    {data.filetype !== 'folder' && data.sha1 &&
                         <ListItem disableGutters>
                             <ListItemText
-                                primary="SHA1"
+                                primary={
+                                    printMode ?
+                                        'SHA1'
+                                        :
+                                        <Link href={searchPath(data.sha1, SEARCH_SHA1)}>
+                                            <a title="search this SHA1 checksum">SHA1</a>
+                                        </Link>
+                                }
                                 secondary={data.sha1}
                             />
                         </ListItem>
-                    )}
+                    }
 
-                    {data.lang && (
+                    {data.lang &&
                         <ListItem disableGutters>
                             <ListItemText
                                 primary="Language"
                                 secondary={getLanguageName(data.lang)}
                             />
                         </ListItem>
-                    )}
-                    {data.date && (
+                    }
+                    {data.date &&
                         <ListItem disableGutters>
                             <ListItemText
-                                primary="Modified"
-                                secondary={data['date']}
+                                primary={
+                                    printMode ?
+                                        'Modified'
+                                        :
+                                        <Link href={searchPath(data.date, SEARCH_MODIFICATION_DATE)}>
+                                            <a title="search modified this date">Modified</a>
+                                        </Link>
+                                }
+                                secondary={data.date}
                             />
                         </ListItem>
-                    )}
-                    {data['date-created'] && (
+                    }
+                    {data['date-created'] &&
                         <ListItem disableGutters>
                             <ListItemText
-                                primary="Created"
+                                primary={
+                                    printMode ?
+                                        'Created'
+                                        :
+                                        <Link href={searchPath(data['date-created'], SEARCH_CREATION_DATE)}>
+                                            <a title="search created this date">Created</a>
+                                        </Link>
+                                }
                                 secondary={data['date-created']}
                             />
                         </ListItem>
-                    )}
-                    {data.pgp && (
+                    }
+                    {data.pgp &&
                         <ListItem disableGutters>
                             <ListItemText
                                 primary="PGP"
                                 secondary={data.pgp}
                             />
                         </ListItem>
-                    )}
+                    }
                 </List>
-            )}
+            }
         </Section>
     )
 }
