@@ -242,8 +242,8 @@ class SearchPage extends Component {
                                             fullWidthInput
                                             blurBehavior="ignore"
                                             dataSource={SEARCH_QUERY_PREFIXES}
-                                            newChipKeyCodes={[13,32]}
-                                            newChipKeys={['Enter','Space']}
+                                            newChipKeyCodes={[]}
+                                            newChipKeys={[]}
                                             onBeforeAdd={this.handleBeforeChipAdd}
                                             onAdd={this.handleChipAdd}
                                             onDelete={this.handleChipDelete}
