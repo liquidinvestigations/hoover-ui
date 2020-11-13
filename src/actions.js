@@ -141,6 +141,7 @@ export function routeChanged(newUrl) {
 
         // hacky
         if (parsed.pathname === '/' && collectionsWasFetched) {
+            dispatch(parseSearchUrlQuery());
             dispatch(search());
         } else if (
             parsed.pathname.match(/doc\/?/) &&
@@ -239,28 +240,7 @@ export const expandFacet = key => {
     };
 };
 
-export const fetchDocLocations = url => {
-    return async (dispatch, getState) => {
-        dispatch({
-            type: 'FETCH_DOC_LOCATIONS',
-            url,
-        });
-
-        try {
-            dispatch({
-                type: 'FETCH_DOC_LOCATIONS_SUCCESS',
-                data: (await api.locationsFor(url, 1)).locations,
-            });
-        } catch (error) {
-            dispatch({
-                type: 'FETCH_DOC_LOCATIONS_FAILURE',
-                error,
-            });
-        }
-    };
-};
-
-export const fetchDoc = (url, { includeParents = false, parentLevels = 3 } = {}) => {
+export const fetchDoc = (url, { includeParents = false, parentLevels = 3, filesPageIndex = 1 } = {}) => {
     return async (dispatch, getState) => {
         dispatch({
             type: 'FETCH_DOC',
@@ -268,7 +248,7 @@ export const fetchDoc = (url, { includeParents = false, parentLevels = 3 } = {})
         });
 
         try {
-            const data = await api.doc(url, 1);
+            const data = await api.doc(url, filesPageIndex);
 
             if (includeParents) {
                 let current = data;

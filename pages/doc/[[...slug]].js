@@ -1,22 +1,23 @@
-import React, { Component, createRef } from 'react';
-import { connect } from 'react-redux';
-import URL from 'url';
-import path from 'path';
-import { withStyles } from '@material-ui/core/styles';
-import SplitPane from 'react-split-pane';
+import React, { useEffect, useState } from 'react'
+import { connect } from 'react-redux'
+import URL from 'url'
+import path from 'path'
+import cn from 'classnames'
+import { Typography } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
+import SplitPane from 'react-split-pane'
 
-import { fetchDoc } from '../../src/actions';
+import { fetchDoc } from '../../src/actions'
 
-import Document, { Meta } from '../../src/components/Document';
-import Locations from '../../src/components/Locations';
-import Finder from '../../src/components/Finder';
-import SplitPaneLayout from '../../src/components/SplitPaneLayout';
-import { parseLocation, copyMetadata } from '../../src/utils';
-import HotKeys from '../../src/components/HotKeys';
-import Typography from '@material-ui/core/Typography';
+import Document  from '../../src/components/document/Document'
+import Locations from '../../src/components/Locations'
+import Finder from '../../src/components/Finder'
+import SplitPaneLayout from '../../src/components/SplitPaneLayout'
+import { parseLocation, copyMetadata, isPrintMode } from '../../src/utils'
+import HotKeys from '../../src/components/HotKeys'
 
-const styles = theme => ({
-    finderSplitPane: {
+const useStyles = makeStyles(theme => ({
+    splitPane: {
         overflow: 'hidden',
         height: 'calc(100vh - 56px)',
         position: 'relative',
@@ -31,111 +32,118 @@ const styles = theme => ({
             height: 'calc(100vh - 64px)',
         }
     },
-});
+    splitPaneWithTitle: {
+        height: 'calc(100vh - 96px)',
 
-class Doc extends Component {
-    state = { printMode: false };
+        '@media (min-width: 0px) and (orientation: landscape)': {
+            height: 'calc(100vh - 88px)',
+        },
 
-    keys = [
+        '@media (min-width: 600px)': {
+            height: 'calc(100vh - 104px)',
+        }
+    },
+    horizontalSplitPane: {
+        overflowX: 'hidden',
+        overflowY: 'auto',
+        height: 'auto',
+    },
+    title: {
+        height: '40px',
+        padding: '10px',
+        backgroundColor: theme.palette.grey['100'],
+        borderBottomColor: theme.palette.grey['400'],
+        borderBottomWidth: '1px',
+        borderBottomStyle: 'solid',
+    },
+}))
+
+function Doc({ data, dispatch, url, isFetching, error }) {
+    if (!url) {
+        return null
+    }
+
+    if (error) {
+        return (
+            <Typography style={{ margin: '5rem 3rem' }} color="error">
+                {error.message.split('\n').map((e, i) => (
+                    <p key={i}>{e}</p>
+                ))}
+            </Typography>
+        )
+    }
+
+    const keys = [
         {
             name: 'copyMetadata',
             key: 'c',
             help: 'Copy MD5 and path to clipboard',
             handler: (e, showMessage) => {
-                if (this.props.data && this.props.data.content) {
-                    showMessage(copyMetadata(this.props.data));
+                if (data?.content) {
+                    showMessage(copyMetadata(data))
                 }
             },
         },
-    ];
+    ]
 
-    root = createRef();
+    const classes = useStyles()
 
-    componentDidMount() {
-        const { query, pathname } = parseLocation();
+    const { query, pathname } = parseLocation()
 
-        const fetch = () => {
-            if (query.path) {
-                this.props.dispatch(
-                    fetchDoc(query.path, {
-                        includeParents: true,
-                    })
-                );
-            } else {
-                this.props.dispatch(fetchDoc(pathname, { includeParents: true }));
-            }
-        };
-
-        const newState = {};
-
-        if (query.print && query.print !== 'false') {
-            newState.printMode = true;
+    const fetch = () => {
+        let path = pathname
+        if (query.path) {
+            path = query.path
         }
-
-        if (Object.keys(newState).length) {
-            this.setState(newState, fetch);
-        } else {
-            fetch();
-        }
+        dispatch(fetchDoc(path, { includeParents: true }))
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (this.state.printMode && this.props.data && !prevProps.data) {
-            window.setTimeout(window.print);
+    useEffect(() => {
+        fetch()
+    }, [url])
+
+    const printMode = isPrintMode()
+
+    useEffect(() => {
+        if (printMode && !isFetching) {
+            window.setTimeout(window.print)
         }
+    }, [isFetching])
+
+    let digest = data?.id
+    let digestUrl = url
+    let urlIsSha = true
+
+    if (data?.id.startsWith('_file_')) {
+        digest = data.digest
+        digestUrl = path.join(URL.resolve(url, './'), digest)
+        urlIsSha = false
     }
 
-    render() {
-        const { data, url, collection, isFetching, error, classes } = this.props;
-        const { printMode } = this.state;
+    if (data?.id.startsWith('_directory_')) {
+        digest = null
+        urlIsSha = false
+    }
 
-        if (!url) {
-            return null;
-        }
+    const doc = (
+        <Document
+            fullPage
+            showMeta
+            showToolbar={!printMode}
+        />
+    )
 
-        if (error) {
-            return (
-                <Typography style={{ margin: '5rem 3rem' }} color="error">
-                    {error.message.split('\n').map((e, i) => (
-                        <p key={i}>{e}</p>
-                    ))}
-                </Typography>
-            );
-        }
+    const finder = (
+        <Finder
+            isFetching={isFetching}
+            data={data}
+            url={url}
+        />
+    )
 
-        let digest = data?.id;
-        let digestUrl = url;
-        let urlIsSha = true;
-
-        if (data?.id.startsWith('_file_')) {
-            digest = data.digest;
-            digestUrl = path.join(URL.resolve(url, './'), digest);
-            urlIsSha = false;
-        }
-
-        if (data?.id.startsWith('_directory_')) {
-            digest = null;
-            urlIsSha = false;
-        }
-
-        const doc = (
-            <Document
-                fullPage
-                showMeta
-                showToolbar={!printMode}
-            />
-        );
-
-        const finder = (
-            <Finder
-                isFetching={isFetching}
-                data={data}
-                url={url}
-            />
-        );
-
-        const infoPane = (
-            !!digest ?
+    const infoPane = (
+        <>
+            {!!digest ?
                 <SplitPaneLayout
                     container={false}
                     left={<Locations data={data} url={digestUrl}/>}
@@ -145,48 +153,53 @@ class Doc extends Component {
                 </SplitPaneLayout>
                 :
                 doc
-        );
+            }
+        </>
+    )
 
-        let content = null;
+    let content = null
 
-        if (printMode) {
-            content = (
-                <div>
-                    {doc}
+    if (printMode) {
+        content = doc
+    } else {
+        content = urlIsSha ?
+            <>
+                {!isFetching &&
+                    <Typography variant="subtitle2" className={classes.title}>
+                        Document <b>{data?.content.filename}</b> - please pick a location to see the Finder
+                    </Typography>
+                }
+                <div className={cn(classes.splitPane, classes.splitPaneWithTitle)}>
+                    {infoPane}
                 </div>
-            );
-        } else {
-            content = (
-                <div className={classes.finderSplitPane}>
-                    {!urlIsSha ?
-                        <SplitPane
-                            split="horizontal"
-                            defaultSize="30%"
-                            style={{ position: 'relative' }}>
-                            {finder}
-                            {infoPane}
-                        </SplitPane>
-                        :
-                        infoPane
-                    }
-                </div>
-            );
-        }
-
-        return (
-            <HotKeys keys={this.keys} focused>
-                <div ref={this.root} tabIndex="-1">
-                    {content}
-                </div>
-            </HotKeys>
-        );
+            </>
+                :
+            <div className={classes.splitPane}>
+                <SplitPane
+                    split="horizontal"
+                    defaultSize="30%"
+                    pane1ClassName={classes.horizontalSplitPane}
+                    pane2ClassName={classes.horizontalSplitPane}>
+                    {finder}
+                    {infoPane}
+                </SplitPane>
+            </div>
     }
+
+    return (
+        <HotKeys keys={keys} focused>
+            <div tabIndex="-1">
+                {content}
+            </div>
+        </HotKeys>
+    )
 }
 
-export default connect(({ doc: { isFetching, data, url, collection, error } }) => ({
+const mapStateToProps = ({ doc: { isFetching, data, url, error } }) => ({
     isFetching,
     data,
     url,
-    collection,
     error,
-}))(withStyles(styles)(Doc));
+})
+
+export default connect(mapStateToProps)(Doc)

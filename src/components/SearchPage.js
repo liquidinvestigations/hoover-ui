@@ -1,11 +1,10 @@
-import Grid from '@material-ui/core/Grid';
-import { withStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import Link from 'next/link';
+import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
-import { Component, createRef } from 'react';
 import { connect } from 'react-redux';
+import Link from 'next/link';
+import ChipInput from 'material-ui-chip-input'
+import { Grid, Typography } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 
 import {
     fetchCollections,
@@ -16,7 +15,7 @@ import {
     fetchPreviousDoc,
 } from '../actions';
 
-import { SEARCH_GUIDE } from '../constants';
+import { SEARCH_GUIDE, SEARCH_QUERY_PREFIXES } from '../constants'
 import SearchLeftDrawer from './SearchLeftDrawer';
 import SearchResults from './SearchResults';
 import SearchRightDrawer from './SearchRightDrawer';
@@ -114,13 +113,28 @@ class SearchPage extends Component {
             handler: e => {
                 if (!isInputFocused()) {
                     e.preventDefault();
-                    this.inputElement.current && this.inputElement.current.focus();
+                    this.inputElement && this.inputElement.focus();
                 }
             },
         },
     ];
 
-    inputElement = createRef();
+    constructor(props) {
+        super(props);
+
+        this.inputElement = null;
+
+        this.setInputElementRef = element => {
+            this.inputElement = element;
+        };
+
+        const [chips, input] = this.extractChips(props.query.q)
+
+        this.state ={
+            input,
+            chips
+        }
+    }
 
     async componentDidMount() {
         const { dispatch } = this.props;
@@ -130,23 +144,77 @@ class SearchPage extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        const isInitialQueryParse =
-            !prevProps.wasQueryParsed && this.props.wasQueryParsed;
-
-        if (isInitialQueryParse && this.props.query.q && this.props.query.q.length) {
+        if (prevProps.query?.q !== this.props.query.q) {
+            const [chips, input] = this.extractChips(this.props.query.q)
+            this.setState({
+                ...this.state,
+                input,
+                chips
+            })
             this.props.dispatch(search());
         }
     }
 
-    handleInputChange = event =>
-        this.props.dispatch(
-            updateSearchQuery({ q: event.target.value }, { syncUrl: false })
-        );
+    handleInputChange = event => {
+        this.setState({
+            ...this.state,
+            input: event.target.value
+        })
+    }
 
     handleSubmit = event => {
         event.preventDefault();
-        this.props.dispatch(updateSearchQuery({}, { resetPagination: true }));
-    };
+        const chipsQueryPart = this.state.chips.length ? this.state.chips.join(' ') + ' ' : ''
+        this.props.dispatch(updateSearchQuery({
+            q: chipsQueryPart + this.state.input
+        }, { resetPagination: true }))
+    }
+
+    handleBeforeChipAdd = chip => {
+        if (chip.indexOf(':') > 0) {
+            const chipParts = chip.split(':')
+            if (SEARCH_QUERY_PREFIXES.indexOf(chipParts[0]) >= 0 && chipParts[1].length > 0) {
+                return true
+            }
+        }
+        return false
+    }
+
+    handleChipAdd = chip => {
+        this.setState({
+            ...this.state,
+            input: this.state.input.replace(chip, ''),
+            chips: [...this.state.chips, chip]
+        })
+    }
+
+    handleChipDelete = (chip, chipIndex) => {
+        const chips = [...this.state.chips]
+        chips.splice(chipIndex, 1)
+        this.setState({
+            ...this.state,
+            chips
+        })
+    }
+
+    extractChips = query => {
+        const chips = []
+        const queryParts = query ? query.match(/(?:[^\s"\[{]+|"[^"]*"|[\[{][^\]}]*[\]}])+/g) : []
+        const otherInput = []
+        queryParts.forEach(part => {
+            if (part.indexOf(':') > 0) {
+                const partParts = part.split(':')
+                if (SEARCH_QUERY_PREFIXES.indexOf(partParts[0]) >= 0 && partParts[1].length > 0) {
+                    chips.push(part)
+                } else {
+                    otherInput.push(part)
+                }
+            } else {
+                otherInput.push(part)
+            }
+        })
+        return [chips, otherInput.join(' ')]
+    }
 
     render() {
         const { classes, error, query, isFetching, results } = this.props;
@@ -161,16 +229,25 @@ class SearchPage extends Component {
                             <Grid container>
                                 <Grid item sm={12}>
                                     <form onSubmit={this.handleSubmit}>
-                                        <TextField
-                                            inputRef={this.inputElement}
+                                        <ChipInput
+                                            inputRef={this.setInputElementRef}
                                             name="q"
-                                            value={query.q || ''}
-                                            onChange={this.handleInputChange}
+                                            value={this.state.chips}
+                                            inputValue={this.state.input}
                                             label="Search"
-                                            margin="normal"
-                                            fullWidth
                                             type="search"
+                                            margin="normal"
                                             autoFocus
+                                            fullWidth
+                                            fullWidthInput
+                                            blurBehavior="ignore"
+                                            dataSource={SEARCH_QUERY_PREFIXES}
+                                            newChipKeyCodes={[]}
+                                            newChipKeys={[]}
+                                            onBeforeAdd={this.handleBeforeChipAdd}
+                                            onAdd={this.handleChipAdd}
+                                            onDelete={this.handleChipDelete}
+                                            onUpdateInput={this.handleInputChange}
                                         />
                                     </form>
 

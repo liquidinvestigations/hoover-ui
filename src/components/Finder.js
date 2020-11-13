@@ -36,6 +36,19 @@ const buildTree = (leaf, basePath) => {
             children: item.children ? item.children.map(createNode) : null,
         });
 
+        const more = {
+            label: '...',
+            fileType: 'more'
+        }
+
+        if (item.children_page > 1) {
+            node.children.unshift(more)
+        }
+
+        if (item.children_has_next_page) {
+            node.children.push(more)
+        }
+
         return node;
     };
 
@@ -63,6 +76,10 @@ class Finder extends Component {
         const label = document.createElement('span');
         label.appendChild(document.createTextNode(item.label));
         label.className = 'tree-view-label';
+
+        if (item.fileType === 'more') {
+            return label;
+        }
 
         const icon = getIconImageElement(item.fileType);
 

@@ -2,9 +2,15 @@ import {
     SORT_RELEVANCE,
     SORT_NEWEST,
     SORT_OLDEST,
+    SORT_CREATED_DESCENDING,
+    SORT_CREATED_ASCENDING,
+    SORT_SIZE_DESCENDING,
+    SORT_SIZE_ASCENDING,
+    SORT_WORD_COUNT_DESCENDING,
+    SORT_WORD_COUNT_ASCENDING,
     DATE_FORMAT,
     DEFAULT_FACET_SIZE,
-} from './constants';
+} from './constants'
 
 function buildQuery(q, { dateRange }) {
     const qs = {
@@ -42,6 +48,24 @@ function buildSortQuery(order) {
             break;
         case SORT_OLDEST:
             sort = [{ date: { order: 'asc', missing: '_last' } }, ...sort];
+            break;
+        case SORT_CREATED_DESCENDING:
+            sort = [{ 'date-created': { order: 'desc', missing: '_last' } }, ...sort];
+            break;
+        case SORT_CREATED_ASCENDING:
+            sort = [{ 'date-created': { order: 'asc', missing: '_last' } }, ...sort];
+            break;
+        case SORT_SIZE_DESCENDING:
+            sort = [{ size: { order: 'desc', missing: '_last' } }, ...sort];
+            break;
+        case SORT_SIZE_ASCENDING:
+            sort = [{ size: { order: 'asc', missing: '_last' } }, ...sort];
+            break;
+        case SORT_WORD_COUNT_DESCENDING:
+            sort = [{ 'word-count': { order: 'desc', missing: '_last' } }, ...sort];
+            break;
+        case SORT_WORD_COUNT_ASCENDING:
+            sort = [{ 'word-count': { order: 'asc', missing: '_last' } }, ...sort];
             break;
     }
 

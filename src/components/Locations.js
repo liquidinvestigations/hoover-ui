@@ -1,75 +1,70 @@
-import { Component } from 'react';
-import { connect } from 'react-redux';
-import Link from "next/link";
-import url from 'url';
-import path from 'path';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Typography from '@material-ui/core/Typography';
-import Folder from '@material-ui/icons/Folder';
-import Loading from './Loading';
-import { fetchDocLocations } from '../actions';
+import React, { useEffect, useState } from 'react'
+import Link from 'next/link'
+import url from 'url'
+import { List, ListItem, ListItemIcon, Typography } from '@material-ui/core'
+import { Folder } from '@material-ui/icons'
+import Loading from './Loading'
+import api from '../api'
 
-class Locations extends Component {
-    componentDidMount() {
-        this.fetch();
+export default function Locations({ url: docUrl, data }) {
+    const [locations, setLocations] = useState([])
+    const [page, setPage] = useState(1)
+    const [hasNextPage, setHasNextPage] = useState(false)
+    const [isFetchingLocationsPage, setFetchingLocationsPage] = useState(false)
+
+    useEffect(async () => {
+        const response = await api.locationsFor(docUrl, page)
+        setLocations(response.locations)
+        setHasNextPage(response.has_next_page)
+    }, [docUrl])
+
+    const loadMore = async event => {
+        event.preventDefault()
+        setFetchingLocationsPage(true)
+        const response = await api.locationsFor(docUrl, page + 1)
+        setPage(page + 1)
+        setLocations([...locations, ...response.locations])
+        setHasNextPage(response.has_next_page)
+        setFetchingLocationsPage(false)
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (prevProps.url !== this.props.url) {
-            this.fetch();
-        }
+    if (!locations.length && data.has_locations) {
+        return <Loading />;
+    } else if (!locations.length) {
+        return null;
     }
 
-    fetch() {
-        const { url: docUrl, data, dispatch } = this.props;
-        dispatch(fetchDocLocations(docUrl));
-    }
+    const baseUrl = url.resolve(docUrl, './');
+    const basePath = url.parse(baseUrl).pathname;
 
-    render() {
-        const { url: docUrl, data, locations } = this.props;
+    return (
+        <List component="nav" dense>
+            <ListItem dense>
+                <Typography variant="h6">Locations</Typography>
+            </ListItem>
 
-        if (!locations.length && data.has_locations) {
-            return <Loading />;
-        } else if (!locations.length) {
-            return null;
-        }
+            {locations.length && (
+                <>
+                    {locations.map(loc => (
+                        <Link key={loc.id} href={`${basePath}${loc.id}`}>
+                            <a>
+                                <ListItem button>
+                                    <ListItemIcon>
+                                        <Folder />
+                                    </ListItemIcon>
 
-        const baseUrl = url.resolve(docUrl, './');
-        const basePath = url.parse(baseUrl).pathname;
-
-        return (
-            <div>
-                <List component="nav" dense>
-                    <ListItem dense>
-                        <Typography variant="h6">Locations</Typography>
-                    </ListItem>
-
-                    {locations.length && (
-                        <>
-                            {locations.map(loc => (
-                                <Link key={loc.id} href={`${basePath}${loc.id}`}>
-                                    <a>
-                                        <ListItem button>
-                                            <ListItemIcon>
-                                                <Folder />
-                                            </ListItemIcon>
-
-                                            <Typography classes={{}}>
-                                                {path.normalize(loc.parent_path)}/<em>{loc.filename}</em>
-                                            </Typography>
-                                        </ListItem>
-                                    </a>
-                                </Link>
-                            ))}
-                        </>
-                    )}
-                </List>
-            </div>
-        );
-    }
+                                    <Typography classes={{}}>
+                                        {loc.parent_path}/<em>{loc.filename}</em>
+                                    </Typography>
+                                </ListItem>
+                            </a>
+                        </Link>
+                    ))}
+                </>
+            )}
+            {hasNextPage && <ListItem dense>
+                {isFetchingLocationsPage ? <Loading /> : <a href="#" onClick={loadMore}>load more...</a>}
+            </ListItem>}
+        </List>
+    )
 }
-
-const mapStateToProps = ({ doc: { locations } }) => ({ locations });
-export default connect(mapStateToProps)(Locations);
