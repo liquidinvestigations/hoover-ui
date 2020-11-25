@@ -1,17 +1,10 @@
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import ListItem from '@material-ui/core/ListItem';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import PropTypes from 'prop-types';
-import { Component } from 'react';
-import { connect } from 'react-redux';
-import { setCollectionsSelection } from '../actions';
-import Loading from './Loading';
-import { formatThousands } from '../utils';
+import React from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import { Checkbox, FormControlLabel, FormGroup, ListItem, Typography } from '@material-ui/core'
+import { formatThousands } from '../utils'
+import Loading from './Loading'
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
     root: {
         display: 'flex',
     },
@@ -22,141 +15,85 @@ const styles = theme => ({
         color: '#999',
         'font-size': '7.5pt',
     },
-});
+}))
 
-export class CollectionsBox extends Component {
-    static propTypes = {
-        classes: PropTypes.object.isRequired,
-        collections: PropTypes.arrayOf(
-            PropTypes.shape({
-                name: PropTypes.string.isRequired,
-                title: PropTypes.string.isRequired,
-            })
-        ),
-        selected: PropTypes.arrayOf(PropTypes.string).isRequired,
-        counts: PropTypes.object,
-    };
+export default function CollectionsBox({ loading, collections, selected, changeSelection, counts }) {
+    const classes = useStyles()
 
-    changeSelection(selected) {
-        this.props.dispatch(setCollectionsSelection(selected));
-    }
-
-    handleChange = event => {
-        const name = event.target.name;
-        const checked = event.target.checked;
-
-        var selected = this.props.selected.splice(0);
-
+    const handleChange = event => {
+        const { name, checked } = event.target
+        let newSelection
         if (checked) {
-            selected = [].concat(selected, [name]);
+            newSelection = [...selected, name]
         } else {
-            selected = selected.filter(c => c != name);
+            newSelection = selected.filter(c => c !== name);
         }
+        changeSelection(newSelection)
+    }
 
-        this.changeSelection(selected);
-    };
+    const handleAllChange = event => {
+        if (event.target.checked) {
+            changeSelection(collections.map(c => c.name))
+        } else {
+            changeSelection([])
+        }
+    }
 
-    renderCheckboxes() {
-        const { collections, selected, counts, classes } = this.props;
+    const collectionLabel = collection => {
+        let collectionCount = ''
+        if (counts && counts[collection.name]) {
+            collectionCount = formatThousands(counts[collection.name])
+        }
+        return (
+            <>
+                <span>
+                    {collection.title}
+                    {' '}
+                    {collectionCount}
+                </span>
+                <br/>
+                <i className={classes.progress}>
+                    {collection.stats.progress_str}
+                </i>
+            </>
+        )
+    }
 
-        let allCheckbox = null;
-
-        if (collections.length > 1) {
-            const allSelected = collections.every(c => selected.includes(c.name));
-
-            allCheckbox = (
-                <FormControlLabel
-                    className={classes.formControlLabel}
-                    control={
-                        <Checkbox
-                            key={'_all_'}
-                            checked={allSelected}
-                            onChange={() =>
-                                allSelected
-                                    ? this.changeSelection([])
-                                    : this.changeSelection(
-                                          collections.map(c => c.name)
-                                      )
+    return (
+        <ListItem dense>
+            <FormGroup>
+                {loading ? <Loading /> :
+                    !collections?.length ? <Typography>no collections available</Typography> :
+                        <>
+                            {collections.length > 1 &&
+                                <FormControlLabel
+                                    className={classes.formControlLabel}
+                                    control={
+                                        <Checkbox
+                                            checked={collections.every(c => selected.includes(c.name))}
+                                            onChange={handleAllChange}
+                                        />
+                                    }
+                                    label="All"
+                                />
                             }
-                            value="_all_"
-                        />
-                    }
-                    label="All"
-                />
-            );
-        }
-
-        const collectionCheckboxes = collections.map(col => (
-            <FormControlLabel
-                className={classes.formControlLabel}
-                key={col.name}
-                control={
-                    <Checkbox
-                        key={col.name}
-                        name={col.name}
-                        checked={selected.includes(col.name)}
-                        onChange={this.handleChange}
-                        value="_all_"
-                    />
+                            {collections.map(collection =>
+                                <FormControlLabel
+                                    key={collection.name}
+                                    className={classes.formControlLabel}
+                                    control={
+                                        <Checkbox
+                                            name={collection.name}
+                                            checked={selected.includes(collection.name)}
+                                            onChange={handleChange}
+                                        />
+                                    }
+                                    label={collectionLabel(collection)}
+                                />
+                            )}
+                        </>
                 }
-                label={
-                    <>
-                        <span>
-                            {col.title + (counts && counts[col.name] ? ` (${formatThousands(counts[col.name])})` : '')}
-                        </span>
-                        <i className={classes.progress}><br/>{col.stats.progress_str}</i>
-                    </>
-                }
-            />
-        ));
-
-        return (
-            <div>
-                {allCheckbox}
-                {collectionCheckboxes}
-            </div>
-        );
-    }
-
-    render() {
-        let result;
-
-        const {
-            selected,
-            collections,
-            classes,
-            isFetching,
-            wasFetched,
-        } = this.props;
-
-        if (collections) {
-            if (collections.length) {
-                result = this.renderCheckboxes();
-            } else {
-                result =
-                    isFetching || !wasFetched ? null : (
-                        <Typography>no collections available</Typography>
-                    );
-            }
-        } else {
-            result = <Loading />;
-        }
-
-        return (
-            <ListItem dense>
-                <FormGroup>{result}</FormGroup>
-            </ListItem>
-        );
-    }
+            </FormGroup>
+        </ListItem>
+    )
 }
-
-const mapStateToProps = ({
-    collections: { isFetching, items, selected, counts, wasFetched },
-}) => ({
-    isFetching,
-    collections: items,
-    selected,
-    counts,
-});
-
-export default connect(mapStateToProps)(withStyles(styles)(CollectionsBox));

@@ -1,4 +1,3 @@
-import path from 'path';
 import fetch from 'isomorphic-fetch';
 import { memoize } from 'lodash';
 import { stringify } from 'querystring'
@@ -14,35 +13,32 @@ const api = {
                 return Object.assign(prev || {}, curr)
             }
         })
-        return path.join(api.prefix, ...paths) + (queryObj ? `?${stringify(queryObj)}` : '')
+        return [api.prefix, ...paths].join('/').replace(/\/+/g, '/')
+            + (queryObj ? `?${stringify(queryObj)}` : '')
     },
 
     fetchJson: async (url, opts = {}) => {
-        const res = await fetch(url, {
+        let apiUrl
+        if (typeof window === 'undefined') {
+            apiUrl = 'https://hoover.fuze.xn--vj-qja.ro' + url
+        } else {
+            apiUrl = url
+        }
+        const res = await fetch(apiUrl, {
             ...opts,
             credentials: 'same-origin',
             headers: {
                 ...(opts.headers || {}),
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
+                Cookie: api.cookie,
             },
         });
 
         if (res.ok) {
             return res.json();
         } else {
-            const body = await res.text();
-            const err = new Error(
-                `unable to fetch ${res.url}: ${res.status} ${
-                    res.statusText
-                }\n${body}`
-            );
-
-            err.url = res.url;
-            err.status = res.status;
-            err.statusText = res.statusText;
-
-            throw err;
+            throw await res.json()
         }
     },
 

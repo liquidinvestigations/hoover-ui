@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import URL from 'url'
-import path from 'path'
 import cn from 'classnames'
 import { Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import SplitPane from 'react-split-pane'
 
-import { fetchDoc } from '../../src/actions'
+import { fetchDoc } from '../../../src/actions'
 
-import Document  from '../../src/components/document/Document'
-import Locations from '../../src/components/Locations'
-import Finder from '../../src/components/Finder'
-import SplitPaneLayout from '../../src/components/SplitPaneLayout'
-import { parseLocation, copyMetadata, isPrintMode } from '../../src/utils'
-import HotKeys from '../../src/components/HotKeys'
+import Document  from '../../../src/components/document/Document'
+import Locations from '../../../src/components/Locations'
+import Finder from '../../../src/components/Finder'
+import SplitPaneLayout from '../../../src/components/SplitPaneLayout'
+import { parseLocation, copyMetadata, isPrintMode } from '../../../src/utils'
+import HotKeys from '../../../src/components/HotKeys'
 
 const useStyles = makeStyles(theme => ({
     splitPane: {
@@ -116,7 +115,7 @@ function Doc({ data, dispatch, url, isFetching, error }) {
 
     if (data?.id.startsWith('_file_')) {
         digest = data.digest
-        digestUrl = path.join(URL.resolve(url, './'), digest)
+        digestUrl = [URL.resolve(url, './'), digest].join('/')
         urlIsSha = false
     }
 
@@ -165,15 +164,15 @@ function Doc({ data, dispatch, url, isFetching, error }) {
         content = urlIsSha ?
             <>
                 {!isFetching &&
-                    <Typography variant="subtitle2" className={classes.title}>
-                        Document <b>{data?.content.filename}</b> - please pick a location to see the Finder
-                    </Typography>
+                <Typography variant="subtitle2" className={classes.title}>
+                    Document <b>{data?.content.filename}</b> - please pick a location to see the Finder
+                </Typography>
                 }
                 <div className={cn(classes.splitPane, classes.splitPaneWithTitle)}>
                     {infoPane}
                 </div>
             </>
-                :
+            :
             <div className={classes.splitPane}>
                 <SplitPane
                     split="horizontal"

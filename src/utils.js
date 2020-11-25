@@ -1,6 +1,5 @@
 import React from 'react';
 import url from 'url';
-import path from 'path';
 import copy from 'copy-text-to-clipboard';
 import langs from 'langs';
 
@@ -73,14 +72,14 @@ export function truncatePath(str) {
     }
     const parts = str.split('/');
 
-    return path.join(
+    return [
         ...parts.slice(0, parts.length / 3),
         '…',
         ...parts.slice(-(parts.length / 3)),
-    );
+    ].join('/');
 }
 
-export const formatThousands = n => n.toLocaleString('en');
+export const formatThousands = n => String(n).replace(/(?<!\..*)(\d)(?=(?:\d{3})+(?:\.|$))/g, '$1,');
 
 export function parseLocation() {
     return url.parse(window.location.href, true);
@@ -124,7 +123,7 @@ export const copyMetadata = doc => {
         : `Could not copy meta metadata – unsupported browser?`;
 };
 
-export const documentViewUrl = item => path.join('/doc', item._collection, item._id);
+export const documentViewUrl = item => ['/doc', item._collection, item._id].join('/');
 
 export const removeCommentsAndSpacing = (str = '') =>
     str.replace(/\/\*.*\*\//g, ' ').replace(/\s+/g, ' ');
