@@ -164,9 +164,9 @@ function Doc({ data, dispatch, url, isFetching, error }) {
         content = urlIsSha ?
             <>
                 {!isFetching &&
-                <Typography variant="subtitle2" className={classes.title}>
-                    Document <b>{data?.content.filename}</b> - please pick a location to see the Finder
-                </Typography>
+                    <Typography variant="subtitle2" className={classes.title}>
+                        Document <b>{data?.content.filename}</b> - please pick a location to see the Finder
+                    </Typography>
                 }
                 <div className={cn(classes.splitPane, classes.splitPaneWithTitle)}>
                     {infoPane}

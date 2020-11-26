@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Checkbox, FormControlLabel, FormGroup, ListItem, Typography } from '@material-ui/core'
-import { formatThousands } from '../utils'
-import Loading from './Loading'
+import { formatThousands } from '../../utils'
+import Loading from '../Loading'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function CollectionsBox({ loading, collections, selected, changeSelection, counts }) {
+function CollectionsBox({ loading, collections, selected, changeSelection, counts }) {
     const classes = useStyles()
 
     const handleChange = event => {
@@ -97,3 +97,5 @@ export default function CollectionsBox({ loading, collections, selected, changeS
         </ListItem>
     )
 }
+
+export default memo(CollectionsBox)

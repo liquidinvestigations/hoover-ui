@@ -17,6 +17,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import api from "../api";
 import { fetchDoc } from '../actions';
 import { makeUnsearchable, truncatePath } from '../utils';
+import { Box } from '@material-ui/core'
 
 const styles = theme => ({
     card: {
@@ -146,37 +147,44 @@ class ResultItem extends Component {
                     <CardContent>
                         <Grid container alignItems="flex-end">
                             <Grid item md={4}>
-                                <Typography variant="caption">
-                                    {wordCount}
-                                </Typography>
+                                <Box>
+                                    <Typography variant="caption">
+                                        {wordCount}
+                                    </Typography>
+                                </Box>
 
                                 {fields.date && (
-                                    <Typography variant="caption">
-                                        <strong>Modified:</strong>{' '}
-                                        {DateTime.fromISO(fields.date)
-                                            .toLocaleString(DateTime.DATE_FULL)
-                                            .replace(/\s/g, ' ')}
-                                    </Typography>
+                                    <Box>
+                                        <Typography variant="caption">
+                                            <strong>Modified:</strong>{' '}
+                                            {DateTime.fromISO(fields.date, { locale: 'en-US' })
+                                                .toLocaleString(DateTime.DATE_FULL)
+                                                .replace(/\s/g, ' ')}
+                                        </Typography>
+                                    </Box>
                                 )}
 
                                 {fields['date-created'] && (
-                                    <Typography variant="caption">
-                                        <strong>Created: </strong>
-                                        {DateTime.fromISO(
-                                            fields['date-created']
-                                        ).toLocaleString(DateTime.DATE_FULL)}
-                                    </Typography>
+                                    <Box>
+                                        <Typography variant="caption">
+                                            <strong>Created: </strong>
+                                            {DateTime.fromISO(fields['date-created'], { locale: 'en-US' })
+                                                .toLocaleString(DateTime.DATE_FULL)}
+                                        </Typography>
+                                    </Box>
                                 )}
 
-                                <Typography variant="caption">
-                                    <Tooltip title="Download original file">
-                                        <a
-                                            target="_blank"
-                                            href={downloadUrl}>
-                                            <IconCloudDownload color="action" />
-                                        </a>
-                                    </Tooltip>
-                                </Typography>
+                                <Box>
+                                    <Typography variant="caption">
+                                        <Tooltip title="Download original file">
+                                            <a
+                                                target="_blank"
+                                                href={downloadUrl}>
+                                                <IconCloudDownload color="action" />
+                                            </a>
+                                        </Tooltip>
+                                    </Typography>
+                                </Box>
                             </Grid>
                             <Grid item md={8}>
                                 <div className={classes.text}>{text}</div>

@@ -18,12 +18,7 @@ const api = {
     },
 
     fetchJson: async (url, opts = {}) => {
-        let apiUrl
-        if (typeof window === 'undefined') {
-            apiUrl = 'https://hoover.fuze.xn--vj-qja.ro' + url
-        } else {
-            apiUrl = url
-        }
+        const apiUrl = typeof window === 'undefined' ? 'http://' + api.host + url : url
         const res = await fetch(apiUrl, {
             ...opts,
             credentials: 'same-origin',

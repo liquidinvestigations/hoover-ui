@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import url from 'url'
 import { IconButton, Toolbar, Tooltip } from '@material-ui/core'
@@ -24,17 +23,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-Document.propTypes = {
-    showToolbar: PropTypes.bool,
-    showMeta: PropTypes.bool,
-}
-
-Document.defaultProps = {
-    showToolbar: true,
-    showMeta: true,
-}
-
-function Document({ docUrl, collection, data, fullPage, isFetching, showToolbar, showMeta }) {
+function Document({ docUrl, collection, data, fullPage, isFetching, showToolbar = true, showMeta = true }) {
     const classes = useStyles()
 
     if (isFetching) {

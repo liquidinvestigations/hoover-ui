@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import Link from 'next/link'
 import url from 'url'
 import { List, ListItem, ListItemText } from '@material-ui/core'
@@ -7,14 +7,13 @@ import Section from './Section'
 import {
     SEARCH_CREATION_DATE,
     SEARCH_FILENAME,
-    SEARCH_FROM,
     SEARCH_MD5,
     SEARCH_MODIFICATION_DATE,
     SEARCH_PATH_PARTS,
     SEARCH_SHA1
 } from '../../constants'
 
-export default function MetaSection({ doc, collection, baseUrl }) {
+function MetaSection({ doc, collection, baseUrl }) {
     const printMode = isPrintMode()
 
     const data = doc ? doc.content : null;
@@ -160,3 +159,5 @@ export default function MetaSection({ doc, collection, baseUrl }) {
         </Section>
     )
 }
+
+export default memo(MetaSection)

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import Link from 'next/link'
 import { Table, TableBody, TableCell, TableRow } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
@@ -19,7 +19,7 @@ const useStyles = makeStyles({
     },
 })
 
-export default function EmailSection({ doc = {} }) {
+function EmailSection({ doc = {} }) {
     const classes = useStyles()
 
     const printMode = isPrintMode()
@@ -123,3 +123,5 @@ export default function EmailSection({ doc = {} }) {
         </Section>
     )
 }
+
+export default memo(EmailSection)

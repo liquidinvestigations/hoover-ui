@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import qs from 'qs'
 import { makeStyles } from '@material-ui/core/styles'
 import { Grid, List, Typography } from '@material-ui/core'
 import ChipInput from 'material-ui-chip-input'
@@ -10,9 +11,9 @@ import SplitPaneLayout from '../src/components/SplitPaneLayout'
 import SearchRightDrawer from '../src/components/SearchRightDrawer'
 import SearchSettings from '../src/components/SearchSettings'
 import SearchResults from '../src/components/SearchResults'
-import Filter from '../src/components/Filter'
-import CollectionsBox from '../src/components/CollectionsBox'
-import Filters from '../src/components/Filters'
+import Filter from '../src/components/filters/Filter'
+import CollectionsBox from '../src/components/filters/CollectionsBox'
+import Filters from '../src/components/filters/Filters'
 import { SEARCH_GUIDE, SEARCH_QUERY_PREFIXES, SORT_RELEVANCE } from '../src/constants'
 import useLoading from '../src/hooks/useLoading'
 import { copyMetadata } from '../src/utils'
@@ -37,6 +38,21 @@ const extractChips = query => {
     return [chips, otherInput.join(' ')]
 }
 
+const defaultParams = {
+    page: 1,
+    size: 10,
+    order: SORT_RELEVANCE,
+}
+
+export const buildUrlQuery = (params) => {
+    const { q, chips, text, ...rest } = params
+    return qs.stringify({
+        q: (chips.length ? chips.join(' ') + ' ' : '') + text,
+        ...defaultParams,
+        ...rest,
+    })
+}
+
 const useStyles = makeStyles(theme => ({
     error: {
         paddingTop: theme.spacing(3),
@@ -54,7 +70,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function Index({ collections, results, error }) {
+export default function Index({ collections, results, serverQuery, error }) {
     const keys = [{
         name: 'nextItem',
         key: 'j',
@@ -109,7 +125,15 @@ export default function Index({ collections, results, error }) {
 
     const classes = useStyles()
     const router = useRouter()
-    const { query, pathname } = router
+    const { pathname } = router
+
+    const getQueryString = () => {
+        if (typeof window === 'undefined') {
+            return serverQuery
+        }
+        return window.location.href.split('?')[1]
+    }
+    const query = qs.parse(getQueryString())
 
     let inputRef = null
     const setInputRef = element => inputRef = element
@@ -119,14 +143,9 @@ export default function Index({ collections, results, error }) {
     const [chips, setChips] = useState(queryChips)
     const [text, setText] = useState(queryText)
 
-    const buildQuery = ({ chips, text, size, order, page, collections }) => ({
-        q: (chips.length ? chips.join(' ') + ' ' : '') + text,
-        size, order, page, collections,
-    })
-
     const search = params => {
-        const defaultParams = { chips, text, size, order, page, collections: selectedCollections }
-        router.push({ pathname, query: buildQuery({ ...defaultParams, ...params }) })
+        const stateParams = { chips, text, size, order, page, collections: selectedCollections }
+        router.push({ pathname, query: buildUrlQuery({ ...query, ...stateParams, ...params }) })
     }
 
     const [selectedCollections, setSelectedCollections] = useState(collections?.map(c => c.name))
@@ -135,23 +154,25 @@ export default function Index({ collections, results, error }) {
         search({ collections, page: 1 })
     }
 
-    const [size, setSize] = useState(query.size || 10)
+    const [size, setSize] = useState(query.size || defaultParams.size)
     const handleSizeChange = size => {
         setSize(size)
         search({ size, page: 1 })
     }
 
-    const [order, setOrder] = useState(query.order || SORT_RELEVANCE)
+    const [order, setOrder] = useState(query.order || defaultParams.order)
     const handleOrderChange = order => {
         setOrder(order)
         search({ order, page: 1 })
     }
 
-    const [page, setPage] = useState(query.page || 1)
+    const [page, setPage] = useState(query.page || defaultParams.page)
     const handlePageChange = page => {
         setPage(page)
         search({ page })
     }
+
+    const handleFilterApply = filter => search({ ...filter, page: 1 })
 
     const handleInputChange = event => setText(event.target.value)
 
@@ -179,7 +200,7 @@ export default function Index({ collections, results, error }) {
 
     const handleSubmit = event => {
         event.preventDefault()
-        search({ page: 1 })
+        search({ text, page: 1 })
     }
 
     useEffect(() => {
@@ -210,7 +231,12 @@ export default function Index({ collections, results, error }) {
                                 </Filter>
                             </List>
 
-                            <Filters />
+                            <Filters
+                                loading={loading}
+                                query={query}
+                                aggregations={results?.aggregations}
+                                applyFilter={handleFilterApply}
+                            />
                         </>
                     }
                     right={<SearchRightDrawer />}>
@@ -291,15 +317,19 @@ export default function Index({ collections, results, error }) {
     )
 }
 
-export async function getServerSideProps({ req, query }) {
+export async function getServerSideProps({ req }) {
+    api.host = req.headers.host
     api.cookie = req.headers.cookie
     try {
-        const collections = await api.collections()
-        if (query.collections && !Array.isArray(query.collections)) {
-            query.collections = [query.collections]
-        }
-        const results = query.q ? await api.search(query) : null
-        return { props: { collections, results }}
+        const collections = await api.collections() // move to context
+
+        const serverQuery = req.url.split('?')[1] || ''
+        const params = qs.parse(serverQuery)
+
+        console.log(params)
+
+        const results = params.q ? await api.search(params) : null
+        return { props: { collections, results, serverQuery }}
     } catch (error) {
         console.log(error)
         return { props: { error: error.reason ? error.reason : error.message }}

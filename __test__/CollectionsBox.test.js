@@ -1,6 +1,6 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
-import { CollectionsBox } from '../src/components/CollectionsBox';
+import { CollectionsBox } from '../src/components/filters/CollectionsBox';
 
 xit('renders the collections box with a collection', () => {
     const tree = renderer

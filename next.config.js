@@ -1,19 +1,8 @@
-const withSass = require('@zeit/next-css');
-const withCss = require('@zeit/next-sass');
-const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
+const withSass = require('@zeit/next-sass')
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
 
-module.exports = withCss(
-    withSass({
+module.exports = withSass({
         cssModules: false,
-        //exportPathMap: function(defaultPathMap) {
-        //    return {
-        //        '/': { page: '/index' },
-        //        '/batch-search': { page: '/batch-search' },
-        //        '/doc': { page: '/doc' },
-        //        '/terms': { page: '/terms' },
-        //    };
-        //},
-
         webpack(config, options) {
             config.plugins.push(new LodashModuleReplacementPlugin());
             config.module.rules.push({
@@ -35,5 +24,10 @@ module.exports = withCss(
         // TODO on some sunny day, enable
         reactStrictMode: false,
         compress: false,
-    })
-);
+        redirects: () => [{
+            source: '/doc/:collection/:id/raw/:file*',
+            destination: '/api/v0/doc/:collection/:id/raw/:file*',
+            permanent: true
+        }],
+    }
+)

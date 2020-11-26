@@ -2,8 +2,8 @@ import { Component } from 'react';
 
 import Link from 'next/link';
 
-import CollectionsBox from './CollectionsBox';
-import Filter from './Filter';
+import CollectionsBox from './filters/CollectionsBox';
+import Filter from './filters/Filter';
 import Batch from './Batch';
 
 import { connect } from 'react-redux';

@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { memo } from 'react'
 import Section from './Section';
 
-export default function HTMLSection({ html, title }) {
+function HTMLSection({ html, title }) {
     if (!html) return null;
 
     return (
@@ -10,3 +10,5 @@ export default function HTMLSection({ html, title }) {
         </Section>
     )
 }
+
+export default memo(HTMLSection)
