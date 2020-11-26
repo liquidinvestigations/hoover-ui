@@ -1,66 +1,50 @@
-import App from 'next/app';
-import React from 'react';
+import React, { useEffect } from 'react'
+import LuxonUtils from '@date-io/luxon'
+import { Provider } from 'react-redux'
+import { ThemeProvider } from '@material-ui/core/styles'
+import CssBaseline from '@material-ui/core/CssBaseline'
+import { MuiPickersUtilsProvider } from '@material-ui/pickers'
+import withReduxStore from '../src/with-redux-store'
+import { JSS_CSS } from "../src/constants"
+import Layout from '../src/components/Layout'
+import theme from '../src/theme'
+import '../styles/main.scss'
 
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { StylesProvider, ThemeProvider } from '@material-ui/core/styles';
+import { useRouter } from 'next/router'
+import { routeChanged } from '../src/actions'
 
-import LuxonUtils from '@date-io/luxon';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+function HooverApp({ Component, pageProps, reduxStore }) {
+    const router = useRouter()
+    const handleRouteChange = url => reduxStore.dispatch(routeChanged(url))
 
-import getPageContext from '../src/get-page-context';
-import withReduxStore from '../src/with-redux-store';
-import { Provider } from 'react-redux';
-
-import Layout from '../src/components/Layout';
-import routerEvents from '../src/router-events';
-import { routeChanged } from '../src/actions';
-import { JSS_CSS } from "../src/constants";
-
-import '../styles/main.scss';
-
-class HooverApp extends App {
-    pageContext = getPageContext();
-
-    handleRouteChange = url => this.props.reduxStore.dispatch(routeChanged(url));
-
-    componentDidMount() {
+    useEffect(() => {
         // Remove the server-side injected CSS.
         const jssStyles = document.querySelector(`#${JSS_CSS}`);
-        if (jssStyles && jssStyles.parentNode) {
-            jssStyles.parentNode.removeChild(jssStyles);
+        if (jssStyles) {
+            jssStyles.parentElement.removeChild(jssStyles);
         }
 
-        routerEvents.on('changeComplete', this.handleRouteChange);
-        this.handleRouteChange(window.location.href);
-    }
+        router.events.on('routeChangeComplete', handleRouteChange)
+        handleRouteChange(window.location.href)
 
-    componentWillUnmount() {
-        routerEvents.removeListener('changeComplete', this.handleRouteChange);
-    }
+        return () => {
+            router.events.off('routeChangeComplete', handleRouteChange)
+        }
+    }, [])
 
-    render() {
-        const { Component, pageProps, reduxStore } = this.props;
-
-        return (
-            <StylesProvider
-                generateClassName={this.pageContext.generateClassName}>
-                <ThemeProvider
-                    theme={this.pageContext.theme}>
-                    <CssBaseline />
-                    <Provider store={reduxStore}>
-                        <MuiPickersUtilsProvider utils={LuxonUtils}>
-                            <Layout>
-                                <Component
-                                    pageContext={this.pageContext}
-                                    {...pageProps}
-                                />
-                            </Layout>
-                        </MuiPickersUtilsProvider>
-                    </Provider>
-                </ThemeProvider>
-            </StylesProvider>
-        );
-    }
+    return (
+        <ThemeProvider
+            theme={theme}>
+            <CssBaseline />
+            <Provider store={reduxStore}>
+                <MuiPickersUtilsProvider utils={LuxonUtils}>
+                    <Layout>
+                        <Component {...pageProps} />
+                    </Layout>
+                </MuiPickersUtilsProvider>
+            </Provider>
+        </ThemeProvider>
+    )
 }
 
-export default withReduxStore(HooverApp);
+export default withReduxStore(HooverApp)
