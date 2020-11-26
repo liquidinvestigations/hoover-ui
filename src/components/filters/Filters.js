@@ -18,10 +18,11 @@ function Filters({ loading, query, aggregations, applyFilter }) {
 
     const handleFilterChange = key => value => applyFilter({ [key]: value })
 
-    const handleLoadMore = key => {
-        const facets = query.facets = {}
-        const newValue = (facets[key] || DEFAULT_FACET_SIZE) + DEFAULT_FACET_SIZE
-        //applyFilter({ facets: { ...facets, [key]: newValue } })
+    const handleLoadMore = key => () => {
+        const facets = query.facets || {}
+        const oldValue = parseInt(facets[key])
+        const newValue = (!isNaN(oldValue) ? oldValue : DEFAULT_FACET_SIZE) + DEFAULT_FACET_SIZE
+        applyFilter({ facets: { ...facets, [key]: newValue } })
     }
 
     return (
@@ -64,6 +65,7 @@ function Filters({ loading, query, aggregations, applyFilter }) {
             </Filter>
 
             <Filter
+                enabled={!!aggregations.count_by_email_domains.email_domains_count.value}
                 title="Email domain"
                 defaultOpen={!!query.emailDomains?.length}>
                 <AggregationFilter
