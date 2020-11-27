@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { memo } from 'react'
 import ReactPlaceholder from 'react-placeholder'
 import Pagination from './Pagination'
 import ResultItem from './ResultItem'
 import { documentViewUrl } from '../utils'
 
-export default function SearchResults({ loading, results, query, changePage }) {
+function SearchResults({ loading, results, query, changePage, selectedDocUrl, onPreview }) {
     if (!results?.hits?.hits) {
         return null
     }
@@ -30,6 +30,9 @@ export default function SearchResults({ loading, results, query, changePage }) {
                         hit={hit}
                         url={documentViewUrl(hit)}
                         index={start + i}
+                        onPreview={onPreview}
+                        isPreview={hit._url.endsWith(selectedDocUrl)}
+                        unsearchable={!!selectedDocUrl}
                     />
                 )}
                 {results.hits.hits.length &&
@@ -44,3 +47,5 @@ export default function SearchResults({ loading, results, query, changePage }) {
         </>
     )
 }
+
+export default memo(SearchResults)

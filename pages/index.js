@@ -8,12 +8,12 @@ import ChipInput from 'material-ui-chip-input'
 import ErrorBoundary from '../src/components/ErrorBoundary'
 import HotKeys from '../src/components/HotKeys'
 import SplitPaneLayout from '../src/components/SplitPaneLayout'
-import SearchRightDrawer from '../src/components/SearchRightDrawer'
 import SearchSettings from '../src/components/SearchSettings'
 import SearchResults from '../src/components/SearchResults'
 import Filter from '../src/components/filters/Filter'
-import CollectionsBox from '../src/components/filters/CollectionsBox'
+import CollectionsBox from '../src/components/filters/CollectionsFilter'
 import Filters from '../src/components/filters/Filters'
+import Document from '../src/components/document/Document'
 import { SEARCH_GUIDE, SEARCH_QUERY_PREFIXES, SORT_RELEVANCE } from '../src/constants'
 import useLoading from '../src/hooks/useLoading'
 import { copyMetadata } from '../src/utils'
@@ -203,6 +203,19 @@ export default function Index({ collections, results, serverQuery, error }) {
         search({ text, page: 1 })
     }
 
+    const [selectedDocUrl, setSelectedDocUrl] = useState()
+    const [selectedDocData, setSelectedDocData] = useState()
+    const [previewLoading, setPreviewLoading] = useState(false)
+    const handleDocPreview = url => {
+        setSelectedDocUrl(url)
+        setPreviewLoading(true)
+        api.doc(url, 1).then(data => {
+            setSelectedDocData(data)
+            setPreviewLoading(false)
+        })
+    }
+
+    // is it neccessary?
     useEffect(() => {
         const [ queryChips, queryText ] = extractChips(query.q)
         if (queryText !== text || JSON.stringify(queryChips) !== JSON.stringify(chips)) {
@@ -239,7 +252,10 @@ export default function Index({ collections, results, serverQuery, error }) {
                             />
                         </>
                     }
-                    right={<SearchRightDrawer />}>
+                    right={
+                        <Document docUrl={selectedDocUrl} data={selectedDocData} loading={previewLoading} />
+                    }
+                >
                     <div className={classes.main}>
                         <Grid container>
                             <Grid item sm={12}>
@@ -307,6 +323,8 @@ export default function Index({ collections, results, serverQuery, error }) {
                                     results={results}
                                     query={query}
                                     changePage={handlePageChange}
+                                    onPreview={handleDocPreview}
+                                    selectedDocUrl={selectedDocUrl}
                                 />
                             </Grid>
                         </Grid>

@@ -1,13 +1,13 @@
-import { connect } from 'react-redux';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { withStyles } from '@material-ui/core/styles';
+import React, { memo } from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import { CircularProgress, LinearProgress } from '@material-ui/core'
+import useLoading from '../hooks/useLoading'
 
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
     linear: {
         position: 'fixed',
         top: 0,
-        height: '5px',
+        height: 5,
         width: '100%',
         zIndex: theme.zIndex.appBar + 1,
     },
@@ -17,28 +17,25 @@ const styles = theme => ({
         paddingLeft: theme.spacing(1),
         paddingRight: theme.spacing(1),
     },
-});
+}))
 
-function getType(type) {
+const getIndicator = type => {
     if (type === 'circular') {
         return <CircularProgress color="secondary" size={20} />;
     } else {
-        return <LinearProgress variant="query" color="secondary" />;
+        return <LinearProgress color="secondary" variant="query" />;
     }
 }
 
-const ProgressIndicator = withStyles(styles)(({ classes, isFetching, type }) => (
-    <div className={classes[type]}>{isFetching && getType(type)}</div>
-));
+function ProgressIndicator({ type }) {
+    const classes = useStyles()
+    const loading = useLoading()
 
-export default connect(
-    ({
-        search: { isFetching: searchFetching },
-        collections: { isFetching: collectionsFetching },
-        doc: { isFetching: docFetching },
-        batch: { isFetching: batchFetching },
-    }) => ({
-        isFetching:
-            searchFetching || collectionsFetching || docFetching || batchFetching,
-    })
-)(ProgressIndicator);
+    return (
+        <div className={classes[type]}>
+            {loading && getIndicator(type)}
+        </div>
+    )
+}
+
+export default memo(ProgressIndicator)

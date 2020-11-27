@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function CollectionsBox({ loading, collections, selected, changeSelection, counts }) {
+function CollectionsFilter({ loading, collections, selected, changeSelection, counts }) {
     const classes = useStyles()
 
     const handleChange = event => {
@@ -98,4 +98,4 @@ function CollectionsBox({ loading, collections, selected, changeSelection, count
     )
 }
 
-export default memo(CollectionsBox)
+export default memo(CollectionsFilter)

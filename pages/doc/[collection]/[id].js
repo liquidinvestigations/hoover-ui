@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { connect } from 'react-redux'
-import URL from 'url'
+import { useRouter } from 'next/router'
+import url from 'url'
 import cn from 'classnames'
 import { Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import SplitPane from 'react-split-pane'
-
-import { fetchDoc } from '../../../src/actions'
-
 import Document  from '../../../src/components/document/Document'
 import Locations from '../../../src/components/Locations'
 import Finder from '../../../src/components/Finder'
 import SplitPaneLayout from '../../../src/components/SplitPaneLayout'
-import { parseLocation, copyMetadata, isPrintMode } from '../../../src/utils'
+import { copyMetadata, documentViewUrl } from '../../../src/utils'
 import HotKeys from '../../../src/components/HotKeys'
+import Loading from '../../../src/components/Loading'
+import api from '../../../src/api'
 
 const useStyles = makeStyles(theme => ({
     splitPane: {
@@ -57,11 +56,50 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function Doc({ data, dispatch, url, isFetching, error }) {
-    if (!url) {
-        return null
-    }
+const keys = [
+    {
+        name: 'copyMetadata',
+        key: 'c',
+        help: 'Copy MD5 and path to clipboard',
+        handler: (e, showMessage) => {
+            if (data?.content) {
+                showMessage(copyMetadata(data))
+            }
+        },
+    },
+]
 
+export default function Doc({ error }) {
+    const classes = useStyles()
+
+    const router = useRouter()
+    const { query } = router
+    const pathname = documentViewUrl({ _collection: query.collection, _id: query.id })
+
+    const [data, setData] = useState()
+    const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        let path = pathname
+        if (query.path) {
+            path = query.path
+        }
+        setLoading(true)
+        api.doc(path, 1).then(data => {
+            setData(data)
+            setLoading(false)
+        })
+    }, [pathname])
+
+    const printMode = query.print && query.print !== 'false'
+
+    useEffect(() => {
+        if (printMode && !loading) {
+            window.setTimeout(window.print)
+        }
+    }, [printMode, loading])
+
+    // remove?
     if (error) {
         return (
             <Typography style={{ margin: '5rem 3rem' }} color="error">
@@ -72,50 +110,13 @@ function Doc({ data, dispatch, url, isFetching, error }) {
         )
     }
 
-    const keys = [
-        {
-            name: 'copyMetadata',
-            key: 'c',
-            help: 'Copy MD5 and path to clipboard',
-            handler: (e, showMessage) => {
-                if (data?.content) {
-                    showMessage(copyMetadata(data))
-                }
-            },
-        },
-    ]
-
-    const classes = useStyles()
-
-    const { query, pathname } = parseLocation()
-
-    const fetch = () => {
-        let path = pathname
-        if (query.path) {
-            path = query.path
-        }
-        dispatch(fetchDoc(path, { includeParents: true }))
-    }
-
-    useEffect(() => {
-        fetch()
-    }, [url])
-
-    const printMode = isPrintMode()
-
-    useEffect(() => {
-        if (printMode && !isFetching) {
-            window.setTimeout(window.print)
-        }
-    }, [isFetching])
-
     let digest = data?.id
-    let digestUrl = url
+    let digestUrl = pathname
     let urlIsSha = true
 
     if (data?.id.startsWith('_file_')) {
         digest = data.digest
-        digestUrl = [URL.resolve(url, './'), digest].join('/')
+        digestUrl = [url.resolve(pathname, './'), digest].join('/')
         urlIsSha = false
     }
 
@@ -125,7 +126,10 @@ function Doc({ data, dispatch, url, isFetching, error }) {
     }
 
     const doc = (
+        loading ? <Loading /> :
         <Document
+            docUrl={pathname}
+            data={data}
             fullPage
             showMeta
             showToolbar={!printMode}
@@ -134,9 +138,9 @@ function Doc({ data, dispatch, url, isFetching, error }) {
 
     const finder = (
         <Finder
-            isFetching={isFetching}
+            isFetching={loading}
             data={data}
-            url={url}
+            url={pathname}
         />
     )
 
@@ -163,7 +167,7 @@ function Doc({ data, dispatch, url, isFetching, error }) {
     } else {
         content = urlIsSha ?
             <>
-                {!isFetching &&
+                {!loading && data &&
                     <Typography variant="subtitle2" className={classes.title}>
                         Document <b>{data?.content.filename}</b> - please pick a location to see the Finder
                     </Typography>
@@ -193,12 +197,3 @@ function Doc({ data, dispatch, url, isFetching, error }) {
         </HotKeys>
     )
 }
-
-const mapStateToProps = ({ doc: { isFetching, data, url, error } }) => ({
-    isFetching,
-    data,
-    url,
-    error,
-})
-
-export default connect(mapStateToProps)(Doc)

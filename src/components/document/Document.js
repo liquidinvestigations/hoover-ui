@@ -1,17 +1,15 @@
-import React from 'react'
-import { connect } from 'react-redux'
+import React, { memo } from 'react'
 import url from 'url'
+import { makeStyles } from '@material-ui/core/styles'
 import { IconButton, Toolbar, Tooltip } from '@material-ui/core'
 import { ChromeReaderMode, CloudDownload, Launch, Print } from '@material-ui/icons'
-import { makeStyles } from '@material-ui/core/styles'
-import api from '../../api'
-import Loading from '../Loading'
 import EmailSection from './EmailSection'
 import PreviewSection from './PreviewSection'
 import HTMLSection from './HTMLSection'
 import TextSection from './TextSection'
 import FilesSection from './FilesSection'
 import MetaSection from './MetaSection'
+import api from '../../api'
 
 const useStyles = makeStyles(theme => ({
     toolbar: {
@@ -23,17 +21,19 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function Document({ docUrl, collection, data, fullPage, isFetching, showToolbar = true, showMeta = true }) {
-    const classes = useStyles()
+const parseCollection = url => {
+    const [, collection] = url.match(/(?:^|\/)doc\/(.+?)\//) || [];
+    return collection;
+}
 
-    if (isFetching) {
-        return <Loading/>
-    }
+function Document({ docUrl, data, fullPage, showToolbar = true, showMeta = true }) {
+    const classes = useStyles()
 
     if (!data || !Object.keys(data).length) {
         return null
     }
 
+    const collection = parseCollection(docUrl)
     const collectionBaseUrl = url.resolve(docUrl, './');
     const headerLinks = [];
 
@@ -163,11 +163,4 @@ function Document({ docUrl, collection, data, fullPage, isFetching, showToolbar 
     )
 }
 
-const mapStateToProps = ({ doc: { isFetching, data, url, collection } }) => ({
-    isFetching,
-    data,
-    docUrl: url,
-    collection,
-})
-
-export default connect(mapStateToProps)(Document)
+export default memo(Document)

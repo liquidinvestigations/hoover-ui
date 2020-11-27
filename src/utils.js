@@ -1,7 +1,7 @@
-import React from 'react';
-import url from 'url';
-import copy from 'copy-text-to-clipboard';
-import langs from 'langs';
+import React from 'react'
+import url from 'url'
+import copy from 'copy-text-to-clipboard'
+import langs from 'langs'
 
 import file from '../icons/file-line.svg';
 import folder from '../icons/folder-line.svg';

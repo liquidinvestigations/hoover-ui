@@ -1,25 +1,13 @@
-import { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { memo, useEffect, useRef } from 'react'
 import cn from 'classnames';
 import { DateTime } from 'luxon';
-import { connect } from 'react-redux';
+import { makeStyles } from '@material-ui/core/styles'
+import { Box, Card, CardContent, CardHeader, Grid, IconButton, Tooltip, Typography } from '@material-ui/core'
+import { AttachFile, CloudDownloadOutlined } from '@material-ui/icons'
+import { makeUnsearchable, truncatePath } from '../utils'
+import api from '../api'
 
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
-import AttachIcon from '@material-ui/icons/AttachFile';
-import { withStyles } from '@material-ui/core/styles';
-import IconCloudDownload from '@material-ui/icons/CloudDownloadOutlined';
-import Tooltip from '@material-ui/core/Tooltip';
-
-import api from "../api";
-import { fetchDoc } from '../actions';
-import { makeUnsearchable, truncatePath } from '../utils';
-import { Box } from '@material-ui/core'
-
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
     card: {
         cursor: 'pointer',
         marginTop: theme.spacing(1),
@@ -38,164 +26,137 @@ const styles = theme => ({
         marginTop: theme.spacing(1),
     },
     path: {
-        // overflow: 'hidden',
-        // whiteSpace: 'nowrap',
         marginTop: theme.spacing(2),
+    },
+    key: {
+        whiteSpace: 'nowrap',
+        fontWeight: 'bold',
     },
     text: {
         cursor: 'text',
-        display: 'inline',
         fontFamily: theme.typography.fontFamilyMono,
         fontSize: '.7rem',
         color: '#555',
     },
-});
-
-function timeMs() {
-    return new Date().getTime();
-}
-
-function combineHighlights(highlight) {
-    var list = [];
-    for (const key in highlight) {
-        if (highlight.hasOwnProperty(key)) {
-            list = list.concat(highlight[key]);
-        }
+    download: {
+        lineHeight: 0,
     }
-    return list;
-}
+}))
 
-class ResultItem extends Component {
-    static propTypes = {
-        classes: PropTypes.object.isRequired,
-    };
+const timeMs = () => new Date().getTime()
 
-    handleClick = e => {
-        const modifier = e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
+function ResultItem({ hit, url, index, onPreview, isPreview, unsearchable }) {
+    const classes = useStyles()
 
-        if (!modifier) {
-            e.preventDefault();
-            this.onPreview();
-        }
-    };
-
-    onPreview = () => this.props.dispatch(fetchDoc(this.props.url));
-
-    componentDidUpdate(prevProps) {
-        if (this.props.url === this.props.doc.url && 'scrollIntoView' in this.node) {
-            this.node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const nodeRef = useRef()
+    const handleMouseDown = () => {
+        nodeRef.current.willFocus = !(nodeRef.current.tUp && timeMs() - nodeRef.current.tUp < 300);
+    }
+    const handleMouseMove = () => {
+        nodeRef.current.willFocus = false;
+    }
+    const handleMouseUp = () => {
+        if (nodeRef.current.willFocus) {
+            nodeRef.current.tUp = timeMs();
+            onPreview(url);
         }
     }
 
-    render() {
-        const { hit, url, classes, doc, index } = this.props;
-
-        const isSelected = url === doc.url;
-        const unsearchable = !!doc.url;
-
-        const fields = hit._source || {};
-        const highlight = hit.highlight || {};
-
-        const icon = fields.attachments ? (
-            <AttachIcon style={{ fontSize: 18 }} />
-        ) : null;
-
-        const text = combineHighlights(highlight).map((hi, n) => (
-            <div key={`${hit._url}${n}`}>
-                <span
-                    dangerouslySetInnerHTML={{
-                        __html: unsearchable ? makeUnsearchable(hi) : hi,
-                    }}
-                />
-            </div>
-        ));
-
-        let wordCount = null;
-
-        if (fields['word-count']) {
-            wordCount = fields['word-count'] + ' words';
+    useEffect(() => {
+        if (isPreview && 'scrollIntoView' in nodeRef.current) {
+            nodeRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
         }
+    }, [isPreview])
 
-        let downloadUrl = api.downloadUrl(this.props.url, fields.filename);
+    const fields = hit._source || {}
+    const highlights = hit.highlight || {}
+    const downloadUrl = api.downloadUrl(url, fields.filename)
 
-        return (
-            <div
-                ref={node => (this.node = node)}
-                className={cn(classes.card, { [classes.selected]: isSelected })}
-                onMouseDown={() => {
-                    this.willFocus = !(this.tUp && timeMs() - this.tUp < 300);
-                }}
-                onMouseMove={() => {
-                    this.willFocus = false;
-                }}
-                onMouseUp={() => {
-                    if (this.willFocus) {
-                        this.tUp = timeMs();
-                        this.onPreview(url);
-                    }
-                }}>
-                <Card>
-                    <CardHeader
-                        title={
-                            <span>
-                                {index}. {fields.filename}
-                            </span>
-                        }
-                        action={icon}
-                        subheader={truncatePath(fields.path)}
-                    />
-                    <CardContent>
-                        <Grid container alignItems="flex-end">
-                            <Grid item md={4}>
-                                <Box>
-                                    <Typography variant="caption">
-                                        {wordCount}
-                                    </Typography>
-                                </Box>
+    return (
+        <Card
+            ref={nodeRef}
+            className={cn(classes.card, { [classes.selected]: isPreview })}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+        >
+            <CardHeader
+                title={
+                    <span>
+                        {index}. {fields.filename}
+                    </span>
+                }
+                action={!!fields.attachments && <AttachFile style={{ fontSize: 18 }} />}
+                subheader={truncatePath(fields.path)}
+            />
+            <CardContent>
+                <Grid container alignItems="flex-end">
+                    <Grid item md={4}>
+                        {fields['word-count'] && (
+                            <Box>
+                                <Typography variant="caption">
+                                    {fields['word-count']} words
+                                </Typography>
+                            </Box>
+                        )}
 
-                                {fields.date && (
-                                    <Box>
-                                        <Typography variant="caption">
-                                            <strong>Modified:</strong>{' '}
-                                            {DateTime.fromISO(fields.date, { locale: 'en-US' })
-                                                .toLocaleString(DateTime.DATE_FULL)
-                                                .replace(/\s/g, ' ')}
-                                        </Typography>
-                                    </Box>
-                                )}
+                        {fields.date && (
+                            <Box>
+                                <Typography variant="caption">
+                                    <strong>Modified:</strong>{' '}
+                                    {DateTime.fromISO(fields.date, { locale: 'en-US' })
+                                        .toLocaleString(DateTime.DATE_FULL)
+                                        .replace(/\s/g, ' ')}
+                                </Typography>
+                            </Box>
+                        )}
 
-                                {fields['date-created'] && (
-                                    <Box>
-                                        <Typography variant="caption">
-                                            <strong>Created: </strong>
-                                            {DateTime.fromISO(fields['date-created'], { locale: 'en-US' })
-                                                .toLocaleString(DateTime.DATE_FULL)}
-                                        </Typography>
-                                    </Box>
-                                )}
+                        {fields['date-created'] && (
+                            <Box>
+                                <Typography variant="caption">
+                                    <strong>Created: </strong>
+                                    {DateTime.fromISO(fields['date-created'], { locale: 'en-US' })
+                                        .toLocaleString(DateTime.DATE_FULL)}
+                                </Typography>
+                            </Box>
+                        )}
 
-                                <Box>
-                                    <Typography variant="caption">
-                                        <Tooltip title="Download original file">
-                                            <a
-                                                target="_blank"
-                                                href={downloadUrl}>
-                                                <IconCloudDownload color="action" />
-                                            </a>
-                                        </Tooltip>
-                                    </Typography>
-                                </Box>
+                        <Box>
+                            <Typography variant="caption">
+                                <Tooltip title="Download original file">
+                                    <IconButton size="small">
+                                        <a href={downloadUrl} className={classes.download}>
+                                            <CloudDownloadOutlined color="action" />
+                                        </a>
+                                    </IconButton>
+                                </Tooltip>
+                            </Typography>
+                        </Box>
+                    </Grid>
+                    <Grid item md={8} className={classes.text}>
+                        {Object.entries(highlights).map(([key, highlight]) =>
+                            <Grid container key={key} spacing={1} wrap="nowrap">
+                                {key !== 'text' &&
+                                    <Grid item>
+                                        <span className={classes.key}>{`${key}:`}</span>
+                                    </Grid>
+                                }
+                                <Grid item container direction="column">
+                                    {[...highlight].map((item, index) =>
+                                        <Grid item key={index}
+                                              dangerouslySetInnerHTML={{
+                                                  __html: unsearchable ? makeUnsearchable(item) : item,
+                                              }}
+                                        />
+                                    )}
+                                </Grid>
                             </Grid>
-                            <Grid item md={8}>
-                                <div className={classes.text}>{text}</div>
-                            </Grid>{' '}
-                        </Grid>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
+                        )}
+                    </Grid>{' '}
+                </Grid>
+            </CardContent>
+        </Card>
+    )
 }
 
-const mapStateToProps = ({ doc }) => ({ doc });
-export default withStyles(styles)(connect(mapStateToProps)(ResultItem));
+export default memo(ResultItem)

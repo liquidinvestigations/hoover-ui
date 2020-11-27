@@ -2,7 +2,7 @@ import { Component } from 'react';
 
 import Link from 'next/link';
 
-import CollectionsBox from './filters/CollectionsBox';
+import CollectionsBox from './filters/CollectionsFilter';
 import Filter from './filters/Filter';
 import Batch from './Batch';
 

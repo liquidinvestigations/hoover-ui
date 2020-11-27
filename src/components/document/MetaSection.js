@@ -2,7 +2,7 @@ import React, { memo } from 'react'
 import Link from 'next/link'
 import url from 'url'
 import { List, ListItem, ListItemText } from '@material-ui/core'
-import { getLanguageName, isPrintMode, parseLocation, searchPath } from '../../utils'
+import { getLanguageName, isPrintMode, searchPath } from '../../utils'
 import Section from './Section'
 import {
     SEARCH_CREATION_DATE,
