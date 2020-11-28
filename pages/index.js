@@ -215,7 +215,7 @@ export default function Index({ serverQuery }) {
     const handleDocPreview = url => {
         setSelectedDocUrl(url)
         setPreviewLoading(true)
-        api.doc(url, 1).then(data => {
+        api.doc(url).then(data => {
             setSelectedDocData(data)
             setPreviewLoading(false)
         })

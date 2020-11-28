@@ -13,7 +13,7 @@ function Loading() {
     const classes = useStyles()
 
     return (
-        <div className={classes.classes}>
+        <div className={classes.progress}>
             <CircularProgress />
         </div>
     )

@@ -69,24 +69,31 @@ const keys = [
     },
 ]
 
-export default function Doc() {
+export default function Doc({ serverQuery }) {
     const classes = useStyles()
 
     const router = useRouter()
-    const { query } = router
+
+    const getQuery = () => {
+        if (typeof window === 'undefined') {
+            return serverQuery
+        }
+        return router.query
+    }
+    const query = getQuery()
+    const pathname = documentViewUrl({ _collection: query.collection, _id: query.id })
+
     const [data, setData] = useState()
     const [loading, setLoading] = useState(false)
-    const [pathname, setPathname] = useState()
 
     useEffect(() => {
         if ((query.collection && query.id) || query.path) {
-            let path = documentViewUrl({ _collection: query.collection, _id: query.id })
+            let path = pathname
             if (query.path) {
                 path = query.path
             }
-            setPathname(path)
             setLoading(true)
-            api.doc(path, 1).then(data => {
+            api.doc(path).then(data => {
                 setData(data)
                 setLoading(false)
             })
@@ -187,4 +194,8 @@ export default function Doc() {
             </div>
         </HotKeys>
     )
+}
+
+export async function getServerSideProps({ query }) {
+    return { props: { serverQuery: query }}
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import Link from 'next/link'
 import url from 'url'
 import { List, ListItem, ListItemIcon, Typography } from '@material-ui/core'
@@ -6,7 +6,7 @@ import { Folder } from '@material-ui/icons'
 import Loading from './Loading'
 import api from '../api'
 
-export default function Locations({ url: docUrl, data }) {
+function Locations({ url: docUrl, data }) {
     const [locations, setLocations] = useState([])
     const [page, setPage] = useState(1)
     const [hasNextPage, setHasNextPage] = useState(false)
@@ -31,14 +31,16 @@ export default function Locations({ url: docUrl, data }) {
         setFetchingLocationsPage(false)
     }
 
-    if (!locations.length && data.has_locations) {
-        return <Loading />;
-    } else if (!locations.length) {
-        return null;
+    if (!docUrl) {
+        return null
     }
 
-    const baseUrl = url.resolve(docUrl, './');
-    const basePath = url.parse(baseUrl).pathname;
+    if (!locations.length && data.has_locations) {
+        return <Loading />
+    }
+
+    const baseUrl = url.resolve(docUrl, './').replace(/\/+/g, '/')
+    const basePath = url.parse(baseUrl).pathname
 
     return (
         <List component="nav" dense>
@@ -48,8 +50,8 @@ export default function Locations({ url: docUrl, data }) {
 
             {locations.length && (
                 <>
-                    {locations.map(loc => (
-                        <Link key={loc.id} href={`${basePath}${loc.id}`}>
+                    {locations.map(location => (
+                        <Link key={location.id} href={`${basePath}${location.id}`} shallow>
                             <a>
                                 <ListItem button>
                                     <ListItemIcon>
@@ -57,7 +59,7 @@ export default function Locations({ url: docUrl, data }) {
                                     </ListItemIcon>
 
                                     <Typography classes={{}}>
-                                        {loc.parent_path}/<em>{loc.filename}</em>
+                                        {location.parent_path}/<em>{location.filename}</em>
                                     </Typography>
                                 </ListItem>
                             </a>
@@ -71,3 +73,5 @@ export default function Locations({ url: docUrl, data }) {
         </List>
     )
 }
+
+export default memo(Locations)

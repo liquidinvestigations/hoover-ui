@@ -45,7 +45,7 @@ const api = {
         api.buildUrl(docUrl, 'locations', { page: pageIndex })
     ), (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`),
 
-    doc: memoize((docUrl, pageIndex) => api.fetchJson(
+    doc: memoize((docUrl, pageIndex = 1) => api.fetchJson(
         api.buildUrl(docUrl, 'json', { children_page: pageIndex })
     ), (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`),
 
