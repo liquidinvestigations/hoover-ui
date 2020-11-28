@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useRef } from 'react'
-import cn from 'classnames';
-import { DateTime } from 'luxon';
+import cn from 'classnames'
+import { DateTime } from 'luxon'
 import { makeStyles } from '@material-ui/core/styles'
 import { Box, Card, CardContent, CardHeader, Grid, IconButton, Tooltip, Typography } from '@material-ui/core'
 import { AttachFile, CloudDownloadOutlined } from '@material-ui/icons'

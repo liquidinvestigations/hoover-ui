@@ -5,17 +5,14 @@ import ResultItem from './ResultItem'
 import { documentViewUrl } from '../utils'
 
 function SearchResults({ loading, results, query, changePage, selectedDocUrl, onPreview }) {
-    if (!results?.hits?.hits) {
-        return null
-    }
     const start = 1 + (query.page - 1) * query.size
 
     return (
         <>
             <Pagination
-                total={parseInt(results.hits.total)}
-                size={parseInt(query.size)}
-                page={parseInt(query.page)}
+                total={parseInt(results?.hits.total || 0)}
+                size={parseInt(query.size || 1)}
+                page={parseInt(query.page || 0)}
                 changePage={changePage}
             />
             <ReactPlaceholder
@@ -24,7 +21,7 @@ function SearchResults({ loading, results, query, changePage, selectedDocUrl, on
                 type="text"
                 rows={10}
             >
-                {results.hits.hits.map((hit, i) =>
+                {results?.hits.hits.map((hit, i) =>
                     <ResultItem
                         key={hit._url}
                         hit={hit}
@@ -35,7 +32,7 @@ function SearchResults({ loading, results, query, changePage, selectedDocUrl, on
                         unsearchable={!!selectedDocUrl}
                     />
                 )}
-                {results.hits.hits.length &&
+                {results?.hits.hits.length &&
                     <Pagination
                         total={parseInt(results.hits.total)}
                         size={parseInt(query.size)}

@@ -69,27 +69,29 @@ const keys = [
     },
 ]
 
-export default function Doc({ error }) {
+export default function Doc() {
     const classes = useStyles()
 
     const router = useRouter()
     const { query } = router
-    const pathname = documentViewUrl({ _collection: query.collection, _id: query.id })
-
     const [data, setData] = useState()
     const [loading, setLoading] = useState(false)
+    const [pathname, setPathname] = useState()
 
     useEffect(() => {
-        let path = pathname
-        if (query.path) {
-            path = query.path
+        if ((query.collection && query.id) || query.path) {
+            let path = documentViewUrl({ _collection: query.collection, _id: query.id })
+            if (query.path) {
+                path = query.path
+            }
+            setPathname(path)
+            setLoading(true)
+            api.doc(path, 1).then(data => {
+                setData(data)
+                setLoading(false)
+            })
         }
-        setLoading(true)
-        api.doc(path, 1).then(data => {
-            setData(data)
-            setLoading(false)
-        })
-    }, [pathname])
+    }, [JSON.stringify(query)])
 
     const printMode = query.print && query.print !== 'false'
 
@@ -98,17 +100,6 @@ export default function Doc({ error }) {
             window.setTimeout(window.print)
         }
     }, [printMode, loading])
-
-    // remove?
-    if (error) {
-        return (
-            <Typography style={{ margin: '5rem 3rem' }} color="error">
-                {error.message.split('\n').map((e, i) => (
-                    <p key={i}>{e}</p>
-                ))}
-            </Typography>
-        )
-    }
 
     let digest = data?.id
     let digestUrl = pathname
@@ -126,10 +117,10 @@ export default function Doc({ error }) {
     }
 
     const doc = (
-        loading ? <Loading /> :
         <Document
             docUrl={pathname}
             data={data}
+            loading={loading}
             fullPage
             showMeta
             showToolbar={!printMode}

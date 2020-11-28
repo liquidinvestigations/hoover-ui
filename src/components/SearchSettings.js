@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { FormControl, Grid, InputLabel, MenuItem, Select } from '@material-ui/core'
 import { SORT_OPTIONS, SIZE_OPTIONS } from '../constants'
@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function SearchSettings ({ size, changeSize, order, changeOrder }) {
+function SearchSettings ({ size, changeSize, order, changeOrder }) {
     const classes = useStyles()
     const handleSizeChange = event => changeSize(event.target.value)
     const handleOrderChange = event => changeOrder(event.target.value)
@@ -45,3 +45,5 @@ export default function SearchSettings ({ size, changeSize, order, changeOrder }
         </Grid>
     )
 }
+
+export default memo(SearchSettings)

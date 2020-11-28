@@ -1,18 +1,18 @@
-import fetch from 'isomorphic-fetch';
-import { memoize } from 'lodash';
+import fetch from 'isomorphic-fetch'
+import { memoize } from 'lodash'
 import { stringify } from 'querystring'
-import buildSearchQuery from './build-search-query';
+import buildSearchQuery from './build-search-query'
 
 const api = {
     prefix: '/api/v0/',
 
     buildUrl: (...paths) => {
         const queryObj = paths.reduce((prev, curr, index) => {
-            if (typeof curr === 'object') {
+            if (typeof curr !== 'string' && typeof curr === 'object' && curr !== null) {
                 paths.splice(index, 1)
                 return Object.assign(prev || {}, curr)
             }
-        })
+        }, undefined)
         return [api.prefix, ...paths].join('/').replace(/\/+/g, '/')
             + (queryObj ? `?${stringify(queryObj)}` : '')
     },
@@ -37,9 +37,9 @@ const api = {
         }
     },
 
-    collections: () => api.fetchJson(api.buildUrl('collections')),
+    collections: memoize(() => api.fetchJson(api.buildUrl('collections'))),
 
-    limits: () => api.fetchJson(api.buildUrl('limits')),
+    limits: memoize(() => api.fetchJson(api.buildUrl('limits'))),
 
     locationsFor: memoize((docUrl, pageIndex) => api.fetchJson(
         api.buildUrl(docUrl, 'locations', { page: pageIndex })
@@ -66,4 +66,4 @@ const api = {
     ocrUrl: (docUrl, tag) => api.buildUrl(docUrl, 'ocr', tag)
 }
 
-export default api;
+export default api

@@ -1,7 +1,6 @@
-import React, { memo } from 'react'
+import React, { createContext, memo, useContext } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { CircularProgress, LinearProgress } from '@material-ui/core'
-import useLoading from '../hooks/useLoading'
 
 const useStyles = makeStyles(theme => ({
     linear: {
@@ -27,9 +26,11 @@ const getIndicator = type => {
     }
 }
 
+export const ProgressIndicatorContext = createContext()
+
 function ProgressIndicator({ type }) {
     const classes = useStyles()
-    const loading = useLoading()
+    const { loading } = useContext(ProgressIndicatorContext)
 
     return (
         <div className={classes[type]}>

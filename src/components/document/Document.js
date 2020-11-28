@@ -9,6 +9,7 @@ import HTMLSection from './HTMLSection'
 import TextSection from './TextSection'
 import FilesSection from './FilesSection'
 import MetaSection from './MetaSection'
+import Loading from '../Loading'
 import api from '../../api'
 
 const useStyles = makeStyles(theme => ({
@@ -26,10 +27,14 @@ const parseCollection = url => {
     return collection;
 }
 
-function Document({ docUrl, data, fullPage, showToolbar = true, showMeta = true }) {
+function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMeta = true }) {
     const classes = useStyles()
 
-    if (!data || !Object.keys(data).length) {
+    if (loading) {
+        return <Loading />
+    }
+
+    if (!docUrl || !data || !Object.keys(data).length) {
         return null
     }
 
@@ -107,7 +112,7 @@ function Document({ docUrl, data, fullPage, showToolbar = true, showMeta = true 
                 </Toolbar>
             )}
 
-            <EmailSection doc={data} />
+            <EmailSection doc={data} collection={collection} />
 
             <PreviewSection
                 title="Preview"

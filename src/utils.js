@@ -11,6 +11,7 @@ import pdf from '../icons/file-pdf-line.svg';
 import doc from '../icons/file-word-line.svg';
 import xls from '../icons/file-excel-line.svg';
 import { SEARCH_CREATION_DATE, SEARCH_MODIFICATION_DATE } from './constants'
+import { buildUrlQuery } from '../pages'
 
 export function getIconImageElement(fileType) {
     const srcMap = {
@@ -90,23 +91,30 @@ export function isPrintMode() {
     return query.print && query.print !== 'false';
 }
 
-export function searchPath(query, prefix) {
+export function searchPath(query, prefix, collections) {
     let quotedQuery = query.replace(/#/g, ' ').replace(/"/g, '')
 
     if (/[\s\/]/g.test(quotedQuery)) {
         quotedQuery = `"${quotedQuery}"`
     }
 
+    const params = { collections: Array.isArray(collections) ? collections : [collections] }
+
     if (prefix === SEARCH_CREATION_DATE || prefix === SEARCH_MODIFICATION_DATE) {
         quotedQuery = quotedQuery.substring(0, 10)
-        quotedQuery = `[${quotedQuery} TO ${quotedQuery}]`
+        if (prefix === SEARCH_MODIFICATION_DATE) {
+            params.text = '*'
+            params.dateRange = { from: quotedQuery, to: quotedQuery }
+        } else {
+            params.fields = [`${prefix}:[${quotedQuery} TO ${quotedQuery}]`]
+        }
+    } else if (prefix) {
+        params.fields = [`${prefix}:${quotedQuery}`]
+    } else {
+        params.text = quotedQuery
     }
 
-    if (prefix) {
-        return `/?q=${prefix}:${quotedQuery}`
-    } else {
-        return `/?q=${prefix}:${quotedQuery}`
-    }
+    return `/?${buildUrlQuery(params)}`
 }
 
 export const isInputFocused = () => {

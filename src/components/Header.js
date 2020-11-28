@@ -1,21 +1,11 @@
-import { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { memo, useEffect, useState } from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import { AppBar, Toolbar, Typography } from '@material-ui/core'
+import cn from 'classnames'
 import Menu from './Menu';
-import Link from 'next/link';
 import api from '../api';
 
-import { withStyles } from '@material-ui/core/styles';
-
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-
-import ProgressIndicator from './ProgressIndicator';
-
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
     root: {
         zIndex: theme.zIndex.drawer + 1,
     },
@@ -30,82 +20,60 @@ const styles = theme => ({
         textDecoration: 'none',
         color: 'inherit',
     },
-});
-
-function embedHypothesis(scriptUrl) {
-  window.hypothesisConfig = function() {
-    return {
-      showHighlights:true,
-      appType:'bookmarklet',
-    };
-  };
-  var scriptNode = document.createElement('script');
-  scriptNode.setAttribute('src', scriptUrl);
-  document.body.appendChild(scriptNode);
-}
-
-class Header extends Component {
-    static propTypes = {
-        classes: PropTypes.object.isRequired,
-    };
-
-    state = {
-        whoami: {
-            username: '',
-            admin: false,
-            urls: {},
-            title: '',
-        },
-    };
-
-    async componentDidMount() {
-        const whoami = await api.whoami();
-
-        if (whoami) {
-            this.setState({ whoami });
-            if (whoami.urls.hypothesis_embed) {
-              embedHypothesis(whoami.urls.hypothesis_embed);
-            }
+    title: {
+        '& a': {
+            color: 'white',
+            textDecoration: 'none',
         }
     }
+}))
 
-    render() {
-        const { classes } = this.props;
-        const { whoami } = this.state;
-
-        return (
-            <div className={classes.root}>
-                <AppBar position="sticky">
-                    <Toolbar>
-                        <Typography
-                            variant="h6"
-                            color="inherit"
-                            className={classes.flex}>
-                            <a href="/"
-                                className={classes.noLink + ' the-title'}
-                                dangerouslySetInnerHTML={{__html: whoami.title}} />
-                        </Typography>
-                        <Menu whoami={whoami} />
-                    </Toolbar>
-                </AppBar>
-            </div>
-        );
-    }
+const embedHypothesis = scriptUrl => {
+    window.hypothesisConfig = () => ({
+        showHighlights: true,
+        appType: 'bookmarklet',
+    })
+    const scriptNode = document.createElement('script')
+    scriptNode.setAttribute('src', scriptUrl)
+    document.body.appendChild(scriptNode)
 }
 
-export default withStyles(styles)(Header);
+function Header() {
+    const classes = useStyles()
 
-{
-    /*<nav className="navbar navbar-expand-md navbar-dark bg-dark">
-    <div className="container">
-        <Link href="/">
-            <a>
-                <span className="navbar-brand">hoover</span>
-            </a>
-        </Link>
+    const [whoAmI, setWhoAmI] = useState({
+        username: '',
+        admin: false,
+        urls: {},
+        title: '',
+    })
 
-        <Menu />
-    </div>
-</nav>
-*/
+    useEffect(() => {
+        api.whoami().then(whoAmI => {
+            setWhoAmI(whoAmI)
+            if (whoAmI.urls.hypothesis_embed) {
+                embedHypothesis(whoAmI.urls.hypothesis_embed);
+            }
+        })
+    }, [])
+
+    return (
+        <div className={classes.root}>
+            <AppBar position="sticky">
+                <Toolbar>
+                    <Typography
+                        variant="h6"
+                        color="inherit"
+                        className={classes.flex}>
+                        <a href="/"
+                            className={cn(classes.noLink, classes.title)}
+                            dangerouslySetInnerHTML={{__html: whoAmI.title}} />
+                    </Typography>
+                    <Menu whoAmI={whoAmI} />
+                </Toolbar>
+            </AppBar>
+        </div>
+    )
 }
+
+export default memo(Header)

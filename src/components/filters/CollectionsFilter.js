@@ -17,8 +17,12 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function CollectionsFilter({ loading, collections, selected, changeSelection, counts }) {
+function CollectionsFilter({ collections, loading, selected, changeSelection, counts }) {
     const classes = useStyles()
+
+    if (loading) {
+        return <Loading />
+    }
 
     const handleChange = event => {
         const { name, checked } = event.target
@@ -62,36 +66,35 @@ function CollectionsFilter({ loading, collections, selected, changeSelection, co
     return (
         <ListItem dense>
             <FormGroup>
-                {loading ? <Loading /> :
-                    !collections?.length ? <Typography>no collections available</Typography> :
-                        <>
-                            {collections.length > 1 &&
-                                <FormControlLabel
-                                    className={classes.formControlLabel}
-                                    control={
-                                        <Checkbox
-                                            checked={collections.every(c => selected.includes(c.name))}
-                                            onChange={handleAllChange}
-                                        />
-                                    }
-                                    label="All"
-                                />
-                            }
-                            {collections.map(collection =>
-                                <FormControlLabel
-                                    key={collection.name}
-                                    className={classes.formControlLabel}
-                                    control={
-                                        <Checkbox
-                                            name={collection.name}
-                                            checked={selected.includes(collection.name)}
-                                            onChange={handleChange}
-                                        />
-                                    }
-                                    label={collectionLabel(collection)}
-                                />
-                            )}
-                        </>
+                {!collections?.length ? <Typography>no collections available</Typography> :
+                    <>
+                        {collections.length > 1 &&
+                            <FormControlLabel
+                                className={classes.formControlLabel}
+                                control={
+                                    <Checkbox
+                                        checked={collections.every(c => selected.includes(c.name))}
+                                        onChange={handleAllChange}
+                                    />
+                                }
+                                label="All"
+                            />
+                        }
+                        {collections.map(collection =>
+                            <FormControlLabel
+                                key={collection.name}
+                                className={classes.formControlLabel}
+                                control={
+                                    <Checkbox
+                                        name={collection.name}
+                                        checked={selected.includes(collection.name)}
+                                        onChange={handleChange}
+                                    />
+                                }
+                                label={collectionLabel(collection)}
+                            />
+                        )}
+                    </>
                 }
             </FormGroup>
         </ListItem>

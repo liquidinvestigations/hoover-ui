@@ -76,16 +76,6 @@ mark {
     -animation: spin 0.7s infinite linear;
 }
 
-@keyframes spin2 {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
 @keyframes spin {
     from {
         transform: scale(1) rotate(0deg);
@@ -94,40 +84,6 @@ mark {
     to {
         transform: scale(1) rotate(360deg);
     }
-}
-
-.batch-rate-limit-message {
-    color: #888;
-    font-size: 14px;
-    padding: 15px;
-}
-
-#batch-results {
-    padding: 0;
-    list-style: none;
-    margin-top: 1em;
-}
-
-.batch-results-link {
-    display: block;
-    font-size: 16px;
-}
-
-.batch-results-result {
-    width: 7em;
-    font-size: 80%;
-    font-weight: normal;
-    text-decoration: none;
-    display: inline-block;
-    color: #888;
-
-    &.error-result {
-        color: red;
-    }
-}
-
-.no-hits a {
-    color: #888;
 }
 
 div[tabindex="-1"]:focus {
@@ -167,9 +123,4 @@ div[tabindex="-1"]:focus {
     .tree-view-label {
         margin-left: 0.3em;
     }
-}
-
-.the-title a {
-  color: white;
-  text-decoration: none;
 }

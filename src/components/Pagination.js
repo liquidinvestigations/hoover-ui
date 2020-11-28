@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { Grid, IconButton, Typography } from '@material-ui/core'
 import { NavigateBefore, NavigateNext } from '@material-ui/icons'
 import { formatThousands } from '../utils';
 
-export default function Pagination({ total, size, page, changePage }) {
+function Pagination({ total, size, page, changePage }) {
     const handleNext = () => changePage(page + 1)
     const handlePrev = () => changePage(page - 1)
 
@@ -47,3 +47,5 @@ export default function Pagination({ total, size, page, changePage }) {
         </Grid>
     )
 }
+
+export default memo(Pagination)

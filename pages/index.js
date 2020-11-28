@@ -1,33 +1,33 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import qs from 'qs'
 import { makeStyles } from '@material-ui/core/styles'
 import { Grid, List, Typography } from '@material-ui/core'
 import ChipInput from 'material-ui-chip-input'
-import ErrorBoundary from '../src/components/ErrorBoundary'
 import HotKeys from '../src/components/HotKeys'
 import SplitPaneLayout from '../src/components/SplitPaneLayout'
 import SearchSettings from '../src/components/SearchSettings'
 import SearchResults from '../src/components/SearchResults'
 import Filter from '../src/components/filters/Filter'
-import CollectionsBox from '../src/components/filters/CollectionsFilter'
 import Filters from '../src/components/filters/Filters'
+import CollectionsFilter from '../src/components/filters/CollectionsFilter'
 import Document from '../src/components/document/Document'
+import { ProgressIndicatorContext } from '../src/components/ProgressIndicator'
 import { SEARCH_GUIDE, SEARCH_QUERY_PREFIXES, SORT_RELEVANCE } from '../src/constants'
-import useLoading from '../src/hooks/useLoading'
+import useCollections from '../src/hooks/useCollections'
 import { copyMetadata } from '../src/utils'
 import api from '../src/api'
 
-const extractChips = query => {
-    const chips = []
+const extractFields = query => {
+    const fields = []
     const queryParts = query ? query.match(/(?:[^\s"\[{]+|"[^"]*"|[\[{][^\]}]*[\]}])+/g) : []
     const otherInput = []
     queryParts?.forEach(part => {
         if (part.indexOf(':') > 0) {
             const partParts = part.split(':')
             if (SEARCH_QUERY_PREFIXES.indexOf(partParts[0]) >= 0 && partParts[1].length > 0) {
-                chips.push(part)
+                fields.push(part)
             } else {
                 otherInput.push(part)
             }
@@ -35,7 +35,7 @@ const extractChips = query => {
             otherInput.push(part)
         }
     })
-    return [chips, otherInput.join(' ')]
+    return [fields, otherInput.join(' ')]
 }
 
 const defaultParams = {
@@ -45,9 +45,9 @@ const defaultParams = {
 }
 
 export const buildUrlQuery = (params) => {
-    const { q, chips, text, ...rest } = params
+    const { q, fields, text, ...rest } = params
     return qs.stringify({
-        q: (chips.length ? chips.join(' ') + ' ' : '') + text,
+        q: (fields?.length ? fields.join(' ') + ' ' : '') + (text || ''),
         ...defaultParams,
         ...rest,
     })
@@ -70,7 +70,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function Index({ collections, results, serverQuery, error }) {
+export default function Index({ serverQuery }) {
     const keys = [{
         name: 'nextItem',
         key: 'j',
@@ -139,16 +139,21 @@ export default function Index({ collections, results, serverQuery, error }) {
     const setInputRef = element => inputRef = element
     const isInputFocused = () => inputRef === document.activeElement
 
-    const [ queryChips, queryText ] = extractChips(query.q)
-    const [chips, setChips] = useState(queryChips)
+    const [ queryFields, queryText ] = extractFields(query.q)
+    const [chips, setChips] = useState(queryFields)
     const [text, setText] = useState(queryText)
 
     const search = params => {
-        const stateParams = { chips, text, size, order, page, collections: selectedCollections }
-        router.push({ pathname, query: buildUrlQuery({ ...query, ...stateParams, ...params }) })
+        const stateParams = { fields: chips, text, size, order, page, collections: selectedCollections }
+        const query = buildUrlQuery({ ...query, ...stateParams, ...params })
+        router.push(
+            { pathname, query },
+            undefined,
+            { shallow: true },
+        )
     }
 
-    const [selectedCollections, setSelectedCollections] = useState(collections?.map(c => c.name))
+    const [collections, collectionsLoading, selectedCollections, setSelectedCollections] = useCollections()
     const handleSelectedCollectionsChange = collections => {
         setSelectedCollections(collections)
         search({ collections, page: 1 })
@@ -192,16 +197,17 @@ export default function Index({ collections, results, serverQuery, error }) {
     }
 
     const handleChipDelete = (chip, chipIndex) => {
-        const chips = [...chips]
-        chips.splice(chipIndex, 1)
-        setChips(chips)
-        search({ chips, page: 1 })
+        const fields = [...chips]
+        fields.splice(chipIndex, 1)
+        setChips(fields)
+        search({ fields, page: 1 })
     }
 
     const handleSubmit = event => {
         event.preventDefault()
         search({ text, page: 1 })
     }
+
 
     const [selectedDocUrl, setSelectedDocUrl] = useState()
     const [selectedDocData, setSelectedDocData] = useState()
@@ -215,141 +221,149 @@ export default function Index({ collections, results, serverQuery, error }) {
         })
     }
 
-    // is it neccessary?
-    useEffect(() => {
-        const [ queryChips, queryText ] = extractChips(query.q)
-        if (queryText !== text || JSON.stringify(queryChips) !== JSON.stringify(chips)) {
-            setChips(queryChips)
-            setText(queryText)
-            search({chips: queryChips, text: queryText, page: 1})
-        }
-    }, [query.q])
 
-    const loading = useLoading()
+    const [error, setError] = useState()
+    const [results, setResults] = useState()
+    const [resultsLoading, setResultsLoading] = useState(!!query.q)
+    useEffect(() => {
+        if (collections && query.q) {
+            const [ queryFields, queryText ] = extractFields(query.q)
+            setChips(queryFields)
+            setText(queryText)
+
+            setError(null)
+            setResultsLoading(true)
+
+            api.search(query).then(results => {
+                setResults(results)
+                setResultsLoading(false)
+            }).catch(error => {
+                setResults(null)
+                setError(error.reason ? error.reason : error.message)
+                setResultsLoading(false)
+            })
+        } else if (pathname === '/') {
+            setResults(null)
+            setChips(null)
+            setText('')
+        }
+    }, [collections, JSON.stringify(query)])
+
+
+    const { setLoading } = useContext(ProgressIndicatorContext)
+    useEffect(() => {
+        setLoading(collectionsLoading || resultsLoading || previewLoading)
+    }, [collectionsLoading, resultsLoading, previewLoading])
+
 
     return (
-        <ErrorBoundary>
-            <HotKeys keys={keys} focused>
-                <SplitPaneLayout
-                    left={
-                        <>
-                            <List dense>
-                                <Filter title="Collections" colorIfFiltered={false}>
-                                    <CollectionsBox
-                                        collections={collections}
-                                        selected={selectedCollections}
-                                        changeSelection={handleSelectedCollectionsChange}
-                                        counts={results?.count_by_index}
-                                    />
-                                </Filter>
-                            </List>
+        <HotKeys keys={keys} focused>
+            <SplitPaneLayout
+                left={
+                    <>
+                        <List dense>
+                            <Filter title="Collections" colorIfFiltered={false}>
+                                <CollectionsFilter
+                                    collections={collections}
+                                    loading={collectionsLoading}
+                                    selected={selectedCollections}
+                                    changeSelection={handleSelectedCollectionsChange}
+                                    counts={results?.count_by_index}
+                                />
+                            </Filter>
+                        </List>
 
-                            <Filters
-                                loading={loading}
-                                query={query}
-                                aggregations={results?.aggregations}
-                                applyFilter={handleFilterApply}
-                            />
-                        </>
-                    }
-                    right={
-                        <Document docUrl={selectedDocUrl} data={selectedDocData} loading={previewLoading} />
-                    }
-                >
-                    <div className={classes.main}>
-                        <Grid container>
-                            <Grid item sm={12}>
-                                <form onSubmit={handleSubmit}>
-                                    <ChipInput
-                                        inputRef={setInputRef}
-                                        label="Search"
-                                        type="search"
-                                        margin="normal"
-                                        value={chips}
-                                        inputValue={text}
-                                        blurBehavior="ignore"
-                                        dataSource={SEARCH_QUERY_PREFIXES}
-                                        newChipKeyCodes={[]}
-                                        newChipKeys={[]}
-                                        onUpdateInput={handleInputChange}
-                                        onBeforeAdd={handleBeforeChipAdd}
-                                        onAdd={handleChipAdd}
-                                        onDelete={handleChipDelete}
-                                        autoFocus
-                                        fullWidth
-                                        fullWidthInput
-                                    />
-                                </form>
+                        <Filters
+                            loading={resultsLoading}
+                            query={query}
+                            aggregations={results?.aggregations}
+                            applyFilter={handleFilterApply}
+                        />
+                    </>
+                }
+                right={
+                    <Document docUrl={selectedDocUrl} data={selectedDocData} loading={previewLoading} />
+                }
+            >
+                <div className={classes.main}>
+                    <Grid container>
+                        <Grid item sm={12}>
+                            <form onSubmit={handleSubmit}>
+                                <ChipInput
+                                    inputRef={setInputRef}
+                                    label="Search"
+                                    type="search"
+                                    margin="normal"
+                                    value={chips}
+                                    inputValue={text}
+                                    blurBehavior="ignore"
+                                    dataSource={SEARCH_QUERY_PREFIXES}
+                                    newChipKeyCodes={[]}
+                                    newChipKeys={[]}
+                                    onUpdateInput={handleInputChange}
+                                    onBeforeAdd={handleBeforeChipAdd}
+                                    onAdd={handleChipAdd}
+                                    onDelete={handleChipDelete}
+                                    autoFocus
+                                    fullWidth
+                                    fullWidthInput
+                                />
+                            </form>
 
-                                <Grid container justify="space-between">
-                                    <Grid item>
-                                        <Typography variant="caption">
-                                            Refine your search using{' '}
-                                            <a href={SEARCH_GUIDE}>
-                                                this handy guide
-                                            </a>
-                                            .
-                                        </Typography>
-                                    </Grid>
-
-                                    <Grid item>
-                                        <Typography variant="caption">
-                                            <Link href="/batch-search">
-                                                <a>Batch search</a>
-                                            </Link>
-                                        </Typography>
-                                    </Grid>
+                            <Grid container justify="space-between">
+                                <Grid item>
+                                    <Typography variant="caption">
+                                        Refine your search using{' '}
+                                        <a href={SEARCH_GUIDE}>
+                                            this handy guide
+                                        </a>
+                                        .
+                                    </Typography>
                                 </Grid>
 
-                                <SearchSettings
-                                    size={size}
-                                    order={order}
-                                    changeSize={handleSizeChange}
-                                    changeOrder={handleOrderChange}
-                                />
+                                <Grid item>
+                                    <Typography variant="caption">
+                                        <Link href="/batch-search">
+                                            <a>Batch search</a>
+                                        </Link>
+                                    </Typography>
+                                </Grid>
                             </Grid>
-                        </Grid>
 
-                        {error && (
-                            <div className={classes.error}>
-                                <Typography color="error">{error}</Typography>
-                            </div>
-                        )}
-
-                        <Grid container>
-                            <Grid item sm={12}>
-                                <SearchResults
-                                    loading={loading}
-                                    results={results}
-                                    query={query}
-                                    changePage={handlePageChange}
-                                    onPreview={handleDocPreview}
-                                    selectedDocUrl={selectedDocUrl}
-                                />
-                            </Grid>
+                            <SearchSettings
+                                size={size}
+                                order={order}
+                                changeSize={handleSizeChange}
+                                changeOrder={handleOrderChange}
+                            />
                         </Grid>
-                    </div>
-                </SplitPaneLayout>
-            </HotKeys>
-        </ErrorBoundary>
+                    </Grid>
+
+                    {error && (
+                        <div className={classes.error}>
+                            <Typography color="error">{error}</Typography>
+                        </div>
+                    )}
+
+                    <Grid container>
+                        <Grid item sm={12}>
+                            <SearchResults
+                                results={results}
+                                loading={resultsLoading}
+                                query={query}
+                                changePage={handlePageChange}
+                                onPreview={handleDocPreview}
+                                selectedDocUrl={selectedDocUrl}
+                            />
+                        </Grid>
+                    </Grid>
+                </div>
+            </SplitPaneLayout>
+        </HotKeys>
     )
 }
 
 export async function getServerSideProps({ req }) {
-    api.host = req.headers.host
-    api.cookie = req.headers.cookie
-    try {
-        const collections = await api.collections() // move to context
-
-        const serverQuery = req.url.split('?')[1] || ''
-        const params = qs.parse(serverQuery)
-
-        console.log(params)
-
-        const results = params.q ? await api.search(params) : null
-        return { props: { collections, results, serverQuery }}
-    } catch (error) {
-        console.log(error)
-        return { props: { error: error.reason ? error.reason : error.message }}
-    }
+    const serverQuery = req.url.split('?')[1] || ''
+    return { props: { serverQuery }}
 }

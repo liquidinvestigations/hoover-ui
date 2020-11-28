@@ -12,10 +12,13 @@ export default function Locations({ url: docUrl, data }) {
     const [hasNextPage, setHasNextPage] = useState(false)
     const [isFetchingLocationsPage, setFetchingLocationsPage] = useState(false)
 
-    useEffect(async () => {
-        const response = await api.locationsFor(docUrl, page)
-        setLocations(response.locations)
-        setHasNextPage(response.has_next_page)
+    useEffect(() => {
+        if (docUrl) {
+            api.locationsFor(docUrl, page).then(response => {
+                setLocations(response.locations)
+                setHasNextPage(response.has_next_page)
+            })
+        }
     }, [docUrl])
 
     const loadMore = async event => {

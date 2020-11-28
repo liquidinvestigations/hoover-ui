@@ -31,13 +31,10 @@ function MetaSection({ doc, collection, baseUrl }) {
 
                     <ListItem disableGutters>
                         <ListItemText
-                            primary={
-                                printMode ?
-                                    'Filename'
-                                    :
-                                    <Link href={searchPath(data.filename, SEARCH_FILENAME)}>
-                                        <a title="search this filename">Filename</a>
-                                    </Link>
+                            primary={printMode ? 'Filename' :
+                                <Link href={searchPath(data.filename, SEARCH_FILENAME, collection)} shallow>
+                                    <a title="search this filename">Filename</a>
+                                </Link>
                             }
                             secondary={data.filename}
                         />
@@ -45,13 +42,10 @@ function MetaSection({ doc, collection, baseUrl }) {
 
                     <ListItem disableGutters>
                         <ListItemText
-                            primary={
-                                printMode ?
-                                    'Path'
-                                    :
-                                    <Link href={searchPath(data.path, SEARCH_PATH_PARTS)}>
-                                        <a title="search this path">Path</a>
-                                    </Link>
+                            primary={printMode ? 'Path' :
+                                <Link href={searchPath(data.path, SEARCH_PATH_PARTS, collection)} shallow>
+                                    <a title="search this path">Path</a>
+                                </Link>
                             }
                             secondary={data.path}
                         />
@@ -60,7 +54,7 @@ function MetaSection({ doc, collection, baseUrl }) {
                     {doc.digest &&
                         <ListItem disableGutters>
                             <ListItemText primary="Id" secondary={
-                                <Link href={url.resolve(baseUrl,doc.digest)}>
+                                <Link href={url.resolve(baseUrl,doc.digest)} shallow>
                                     <a>{doc.digest}</a>
                                 </Link>
                             } />
@@ -79,13 +73,10 @@ function MetaSection({ doc, collection, baseUrl }) {
                     {data.filetype !== 'folder' && data.md5 &&
                         <ListItem disableGutters>
                             <ListItemText
-                                primary={
-                                    printMode ?
-                                        'MD5'
-                                        :
-                                        <Link href={searchPath(data.md5, SEARCH_MD5)}>
-                                            <a title="search this MD5 checksum">MD5</a>
-                                        </Link>
+                                primary={printMode ? 'MD5' :
+                                    <Link href={searchPath(data.md5, SEARCH_MD5, collection)} shallow>
+                                        <a title="search this MD5 checksum">MD5</a>
+                                    </Link>
                                 }
                                 secondary={data.md5}
                             />
@@ -95,13 +86,10 @@ function MetaSection({ doc, collection, baseUrl }) {
                     {data.filetype !== 'folder' && data.sha1 &&
                         <ListItem disableGutters>
                             <ListItemText
-                                primary={
-                                    printMode ?
-                                        'SHA1'
-                                        :
-                                        <Link href={searchPath(data.sha1, SEARCH_SHA1)}>
-                                            <a title="search this SHA1 checksum">SHA1</a>
-                                        </Link>
+                                primary={printMode ? 'SHA1' :
+                                    <Link href={searchPath(data.sha1, SEARCH_SHA1, collection)} shallow>
+                                        <a title="search this SHA1 checksum">SHA1</a>
+                                    </Link>
                                 }
                                 secondary={data.sha1}
                             />
@@ -119,13 +107,10 @@ function MetaSection({ doc, collection, baseUrl }) {
                     {data.date &&
                         <ListItem disableGutters>
                             <ListItemText
-                                primary={
-                                    printMode ?
-                                        'Modified'
-                                        :
-                                        <Link href={searchPath(data.date, SEARCH_MODIFICATION_DATE)}>
-                                            <a title="search modified this date">Modified</a>
-                                        </Link>
+                                primary={printMode ? 'Modified' :
+                                    <Link href={searchPath(data.date, SEARCH_MODIFICATION_DATE, collection)} shallow>
+                                        <a title="search modified this date">Modified</a>
+                                    </Link>
                                 }
                                 secondary={data.date}
                             />
@@ -134,13 +119,10 @@ function MetaSection({ doc, collection, baseUrl }) {
                     {data['date-created'] &&
                         <ListItem disableGutters>
                             <ListItemText
-                                primary={
-                                    printMode ?
-                                        'Created'
-                                        :
-                                        <Link href={searchPath(data['date-created'], SEARCH_CREATION_DATE)}>
-                                            <a title="search created this date">Created</a>
-                                        </Link>
+                                primary={printMode ? 'Created' :
+                                    <Link href={searchPath(data['date-created'], SEARCH_CREATION_DATE, collection)} shallow>
+                                        <a title="search created this date">Created</a>
+                                    </Link>
                                 }
                                 secondary={data['date-created']}
                             />

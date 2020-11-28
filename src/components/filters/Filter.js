@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import cn from 'classnames';
 import { makeStyles } from '@material-ui/core/styles'
 import { Collapse, Divider, Grid, IconButton, ListItem, Typography } from '@material-ui/core'
@@ -34,6 +34,10 @@ function Filter({ title, children, defaultOpen, enabled = true, colorIfFiltered 
 
     const [open, setOpen] = useState(defaultOpen || false)
     const toggle = () => setOpen(!open)
+
+    useEffect(() => {
+        setOpen(defaultOpen)
+    }, [defaultOpen])
 
     return (
         <>

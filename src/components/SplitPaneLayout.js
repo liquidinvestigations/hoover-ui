@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import SplitPane from 'react-split-pane';
 import { makeStyles } from '@material-ui/core/styles'
 
@@ -40,8 +40,9 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function SplitPaneLayout({ left, children, right,  defaultSizeLeft = '20%',
-                                            defaultSizeMiddle = '60%', container = true, } = {}) {
+function SplitPaneLayout({ left, children, right,  defaultSizeLeft = '20%',
+                             defaultSizeMiddle = '60%', container = true, } = {}) {
+
     const classes = useStyles()
 
     return (
@@ -81,3 +82,5 @@ export default function SplitPaneLayout({ left, children, right,  defaultSizeLef
         </div>
     )
 }
+
+export default memo(SplitPaneLayout)
