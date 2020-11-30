@@ -18,17 +18,15 @@ const api = {
     },
 
     fetchJson: async (url, opts = {}) => {
-        const apiUrl = typeof window === 'undefined' ? 'http://' + api.host + url : url
-        const res = await fetch(apiUrl, {
+        const res = await fetch(url, {
             ...opts,
             credentials: 'same-origin',
             headers: {
                 ...(opts.headers || {}),
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                Cookie: api.cookie,
             },
-        });
+        })
 
         if (res.ok) {
             return res.json();

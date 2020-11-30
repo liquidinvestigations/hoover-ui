@@ -134,6 +134,9 @@ export default function Index({ serverQuery }) {
         return window.location.href.split('?')[1]
     }
     const query = qs.parse(getQueryString())
+    if (query.collections && typeof query.collections === 'string') {
+        query.collections = query.collections.split('+')
+    }
 
     let inputRef = null
     const setInputRef = element => inputRef = element
@@ -145,9 +148,9 @@ export default function Index({ serverQuery }) {
 
     const search = params => {
         const stateParams = { fields: chips, text, size, order, page, collections: selectedCollections }
-        const query = buildUrlQuery({ ...query, ...stateParams, ...params })
+        const newQuery = buildUrlQuery({ ...query, ...stateParams, ...params })
         router.push(
-            { pathname, query },
+            { pathname, query: newQuery },
             undefined,
             { shallow: true },
         )

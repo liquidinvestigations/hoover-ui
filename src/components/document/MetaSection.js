@@ -2,7 +2,7 @@ import React, { memo } from 'react'
 import Link from 'next/link'
 import url from 'url'
 import { List, ListItem, ListItemText } from '@material-ui/core'
-import { getLanguageName, isPrintMode, searchPath } from '../../utils'
+import { getLanguageName, humanFileSize, isPrintMode, searchPath } from '../../utils'
 import Section from './Section'
 import {
     SEARCH_CREATION_DATE,
@@ -53,7 +53,7 @@ function MetaSection({ doc, collection, baseUrl }) {
 
                     {doc.digest &&
                         <ListItem disableGutters>
-                            <ListItemText primary="Id" secondary={
+                            <ListItemText primary="ID" secondary={
                                 <Link href={url.resolve(baseUrl,doc.digest)} shallow>
                                     <a>{doc.digest}</a>
                                 </Link>
@@ -133,6 +133,22 @@ function MetaSection({ doc, collection, baseUrl }) {
                             <ListItemText
                                 primary="PGP"
                                 secondary={data.pgp}
+                            />
+                        </ListItem>
+                    }
+                    {data['word-count'] &&
+                        <ListItem disableGutters>
+                            <ListItemText
+                                primary="Word count"
+                                secondary={data['word-count']}
+                            />
+                        </ListItem>
+                    }
+                    {data.size &&
+                        <ListItem disableGutters>
+                            <ListItemText
+                                primary="Size"
+                                secondary={humanFileSize(data.size)}
                             />
                         </ListItem>
                     }

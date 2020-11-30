@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import { DateTime } from 'luxon'
 import { ArrowLeft, ArrowRight, Event } from '@material-ui/icons'
 import { Button, Grid, List, ListItem } from '@material-ui/core'
@@ -25,6 +25,11 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange }) {
     const handleReset = () => onChange(null)
 
     const unedited = defaultFrom === from && defaultTo === to
+
+    useEffect(() => {
+        setFrom(defaultFrom)
+        setTo(defaultTo)
+    }, [defaultFrom, defaultTo])
 
     return (
         <List>
