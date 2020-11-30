@@ -105,8 +105,7 @@ function ResultItem({ hit, url, index, onPreview, isPreview, unsearchable }) {
                                 <Typography variant="caption">
                                     <strong>Modified:</strong>{' '}
                                     {DateTime.fromISO(fields.date, { locale: 'en-US' })
-                                        .toLocaleString(DateTime.DATE_FULL)
-                                        .replace(/\s/g, ' ')}
+                                        .toLocaleString(DateTime.DATE_FULL)}
                                 </Typography>
                             </Box>
                         )}
@@ -114,7 +113,7 @@ function ResultItem({ hit, url, index, onPreview, isPreview, unsearchable }) {
                         {fields['date-created'] && (
                             <Box>
                                 <Typography variant="caption">
-                                    <strong>Created: </strong>
+                                    <strong>Created:</strong>{' '}
                                     {DateTime.fromISO(fields['date-created'], { locale: 'en-US' })
                                         .toLocaleString(DateTime.DATE_FULL)}
                                 </Typography>

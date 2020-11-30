@@ -41,7 +41,7 @@ export default function BatchResults({ loading, results, batchSize, offset, term
     const classes = useStyles()
 
     const page = offset / batchSize;
-    const total = Math.ceil(terms.length / batchSize);
+    const total = Math.ceil(terms?.length / batchSize);
     const progressMessage = `Loading, ${page} of ${total}`;
 
     return (

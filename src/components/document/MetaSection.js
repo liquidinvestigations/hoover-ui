@@ -12,6 +12,7 @@ import {
     SEARCH_PATH_PARTS,
     SEARCH_SHA1
 } from '../../constants'
+import { DateTime } from 'luxon'
 
 function MetaSection({ doc, collection, baseUrl }) {
     const printMode = isPrintMode()
@@ -51,7 +52,7 @@ function MetaSection({ doc, collection, baseUrl }) {
                         />
                     </ListItem>
 
-                    {doc.digest &&
+                    {!!doc.digest &&
                         <ListItem disableGutters>
                             <ListItemText primary="ID" secondary={
                                 <Link href={url.resolve(baseUrl,doc.digest)} shallow>
@@ -61,7 +62,7 @@ function MetaSection({ doc, collection, baseUrl }) {
                         </ListItem>
                     }
 
-                    {data.filetype &&
+                    {!!data.filetype &&
                         <ListItem disableGutters>
                             <ListItemText
                                 primary="Type"
@@ -96,7 +97,7 @@ function MetaSection({ doc, collection, baseUrl }) {
                         </ListItem>
                     }
 
-                    {data.lang &&
+                    {!!data.lang &&
                         <ListItem disableGutters>
                             <ListItemText
                                 primary="Language"
@@ -104,7 +105,7 @@ function MetaSection({ doc, collection, baseUrl }) {
                             />
                         </ListItem>
                     }
-                    {data.date &&
+                    {!!data.date &&
                         <ListItem disableGutters>
                             <ListItemText
                                 primary={printMode ? 'Modified' :
@@ -112,11 +113,12 @@ function MetaSection({ doc, collection, baseUrl }) {
                                         <a title="search modified this date">Modified</a>
                                     </Link>
                                 }
-                                secondary={data.date}
+                                secondary={DateTime.fromISO(data.date, { locale: 'en-US' })
+                                    .toLocaleString(DateTime.DATE_FULL)}
                             />
                         </ListItem>
                     }
-                    {data['date-created'] &&
+                    {!!data['date-created'] &&
                         <ListItem disableGutters>
                             <ListItemText
                                 primary={printMode ? 'Created' :
@@ -124,11 +126,12 @@ function MetaSection({ doc, collection, baseUrl }) {
                                         <a title="search created this date">Created</a>
                                     </Link>
                                 }
-                                secondary={data['date-created']}
+                                secondary={DateTime.fromISO(data['date-created'], { locale: 'en-US' })
+                                        .toLocaleString(DateTime.DATE_FULL)}
                             />
                         </ListItem>
                     }
-                    {data.pgp &&
+                    {!!data.pgp &&
                         <ListItem disableGutters>
                             <ListItemText
                                 primary="PGP"
@@ -136,7 +139,7 @@ function MetaSection({ doc, collection, baseUrl }) {
                             />
                         </ListItem>
                     }
-                    {data['word-count'] &&
+                    {!!data['word-count'] &&
                         <ListItem disableGutters>
                             <ListItemText
                                 primary="Word count"
@@ -144,7 +147,7 @@ function MetaSection({ doc, collection, baseUrl }) {
                             />
                         </ListItem>
                     }
-                    {data.size &&
+                    {!!data.size &&
                         <ListItem disableGutters>
                             <ListItemText
                                 primary="Size"

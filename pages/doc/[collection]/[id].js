@@ -133,7 +133,7 @@ export default function Doc() {
 
     const finder = (
         <Finder
-            isFetching={loading}
+            loading={loading}
             data={data}
             url={pathname}
         />

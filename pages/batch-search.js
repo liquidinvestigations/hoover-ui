@@ -18,7 +18,8 @@ const useStyles = makeStyles(theme => ({
     rateLimit: {
         color: '#888',
         fontSize: '14px',
-        padding: '15px',
+        paddingTop: theme.spacing(2),
+        paddingBottom: theme.spacing(2),
     }
 }))
 
@@ -164,11 +165,9 @@ export default function BatchSearch() {
                         </Grid>
                     </Grid>
 
-                    <Typography>
-                        <span className={classes.rateLimit}>
-                            {'rate limit: '}{limits.batch * limits.requests.limit}
-                            {' terms every '}{limits.requests.interval}{' seconds'}
-                        </span>
+                    <Typography className={classes.rateLimit}>
+                        {'rate limit: '}{limits.batch * limits.requests.limit}
+                        {' terms every '}{limits.requests.interval}{' seconds'}
                     </Typography>
 
                     <BatchResults

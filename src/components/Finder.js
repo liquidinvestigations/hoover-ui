@@ -1,18 +1,19 @@
-import { Component } from 'react';
-import ReactFinder from './ReactFinder';
-import ErrorBoundary from './ErrorBoundary';
-import last from 'lodash/last';
-import { withRouter } from 'next/router';
-import { getBasePath, getIconImageElement } from '../utils';
+import React, { memo, useEffect, useState } from 'react'
+import ReactFinder from './ReactFinder'
+import ErrorBoundary from './ErrorBoundary'
+import last from 'lodash/last'
+import { useRouter } from 'next/router'
+import { getBasePath, getIconImageElement } from '../utils'
+import api from '../api'
 
 const filenameFor = item => {
     if (item.filename) {
         return item.filename;
     } else {
         const { filename, path } = item.content;
-        return filename || last(path.split('/').filter(Boolean)) || path || '/';
+        return filename || last(path.split('/').filter(Boolean).pop()) || path || '/';
     }
-};
+}
 
 const buildTree = (leaf, basePath) => {
     const nodesById = {};
@@ -49,95 +50,114 @@ const buildTree = (leaf, basePath) => {
             node.children.push(more)
         }
 
-        return node;
-    };
+        return node
+    }
 
-    let current = createNode(leaf);
+    let current = createNode(leaf)
 
     while (current.parent) {
-        const parentNode = current.parent;
+        const parentNode = current.parent
 
         parentNode.children = parentNode.children
             ? parentNode.children.map(child => nodesById[child.id] || child)
-            : null;
+            : null
 
-        current = parentNode;
+        current = parentNode
     }
 
-    return [current];
-};
+    return [current]
+}
 
-class Finder extends Component {
-    shouldComponentUpdate(nextProps, nextState) {
-        return !nextProps.isFetching;
+const handleCreateItemContent = (config, item) => {
+    const label = document.createElement('span')
+    label.appendChild(document.createTextNode(item.label))
+    label.className = 'tree-view-label'
+
+    if (item.fileType === 'more') {
+        return label
     }
 
-    handleCreateItemContent = (config, item) => {
-        const label = document.createElement('span');
-        label.appendChild(document.createTextNode(item.label));
-        label.className = 'tree-view-label';
+    const icon = getIconImageElement(item.fileType)
 
-        if (item.fileType === 'more') {
-            return label;
-        }
+    const fragment = document.createDocumentFragment()
+    fragment.appendChild(icon)
+    fragment.appendChild(label)
 
-        const icon = getIconImageElement(item.fileType);
+    return fragment
+}
 
-        const fragment = document.createDocumentFragment();
-        fragment.appendChild(icon);
-        fragment.appendChild(label);
+function Finder({ loading, data, url }) {
+    /*shouldComponentUpdate(nextProps, nextState) {
+        return !nextProps.isFetching
+    }*/
+    const router = useRouter()
 
-        return fragment;
+    const handleColumnCreated = (...args) => console.log('column-created', ...args)
+
+    const handleLeafSelected = item => {
+        console.log('leaf-selected', item)
+
+        navigateTo(item)
     }
 
-    handleColumnCreated = (...args) => console.log('column-created', ...args);
+    const handleItemSelected = item => {
+        console.log('item-selected', item)
+    }
 
-    handleLeafSelected = item => {
-        console.log('leaf-selected', item);
+    const handleInteriorSelected = item => {
+        console.log('interior-selected', item)
+        navigateTo(item)
+    }
 
-        this.navigateTo(item);
-    };
-
-    handleItemSelected = item => {
-        console.log('item-selected', item);
-    };
-
-    handleInteriorSelected = item => {
-        console.log('interior-selected', item);
-        this.navigateTo(item);
-    };
-
-    navigateTo(item) {
+    const navigateTo = item => {
         if (item.href) {
-            this.props.router.push(
+            router.push(
                 item.href,
                 undefined,
                 {shallow: true},
-            );
+            )
         }
     }
 
-    render() {
-        const { data, url } = this.props;
+    const [defaultValue, setDefaultValue] = useState(data)
+    const [tree, setTree] = useState([])
 
-        const tree = data ? buildTree(data, getBasePath(url)) : [];
+    const parentLevels = 3
+    useEffect(async () => {
+        if (!loading && url && data) {
+            let current = data;
+            let level = 0;
 
-        return (
-            <div className="finder">
-                <ErrorBoundary visible>
-                    <ReactFinder
-                        data={tree}
-                        defaultValue={data}
-                        onLeafSelected={this.handleLeafSelected}
-                        onItemSelected={this.handleItemSelected}
-                        onInteriorSelected={this.handleInteriorSelected}
-                        onColumnCreated={this.handleColumnCreated}
-                        createItemContent={this.handleCreateItemContent}
-                    />
-                </ErrorBoundary>
-            </div>
-        );
-    }
+            while (current.parent_id && level <= parentLevels) {
+                current.parent = await api.doc(
+                    getBasePath(url) + current.parent_id,
+                    current.parent_children_page
+                )
+
+                current = current.parent
+                level++
+
+                setDefaultValue(data)
+                setTree(buildTree(data, getBasePath(url)))
+            }
+        }
+    }, [url, data, loading])
+
+    return (
+        <div className="finder">
+            <ErrorBoundary visible>
+                <ReactFinder
+                    data={tree}
+                    defaultValue={defaultValue}
+                    onLeafSelected={handleLeafSelected}
+                    onItemSelected={handleItemSelected}
+                    onInteriorSelected={handleInteriorSelected}
+                    onColumnCreated={handleColumnCreated}
+                    createItemContent={handleCreateItemContent}
+                />
+            </ErrorBoundary>
+        </div>
+    )
 }
 
-export default withRouter(Finder);
+export default memo(Finder)

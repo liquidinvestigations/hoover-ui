@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import qs from 'qs'
@@ -16,7 +16,7 @@ import Document from '../src/components/document/Document'
 import { ProgressIndicatorContext } from '../src/components/ProgressIndicator'
 import { SEARCH_GUIDE, SEARCH_QUERY_PREFIXES, SORT_RELEVANCE } from '../src/constants'
 import useCollections from '../src/hooks/useCollections'
-import { copyMetadata } from '../src/utils'
+import { copyMetadata, documentViewUrl } from '../src/utils'
 import api from '../src/api'
 
 const extractFields = query => {
@@ -75,18 +75,20 @@ export default function Index({ serverQuery }) {
         name: 'nextItem',
         key: 'j',
         help: 'Preview next result',
-        handler: () => {
+        handler: event => {
+            event.preventDefault()
             if (!isInputFocused()) {
-                fetchNextDoc()
+                previewNextDoc()
             }
         },
     },{
         name: 'previousItem',
         key: 'k',
         help: 'Preview the previous result',
-        handler: () => {
+        handler: event => {
+            event.preventDefault()
             if (!isInputFocused()) {
-                fetchPreviousDoc()
+                previewPreviousDoc()
             }
         },
     },{
@@ -98,8 +100,8 @@ export default function Index({ serverQuery }) {
                 return
             }
             event.preventDefault()
-            if (this.props.docData && this.props.docData.content) {
-                showMessage(copyMetadata(this.props.docData))
+            if (selectedDocData?.content) {
+                showMessage(copyMetadata(selectedDocData))
             } else {
                 showMessage('Unable to copy metadata – no document selected?')
             }
@@ -109,7 +111,7 @@ export default function Index({ serverQuery }) {
         key: 'o',
         help: 'Open the currently previewed result',
         handler: () => {
-            isInputFocused() || window.open(this.props.docUrl, '_blank')
+            isInputFocused() || (!!selectedDocUrl && window.open(selectedDocUrl, '_blank'))
         },
     },{
         name: 'focusInputField',
@@ -138,8 +140,7 @@ export default function Index({ serverQuery }) {
         query.collections = query.collections.split('+')
     }
 
-    let inputRef = null
-    const setInputRef = element => inputRef = element
+    let [inputRef, setInputRef] = useState()
     const isInputFocused = () => inputRef === document.activeElement
 
     const [ queryFields, queryText ] = extractFields(query.q)
@@ -150,7 +151,7 @@ export default function Index({ serverQuery }) {
         const stateParams = { fields: chips, text, size, order, page, collections: selectedCollections }
         const newQuery = buildUrlQuery({ ...query, ...stateParams, ...params })
         router.push(
-            { pathname, query: newQuery },
+            { pathname, search: newQuery },
             undefined,
             { shallow: true },
         )
@@ -251,6 +252,33 @@ export default function Index({ serverQuery }) {
             setText('')
         }
     }, [collections, JSON.stringify(query)])
+
+
+    const currentDocIndex = () => results.hits.hits.findIndex(hit => documentViewUrl(hit) === selectedDocUrl)
+
+    const previewNextDoc = () => {
+        if (results?.hits.hits) {
+            const currentIndex = currentDocIndex()
+            if (currentIndex === results.hits.hits.length - 1) {
+                setPage(parseInt(page) + 1)
+                search({ page: parseInt(page) + 1 })
+            } else {
+                handleDocPreview(documentViewUrl(results.hits.hits[currentIndex + 1]))
+            }
+        }
+    }
+
+    const previewPreviousDoc = () => {
+        if (results?.hits.hits && selectedDocUrl) {
+            const currentIndex = currentDocIndex()
+            if (currentIndex === 0 && page > 1) {
+                setPage(parseInt(page) - 1)
+                search({ page: parseInt(page) - 1 })
+            } else {
+                handleDocPreview(documentViewUrl(results.hits.hits[currentIndex - 1]))
+            }
+        }
+    }
 
 
     const { setLoading } = useContext(ProgressIndicatorContext)
