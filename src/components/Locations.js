@@ -10,7 +10,7 @@ function Locations({ url: docUrl, data }) {
     const [locations, setLocations] = useState([])
     const [page, setPage] = useState(1)
     const [hasNextPage, setHasNextPage] = useState(false)
-    const [isFetchingLocationsPage, setFetchingLocationsPage] = useState(false)
+    const [loadingNextPage, setLoadingNextPage] = useState(false)
 
     useEffect(() => {
         if (docUrl) {
@@ -23,15 +23,15 @@ function Locations({ url: docUrl, data }) {
 
     const loadMore = async event => {
         event.preventDefault()
-        setFetchingLocationsPage(true)
+        setLoadingNextPage(true)
         const response = await api.locationsFor(docUrl, page + 1)
         setPage(page + 1)
         setLocations([...locations, ...response.locations])
         setHasNextPage(response.has_next_page)
-        setFetchingLocationsPage(false)
+        setLoadingNextPage(false)
     }
 
-    if (!docUrl) {
+    if (!docUrl || !data) {
         return null
     }
 
@@ -58,7 +58,7 @@ function Locations({ url: docUrl, data }) {
                                         <Folder />
                                     </ListItemIcon>
 
-                                    <Typography classes={{}}>
+                                    <Typography style={{ wordBreak: 'break-all' }}>
                                         {location.parent_path}/<em>{location.filename}</em>
                                     </Typography>
                                 </ListItem>
@@ -68,7 +68,7 @@ function Locations({ url: docUrl, data }) {
                 </>
             )}
             {hasNextPage && <ListItem dense>
-                {isFetchingLocationsPage ? <Loading /> : <a href="#" onClick={loadMore}>load more...</a>}
+                {loadingNextPage ? <Loading /> : <a href="#" onClick={loadMore}>load more...</a>}
             </ListItem>}
         </List>
     )

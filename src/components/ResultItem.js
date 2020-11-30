@@ -50,15 +50,15 @@ function ResultItem({ hit, url, index, onPreview, isPreview, unsearchable }) {
 
     const nodeRef = useRef()
     const handleMouseDown = () => {
-        nodeRef.current.willFocus = !(nodeRef.current.tUp && timeMs() - nodeRef.current.tUp < 300);
+        nodeRef.current.willFocus = !(nodeRef.current.tUp && timeMs() - nodeRef.current.tUp < 300)
     }
     const handleMouseMove = () => {
-        nodeRef.current.willFocus = false;
+        nodeRef.current.willFocus = false
     }
     const handleMouseUp = () => {
         if (nodeRef.current.willFocus) {
-            nodeRef.current.tUp = timeMs();
-            onPreview(url);
+            nodeRef.current.tUp = timeMs()
+            onPreview(url)
         }
     }
 

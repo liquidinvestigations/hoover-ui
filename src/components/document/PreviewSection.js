@@ -58,7 +58,7 @@ function PreviewSection({ type, url, title, docTitle }) {
                         src={pdfViewerUrl}
                         height="100%"
                         width="100%"
-                        allowFullScreen="true"
+                        allowFullScreen={true}
                     />
                 </div>
             </>
@@ -67,7 +67,7 @@ function PreviewSection({ type, url, title, docTitle }) {
         preview = (
             <div id="hoover-media-viewer-container" className={classes.preview}>
                 <embed
-                    style={{"object-fit": "contain"}}
+                    style={{ objectFit: 'contain'}}
                     src={url}
                     type={type}
                     height="100%"

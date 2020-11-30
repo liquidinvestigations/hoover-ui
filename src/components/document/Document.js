@@ -39,20 +39,23 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
     }
 
     const collection = parseCollection(docUrl)
-    const collectionBaseUrl = url.resolve(docUrl, './');
-    const headerLinks = [];
+    const collectionBaseUrl = url.resolve(docUrl, './')
+    const headerLinks = []
 
-    let digest = data.id;
-    let docRawUrl = api.downloadUrl(`${collectionBaseUrl}${digest}`, data.content.filename);
+    let digest = data.id
+    let digestUrl = docUrl
+    let docRawUrl = api.downloadUrl(`${collectionBaseUrl}${digest}`, data.content.filename)
 
     if (data.id.startsWith('_file_')) {
-        digest = data.digest;
-        docRawUrl = api.downloadUrl(`${collectionBaseUrl}${digest}`, data.content.filename);
+        digest = data.digest
+        digestUrl = [url.resolve(docUrl, './'), data.digest].join('/')
+        docRawUrl = api.downloadUrl(`${collectionBaseUrl}${digest}`, data.content.filename)
     }
 
     if (data.id.startsWith('_directory_')) {
-        digest = null;
-        docRawUrl = null;
+        digest = null
+        digestUrl = null
+        docRawUrl = null
     }
 
     if (!fullPage) {
@@ -87,7 +90,7 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
     headerLinks.push(
         ...ocrData.map(({tag}) => {
             return {
-                href: api.ocrUrl(docUrl, tag),
+                href: api.ocrUrl(digestUrl, tag),
                 text: `OCR ${tag}`,
                 icon: <ChromeReaderMode />,
             };
@@ -140,6 +143,7 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
 
             {ocrData.map(({tag, text}) => (
                 <TextSection
+                    key={tag}
                     title={"OCR " + tag}
                     text={text}
                     fullPage={fullPage}

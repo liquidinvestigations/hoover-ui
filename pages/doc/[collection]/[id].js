@@ -11,7 +11,6 @@ import Finder from '../../../src/components/Finder'
 import SplitPaneLayout from '../../../src/components/SplitPaneLayout'
 import { copyMetadata, documentViewUrl } from '../../../src/utils'
 import HotKeys from '../../../src/components/HotKeys'
-import Loading from '../../../src/components/Loading'
 import api from '../../../src/api'
 
 const useStyles = makeStyles(theme => ({
@@ -69,31 +68,44 @@ const keys = [
     },
 ]
 
-export default function Doc({ serverQuery }) {
+export default function Doc() {
     const classes = useStyles()
 
     const router = useRouter()
+    const { query } = router
 
-    const getQuery = () => {
-        if (typeof window === 'undefined') {
-            return serverQuery
-        }
-        return router.query
-    }
-    const query = getQuery()
-    const pathname = documentViewUrl({ _collection: query.collection, _id: query.id })
-
+    const [pathname, setPathname] = useState()
     const [data, setData] = useState()
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
+
+    const [digest, setDigest] = useState()
+    const [digestUrl, setDigestUrl] = useState()
+    const [urlIsSha, setUrlIsSha] = useState(true)
 
     useEffect(() => {
         if ((query.collection && query.id) || query.path) {
-            let path = pathname
+            let path = documentViewUrl({ _collection: query.collection, _id: query.id })
             if (query.path) {
                 path = query.path
             }
+            setPathname(path)
             setLoading(true)
             api.doc(path).then(data => {
+                if (data.id.startsWith('_')) {
+                    if (data.id.startsWith('_file_')) {
+                        setDigest(data.digest)
+                        setDigestUrl([url.resolve(path, './'), data.digest].join('/'))
+                        setUrlIsSha(false)
+                    }
+                    if (data.id.startsWith('_directory_')) {
+                        setDigest(null)
+                        setUrlIsSha(false)
+                    }
+                } else {
+                    setDigest(data.id)
+                    setDigestUrl(path)
+                    setUrlIsSha(true)
+                }
                 setData(data)
                 setLoading(false)
             })
@@ -107,21 +119,6 @@ export default function Doc({ serverQuery }) {
             window.setTimeout(window.print)
         }
     }, [printMode, loading])
-
-    let digest = data?.id
-    let digestUrl = pathname
-    let urlIsSha = true
-
-    if (data?.id.startsWith('_file_')) {
-        digest = data.digest
-        digestUrl = [url.resolve(pathname, './'), digest].join('/')
-        urlIsSha = false
-    }
-
-    if (data?.id.startsWith('_directory_')) {
-        digest = null
-        urlIsSha = false
-    }
 
     const doc = (
         <Document
@@ -147,9 +144,10 @@ export default function Doc({ serverQuery }) {
             {!!digest ?
                 <SplitPaneLayout
                     container={false}
-                    left={<Locations data={data} url={digestUrl}/>}
+                    left={loading ? null : <Locations data={data} url={digestUrl}/>}
                     defaultSizeLeft="25%"
-                    defaultSizeMiddle="70%">
+                    defaultSizeMiddle="70%"
+                >
                     {doc}
                 </SplitPaneLayout>
                 :
@@ -194,8 +192,4 @@ export default function Doc({ serverQuery }) {
             </div>
         </HotKeys>
     )
-}
-
-export async function getServerSideProps({ query }) {
-    return { props: { serverQuery: query }}
 }
