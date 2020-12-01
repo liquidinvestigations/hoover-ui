@@ -119,7 +119,7 @@ function Finder({ loading, data, url }) {
         }
     }
 
-    const [defaultValue, setDefaultValue] = useState(data)
+    const [defaultValue, setDefaultValue] = useState()
     const [tree, setTree] = useState([])
 
     const parentLevels = 3

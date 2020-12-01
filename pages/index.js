@@ -5,7 +5,7 @@ import qs from 'qs'
 import { makeStyles } from '@material-ui/core/styles'
 import { Grid, List, Typography } from '@material-ui/core'
 import ChipInput from 'material-ui-chip-input'
-import HotKeys from '../src/components/HotKeys'
+import HotKeysWithHelp from '../src/components/HotKeysWithHelp'
 import SplitPaneLayout from '../src/components/SplitPaneLayout'
 import SearchSettings from '../src/components/SearchSettings'
 import SearchResults from '../src/components/SearchResults'
@@ -71,60 +71,6 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function Index({ serverQuery }) {
-    const keys = [{
-        name: 'nextItem',
-        key: 'j',
-        help: 'Preview next result',
-        handler: event => {
-            event.preventDefault()
-            if (!isInputFocused()) {
-                previewNextDoc()
-            }
-        },
-    },{
-        name: 'previousItem',
-        key: 'k',
-        help: 'Preview the previous result',
-        handler: event => {
-            event.preventDefault()
-            if (!isInputFocused()) {
-                previewPreviousDoc()
-            }
-        },
-    },{
-        name: 'copyMetadata',
-        key: 'c',
-        help: 'Copy metadata (MD5 and path) of the currently previewed item to the clipboard.',
-        handler: (event, showMessage) => {
-            if (isInputFocused()) {
-                return
-            }
-            event.preventDefault()
-            if (selectedDocData?.content) {
-                showMessage(copyMetadata(selectedDocData))
-            } else {
-                showMessage('Unable to copy metadata – no document selected?')
-            }
-        },
-    },{
-        name: 'openItem',
-        key: 'o',
-        help: 'Open the currently previewed result',
-        handler: () => {
-            isInputFocused() || (!!selectedDocUrl && window.open(selectedDocUrl, '_blank'))
-        },
-    },{
-        name: 'focusInputField',
-        key: '/',
-        help: 'Focus the search field',
-        handler: event => {
-            if (!isInputFocused()) {
-                event.preventDefault()
-                inputRef && inputRef.focus()
-            }
-        },
-    }]
-
     const classes = useStyles()
     const router = useRouter()
     const { pathname } = router
@@ -164,28 +110,28 @@ export default function Index({ serverQuery }) {
     }
 
     const [size, setSize] = useState(query.size || defaultParams.size)
-    const handleSizeChange = size => {
+    const handleSizeChange = useCallback(size => {
         setSize(size)
         search({ size, page: 1 })
-    }
+    }, [])
 
     const [order, setOrder] = useState(query.order || defaultParams.order)
-    const handleOrderChange = order => {
+    const handleOrderChange = useCallback(order => {
         setOrder(order)
         search({ order, page: 1 })
-    }
+    }, [])
 
     const [page, setPage] = useState(query.page || defaultParams.page)
-    const handlePageChange = page => {
+    const handlePageChange = useCallback(page => {
         setPage(page)
         search({ page })
-    }
+    }, [])
 
-    const handleFilterApply = filter => search({ ...filter, page: 1 })
+    const handleFilterApply = useCallback(filter => search({ ...filter, page: 1 }), [])
 
-    const handleInputChange = event => setText(event.target.value)
+    const handleInputChange = useCallback(event => setText(event.target.value), [])
 
-    const handleBeforeChipAdd = chip => {
+    const handleBeforeChipAdd = useCallback(chip => {
         if (chip.indexOf(':') > 0) {
             const chipParts = chip.split(':')
             if (SEARCH_QUERY_PREFIXES.indexOf(chipParts[0]) >= 0 && chipParts[1].length > 0) {
@@ -193,7 +139,7 @@ export default function Index({ serverQuery }) {
             }
         }
         return false
-    }
+    }, [])
 
     const handleChipAdd = chip => {
         setChips([...chips, chip])
@@ -216,14 +162,14 @@ export default function Index({ serverQuery }) {
     const [selectedDocUrl, setSelectedDocUrl] = useState()
     const [selectedDocData, setSelectedDocData] = useState()
     const [previewLoading, setPreviewLoading] = useState(false)
-    const handleDocPreview = url => {
+    const handleDocPreview = useCallback(url => {
         setSelectedDocUrl(url)
         setPreviewLoading(true)
         api.doc(url).then(data => {
             setSelectedDocData(data)
             setPreviewLoading(false)
         })
-    }
+    }, [])
 
 
     const [error, setError] = useState()
@@ -256,7 +202,7 @@ export default function Index({ serverQuery }) {
 
     const currentDocIndex = () => results.hits.hits.findIndex(hit => documentViewUrl(hit) === selectedDocUrl)
 
-    const previewNextDoc = () => {
+    const previewNextDoc = useCallback(() => {
         if (results?.hits.hits) {
             const currentIndex = currentDocIndex()
             if (currentIndex === results.hits.hits.length - 1) {
@@ -266,9 +212,9 @@ export default function Index({ serverQuery }) {
                 handleDocPreview(documentViewUrl(results.hits.hits[currentIndex + 1]))
             }
         }
-    }
+    }, [page, results, selectedDocUrl])
 
-    const previewPreviousDoc = () => {
+    const previewPreviousDoc = useCallback(() => {
         if (results?.hits.hits && selectedDocUrl) {
             const currentIndex = currentDocIndex()
             if (currentIndex === 0 && page > 1) {
@@ -278,6 +224,61 @@ export default function Index({ serverQuery }) {
                 handleDocPreview(documentViewUrl(results.hits.hits[currentIndex - 1]))
             }
         }
+    }, [page, results, selectedDocUrl])
+
+    const keys = {
+        nextItem: {
+            key: 'j',
+            help: 'Preview next result',
+            handler: event => {
+                event.preventDefault()
+                if (!isInputFocused()) {
+                    previewNextDoc()
+                }
+            },
+        },
+        previousItem: {
+            key: 'k',
+            help: 'Preview the previous result',
+            handler: event => {
+                event.preventDefault()
+                if (!isInputFocused()) {
+                    previewPreviousDoc()
+                }
+            },
+        },
+        copyMetadata: {
+            key: 'c',
+            help: 'Copy metadata (MD5 and path) of the currently previewed item to the clipboard.',
+            handler: (event, showMessage) => {
+                if (isInputFocused()) {
+                    return
+                }
+                event.preventDefault()
+                if (selectedDocData?.content) {
+                    showMessage(copyMetadata(selectedDocData))
+                } else {
+                    showMessage('Unable to copy metadata – no document selected?')
+                }
+            },
+        },
+        openItem: {
+            key: 'o',
+            help: 'Open the currently previewed result',
+            handler: () => {
+                isInputFocused() || (!!selectedDocUrl && window.open(selectedDocUrl, '_blank'))
+            },
+        },
+        focusInputField: {
+            key: '/',
+            help: 'Focus the search field',
+            handler: event => {
+                if (!isInputFocused()) {
+                    event.preventDefault()
+                    inputRef && inputRef.focus()
+                }
+            },
+        }
     }
 
 
@@ -286,9 +287,8 @@ export default function Index({ serverQuery }) {
         setLoading(collectionsLoading || resultsLoading || previewLoading)
     }, [collectionsLoading, resultsLoading, previewLoading])
 
-
     return (
-        <HotKeys keys={keys} focused>
+        <HotKeysWithHelp keys={keys}>
             <SplitPaneLayout
                 left={
                     <>
@@ -390,7 +390,7 @@ export default function Index({ serverQuery }) {
                     </Grid>
                 </div>
             </SplitPaneLayout>
-        </HotKeys>
+        </HotKeysWithHelp>
     )
 }
 

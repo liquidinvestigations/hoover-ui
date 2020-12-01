@@ -9,27 +9,17 @@ import Document  from '../../../src/components/document/Document'
 import Locations from '../../../src/components/Locations'
 import Finder from '../../../src/components/Finder'
 import SplitPaneLayout from '../../../src/components/SplitPaneLayout'
+import HotKeysWithHelp from '../../../src/components/HotKeysWithHelp'
 import { copyMetadata, documentViewUrl } from '../../../src/utils'
-import HotKeys from '../../../src/components/HotKeys'
 import api from '../../../src/api'
 
 const useStyles = makeStyles(theme => ({
     splitPane: {
         overflow: 'hidden',
-        height: 'calc(100vh - 56px)',
         position: 'relative',
         backfaceVisibility: 'hidden',
         willChange: 'overflow',
 
-        '@media (min-width: 0px) and (orientation: landscape)': {
-            height: 'calc(100vh - 48px)',
-        },
-
-        '@media (min-width: 600px)': {
-            height: 'calc(100vh - 64px)',
-        }
-    },
-    splitPaneWithTitle: {
         height: 'calc(100vh - 96px)',
 
         '@media (min-width: 0px) and (orientation: landscape)': {
@@ -55,9 +45,8 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const keys = [
-    {
-        name: 'copyMetadata',
+const keys = {
+    copyMetadata: {
         key: 'c',
         help: 'Copy MD5 and path to clipboard',
         handler: (e, showMessage) => {
@@ -66,7 +55,7 @@ const keys = [
             }
         },
     },
-]
+}
 
 export default function Doc() {
     const classes = useStyles()
@@ -163,33 +152,46 @@ export default function Doc() {
     } else {
         content = urlIsSha ?
             <>
-                {!loading && data &&
+                {data &&
                     <Typography variant="subtitle2" className={classes.title}>
-                        Document <b>{data?.content.filename}</b> - please pick a location to see the Finder
+                        Document <b>{data?.id}</b>
+                        {' '}
+                        filename: <b>{data?.content.filename}</b>
+                        {' '}
+                        - please pick a location to see the Finder
                     </Typography>
                 }
-                <div className={cn(classes.splitPane, classes.splitPaneWithTitle)}>
+                <div className={classes.splitPane}>
                     {infoPane}
                 </div>
             </>
             :
-            <div className={classes.splitPane}>
-                <SplitPane
-                    split="horizontal"
-                    defaultSize="30%"
-                    pane1ClassName={classes.horizontalSplitPane}
-                    pane2ClassName={classes.horizontalSplitPane}>
-                    {finder}
-                    {infoPane}
-                </SplitPane>
-            </div>
+            <>
+                {data &&
+                    <Typography variant="subtitle2" className={classes.title}>
+                        {!!digest ? 'File' : 'Directory'}
+                        {' '}
+                        <b>{data.content.path}</b>
+                    </Typography>
+                }
+                <div className={classes.splitPane}>
+                    <SplitPane
+                        split="horizontal"
+                        defaultSize="30%"
+                        pane1ClassName={classes.horizontalSplitPane}
+                        pane2ClassName={classes.horizontalSplitPane}>
+                        {finder}
+                        {infoPane}
+                    </SplitPane>
+                </div>
+            </>
     }
 
     return (
-        <HotKeys keys={keys} focused>
+        <HotKeysWithHelp keys={keys}>
             <div tabIndex="-1">
                 {content}
             </div>
-        </HotKeys>
+        </HotKeysWithHelp>
     )
 }
