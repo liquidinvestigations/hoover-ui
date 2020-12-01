@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import url from 'url'
-import cn from 'classnames'
 import { Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import SplitPane from 'react-split-pane'
@@ -44,18 +43,6 @@ const useStyles = makeStyles(theme => ({
         borderBottomStyle: 'solid',
     },
 }))
-
-const keys = {
-    copyMetadata: {
-        key: 'c',
-        help: 'Copy MD5 and path to clipboard',
-        handler: (e, showMessage) => {
-            if (data?.content) {
-                showMessage(copyMetadata(data))
-            }
-        },
-    },
-}
 
 export default function Doc() {
     const classes = useStyles()
@@ -185,6 +172,18 @@ export default function Doc() {
                     </SplitPane>
                 </div>
             </>
+    }
+
+    const keys = {
+        copyMetadata: {
+            key: 'c',
+            help: 'Copy MD5 and path to clipboard',
+            handler: (e, showMessage) => {
+                if (data?.content) {
+                    showMessage(copyMetadata(data))
+                }
+            },
+        },
     }
 
     return (

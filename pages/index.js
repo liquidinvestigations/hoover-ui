@@ -106,18 +106,21 @@ export default function Index({ serverQuery }) {
     const [collections, collectionsLoading, selectedCollections, setSelectedCollections] = useCollections()
     const handleSelectedCollectionsChange = collections => {
         setSelectedCollections(collections)
+        setPage(1)
         search({ collections, page: 1 })
     }
 
     const [size, setSize] = useState(query.size || defaultParams.size)
     const handleSizeChange = useCallback(size => {
         setSize(size)
+        setPage(1)
         search({ size, page: 1 })
     }, [])
 
     const [order, setOrder] = useState(query.order || defaultParams.order)
     const handleOrderChange = useCallback(order => {
         setOrder(order)
+        setPage(1)
         search({ order, page: 1 })
     }, [])
 
@@ -127,7 +130,10 @@ export default function Index({ serverQuery }) {
         search({ page })
     }, [])
 
-    const handleFilterApply = useCallback(filter => search({ ...filter, page: 1 }), [])
+    const handleFilterApply = useCallback(filter => {
+        setPage(1)
+        search({ ...filter, page: 1 })
+    }, [])
 
     const handleInputChange = useCallback(event => setText(event.target.value), [])
 
@@ -150,15 +156,18 @@ export default function Index({ serverQuery }) {
         const fields = [...chips]
         fields.splice(chipIndex, 1)
         setChips(fields)
+        setPage(1)
         search({ fields, page: 1 })
     }
 
     const handleSubmit = event => {
         event.preventDefault()
+        setPage(1)
         search({ text, page: 1 })
     }
 
 
+    const [previewOnLoad, setPreviewOnLoad] = useState()
     const [selectedDocUrl, setSelectedDocUrl] = useState()
     const [selectedDocData, setSelectedDocData] = useState()
     const [previewLoading, setPreviewLoading] = useState(false)
@@ -187,6 +196,14 @@ export default function Index({ serverQuery }) {
             api.search(query).then(results => {
                 setResults(results)
                 setResultsLoading(false)
+
+                if (previewOnLoad === 'first') {
+                    setPreviewOnLoad(null)
+                    handleDocPreview(documentViewUrl(results.hits.hits[0]))
+                } else if (previewOnLoad === 'last') {
+                    setPreviewOnLoad(null)
+                    handleDocPreview(documentViewUrl(results.hits.hits[results.hits.hits.length - 1]))
+                }
             }).catch(error => {
                 setResults(null)
                 setError(error.reason ? error.reason : error.message)
@@ -203,28 +220,34 @@ export default function Index({ serverQuery }) {
     const currentDocIndex = () => results.hits.hits.findIndex(hit => documentViewUrl(hit) === selectedDocUrl)
 
     const previewNextDoc = useCallback(() => {
-        if (results?.hits.hits) {
+        if (!resultsLoading && results?.hits.hits) {
             const currentIndex = currentDocIndex()
-            if (currentIndex === results.hits.hits.length - 1) {
-                setPage(parseInt(page) + 1)
-                search({ page: parseInt(page) + 1 })
-            } else {
-                handleDocPreview(documentViewUrl(results.hits.hits[currentIndex + 1]))
+            if ((parseInt(page) - 1) * size + currentIndex < results.hits.total - 1) {
+                if (currentIndex === results.hits.hits.length - 1) {
+                    setPage(parseInt(page) + 1)
+                    setPreviewOnLoad('first')
+                    search({page: parseInt(page) + 1})
+                } else {
+                    handleDocPreview(documentViewUrl(results.hits.hits[currentIndex + 1]))
+                }
             }
         }
-    }, [page, results, selectedDocUrl])
+    }, [page, size, results, resultsLoading, selectedDocUrl])
 
     const previewPreviousDoc = useCallback(() => {
-        if (results?.hits.hits && selectedDocUrl) {
+        if (!resultsLoading && results?.hits.hits && selectedDocUrl) {
             const currentIndex = currentDocIndex()
-            if (currentIndex === 0 && page > 1) {
-                setPage(parseInt(page) - 1)
-                search({ page: parseInt(page) - 1 })
-            } else {
-                handleDocPreview(documentViewUrl(results.hits.hits[currentIndex - 1]))
+            if (page > 1 || currentIndex >= 1) {
+                if (currentIndex === 0 && page > 1) {
+                    setPage(parseInt(page) - 1)
+                    setPreviewOnLoad('last')
+                    search({page: parseInt(page) - 1})
+                } else {
+                    handleDocPreview(documentViewUrl(results.hits.hits[currentIndex - 1]))
+                }
             }
         }
-    }, [page, results, selectedDocUrl])
+    }, [page, size, results, resultsLoading, selectedDocUrl])
 
     const keys = {
         nextItem: {

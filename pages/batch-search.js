@@ -6,9 +6,9 @@ import useCollections from '../src/hooks/useCollections'
 import Filter from '../src/components/filters/Filter'
 import CollectionsFilter from '../src/components/filters/CollectionsFilter'
 import BatchResults from '../src/components/BatchResults'
+import Loading from '../src/components/Loading'
 import { searchPath } from '../src/utils'
 import api from '../src/api'
-import Loading from '../src/components/Loading'
 
 const useStyles = makeStyles(theme => ({
     main: {
