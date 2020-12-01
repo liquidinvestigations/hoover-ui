@@ -111,29 +111,29 @@ export default function Index({ serverQuery }) {
     }
 
     const [size, setSize] = useState(query.size || defaultParams.size)
-    const handleSizeChange = useCallback(size => {
+    const handleSizeChange = size => {
         setSize(size)
         setPage(1)
         search({ size, page: 1 })
-    }, [])
+    }
 
     const [order, setOrder] = useState(query.order || defaultParams.order)
-    const handleOrderChange = useCallback(order => {
+    const handleOrderChange = order => {
         setOrder(order)
         setPage(1)
         search({ order, page: 1 })
-    }, [])
+    }
 
     const [page, setPage] = useState(query.page || defaultParams.page)
-    const handlePageChange = useCallback(page => {
+    const handlePageChange = page => {
         setPage(page)
         search({ page })
-    }, [])
+    }
 
-    const handleFilterApply = useCallback(filter => {
+    const handleFilterApply = filter => {
         setPage(1)
         search({ ...filter, page: 1 })
-    }, [])
+    }
 
     const handleInputChange = useCallback(event => setText(event.target.value), [])
 
