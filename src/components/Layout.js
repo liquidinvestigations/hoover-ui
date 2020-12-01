@@ -1,29 +1,41 @@
-import { withTheme } from '@material-ui/core/styles';
-import Head from 'next/head';
-import Header from './Header';
-import ProgressIndicator from './ProgressIndicator';
+import React, { memo, useState } from 'react'
+import Head from 'next/head'
+import Header from './Header'
+import theme from '../theme'
+import ProgressIndicator, { ProgressIndicatorContext } from './ProgressIndicator'
+import ErrorBoundary from './ErrorBoundary'
 
-export default withTheme(({ children, theme }) => (
-    <div>
-        <Head>
-            <meta charSet="utf-8" />
-            <title>Hoover</title>
+function Layout({ children }) {
+    const [loading, setLoading] = useState(false)
 
-            <meta
-                name="viewport"
-                content={
-                    'user-scalable=0, initial-scale=1, ' +
-                    'minimum-scale=1, width=device-width, height=device-height'
-                }
-            />
+    return (
+        <>
+            <Head>
+                <meta charSet="utf-8" />
+                <title>Hoover</title>
 
-            <meta name="theme-color" content={theme.palette.primary.main} />
-        </Head>
+                <meta
+                    name="viewport"
+                    content={
+                        'user-scalable=0, initial-scale=1, ' +
+                        'minimum-scale=1, width=device-width, height=device-height'
+                    }
+                />
 
-        <ProgressIndicator type="linear" />
-        <div>
-            <Header />
-            {children}
-        </div>
-    </div>
-));
+                <meta name="theme-color" content={theme.palette.primary.main} />
+            </Head>
+
+            <ProgressIndicatorContext.Provider value={{ loading, setLoading }}>
+                <ProgressIndicator type="linear" />
+                <div>
+                    <Header />
+                    <ErrorBoundary>
+                        {children}
+                    </ErrorBoundary>
+                </div>
+            </ProgressIndicatorContext.Provider>
+        </>
+    )
+}
+
+export default memo(Layout)

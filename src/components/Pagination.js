@@ -1,91 +1,51 @@
-import { Component } from 'react';
-import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import IconPrevious from '@material-ui/icons/NavigateBefore';
-import IconNext from '@material-ui/icons/NavigateNext';
-
-import { connect } from 'react-redux';
-import { loadNextSearchPage, loadPreviousSearchPage } from '../actions';
-
+import React, { memo } from 'react'
+import { Grid, IconButton, Typography } from '@material-ui/core'
+import { NavigateBefore, NavigateNext } from '@material-ui/icons'
 import { formatThousands } from '../utils';
 
-export class Pagination extends Component {
-    static propTypes = {
-        results: PropTypes.object.isRequired,
-        query: PropTypes.object.isRequired,
-        searchAfterByPage: PropTypes.object.isRequired,
-    };
+function Pagination({ total, size, page, changePage }) {
+    const handleNext = () => changePage(page + 1)
+    const handlePrev = () => changePage(page - 1)
 
-    handleNext = e => {
-        e.preventDefault();
+    const pageCount = Math.ceil(total / size)
 
-        const { dispatch } = this.props;
-        dispatch(loadNextSearchPage());
-    };
+    const from = total === 0 ? 0 : page * size - (size - 1)
+    const to = Math.min(total, page * size)
 
-    handlePrev = e => {
-        e.preventDefault();
+    const hasNext = page < pageCount
+    const hasPrev = page > 1
 
-        const { dispatch } = this.props;
-        dispatch(loadPreviousSearchPage());
-    };
+    return (
+        <Grid container alignItems="center" justify="space-between" style={{ marginTop: '1rem' }}>
+            <Grid item>
+                <Typography variant="caption">
+                    Showing {from} - {to} of {formatThousands(total)} hits.
+                    Page {total === 0 ? 0 : page}
+                    {' '}
+                    of
+                    {' '}
+                    {formatThousands(pageCount)} pages.
+                </Typography>
+            </Grid>
 
-    render() {
-        const {
-            results,
-            query: { page, size },
-        } = this.props;
+            <Grid item>
+                <Grid container justify="flex-end">
+                    <IconButton
+                        tabIndex="-1"
+                        onClick={handlePrev}
+                        disabled={!hasPrev}>
+                        <NavigateBefore />
+                    </IconButton>
 
-        const total = results.hits.total;
-        const pageCount = Math.ceil(total / size);
-
-        const from = total === 0 ? 0 : page * size - (size - 1);
-        const to = Math.min(total, page * size);
-
-        const hasNext = page < pageCount;
-        const hasPrev = page > 1;
-
-        return (
-            <div style={{ marginTop: '1rem' }}>
-                <Grid container alignItems="center" justify="space-between">
-                    <Grid item>
-                        <Typography variant="caption">
-                            Showing {from} - {to} of {formatThousands(total)} hits.
-                            Page {total === 0 ? 0 : page}
-                             of
-                            {' '}
-                            {formatThousands(pageCount)} pages.
-                        </Typography>
-                    </Grid>
-
-                    <Grid item>
-                        <Grid container justify="flex-end">
-                            <IconButton
-                                tabIndex="-1"
-                                onClick={this.handlePrev}
-                                disabled={!hasPrev}>
-                                <IconPrevious />
-                            </IconButton>
-
-                            <IconButton
-                                onClick={this.handleNext}
-                                disabled={!hasNext}>
-                                <IconNext />
-                            </IconButton>
-                        </Grid>
-                    </Grid>
+                    <IconButton
+                        onClick={handleNext}
+                        disabled={!hasNext}>
+                        <NavigateNext />
+                    </IconButton>
                 </Grid>
-            </div>
-        );
-    }
+            </Grid>
+        </Grid>
+    )
 }
 
-const mapStateToProps = ({ search: { results, query, searchAfterByPage } }) => ({
-    results,
-    query,
-    searchAfterByPage,
-});
-
-export default connect(mapStateToProps)(Pagination);
+export default memo(Pagination)

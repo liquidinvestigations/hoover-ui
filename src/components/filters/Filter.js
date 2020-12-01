@@ -1,10 +1,14 @@
-import React, { memo, useState } from 'react'
-import cn from 'classnames'
+import React, { memo, useEffect, useState } from 'react'
+import cn from 'classnames';
 import { makeStyles } from '@material-ui/core/styles'
 import { Collapse, Divider, Grid, IconButton, ListItem, Typography } from '@material-ui/core'
 import { ExpandMore } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
+    upper: {
+        textTransform: 'uppercase',
+    },
+
     expand: {
         transform: 'rotate(0deg)',
         transition: theme.transitions.create('transform', {
@@ -19,40 +23,35 @@ const useStyles = makeStyles(theme => ({
     expandOpen: {
         transform: 'rotate(180deg)',
     },
-
-    sectionHeader: {
-        backgroundColor: theme.palette.grey[200],
-        color: theme.palette.text.action,
-        padding: '1rem',
-    },
-
-    sectionContent: {
-        margin: '1rem',
-        overflowWrap: 'break-word',
-        wordWrap: 'break-word',
-        position: 'relative',
-        // padding: '0 2rem 0 0',
-        fontSize: 12,
-    },
-
-    scrollX: {
-        overflowX: 'auto',
-    },
 }))
 
-function Section({ title, children, defaultOpen = true, scrollX = false }) {
+function Filter({ title, children, defaultOpen, enabled = true, colorIfFiltered = true }) {
+    if (!enabled) {
+        return null
+    }
+
     const classes = useStyles()
 
     const [open, setOpen] = useState(defaultOpen || false)
-
     const toggle = () => setOpen(!open)
+
+    useEffect(() => {
+        setOpen(defaultOpen)
+    }, [defaultOpen])
 
     return (
         <>
-            <ListItem onClick={toggle} button dense className={classes.sectionHeader}>
+            <ListItem onClick={toggle} button dense>
                 <Grid container alignItems="baseline" justify="space-between">
                     <Grid item>
-                        <Typography variant="h6">
+                        <Typography
+                            variant="body2"
+                            className={classes.upper}
+                            color={
+                                defaultOpen && colorIfFiltered
+                                    ? 'secondary'
+                                    : 'initial'
+                            }>
                             {title}
                         </Typography>
                     </Grid>
@@ -65,20 +64,24 @@ function Section({ title, children, defaultOpen = true, scrollX = false }) {
                             onClick={toggle}
                             aria-expanded={open}
                             aria-label="Show more">
-                            <ExpandMore color={'action'} />
+                            <ExpandMore
+                                color={
+                                    defaultOpen && colorIfFiltered
+                                        ? 'secondary'
+                                        : 'action'
+                                }
+                            />
                         </IconButton>
                     </Grid>
                 </Grid>
             </ListItem>
 
             <Collapse in={open}>
-                <div className={cn(classes.sectionContent, { [classes.scrollX]: scrollX })}>
-                    {children}
-                </div>
+                {children}
                 <Divider />
             </Collapse>
         </>
     )
 }
 
-export default memo(Section)
+export default memo(Filter)

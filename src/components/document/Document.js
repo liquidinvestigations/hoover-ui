@@ -1,18 +1,16 @@
-import React from 'react'
-import PropTypes from 'prop-types'
-import { connect } from 'react-redux'
+import React, { memo } from 'react'
 import url from 'url'
+import { makeStyles } from '@material-ui/core/styles'
 import { IconButton, Toolbar, Tooltip } from '@material-ui/core'
 import { ChromeReaderMode, CloudDownload, Launch, Print } from '@material-ui/icons'
-import { makeStyles } from '@material-ui/core/styles'
-import api from '../../api'
-import Loading from '../Loading'
 import EmailSection from './EmailSection'
 import PreviewSection from './PreviewSection'
 import HTMLSection from './HTMLSection'
 import TextSection from './TextSection'
 import FilesSection from './FilesSection'
 import MetaSection from './MetaSection'
+import Loading from '../Loading'
+import api from '../../api'
 
 const useStyles = makeStyles(theme => ({
     toolbar: {
@@ -24,41 +22,40 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-Document.propTypes = {
-    showToolbar: PropTypes.bool,
-    showMeta: PropTypes.bool,
+const parseCollection = url => {
+    const [, collection] = url.match(/(?:^|\/)doc\/(.+?)\//) || [];
+    return collection;
 }
 
-Document.defaultProps = {
-    showToolbar: true,
-    showMeta: true,
-}
-
-function Document({ docUrl, collection, data, fullPage, isFetching, showToolbar, showMeta }) {
+function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMeta = true }) {
     const classes = useStyles()
 
-    if (isFetching) {
-        return <Loading/>
+    if (loading) {
+        return <Loading />
     }
 
-    if (!data || !Object.keys(data).length) {
+    if (!docUrl || !data || !Object.keys(data).length) {
         return null
     }
 
-    const collectionBaseUrl = url.resolve(docUrl, './');
-    const headerLinks = [];
+    const collection = parseCollection(docUrl)
+    const collectionBaseUrl = url.resolve(docUrl, './')
+    const headerLinks = []
 
-    let digest = data.id;
-    let docRawUrl = api.downloadUrl(`${collectionBaseUrl}${digest}`, data.content.filename);
+    let digest = data.id
+    let digestUrl = docUrl
+    let docRawUrl = api.downloadUrl(`${collectionBaseUrl}${digest}`, data.content.filename)
 
     if (data.id.startsWith('_file_')) {
-        digest = data.digest;
-        docRawUrl = api.downloadUrl(`${collectionBaseUrl}${digest}`, data.content.filename);
+        digest = data.digest
+        digestUrl = [url.resolve(docUrl, './'), data.digest].join('/')
+        docRawUrl = api.downloadUrl(`${collectionBaseUrl}${digest}`, data.content.filename)
     }
 
     if (data.id.startsWith('_directory_')) {
-        digest = null;
-        docRawUrl = null;
+        digest = null
+        digestUrl = null
+        docRawUrl = null
     }
 
     if (!fullPage) {
@@ -93,7 +90,7 @@ function Document({ docUrl, collection, data, fullPage, isFetching, showToolbar,
     headerLinks.push(
         ...ocrData.map(({tag}) => {
             return {
-                href: api.ocrUrl(docUrl, tag),
+                href: api.ocrUrl(digestUrl, tag),
                 text: `OCR ${tag}`,
                 icon: <ChromeReaderMode />,
             };
@@ -118,7 +115,7 @@ function Document({ docUrl, collection, data, fullPage, isFetching, showToolbar,
                 </Toolbar>
             )}
 
-            <EmailSection doc={data} />
+            <EmailSection doc={data} collection={collection} />
 
             <PreviewSection
                 title="Preview"
@@ -146,6 +143,7 @@ function Document({ docUrl, collection, data, fullPage, isFetching, showToolbar,
 
             {ocrData.map(({tag, text}) => (
                 <TextSection
+                    key={tag}
                     title={"OCR " + tag}
                     text={text}
                     fullPage={fullPage}
@@ -174,11 +172,4 @@ function Document({ docUrl, collection, data, fullPage, isFetching, showToolbar,
     )
 }
 
-const mapStateToProps = ({ doc: { isFetching, data, url, collection } }) => ({
-    isFetching,
-    data,
-    docUrl: url,
-    collection,
-})
-
-export default connect(mapStateToProps)(Document)
+export default memo(Document)

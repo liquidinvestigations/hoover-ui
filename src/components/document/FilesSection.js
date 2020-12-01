@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { memo, useState } from 'react'
 import Link from 'next/link'
 import url from 'url'
 import { Table, TableBody, TableCell, TableRow } from '@material-ui/core'
@@ -7,7 +7,7 @@ import api from '../../api'
 import Section from './Section'
 import Loading from '../Loading'
 
-export default function FilesSection({ data, page, hasNextPage, baseUrl, docUrl, title, fullPage }) {
+function FilesSection({ data, page, hasNextPage, baseUrl, docUrl, title, fullPage }) {
     const [files, setFiles] = useState(data)
     const [currentPage, setCurrentPage] = useState(page)
     const [currentHasNextPage, setCurrentHasNextPage] = useState(hasNextPage)
@@ -74,3 +74,5 @@ export default function FilesSection({ data, page, hasNextPage, baseUrl, docUrl,
         )
     )
 }
+
+export default memo(FilesSection)

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import Link from 'next/link'
 import url from 'url'
 import { List, ListItem, ListItemIcon, Typography } from '@material-ui/core'
@@ -6,36 +6,41 @@ import { Folder } from '@material-ui/icons'
 import Loading from './Loading'
 import api from '../api'
 
-export default function Locations({ url: docUrl, data }) {
+function Locations({ url: docUrl, data }) {
     const [locations, setLocations] = useState([])
     const [page, setPage] = useState(1)
     const [hasNextPage, setHasNextPage] = useState(false)
-    const [isFetchingLocationsPage, setFetchingLocationsPage] = useState(false)
+    const [loadingNextPage, setLoadingNextPage] = useState(false)
 
-    useEffect(async () => {
-        const response = await api.locationsFor(docUrl, page)
-        setLocations(response.locations)
-        setHasNextPage(response.has_next_page)
+    useEffect(() => {
+        if (docUrl) {
+            api.locationsFor(docUrl, page).then(response => {
+                setLocations(response.locations)
+                setHasNextPage(response.has_next_page)
+            })
+        }
     }, [docUrl])
 
     const loadMore = async event => {
         event.preventDefault()
-        setFetchingLocationsPage(true)
+        setLoadingNextPage(true)
         const response = await api.locationsFor(docUrl, page + 1)
         setPage(page + 1)
         setLocations([...locations, ...response.locations])
         setHasNextPage(response.has_next_page)
-        setFetchingLocationsPage(false)
+        setLoadingNextPage(false)
+    }
+
+    if (!docUrl || !data) {
+        return null
     }
 
     if (!locations.length && data.has_locations) {
-        return <Loading />;
-    } else if (!locations.length) {
-        return null;
+        return <Loading />
     }
 
-    const baseUrl = url.resolve(docUrl, './');
-    const basePath = url.parse(baseUrl).pathname;
+    const baseUrl = url.resolve(docUrl, './').replace(/\/+/g, '/')
+    const basePath = url.parse(baseUrl).pathname
 
     return (
         <List component="nav" dense>
@@ -45,16 +50,16 @@ export default function Locations({ url: docUrl, data }) {
 
             {locations.length && (
                 <>
-                    {locations.map(loc => (
-                        <Link key={loc.id} href={`${basePath}${loc.id}`}>
+                    {locations.map(location => (
+                        <Link key={location.id} href={`${basePath}${location.id}`} shallow>
                             <a>
                                 <ListItem button>
                                     <ListItemIcon>
                                         <Folder />
                                     </ListItemIcon>
 
-                                    <Typography classes={{}}>
-                                        {loc.parent_path}/<em>{loc.filename}</em>
+                                    <Typography style={{ wordBreak: 'break-all' }}>
+                                        {location.parent_path}/<em>{location.filename}</em>
                                     </Typography>
                                 </ListItem>
                             </a>
@@ -63,8 +68,10 @@ export default function Locations({ url: docUrl, data }) {
                 </>
             )}
             {hasNextPage && <ListItem dense>
-                {isFetchingLocationsPage ? <Loading /> : <a href="#" onClick={loadMore}>load more...</a>}
+                {loadingNextPage ? <Loading /> : <a href="#" onClick={loadMore}>load more...</a>}
             </ListItem>}
         </List>
     )
 }
+
+export default memo(Locations)

@@ -1,20 +1,20 @@
-import path from 'path';
-import fetch from 'isomorphic-fetch';
-import { memoize } from 'lodash';
-import { stringify } from 'querystring'
-import buildSearchQuery from './build-search-query';
+import fetch from 'isomorphic-fetch'
+import memoize from 'lodash/memoize'
+import { stringify } from 'qs'
+import buildSearchQuery from './build-search-query'
 
 const api = {
     prefix: '/api/v0/',
 
     buildUrl: (...paths) => {
         const queryObj = paths.reduce((prev, curr, index) => {
-            if (typeof curr === 'object') {
+            if (typeof curr !== 'string' && typeof curr === 'object' && curr !== null) {
                 paths.splice(index, 1)
                 return Object.assign(prev || {}, curr)
             }
-        })
-        return path.join(api.prefix, ...paths) + (queryObj ? `?${stringify(queryObj)}` : '')
+        }, undefined)
+        return [api.prefix, ...paths].join('/').replace(/\/+/g, '/')
+            + (queryObj ? `?${stringify(queryObj)}` : '')
     },
 
     fetchJson: async (url, opts = {}) => {
@@ -26,35 +26,24 @@ const api = {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
             },
-        });
+        })
 
         if (res.ok) {
             return res.json();
         } else {
-            const body = await res.text();
-            const err = new Error(
-                `unable to fetch ${res.url}: ${res.status} ${
-                    res.statusText
-                }\n${body}`
-            );
-
-            err.url = res.url;
-            err.status = res.status;
-            err.statusText = res.statusText;
-
-            throw err;
+            throw await res.json()
         }
     },
 
-    collections: () => api.fetchJson(api.buildUrl('collections')),
+    collections: memoize(() => api.fetchJson(api.buildUrl('collections'))),
 
-    limits: () => api.fetchJson(api.buildUrl('limits')),
+    limits: memoize(() => api.fetchJson(api.buildUrl('limits'))),
 
     locationsFor: memoize((docUrl, pageIndex) => api.fetchJson(
         api.buildUrl(docUrl, 'locations', { page: pageIndex })
     ), (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`),
 
-    doc: memoize((docUrl, pageIndex) => api.fetchJson(
+    doc: memoize((docUrl, pageIndex = 1) => api.fetchJson(
         api.buildUrl(docUrl, 'json', { children_page: pageIndex })
     ), (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`),
 
@@ -75,4 +64,4 @@ const api = {
     ocrUrl: (docUrl, tag) => api.buildUrl(docUrl, 'ocr', tag)
 }
 
-export default api;
+export default api

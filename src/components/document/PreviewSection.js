@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Section from './Section'
 
@@ -42,7 +42,7 @@ const useStyles = makeStyles({
     },
 })
 
-export default function PreviewSection({ type, url, title, docTitle }) {
+function PreviewSection({ type, url, title, docTitle }) {
     const classes = useStyles()
 
     if (!type || !url) return null;
@@ -58,7 +58,7 @@ export default function PreviewSection({ type, url, title, docTitle }) {
                         src={pdfViewerUrl}
                         height="100%"
                         width="100%"
-                        allowFullScreen="true"
+                        allowFullScreen={true}
                     />
                 </div>
             </>
@@ -67,7 +67,7 @@ export default function PreviewSection({ type, url, title, docTitle }) {
         preview = (
             <div id="hoover-media-viewer-container" className={classes.preview}>
                 <embed
-                    style={{"object-fit": "contain"}}
+                    style={{ objectFit: 'contain'}}
                     src={url}
                     type={type}
                     height="100%"
@@ -86,3 +86,5 @@ export default function PreviewSection({ type, url, title, docTitle }) {
         </Section>
     )
 }
+
+export default memo(PreviewSection)

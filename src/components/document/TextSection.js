@@ -1,5 +1,4 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React, { memo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import Section from './Section'
 
@@ -9,15 +8,7 @@ const useStyles = makeStyles({
     },
 })
 
-TextSection.propTypes = {
-    omitIfEmpty: PropTypes.bool,
-}
-
-TextSection.defaultProps = {
-    omitIfEmpty: true,
-}
-
-export default function TextSection({ text, title, omitIfEmpty }) {
+function TextSection({ text, title, omitIfEmpty = true }) {
     const classes = useStyles()
 
     let displayText = null
@@ -38,3 +29,5 @@ export default function TextSection({ text, title, omitIfEmpty }) {
         </Section>
     )
 }
+
+export default memo(TextSection)

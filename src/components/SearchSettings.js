@@ -1,68 +1,49 @@
-import { connect } from 'react-redux';
-import Grid from '@material-ui/core/Grid';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import InputLabel from '@material-ui/core/InputLabel';
-import { withStyles } from '@material-ui/core/styles';
+import React, { memo } from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import { FormControl, Grid, InputLabel, MenuItem, Select } from '@material-ui/core'
+import { SORT_OPTIONS, SIZE_OPTIONS } from '../constants'
 
-import { SORT_OPTIONS, SIZE_OPTIONS } from '../constants';
-import { updateSearchQuery } from '../actions';
-
-const setSize = dispatch => event =>
-    dispatch(
-        updateSearchQuery({ size: event.target.value }, { resetPagination: true })
-    );
-
-const setOrder = dispatch => event =>
-    dispatch(
-        updateSearchQuery({ order: event.target.value }, { resetPagination: true })
-    );
-
-const styles = theme => ({
+const useStyles = makeStyles(theme => ({
     root: {
         marginTop: theme.spacing(3),
     },
-});
+    formControl: {
+        minWidth: 200
+    },
+}))
 
-const SearchSettings = ({ size, order, dispatch, classes }) => (
-    <div className={classes.root}>
-        <Grid container justify="space-between">
+function SearchSettings ({ size, changeSize, order, changeOrder }) {
+    const classes = useStyles()
+    const handleSizeChange = event => changeSize(event.target.value)
+    const handleOrderChange = event => changeOrder(event.target.value)
+
+    return (
+        <Grid container justify="space-between" className={classes.root}>
             <Grid item>
-                <FormControl style={{ minWidth: 200 }}>
+                <FormControl className={classes.formControl}>
                     <InputLabel>Results per page</InputLabel>
-
-                    <Select autoWidth value={size} onChange={setSize(dispatch)}>
-                        {SIZE_OPTIONS.map(s => (
-                            <MenuItem key={s} value={s}>
-                                {s}
-                            </MenuItem>
+                    <Select autoWidth value={size} onChange={handleSizeChange}>
+                        {SIZE_OPTIONS.map(option => (
+                            <MenuItem key={option} value={option}>{option}</MenuItem>
                         ))}
                     </Select>
                 </FormControl>
             </Grid>
 
             <Grid item>
-                <FormControl style={{ minWidth: 200 }}>
+                <FormControl className={classes.formControl}>
                     <InputLabel>Order</InputLabel>
-
-                    <Select autoWidth value={order} onChange={setOrder(dispatch)}>
-                        {SORT_OPTIONS.map(s => (
-                            <MenuItem key={s} value={s}>
-                                {s}
+                    <Select autoWidth value={order} onChange={handleOrderChange}>
+                        {SORT_OPTIONS.map(option => (
+                            <MenuItem key={option} value={option}>
+                                {option}
                             </MenuItem>
                         ))}
                     </Select>
                 </FormControl>
             </Grid>
         </Grid>
-    </div>
-);
+    )
+}
 
-const mapStateToProps = ({
-    search: {
-        query: { size, order },
-    },
-}) => ({ size, order });
-
-export default connect(mapStateToProps)(withStyles(styles)(SearchSettings));
+export default memo(SearchSettings)

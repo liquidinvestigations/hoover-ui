@@ -1,45 +1,48 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React, { memo } from 'react'
 import ReactPlaceholder from 'react-placeholder'
 import Pagination from './Pagination'
 import ResultItem from './ResultItem'
 import { documentViewUrl } from '../utils'
 
-SearchResults.propTypes = {
-    query: PropTypes.object.isRequired,
-    results: PropTypes.object,
-    isFetching: PropTypes.bool.isRequired,
-}
-
-export default function SearchResults({ results, query, isFetching }) {
-    if (!results.hits.hits) {
-        return null
-    }
-
+function SearchResults({ loading, results, query, changePage, selectedDocUrl, onPreview }) {
     const start = 1 + (query.page - 1) * query.size
 
-    const resultList = results.hits.hits.map((hit, i) => (
-        <ResultItem
-            key={hit._url}
-            hit={hit}
-            url={documentViewUrl(hit)}
-            index={start + i}
-        />
-    ))
-
     return (
-        <div>
-            <Pagination />
-
+        <>
+            <Pagination
+                total={parseInt(results?.hits.total || 0)}
+                size={parseInt(query.size || 1)}
+                page={parseInt(query.page || 0)}
+                changePage={changePage}
+            />
             <ReactPlaceholder
                 showLoadingAnimation
-                ready={!isFetching}
+                ready={!loading}
                 type="text"
-                rows={10}>
-                {resultList}
-
-                {!!resultList.length && <Pagination />}
+                rows={10}
+            >
+                {results?.hits.hits.map((hit, i) =>
+                    <ResultItem
+                        key={hit._url}
+                        hit={hit}
+                        url={documentViewUrl(hit)}
+                        index={start + i}
+                        onPreview={onPreview}
+                        isPreview={hit._url.endsWith(selectedDocUrl)}
+                        unsearchable={!!selectedDocUrl}
+                    />
+                )}
+                {results?.hits.hits.length &&
+                    <Pagination
+                        total={parseInt(results.hits.total)}
+                        size={parseInt(query.size)}
+                        page={parseInt(query.page)}
+                        changePage={changePage}
+                    />
+                }
             </ReactPlaceholder>
-        </div>
+        </>
     )
 }
+
+export default memo(SearchResults)

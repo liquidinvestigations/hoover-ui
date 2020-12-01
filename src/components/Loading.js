@@ -1,12 +1,22 @@
-import { Component } from 'react';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import React, { memo } from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import { CircularProgress } from '@material-ui/core'
 
-export default class Loading extends Component {
-    render() {
-        return (
-            <div style={{ padding: '1rem', textAlign: 'center' }}>
-                <CircularProgress />
-            </div>
-        );
+const useStyles = makeStyles(theme => ({
+    progress: {
+        padding: '1rem',
+        textAlign: 'center',
     }
+}))
+
+function Loading() {
+    const classes = useStyles()
+
+    return (
+        <div className={classes.progress}>
+            <CircularProgress />
+        </div>
+    )
 }
+
+export default memo(Loading)

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import Link from 'next/link'
 import { Table, TableBody, TableCell, TableRow } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
@@ -19,14 +19,14 @@ const useStyles = makeStyles({
     },
 })
 
-export default function EmailSection({ doc = {} }) {
+function EmailSection({ doc, collection }) {
     const classes = useStyles()
 
     const printMode = isPrintMode()
 
-    const data = doc.content
+    const data = doc?.content
 
-    if (data.filetype !== 'email') {
+    if (data?.filetype !== 'email') {
         return null
     }
 
@@ -38,8 +38,8 @@ export default function EmailSection({ doc = {} }) {
                 <TableBody>
                     <TableRow>
                         <TableCell>
-                            {data.from && !printMode ?
-                                <Link href={searchPath(data.from, SEARCH_FROM)}>
+                            {data.from?.length && !printMode ?
+                                <Link href={searchPath(data.from, SEARCH_FROM, collection)} shallow>
                                     <a title="search emails from">From</a>
                                 </Link>
                                 :
@@ -54,8 +54,8 @@ export default function EmailSection({ doc = {} }) {
                     </TableRow>
                     <TableRow>
                         <TableCell>
-                            {data.to && !printMode ?
-                                <Link href={searchPath(to, SEARCH_TO)}>
+                            {data.to?.length && !printMode ?
+                                <Link href={searchPath(to, SEARCH_TO, collection)} shallow>
                                     <a title="search emails to">To</a>
                                 </Link>
                                 :
@@ -71,7 +71,7 @@ export default function EmailSection({ doc = {} }) {
                     <TableRow>
                         <TableCell>
                             {data.date && !printMode ?
-                                <Link href={searchPath(data.date, SEARCH_MODIFICATION_DATE)}>
+                                <Link href={searchPath(data.date, SEARCH_MODIFICATION_DATE, collection)} shallow>
                                     <a title="search sent this date">Date</a>
                                 </Link>
                                 :
@@ -86,8 +86,8 @@ export default function EmailSection({ doc = {} }) {
                     </TableRow>
                     <TableRow>
                         <TableCell>
-                            {data.subject && !printMode ?
-                                <Link href={searchPath(data.subject, SEARCH_SUBJECT)}>
+                            {data.subject?.length && !printMode ?
+                                <Link href={searchPath(data.subject, SEARCH_SUBJECT, collection)} shallow>
                                     <a title="search emails with subject">Subject</a>
                                 </Link>
                                 :
@@ -103,7 +103,7 @@ export default function EmailSection({ doc = {} }) {
                     {data['message-id'] && !printMode &&
                         <TableRow>
                             <TableCell colSpan={2}>
-                                <Link href={searchPath(data['message-id'], SEARCH_IN_REPLY_TO)}>
+                                <Link href={searchPath(data['message-id'], SEARCH_IN_REPLY_TO, collection)} shallow>
                                     <a>search e-mails replying to this one</a>
                                 </Link>
                             </TableCell>
@@ -112,7 +112,7 @@ export default function EmailSection({ doc = {} }) {
                     {data['thread-index'] && !printMode &&
                     <TableRow>
                         <TableCell colSpan={2}>
-                            <Link href={searchPath(data['thread-index'], SEARCH_THREAD_INDEX)}>
+                            <Link href={searchPath(data['thread-index'], SEARCH_THREAD_INDEX, collection)} shallow>
                                 <a>search e-mails in this thread</a>
                             </Link>
                         </TableCell>
@@ -123,3 +123,5 @@ export default function EmailSection({ doc = {} }) {
         </Section>
     )
 }
+
+export default memo(EmailSection)

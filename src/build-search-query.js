@@ -27,8 +27,8 @@ function buildQuery(q, { dateRange }) {
                 filter: {
                     range: {
                         date: {
-                            gte: dateRange.from.toFormat(DATE_FORMAT),
-                            lte: dateRange.to.toFormat(DATE_FORMAT),
+                            gte: dateRange.from,
+                            lte: dateRange.to,
                         },
                     },
                 },
