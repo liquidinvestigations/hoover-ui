@@ -117,12 +117,6 @@ export function searchPath(query, prefix, collections) {
     return `/?${buildUrlQuery(params)}`
 }
 
-export const isInputFocused = () => {
-    const tagName = document.activeElement.tagName.toUpperCase();
-
-    return tagName === 'INPUT' || document.activeElement.contentEditable === 'true';
-};
-
 export const copyMetadata = doc => {
     const string = [doc.content.md5, doc.content.path].join('\n');
 
