@@ -1,7 +1,7 @@
 import fetch from 'isomorphic-fetch'
 import memoize from 'lodash/memoize'
 import { stringify } from 'qs'
-import buildSearchQuery from './build-search-query'
+import buildSearchQuery from './buildSearchQuery'
 
 const api = {
     prefix: '/api/v0/',

@@ -1,4 +1,4 @@
-import buildSearchQuery from '../src/build-search-query';
+import buildSearchQuery from '../src/buildSearchQuery';
 
 it('builds a default query', () => {
     const query = buildSearchQuery();
