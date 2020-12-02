@@ -1,7 +1,7 @@
 import React, { memo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { FormControl, Grid, InputLabel, MenuItem, Select } from '@material-ui/core'
-import { SORT_OPTIONS, SIZE_OPTIONS } from '../constants'
+import { SIZE_OPTIONS, SORTABLE_FIELDS } from '../constants'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -30,18 +30,18 @@ function SearchSettings ({ size, changeSize, order, changeOrder }) {
                 </FormControl>
             </Grid>
 
-            <Grid item>
+            {/*<Grid item>
                 <FormControl className={classes.formControl}>
                     <InputLabel>Order</InputLabel>
                     <Select autoWidth value={order} onChange={handleOrderChange}>
-                        {SORT_OPTIONS.map(option => (
+                        {SORTABLE_FIELDS.map(option => (
                             <MenuItem key={option} value={option}>
                                 {option}
                             </MenuItem>
                         ))}
                     </Select>
                 </FormControl>
-            </Grid>
+            </Grid>*/}
         </Grid>
     )
 }

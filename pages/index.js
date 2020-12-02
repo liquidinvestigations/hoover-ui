@@ -8,15 +8,17 @@ import ChipInput from 'material-ui-chip-input'
 import HotKeysWithHelp from '../src/components/HotKeysWithHelp'
 import SplitPaneLayout from '../src/components/SplitPaneLayout'
 import SearchSettings from '../src/components/SearchSettings'
+import Sorting from '../src/components/sorting/Sorting'
 import SearchResults from '../src/components/SearchResults'
 import Filter from '../src/components/filters/Filter'
 import Filters from '../src/components/filters/Filters'
 import CollectionsFilter from '../src/components/filters/CollectionsFilter'
 import Document from '../src/components/document/Document'
 import { ProgressIndicatorContext } from '../src/components/ProgressIndicator'
-import { SEARCH_GUIDE, SEARCH_QUERY_PREFIXES, SORT_RELEVANCE } from '../src/constants'
+import { SEARCH_GUIDE, SEARCH_QUERY_PREFIXES } from '../src/constants'
 import useCollections from '../src/hooks/useCollections'
 import { copyMetadata, documentViewUrl } from '../src/utils'
+import fixLegacyQuery from '../src/fixLegacyQuery'
 import api from '../src/api'
 
 const extractFields = query => {
@@ -41,7 +43,6 @@ const extractFields = query => {
 const defaultParams = {
     page: 1,
     size: 10,
-    order: SORT_RELEVANCE,
 }
 
 export const buildUrlQuery = (params) => {
@@ -81,10 +82,8 @@ export default function Index({ serverQuery }) {
         }
         return window.location.href.split('?')[1]
     }
-    const query = qs.parse(getQueryString())
-    if (query.collections && typeof query.collections === 'string') {
-        query.collections = query.collections.split('+')
-    }
+    const query = qs.parse(getQueryString(), { arrayLimit: 100 })
+    fixLegacyQuery(query)
 
     let [inputRef, setInputRef] = useState()
     const isInputFocused = () => inputRef === document.activeElement
@@ -383,6 +382,11 @@ export default function Index({ serverQuery }) {
                                     </Typography>
                                 </Grid>
                             </Grid>
+
+                            <Sorting
+                                order={order}
+                                changeOrder={handleOrderChange}
+                            />
 
                             <SearchSettings
                                 size={size}
