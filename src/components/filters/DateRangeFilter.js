@@ -3,8 +3,7 @@ import { DateTime } from 'luxon'
 import { ArrowLeft, ArrowRight, Event } from '@material-ui/icons'
 import { Button, Grid, List, ListItem } from '@material-ui/core'
 import { KeyboardDatePicker } from '@material-ui/pickers'
-
-const DATE_FORMAT = 'yyyy-MM-dd';
+import { DATE_FORMAT } from '../../constants'
 
 const icons = {
     leftArrowIcon: <ArrowLeft />,

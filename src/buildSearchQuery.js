@@ -1,16 +1,4 @@
-import {
-    SORT_RELEVANCE,
-    SORT_NEWEST,
-    SORT_OLDEST,
-    SORT_CREATED_DESCENDING,
-    SORT_CREATED_ASCENDING,
-    SORT_SIZE_DESCENDING,
-    SORT_SIZE_ASCENDING,
-    SORT_WORD_COUNT_DESCENDING,
-    SORT_WORD_COUNT_ASCENDING,
-    DATE_FORMAT,
-    DEFAULT_FACET_SIZE,
-} from './constants'
+import { DEFAULT_FACET_SIZE, SORTABLE_FIELDS } from './constants'
 
 function buildQuery(q, { dateRange }) {
     const qs = {
@@ -42,32 +30,11 @@ function buildQuery(q, { dateRange }) {
 function buildSortQuery(order) {
     let sort = ['_score', '_id'];
 
-    switch (order) {
-        case SORT_NEWEST:
-            sort = [{ date: { order: 'desc', missing: '_last' } }, ...sort];
-            break;
-        case SORT_OLDEST:
-            sort = [{ date: { order: 'asc', missing: '_last' } }, ...sort];
-            break;
-        case SORT_CREATED_DESCENDING:
-            sort = [{ 'date-created': { order: 'desc', missing: '_last' } }, ...sort];
-            break;
-        case SORT_CREATED_ASCENDING:
-            sort = [{ 'date-created': { order: 'asc', missing: '_last' } }, ...sort];
-            break;
-        case SORT_SIZE_DESCENDING:
-            sort = [{ size: { order: 'desc', missing: '_last' } }, ...sort];
-            break;
-        case SORT_SIZE_ASCENDING:
-            sort = [{ size: { order: 'asc', missing: '_last' } }, ...sort];
-            break;
-        case SORT_WORD_COUNT_DESCENDING:
-            sort = [{ 'word-count': { order: 'desc', missing: '_last' } }, ...sort];
-            break;
-        case SORT_WORD_COUNT_ASCENDING:
-            sort = [{ 'word-count': { order: 'asc', missing: '_last' } }, ...sort];
-            break;
-    }
+    Array.isArray(order) && order.filter(([field, direction = 'asc']) =>
+        SORTABLE_FIELDS.includes(field) && ['asc', 'desc'].includes(direction)
+    ).reverse().forEach(([field, direction = 'asc']) => {
+        sort = [{ [field]: { order: direction, missing: '_last' } }, ...sort]
+    })
 
     return sort;
 }
@@ -156,7 +123,7 @@ export default function buildSearchQuery({
     page = 1,
     size = 0,
     q = '*',
-    order = SORT_RELEVANCE,
+    order = null,
     collections = [],
     dateYears = null,
     dateCreatedYears = null,
