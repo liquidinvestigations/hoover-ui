@@ -387,11 +387,6 @@ export default function Index({ serverQuery }) {
                                 order={order}
                                 changeOrder={handleOrderChange}
                             />
-
-                            <SearchSize
-                                size={size}
-                                changeSize={handleSizeChange}
-                            />
                         </Grid>
                     </Grid>
 
@@ -408,6 +403,7 @@ export default function Index({ serverQuery }) {
                                 loading={resultsLoading}
                                 query={query}
                                 changePage={handlePageChange}
+                                changeSize={handleSizeChange}
                                 onPreview={handleDocPreview}
                                 selectedDocUrl={selectedDocUrl}
                             />

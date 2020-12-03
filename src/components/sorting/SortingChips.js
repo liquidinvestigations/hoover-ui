@@ -2,7 +2,7 @@ import React, { memo } from 'react'
 import cn from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
 import { Chip } from '@material-ui/core'
-import { ArrowUpward } from '@material-ui/icons'
+import { ArrowDownward, ArrowUpward } from '@material-ui/icons'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import { SORTABLE_FIELDS } from '../../constants'
 
@@ -16,6 +16,7 @@ const useStyles = makeStyles(theme => ({
     chips: {
         display: 'flex',
         flexWrap: 'wrap',
+        justifyContent: 'flex-end',
         '& > *': {
             marginRight: theme.spacing(0.5),
             marginBottom: theme.spacing(0.5),
@@ -70,6 +71,7 @@ function SortingChips({ order, changeOrder }) {
                                             ref={provided.innerRef}
                                             {...provided.draggableProps}
                                             {...provided.dragHandleProps}
+                                            size="small"
                                             icon={<ArrowUpward />}
                                             label={field}
                                             onClick={handleClick(field)}
@@ -81,7 +83,7 @@ function SortingChips({ order, changeOrder }) {
                             )
                         }
                         {provided.placeholder}
-                        <Chip icon={<ArrowUpward />} label={'relevance'} />
+                        <Chip size="small" icon={<ArrowDownward />} label={'relevance'} />
                     </div>
                 )}
             </Droppable>
