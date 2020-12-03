@@ -101,12 +101,12 @@ export function searchPath(query, prefix, collections) {
     const params = { collections: Array.isArray(collections) ? collections : [collections] }
 
     if (prefix === SEARCH_CREATION_DATE || prefix === SEARCH_MODIFICATION_DATE) {
+        params.text = '*'
         quotedQuery = quotedQuery.substring(0, 10)
-        if (prefix === SEARCH_MODIFICATION_DATE) {
-            params.text = '*'
-            params.dateRange = { from: quotedQuery, to: quotedQuery }
+        if (prefix === SEARCH_CREATION_DATE) {
+            params.dateCreatedRange = { from: quotedQuery, to: quotedQuery }
         } else {
-            params.fields = [`${prefix}:[${quotedQuery} TO ${quotedQuery}]`]
+            params.dateModifiedRange = { from: quotedQuery, to: quotedQuery }
         }
     } else if (prefix) {
         params.fields = [`${prefix}:${quotedQuery}`]

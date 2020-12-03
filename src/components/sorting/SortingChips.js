@@ -2,7 +2,7 @@ import React, { memo } from 'react'
 import cn from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
 import { Chip } from '@material-ui/core'
-import { ArrowDownward } from '@material-ui/icons'
+import { ArrowUpward } from '@material-ui/icons'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import { SORTABLE_FIELDS } from '../../constants'
 
@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
     icon: {
         transition: 'transform .5s ease-in-out',
     },
-    iconUp: {
+    iconDown: {
         transform: 'rotate(180deg)',
     },
     chips: {
@@ -70,18 +70,18 @@ function SortingChips({ order, changeOrder }) {
                                             ref={provided.innerRef}
                                             {...provided.draggableProps}
                                             {...provided.dragHandleProps}
-                                            icon={<ArrowDownward />}
+                                            icon={<ArrowUpward />}
                                             label={field}
                                             onClick={handleClick(field)}
                                             onDelete={handleDelete(field)}
-                                            classes={{ icon: cn(classes.icon, { [classes.iconUp]: direction === 'desc' }) }}
+                                            classes={{ icon: cn(classes.icon, { [classes.iconDown]: direction === 'desc' }) }}
                                         />
                                     )}
                                 </Draggable>
                             )
                         }
                         {provided.placeholder}
-                        <Chip icon={<ArrowDownward />} label={'relevance'} />
+                        <Chip icon={<ArrowUpward />} label={'relevance'} />
                     </div>
                 )}
             </Droppable>
