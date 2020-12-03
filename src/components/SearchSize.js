@@ -1,14 +1,11 @@
 import React, { memo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { FormControl, Grid, InputLabel, MenuItem, Select } from '@material-ui/core'
+import { Grid, MenuItem, Select, Typography } from '@material-ui/core'
 import { SIZE_OPTIONS } from '../constants'
 
 const useStyles = makeStyles(theme => ({
-    root: {
-        marginTop: theme.spacing(3),
-    },
-    formControl: {
-        minWidth: 200
+    label: {
+        marginRight: theme.spacing(1),
     },
 }))
 
@@ -17,16 +14,16 @@ function SearchSize ({ size, changeSize }) {
     const handleSizeChange = event => changeSize(event.target.value)
 
     return (
-        <Grid container justify="space-between" className={classes.root}>
+        <Grid container alignItems="center">
             <Grid item>
-                <FormControl className={classes.formControl}>
-                    <InputLabel>Results per page</InputLabel>
-                    <Select autoWidth value={size} onChange={handleSizeChange}>
-                        {SIZE_OPTIONS.map(option => (
-                            <MenuItem key={option} value={option}>{option}</MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
+                <Typography variant="caption" className={classes.label}>Hits / page</Typography>
+            </Grid>
+            <Grid item>
+                <Select autoWidth disableUnderline value={size} onChange={handleSizeChange}>
+                    {SIZE_OPTIONS.map(option => (
+                        <MenuItem key={option} value={option}>{option}</MenuItem>
+                    ))}
+                </Select>
             </Grid>
         </Grid>
     )

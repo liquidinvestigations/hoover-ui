@@ -4,7 +4,7 @@ import Pagination from './Pagination'
 import ResultItem from './ResultItem'
 import { documentViewUrl } from '../utils'
 
-function SearchResults({ loading, results, query, changePage, selectedDocUrl, onPreview }) {
+function SearchResults({ loading, results, query, changePage, changeSize, selectedDocUrl, onPreview }) {
     const start = 1 + (query.page - 1) * query.size
 
     return (
@@ -14,6 +14,7 @@ function SearchResults({ loading, results, query, changePage, selectedDocUrl, on
                 size={parseInt(query.size || 1)}
                 page={parseInt(query.page || 0)}
                 changePage={changePage}
+                changeSize={changeSize}
             />
             <ReactPlaceholder
                 showLoadingAnimation
@@ -38,6 +39,7 @@ function SearchResults({ loading, results, query, changePage, selectedDocUrl, on
                         size={parseInt(query.size)}
                         page={parseInt(query.page)}
                         changePage={changePage}
+                        changeSize={changeSize}
                     />
                 }
             </ReactPlaceholder>

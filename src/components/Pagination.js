@@ -2,8 +2,9 @@ import React, { memo } from 'react'
 import { Grid, IconButton, Typography } from '@material-ui/core'
 import { NavigateBefore, NavigateNext } from '@material-ui/icons'
 import { formatThousands } from '../utils';
+import SearchSize from './SearchSize'
 
-function Pagination({ total, size, page, changePage }) {
+function Pagination({ total, size, page, changePage, changeSize }) {
     const handleNext = () => changePage(page + 1)
     const handlePrev = () => changePage(page - 1)
 
@@ -26,6 +27,13 @@ function Pagination({ total, size, page, changePage }) {
                     {' '}
                     {formatThousands(pageCount)} pages.
                 </Typography>
+            </Grid>
+
+            <Grid item>
+                <SearchSize
+                    size={size}
+                    changeSize={changeSize}
+                />
             </Grid>
 
             <Grid item>
