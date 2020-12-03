@@ -1,9 +1,10 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useContext } from 'react'
+import cn from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
 import { AppBar, Toolbar, Typography } from '@material-ui/core'
-import cn from 'classnames'
-import Menu from './Menu';
-import api from '../api';
+import { UserContext } from '../../pages/_app'
+import Menu from './Menu'
+import Link from 'next/link'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -11,10 +12,6 @@ const useStyles = makeStyles(theme => ({
     },
     flex: {
         flexGrow: 1,
-    },
-    menuButton: {
-        marginLeft: -12,
-        marginRight: 20,
     },
     noLink: {
         textDecoration: 'none',
@@ -28,34 +25,9 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-const embedHypothesis = scriptUrl => {
-    window.hypothesisConfig = () => ({
-        showHighlights: true,
-        appType: 'bookmarklet',
-    })
-    const scriptNode = document.createElement('script')
-    scriptNode.setAttribute('src', scriptUrl)
-    document.body.appendChild(scriptNode)
-}
-
 function Header() {
     const classes = useStyles()
-
-    const [whoAmI, setWhoAmI] = useState({
-        username: '',
-        admin: false,
-        urls: {},
-        title: '',
-    })
-
-    useEffect(() => {
-        api.whoami().then(whoAmI => {
-            setWhoAmI(whoAmI)
-            if (whoAmI.urls.hypothesis_embed) {
-                embedHypothesis(whoAmI.urls.hypothesis_embed);
-            }
-        })
-    }, [])
+    const whoAmI = useContext(UserContext)
 
     return (
         <div className={classes.root}>
@@ -65,11 +37,14 @@ function Header() {
                         variant="h6"
                         color="inherit"
                         className={classes.flex}>
-                        <a href="/"
-                            className={cn(classes.noLink, classes.title)}
-                            dangerouslySetInnerHTML={{__html: whoAmI.title}} />
+                        <Link href="/">
+                            <a
+                                className={cn(classes.noLink, classes.title)}
+                                dangerouslySetInnerHTML={{__html: whoAmI.title}}
+                            />
+                        </Link>
                     </Typography>
-                    <Menu whoAmI={whoAmI} />
+                    <Menu />
                 </Toolbar>
             </AppBar>
         </div>

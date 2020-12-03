@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
 import { Button, Grid, List, TextField, Typography } from '@material-ui/core'
-import useCollections from '../src/hooks/useCollections'
 import Filter from '../src/components/filters/Filter'
 import CollectionsFilter from '../src/components/filters/CollectionsFilter'
 import BatchResults from '../src/components/BatchResults'
 import Loading from '../src/components/Loading'
-import { searchPath } from '../src/utils'
+import { authorizeApiSSR, searchPath } from '../src/utils'
 import api from '../src/api'
 
 const useStyles = makeStyles(theme => ({
@@ -23,21 +22,14 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-export default function BatchSearch() {
+export default function BatchSearch({ collections, limits }) {
     const classes = useStyles()
 
-    const [collections, collectionsLoading, selectedCollections, setSelectedCollections] = useCollections()
+    const [selectedCollections, setSelectedCollections] = useState(collections?.map(c => c.name))
     const handleSelectedCollectionsChange = collections => {
         setSelectedCollections(collections)
         search(collections)
     }
-
-    const [limits, setLimits] = useState()
-    useEffect(() => {
-        api.limits().then(limits => {
-            setLimits(limits)
-        })
-    }, [])
 
     const [terms, setTerms] = useState()
     const handleTermsChange = event => {
@@ -121,7 +113,6 @@ export default function BatchSearch() {
                         colorIfFiltered={false}>
                         <CollectionsFilter
                             collections={collections}
-                            loading={collectionsLoading}
                             selected={selectedCollections}
                             changeSelection={handleSelectedCollectionsChange}
                             counts={results?.count_by_index}
@@ -181,4 +172,12 @@ export default function BatchSearch() {
             </Grid>
         </Grid>
     )
+}
+
+export async function getServerSideProps({ req }) {
+    authorizeApiSSR(req, api)
+    const collections = await api.collections()
+    const limits = await api.limits()
+
+    return { props: { collections, limits }}
 }

@@ -11,7 +11,7 @@ function SearchResults({ loading, results, query, changePage, changeSize, select
         <>
             <Pagination
                 total={parseInt(results?.hits.total || 0)}
-                size={parseInt(query.size || 1)}
+                size={parseInt(query.size || 10)}
                 page={parseInt(query.page || 0)}
                 changePage={changePage}
                 changeSize={changeSize}
@@ -39,7 +39,7 @@ function SearchResults({ loading, results, query, changePage, changeSize, select
                 {!!results?.hits.hits.length &&
                     <Pagination
                         total={parseInt(results.hits.total)}
-                        size={parseInt(query.size)}
+                        size={parseInt(query.size || 10)}
                         page={parseInt(query.page)}
                         changePage={changePage}
                         changeSize={changeSize}

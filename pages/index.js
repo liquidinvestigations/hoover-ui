@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
+import Router, { useRouter } from 'next/router'
 import Link from 'next/link'
 import qs from 'qs'
 import { makeStyles } from '@material-ui/core/styles'
@@ -7,7 +7,6 @@ import { Grid, List, Typography } from '@material-ui/core'
 import ChipInput from 'material-ui-chip-input'
 import HotKeysWithHelp from '../src/components/HotKeysWithHelp'
 import SplitPaneLayout from '../src/components/SplitPaneLayout'
-import SearchSize from '../src/components/SearchSize'
 import Sorting from '../src/components/sorting/Sorting'
 import SearchResults from '../src/components/SearchResults'
 import Filter from '../src/components/filters/Filter'
@@ -16,8 +15,7 @@ import CollectionsFilter from '../src/components/filters/CollectionsFilter'
 import Document from '../src/components/document/Document'
 import { ProgressIndicatorContext } from '../src/components/ProgressIndicator'
 import { SEARCH_GUIDE, SEARCH_QUERY_PREFIXES } from '../src/constants'
-import useCollections from '../src/hooks/useCollections'
-import { copyMetadata, documentViewUrl } from '../src/utils'
+import { authorizeApiSSR, copyMetadata, documentViewUrl } from '../src/utils'
 import fixLegacyQuery from '../src/fixLegacyQuery'
 import api from '../src/api'
 
@@ -71,7 +69,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function Index({ serverQuery }) {
+export default function Index({ collections, serverQuery }) {
     const classes = useStyles()
     const router = useRouter()
     const { pathname } = router
@@ -102,7 +100,7 @@ export default function Index({ serverQuery }) {
         )
     }
 
-    const [collections, collectionsLoading, selectedCollections, setSelectedCollections] = useCollections()
+    const [selectedCollections, setSelectedCollections] = useState(collections?.map(c => c.name))
     const handleSelectedCollectionsChange = collections => {
         setSelectedCollections(collections)
         setPage(1)
@@ -208,12 +206,24 @@ export default function Index({ serverQuery }) {
                 setError(error.reason ? error.reason : error.message)
                 setResultsLoading(false)
             })
-        } else if (pathname === '/') {
+        }
+    }, [collections, JSON.stringify(query)])
+
+
+    const clearResults = url => {
+        if (url === '/') {
             setResults(null)
             setChips(null)
             setText('')
         }
-    }, [collections, JSON.stringify(query)])
+    }
+
+    useEffect(() => {
+        Router.events.on('routeChangeStart', clearResults)
+        return () => {
+            Router.events.off('routeChangeStart', clearResults)
+        }
+    })
 
 
     const currentDocIndex = () => results.hits.hits.findIndex(hit => documentViewUrl(hit) === selectedDocUrl)
@@ -306,8 +316,8 @@ export default function Index({ serverQuery }) {
 
     const { setLoading } = useContext(ProgressIndicatorContext)
     useEffect(() => {
-        setLoading(collectionsLoading || resultsLoading || previewLoading)
-    }, [collectionsLoading, resultsLoading, previewLoading])
+        setLoading(resultsLoading || previewLoading)
+    }, [resultsLoading, previewLoading])
 
     return (
         <HotKeysWithHelp keys={keys}>
@@ -318,7 +328,6 @@ export default function Index({ serverQuery }) {
                             <Filter title="Collections" colorIfFiltered={false}>
                                 <CollectionsFilter
                                     collections={collections}
-                                    loading={collectionsLoading}
                                     selected={selectedCollections}
                                     changeSelection={handleSelectedCollectionsChange}
                                     counts={results?.count_by_index}
@@ -416,6 +425,10 @@ export default function Index({ serverQuery }) {
 }
 
 export async function getServerSideProps({ req }) {
+    authorizeApiSSR(req, api)
+    const collections = await api.collections()
+
     const serverQuery = req.url.split('?')[1] || ''
-    return { props: { serverQuery }}
+
+    return { props: { collections, serverQuery }}
 }

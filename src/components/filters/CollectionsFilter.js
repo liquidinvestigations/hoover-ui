@@ -2,7 +2,6 @@ import React, { memo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Checkbox, FormControlLabel, FormGroup, ListItem, Typography } from '@material-ui/core'
 import { formatThousands } from '../../utils'
-import Loading from '../Loading'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -17,12 +16,8 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function CollectionsFilter({ collections, loading, selected, changeSelection, counts }) {
+function CollectionsFilter({ collections, selected, changeSelection, counts }) {
     const classes = useStyles()
-
-    if (loading) {
-        return <Loading />
-    }
 
     const handleChange = event => {
         const { name, checked } = event.target
