@@ -1,10 +1,12 @@
-import React, { Fragment, memo } from 'react'
+import React, { memo, useContext } from 'react'
 import Link from 'next/link'
 import { Button } from '@material-ui/core'
 import { useRouter } from 'next/router'
+import { UserContext } from '../../pages/_app'
 
-function Menu({ whoAmI }) {
+function Menu() {
     const router = useRouter()
+    const whoAmI = useContext(UserContext)
 
     const links = () => ([{
             name: 'search',

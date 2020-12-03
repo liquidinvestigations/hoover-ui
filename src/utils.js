@@ -12,6 +12,7 @@ import doc from '../icons/file-word-line.svg';
 import xls from '../icons/file-excel-line.svg';
 import { SEARCH_CREATION_DATE, SEARCH_MODIFICATION_DATE } from './constants'
 import { buildUrlQuery } from '../pages'
+import api from './api'
 
 export function getIconImageElement(fileType) {
     const srcMap = {
@@ -150,4 +151,9 @@ export const humanFileSize = (bytes, si=false, dp=1) => {
 
 
     return bytes.toFixed(dp) + ' ' + units[u]
+}
+
+export const authorizeApiSSR = (req, api) => {
+    const { host, cookie } = req.headers
+    Object.assign(api, { host, cookie })
 }
