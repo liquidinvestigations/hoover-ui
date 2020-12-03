@@ -87,9 +87,6 @@ const handleCreateItemContent = (config, item) => {
 }
 
 function Finder({ loading, data, url }) {
-    /*shouldComponentUpdate(nextProps, nextState) {
-        return !nextProps.isFetching
-    }*/
     const router = useRouter()
 
     const handleColumnCreated = (...args) => console.log('column-created', ...args)

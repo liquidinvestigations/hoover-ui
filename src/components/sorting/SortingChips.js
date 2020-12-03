@@ -1,9 +1,10 @@
 import React, { memo } from 'react'
 import cn from 'classnames'
+import { makeStyles } from '@material-ui/core/styles'
 import { Chip } from '@material-ui/core'
 import { ArrowDownward } from '@material-ui/icons'
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import { SORTABLE_FIELDS } from '../../constants'
-import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles(theme => ({
     icon: {
@@ -11,6 +12,14 @@ const useStyles = makeStyles(theme => ({
     },
     iconUp: {
         transform: 'rotate(180deg)',
+    },
+    chips: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        '& > *': {
+            marginRight: theme.spacing(0.5),
+            marginBottom: theme.spacing(0.5),
+        },
     },
 }))
 
@@ -36,25 +45,47 @@ function SortingChips({ order, changeOrder }) {
         changeOrder(newOrder)
     }
 
+    const handleDragEnd = result => {
+        if (result.destination) {
+            const newOrder = [...order]
+            const [reorderedItem] = newOrder.splice(result.source.index, 1)
+            newOrder.splice(result.destination.index, 0, reorderedItem)
+            changeOrder(newOrder)
+        }
+    }
+
     return (
-        <>
-            {Array.isArray(order) &&
-                order.filter(([field, direction = 'asc']) =>
-                    SORTABLE_FIELDS.includes(field) && ['asc', 'desc'].includes(direction)
-                )
-                .map(([field, direction = 'asc']) =>
-                    <Chip
-                        key={field}
-                        icon={<ArrowDownward />}
-                        label={field}
-                        onClick={handleClick(field)}
-                        onDelete={handleDelete(field)}
-                        classes={{ icon: cn(classes.icon, { [classes.iconUp]: direction === 'desc' }) }}
-                    />
-                )
-            }
-            <Chip icon={<ArrowDownward />} label={'relevance'} />
-        </>
+        <DragDropContext onDragEnd={handleDragEnd}>
+            <Droppable droppableId="sorting" direction="horizontal">
+                {provided => (
+                    <div {...provided.droppableProps} ref={provided.innerRef} className={classes.chips}>
+                        {Array.isArray(order) &&
+                            order.filter(([field, direction = 'asc']) =>
+                                SORTABLE_FIELDS.includes(field) && ['asc', 'desc'].includes(direction)
+                            )
+                            .map(([field, direction = 'asc'], index) =>
+                                <Draggable key={field} draggableId={field} index={index}>
+                                    {provided => (
+                                        <Chip
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            {...provided.dragHandleProps}
+                                            icon={<ArrowDownward />}
+                                            label={field}
+                                            onClick={handleClick(field)}
+                                            onDelete={handleDelete(field)}
+                                            classes={{ icon: cn(classes.icon, { [classes.iconUp]: direction === 'desc' }) }}
+                                        />
+                                    )}
+                                </Draggable>
+                            )
+                        }
+                        {provided.placeholder}
+                        <Chip icon={<ArrowDownward />} label={'relevance'} />
+                    </div>
+                )}
+            </Droppable>
+        </DragDropContext>
     )
 }
 

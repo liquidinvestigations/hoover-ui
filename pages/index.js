@@ -7,7 +7,7 @@ import { Grid, List, Typography } from '@material-ui/core'
 import ChipInput from 'material-ui-chip-input'
 import HotKeysWithHelp from '../src/components/HotKeysWithHelp'
 import SplitPaneLayout from '../src/components/SplitPaneLayout'
-import SearchSettings from '../src/components/SearchSettings'
+import SearchSize from '../src/components/SearchSize'
 import Sorting from '../src/components/sorting/Sorting'
 import SearchResults from '../src/components/SearchResults'
 import Filter from '../src/components/filters/Filter'
@@ -388,11 +388,9 @@ export default function Index({ serverQuery }) {
                                 changeOrder={handleOrderChange}
                             />
 
-                            <SearchSettings
+                            <SearchSize
                                 size={size}
-                                order={order}
                                 changeSize={handleSizeChange}
-                                changeOrder={handleOrderChange}
                             />
                         </Grid>
                     </Grid>
