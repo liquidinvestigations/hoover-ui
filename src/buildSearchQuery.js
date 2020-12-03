@@ -1,30 +1,44 @@
 import { DEFAULT_FACET_SIZE, SORTABLE_FIELDS } from './constants'
 
-function buildQuery(q, { dateRange }) {
+function buildQuery(q, { dateCreatedRange, dateModifiedRange }) {
     const qs = {
         query_string: {
             query: q,
             default_operator: 'AND',
         },
-    };
-
-    if (dateRange && dateRange.from && dateRange.to) {
-        return {
-            bool: {
-                must: qs,
-                filter: {
-                    range: {
-                        date: {
-                            gte: dateRange.from,
-                            lte: dateRange.to,
-                        },
-                    },
-                },
-            },
-        };
     }
 
-    return qs;
+    const queryRanges = []
+    if (dateCreatedRange) {
+        queryRanges.push(['date-created', dateCreatedRange])
+    }
+    if (dateModifiedRange) {
+        queryRanges.push(['date', dateModifiedRange])
+    }
+
+    const ranges = []
+    queryRanges.forEach(([field, dateRange]) => {
+        if (dateRange && dateRange.from && dateRange.to) {
+            ranges.push({
+                range: {
+                    [field]: {
+                        gte: dateRange.from,
+                        lte: dateRange.to,
+                    },
+                },
+            })
+        }
+    })
+
+    if (ranges.length) {
+        return {
+            bool: {
+                must: [qs, ...ranges],
+            },
+        }
+    }
+
+    return qs
 }
 
 function buildSortQuery(order) {
@@ -127,14 +141,15 @@ export default function buildSearchQuery({
     collections = [],
     dateYears = null,
     dateCreatedYears = null,
-    dateRange,
+    dateCreatedRange,
+    dateModifiedRange,
     searchAfter = '',
     fileType = null,
     language = null,
     emailDomains = null,
     facets = {},
 } = {}) {
-    const query = buildQuery(q, { dateRange });
+    const query = buildQuery(q, { dateCreatedRange, dateModifiedRange });
     const sort = buildSortQuery(order);
 
     const fields = [
