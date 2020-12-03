@@ -28,13 +28,24 @@ function Filters({ loading, query, aggregations, applyFilter }) {
     return (
         <List>
             <Filter
-                title="Date range"
-                defaultOpen={!!(query.dateRange?.from || query.dateRange?.to)}>
+                title="Date modified"
+                defaultOpen={!!(query.dateModifiedRange?.from || query.dateModifiedRange?.to)}>
                 <DateRangeFilter
                     disabled={loading}
-                    onChange={handleFilterChange('dateRange')}
-                    defaultFrom={query.dateRange?.from}
-                    defaultTo={query.dateRange?.to}
+                    onChange={handleFilterChange('dateModifiedRange')}
+                    defaultFrom={query.dateModifiedRange?.from}
+                    defaultTo={query.dateModifiedRange?.to}
+                />
+            </Filter>
+
+            <Filter
+                title="Date created"
+                defaultOpen={!!(query.dateCreatedRange?.from || query.dateCreatedRange?.to)}>
+                <DateRangeFilter
+                    disabled={loading}
+                    onChange={handleFilterChange('dateCreatedRange')}
+                    defaultFrom={query.dateCreatedRange?.from}
+                    defaultTo={query.dateCreatedRange?.to}
                 />
             </Filter>
 
