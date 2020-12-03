@@ -7,7 +7,7 @@ const useStyles = makeStyles(theme => ({
     root: {
         display: 'flex',
         marginTop: theme.spacing(2),
-        justifyContent: 'space-between',
+        justifyContent: 'flex-end',
     },
 }))
 
@@ -16,7 +16,7 @@ function Sorting({ order = [], changeOrder }) {
     const handleSortingAdd = field => {
         const index = order?.findIndex(([v]) => v === field)
         if (!index || index < 0) {
-            changeOrder([...order, [field]])
+            changeOrder([[field], ...order])
         }
     }
 
