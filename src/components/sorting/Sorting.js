@@ -9,14 +9,6 @@ const useStyles = makeStyles(theme => ({
         marginTop: theme.spacing(2),
         justifyContent: 'space-between',
     },
-    chips: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        '& > *': {
-            marginRight: theme.spacing(0.5),
-            marginBottom: theme.spacing(0.5),
-        },
-    }
 }))
 
 function Sorting({ order = [], changeOrder }) {
@@ -30,9 +22,7 @@ function Sorting({ order = [], changeOrder }) {
 
     return (
         <div className={classes.root}>
-            <div className={classes.chips}>
-                <SortingChips order={order} changeOrder={changeOrder} />
-            </div>
+            <SortingChips order={order} changeOrder={changeOrder} />
             <SortingMenu addSorting={handleSortingAdd} />
         </div>
     )
