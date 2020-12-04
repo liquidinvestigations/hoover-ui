@@ -1,10 +1,9 @@
 import React, { memo, useContext } from 'react'
-import cn from 'classnames'
+import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
 import { AppBar, Toolbar, Typography } from '@material-ui/core'
 import { UserContext } from '../../pages/_app'
 import Menu from './Menu'
-import Link from 'next/link'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -17,12 +16,6 @@ const useStyles = makeStyles(theme => ({
         textDecoration: 'none',
         color: 'inherit',
     },
-    title: {
-        '& a': {
-            color: 'white',
-            textDecoration: 'none',
-        }
-    }
 }))
 
 function Header() {
@@ -36,13 +29,15 @@ function Header() {
                     <Typography
                         variant="h6"
                         color="inherit"
-                        className={classes.flex}>
+                        className={classes.flex}
+                    >
                         <Link href="/">
-                            <a
-                                className={cn(classes.noLink, classes.title)}
-                                dangerouslySetInnerHTML={{__html: whoAmI.title}}
-                            />
+                            <a className={classes.noLink}>{whoAmI.title}</a>
                         </Link>
+                        {' ⟶ '}
+                        <a href={whoAmI.liquid.url} className={classes.noLink}>
+                            {whoAmI.liquid.title}
+                        </a>
                     </Typography>
                     <Menu />
                 </Toolbar>
