@@ -132,9 +132,6 @@ Object {
   },
   "search_after": "",
   "size": 0,
-  "sort": Array [
-    "_score",
-    "_id",
-  ],
+  "sort": Array [],
 }
 `;
