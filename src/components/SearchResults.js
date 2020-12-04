@@ -22,7 +22,7 @@ function SearchResults({ loading, results, query, changePage, changeSize, select
                 type="text"
                 rows={10}
             >
-                {!query.collections?.length &&
+                {!!results && !query.collections?.length &&
                     <i>no collections selected</i>
                 }
                 {results?.hits.hits.map((hit, i) =>

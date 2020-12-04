@@ -68,18 +68,6 @@ function CollectionsFilter({ collections, selected, changeSelection, counts }) {
             <FormGroup>
                 {!collections?.length ? <Typography>no collections available</Typography> :
                     <>
-                        {collections.length > 1 &&
-                            <FormControlLabel
-                                className={classes.formControlLabel}
-                                control={
-                                    <Checkbox
-                                        checked={collections.every(c => selected.includes(c.name))}
-                                        onChange={handleAllChange}
-                                    />
-                                }
-                                label="All"
-                            />
-                        }
                         {collections.map(collection =>
                             <FormControlLabel
                                 key={collection.name}
@@ -94,6 +82,18 @@ function CollectionsFilter({ collections, selected, changeSelection, counts }) {
                                 label={collectionLabel(collection)}
                             />
                         )}
+                        {collections.length > 1 &&
+                        <FormControlLabel
+                            className={classes.formControlLabel}
+                            control={
+                                <Checkbox
+                                    checked={collections.every(c => selected.includes(c.name))}
+                                    onChange={handleAllChange}
+                                />
+                            }
+                            label="Select all"
+                        />
+                        }
                     </>
                 }
             </FormGroup>

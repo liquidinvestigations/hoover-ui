@@ -36,33 +36,13 @@ export const SEARCH_QUERY_PREFIXES = [
     SEARCH_OCR,
 ]
 export const SIZE_OPTIONS = [10, 50, 200, 1000]
-export const SORTABLE_FIELDS = [
-    'attachments',
-    'content-type',
-    'date',
-    'date-created',
-    'email-domains',
-    'filetype',
-    'id',
-    'in-reply-to',
-    'lang',
-    'md5',
-    'message',
-    'message-id',
-    'path',
-    //'path-text',
-    'path-parts',
-    'references',
-    'rev',
-    'sha1',
-    'size',
-    'suffix',
-    'thread-index',
-    'word-count',
-    'ocr',
-    'ocrpdf',
-    'ocrimage',
-]
+export const SORTABLE_FIELDS = {
+    _score: 'Relevance',
+    date: 'Date modified',
+    'date-created': 'Date created',
+    size: 'Size',
+    'word-count': 'Word count',
+}
 export const DATE_FORMAT = 'yyyy-MM-dd'
 export const DEFAULT_FACET_SIZE = 10
 export const JSS_CSS = 'jss-server-side'

@@ -2,7 +2,7 @@ import React, { memo } from 'react'
 import cn from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
 import { Chip } from '@material-ui/core'
-import { ArrowDownward, ArrowUpward } from '@material-ui/icons'
+import { ArrowUpward } from '@material-ui/icons'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import { SORTABLE_FIELDS } from '../../constants'
 
@@ -62,7 +62,7 @@ function SortingChips({ order, changeOrder }) {
                     <div {...provided.droppableProps} ref={provided.innerRef} className={classes.chips}>
                         {Array.isArray(order) &&
                             order.filter(([field, direction = 'asc']) =>
-                                SORTABLE_FIELDS.includes(field) && ['asc', 'desc'].includes(direction)
+                                Object.keys(SORTABLE_FIELDS).includes(field) && ['asc', 'desc'].includes(direction)
                             )
                             .map(([field, direction = 'asc'], index) =>
                                 <Draggable key={field} draggableId={field} index={index}>
@@ -73,17 +73,20 @@ function SortingChips({ order, changeOrder }) {
                                             {...provided.dragHandleProps}
                                             size="small"
                                             icon={<ArrowUpward />}
-                                            label={field}
-                                            onClick={handleClick(field)}
+                                            label={SORTABLE_FIELDS[field]}
+                                            onClick={field.startsWith('_') ? null : handleClick(field)}
                                             onDelete={handleDelete(field)}
-                                            classes={{ icon: cn(classes.icon, { [classes.iconDown]: direction === 'desc' }) }}
+                                            classes={{
+                                                icon: cn(classes.icon, {
+                                                    [classes.iconDown]: direction === 'desc' || field.startsWith('_')
+                                                })
+                                            }}
                                         />
                                     )}
                                 </Draggable>
                             )
                         }
                         {provided.placeholder}
-                        <Chip size="small" icon={<ArrowDownward />} label={'relevance'} />
                     </div>
                 )}
             </Droppable>

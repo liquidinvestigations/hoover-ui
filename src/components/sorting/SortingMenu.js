@@ -26,13 +26,13 @@ export default function SortingMenu({ addSorting }) {
                 open={Boolean(anchorEl)}
                 onClose={handleSortingMenuClose}
             >
-                {SORTABLE_FIELDS.map(field => (
+                {Object.entries(SORTABLE_FIELDS).map(([field, name]) => (
                     <MenuItem
                         key={field}
                         value={field}
                         onClick={handleSortingClick(field)}
                     >
-                        {field}
+                        {name}
                     </MenuItem>
                 ))}
             </Menu>
