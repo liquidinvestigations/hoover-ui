@@ -18,6 +18,7 @@ import { SEARCH_GUIDE, SEARCH_QUERY_PREFIXES } from '../src/constants'
 import { authorizeApiSSR, copyMetadata, documentViewUrl } from '../src/utils'
 import fixLegacyQuery from '../src/fixLegacyQuery'
 import api from '../src/api'
+import { rollupParams, unwindParams } from '../src/queryUtils'
 
 const extractFields = query => {
     const fields = []
@@ -44,12 +45,13 @@ const defaultParams = {
 }
 
 export const buildUrlQuery = (params) => {
-    const { q, fields, text, ...rest } = params
-    return qs.stringify({
+    const { q, collections, fields, text, ...rest } = params
+    return qs.stringify(rollupParams({
         q: (fields?.length ? fields.join(' ') + ' ' : '') + (text || ''),
         ...defaultParams,
+        collections: collections.join('+'),
         ...rest,
-    })
+    }))
 }
 
 const useStyles = makeStyles(theme => ({
@@ -80,7 +82,7 @@ export default function Index({ collections, serverQuery }) {
         }
         return window.location.href.split('?')[1]
     }
-    const query = qs.parse(getQueryString(), { arrayLimit: 100 })
+    const query = unwindParams(qs.parse(getQueryString(), { arrayLimit: 100 }))
     fixLegacyQuery(query)
 
     let [inputRef, setInputRef] = useState()
@@ -100,7 +102,7 @@ export default function Index({ collections, serverQuery }) {
         )
     }
 
-    const [selectedCollections, setSelectedCollections] = useState(collections?.map(c => c.name))
+    const [selectedCollections, setSelectedCollections] = useState(query.collections || [])
     const handleSelectedCollectionsChange = collections => {
         setSelectedCollections(collections)
         setPage(1)
@@ -325,7 +327,11 @@ export default function Index({ collections, serverQuery }) {
                 left={
                     <>
                         <List dense>
-                            <Filter title="Collections" colorIfFiltered={false}>
+                            <Filter
+                                title={`Collections (${selectedCollections.length})`}
+                                colorIfFiltered={false}
+                                defaultOpen
+                            >
                                 <CollectionsFilter
                                     collections={collections}
                                     selected={selectedCollections}

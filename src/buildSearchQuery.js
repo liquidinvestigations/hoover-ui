@@ -42,12 +42,16 @@ function buildQuery(q, { dateCreatedRange, dateModifiedRange }) {
 }
 
 function buildSortQuery(order) {
-    let sort = ['_score', '_id'];
+    let sort = [];
 
     Array.isArray(order) && order.filter(([field, direction = 'asc']) =>
-        SORTABLE_FIELDS.includes(field) && ['asc', 'desc'].includes(direction)
+        Object.keys(SORTABLE_FIELDS).includes(field) && ['asc', 'desc'].includes(direction)
     ).reverse().forEach(([field, direction = 'asc']) => {
-        sort = [{ [field]: { order: direction, missing: '_last' } }, ...sort]
+        if (field.startsWith('_')) {
+            sort = [field, ...sort]
+        } else {
+            sort = [{[field]: {order: direction, missing: '_last'}}, ...sort]
+        }
     })
 
     return sort;

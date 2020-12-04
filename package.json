@@ -15,7 +15,7 @@
     "heroku-postbuild": "next build"
   },
   "engine": {
-    "node": "10.23"
+    "node": "14.15"
   },
   "repository": {
     "type": "git",
