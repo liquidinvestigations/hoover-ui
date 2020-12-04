@@ -10,6 +10,9 @@ const useStyles = makeStyles(theme => ({
     formControlLabel: {
         width: '100%',
     },
+    count: {
+        color: theme.palette.grey[500]
+    },
     progress: {
         color: '#999',
         'font-size': '7.5pt',
@@ -47,7 +50,9 @@ function CollectionsFilter({ collections, selected, changeSelection, counts }) {
             <>
                 <span>
                     {collection.title}
-                    {' '}
+                </span>
+                {' '}
+                <span className={classes.count}>
                     {collectionCount}
                 </span>
                 <br/>

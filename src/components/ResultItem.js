@@ -92,7 +92,7 @@ function ResultItem({ hit, url, index, onPreview, isPreview, unsearchable }) {
             <CardContent>
                 <Grid container alignItems="flex-end">
                     <Grid item md={4}>
-                        {fields['word-count'] && (
+                        {!!fields['word-count'] && (
                             <Box>
                                 <Typography variant="caption">
                                     {fields['word-count']} words
@@ -100,7 +100,7 @@ function ResultItem({ hit, url, index, onPreview, isPreview, unsearchable }) {
                             </Box>
                         )}
 
-                        {fields.date && (
+                        {!!fields.date && (
                             <Box>
                                 <Typography variant="caption">
                                     <strong>Modified:</strong>{' '}
@@ -110,7 +110,7 @@ function ResultItem({ hit, url, index, onPreview, isPreview, unsearchable }) {
                             </Box>
                         )}
 
-                        {fields['date-created'] && (
+                        {!!fields['date-created'] && (
                             <Box>
                                 <Typography variant="caption">
                                     <strong>Created:</strong>{' '}
