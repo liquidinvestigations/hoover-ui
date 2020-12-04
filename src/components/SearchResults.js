@@ -21,6 +21,9 @@ function SearchResults({ loading, results, query, changePage, selectedDocUrl, on
                 type="text"
                 rows={10}
             >
+                {!query.collections?.length &&
+                    <i>no collections selected</i>
+                }
                 {results?.hits.hits.map((hit, i) =>
                     <ResultItem
                         key={hit._url}
@@ -32,7 +35,7 @@ function SearchResults({ loading, results, query, changePage, selectedDocUrl, on
                         unsearchable={!!selectedDocUrl}
                     />
                 )}
-                {results?.hits.hits.length &&
+                {!!results?.hits.hits.length &&
                     <Pagination
                         total={parseInt(results.hits.total)}
                         size={parseInt(query.size)}

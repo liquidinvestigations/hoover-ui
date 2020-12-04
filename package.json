@@ -1,6 +1,6 @@
 {
   "name": "hoover-ui",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "React.js port of the hoover ui",
   "main": "index.js",
   "scripts": {

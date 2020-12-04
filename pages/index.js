@@ -81,7 +81,7 @@ export default function Index({ serverQuery }) {
         }
         return window.location.href.split('?')[1]
     }
-    const query = qs.parse(getQueryString())
+    const query = qs.parse(getQueryString(), { arrayLimit: 100 })
     if (query.collections && typeof query.collections === 'string') {
         query.collections = query.collections.split('+')
     }
