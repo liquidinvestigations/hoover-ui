@@ -3,9 +3,12 @@ import { Sort } from '@material-ui/icons'
 import { Fab, Menu, MenuItem } from '@material-ui/core'
 import { SORTABLE_FIELDS } from '../../constants'
 
-export default function SortingMenu({ addSorting }) {
+export default function SortingMenu({ order, addSorting }) {
+    const sortOptions = Object.entries(SORTABLE_FIELDS).filter(
+        ([field]) => order.findIndex(([v]) => v === field) === -1
+    )
     const [anchorEl, setAnchorEl] = useState(null)
-    const handleSortingMenuClick = event => setAnchorEl(event.currentTarget)
+    const handleSortingMenuClick = event => sortOptions.length && setAnchorEl(event.currentTarget)
     const handleSortingMenuClose = () => setAnchorEl(null)
     const handleSortingClick = field => () => addSorting(field)
 
@@ -26,7 +29,7 @@ export default function SortingMenu({ addSorting }) {
                 open={Boolean(anchorEl)}
                 onClose={handleSortingMenuClose}
             >
-                {Object.entries(SORTABLE_FIELDS).map(([field, name]) => (
+                {sortOptions.map(([field, name]) => (
                     <MenuItem
                         key={field}
                         value={field}
