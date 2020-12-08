@@ -38,16 +38,21 @@ const buildTree = (leaf, basePath) => {
         });
 
         const more = {
+            loadId: id,
             label: '...',
-            fileType: 'more'
+            fileType: 'more',
         }
 
-        if (item.children_page > 1) {
-            node.children.unshift(more)
+        const hasPrevPage = item.hasPrevPage === undefined ? item.children_page > 1 : item.hasPrevPage
+        const prevPage = item.prevPage === undefined ? item.children_page - 1 : item.prevPage
+        const nextPage = item.nextPage === undefined ? item.children_page + 1 : item.nextPage
+
+        if (hasPrevPage) {
+            node.children.unshift({...more, loadPage: prevPage, direction: 'prepend'})
         }
 
         if (item.children_has_next_page) {
-            node.children.push(more)
+            node.children.push({...more, loadPage: nextPage, direction: 'append'})
         }
 
         return node
@@ -93,7 +98,6 @@ function Finder({ loading, data, url }) {
 
     const handleLeafSelected = item => {
         console.log('leaf-selected', item)
-
         navigateTo(item)
     }
 
@@ -106,13 +110,35 @@ function Finder({ loading, data, url }) {
         navigateTo(item)
     }
 
-    const navigateTo = item => {
+    const navigateTo = async item => {
         if (item.href) {
             router.push(
                 item.href,
                 undefined,
                 {shallow: true},
             )
+        } else if (item.fileType === 'more') {
+            const moreItems = await api.doc(
+                getBasePath(url) + item.loadId,
+                item.loadPage
+            )
+            let current = {...data}
+            while (current.id !== item.loadId) {
+                current = current.parent
+            }
+            if (item.direction === 'append') {
+                current.nextPage = item.loadPage + 1
+                current.children.push(...moreItems.children)
+                current.children_has_next_page = moreItems.children_has_next_page
+                setDefaultValue(moreItems.children[0])
+            } else {
+                current.hasPrevPage = item.loadPage > 1
+                current.prevPage = item.loadPage - 1
+                current.children.unshift(...moreItems.children)
+                setDefaultValue(moreItems.children[moreItems.children.length - 1])
+            }
+
+            setTree(buildTree(current, getBasePath(url)))
         }
     }
 
