@@ -48,7 +48,7 @@ function buildSortQuery(order) {
         Object.keys(SORTABLE_FIELDS).includes(field) && ['asc', 'desc'].includes(direction)
     ).reverse().forEach(([field, direction = 'asc']) => {
         if (field.startsWith('_')) {
-            sort = [field, ...sort]
+            sort = [{[field]: {order: direction}}, ...sort]
         } else {
             sort = [{[field]: {order: direction, missing: '_last'}}, ...sort]
         }

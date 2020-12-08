@@ -14,16 +14,16 @@ const useStyles = makeStyles(theme => ({
 function Sorting({ order = [], changeOrder }) {
     const classes = useStyles()
     const handleSortingAdd = field => {
-        const index = order?.findIndex(([v]) => v === field)
+        const index = order.findIndex(([v]) => v === field)
         if (!index || index < 0) {
-            changeOrder([[field], ...order])
+            changeOrder([[field, 'desc'], ...order])
         }
     }
 
     return (
         <div className={classes.root}>
             <SortingChips order={order} changeOrder={changeOrder} />
-            <SortingMenu addSorting={handleSortingAdd} />
+            <SortingMenu order={order} addSorting={handleSortingAdd} />
         </div>
     )
 }

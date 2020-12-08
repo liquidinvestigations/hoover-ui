@@ -74,11 +74,11 @@ function SortingChips({ order, changeOrder }) {
                                             size="small"
                                             icon={<ArrowUpward />}
                                             label={SORTABLE_FIELDS[field]}
-                                            onClick={field.startsWith('_') ? null : handleClick(field)}
+                                            onClick={handleClick(field)}
                                             onDelete={handleDelete(field)}
                                             classes={{
                                                 icon: cn(classes.icon, {
-                                                    [classes.iconDown]: direction === 'desc' || field.startsWith('_')
+                                                    [classes.iconDown]: direction === 'desc'
                                                 })
                                             }}
                                         />
