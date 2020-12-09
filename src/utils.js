@@ -154,6 +154,5 @@ export const humanFileSize = (bytes, si=false, dp=1) => {
 }
 
 export const authorizeApiSSR = (req, api) => {
-    const { host, cookie } = req.headers
-    Object.assign(api, { host, cookie })
+    api.headers = req.headers
 }

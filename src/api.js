@@ -31,6 +31,7 @@ const api = {
             credentials: 'same-origin',
             headers: {
                 ...(opts.headers || {}),
+                ...(api.headers || {}),
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
                 Cookie: api.cookie,
