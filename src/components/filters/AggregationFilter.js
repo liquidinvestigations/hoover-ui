@@ -6,7 +6,9 @@ import { formatThousands } from '../../utils'
 const defaultBucketSorter = (a, b) => b.doc_count - a.doc_count;
 
 const useStyles = makeStyles(theme => ({
-    root: {},
+    checkbox: {
+        padding: 5,
+    },
     label: {
         overflowX: 'hidden',
         whiteSpace: 'nowrap',
@@ -55,17 +57,17 @@ function AggregationFilter({ aggregation, cardinality, size, title, disabled, on
             <ListItem
                 key={bucket.key}
                 role={undefined}
-                classes={{
-                    root: classes.root,
-                }}
                 dense
                 button
-                onClick={handleChange(value)}>
+                onClick={handleChange(value)}
+            >
                 <Checkbox
+                    size="small"
                     tabIndex={-1}
                     disableRipple
                     value={value}
                     checked={checked}
+                    classes={{ root: classes.checkbox }}
                     disabled={disabled || !bucket.doc_count}
                     onChange={handleChange(value)}
                 />

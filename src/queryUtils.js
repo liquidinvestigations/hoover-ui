@@ -4,7 +4,7 @@ const PARAMS_MAP = {
     p: 'page',
     s: 'size',
     o: 'order',
-    m: 'dateModifiedRange',
+    m: 'dateRange',
     r: 'dateCreatedRange',
     f: 'fileType',
     l: 'language',

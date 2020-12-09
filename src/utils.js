@@ -10,7 +10,7 @@ import email from '../icons/mail-line.svg';
 import pdf from '../icons/file-pdf-line.svg';
 import doc from '../icons/file-word-line.svg';
 import xls from '../icons/file-excel-line.svg';
-import { SEARCH_CREATION_DATE, SEARCH_MODIFICATION_DATE } from './constants'
+import { SEARCH_DATE, SEARCH_DATE_CREATED } from './constants'
 import { buildUrlQuery } from '../pages'
 import api from './api'
 
@@ -101,13 +101,13 @@ export function searchPath(query, prefix, collections) {
 
     const params = { collections: Array.isArray(collections) ? collections : [collections] }
 
-    if (prefix === SEARCH_CREATION_DATE || prefix === SEARCH_MODIFICATION_DATE) {
+    if (prefix === SEARCH_DATE || prefix === SEARCH_DATE_CREATED) {
         params.text = '*'
         quotedQuery = quotedQuery.substring(0, 10)
-        if (prefix === SEARCH_CREATION_DATE) {
-            params.dateCreatedRange = { from: quotedQuery, to: quotedQuery }
+        if (prefix === SEARCH_DATE) {
+            params.dateRange = { from: quotedQuery, to: quotedQuery }
         } else {
-            params.dateModifiedRange = { from: quotedQuery, to: quotedQuery }
+            params.dateCreatedRange = { from: quotedQuery, to: quotedQuery }
         }
     } else if (prefix) {
         params.fields = [`${prefix}:${quotedQuery}`]

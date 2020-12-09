@@ -2,7 +2,7 @@ import React, { createContext, useEffect } from 'react'
 import App from 'next/app'
 import LuxonUtils from '@date-io/luxon'
 import { ThemeProvider } from '@material-ui/core/styles'
-import CssBaseline from '@material-ui/core/CssBaseline'
+import { CssBaseline } from '@material-ui/core'
 import { MuiPickersUtilsProvider } from '@material-ui/pickers'
 import { authorizeApiSSR } from '../src/utils'
 import { JSS_CSS } from "../src/constants"

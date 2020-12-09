@@ -29,12 +29,23 @@ function Filters({ loading, query, aggregations, applyFilter }) {
         <List>
             <Filter
                 title="Date modified"
-                defaultOpen={!!(query.dateModifiedRange?.from || query.dateModifiedRange?.to)}>
+                defaultOpen={!!(query.dateRange?.from || query.dateRange?.to)}>
                 <DateRangeFilter
                     disabled={loading}
-                    onChange={handleFilterChange('dateModifiedRange')}
-                    defaultFrom={query.dateModifiedRange?.from}
-                    defaultTo={query.dateModifiedRange?.to}
+                    onChange={handleFilterChange('dateRange')}
+                    defaultFrom={query.dateRange?.from}
+                    defaultTo={query.dateRange?.to}
+                />
+
+                <AggregationFilter
+                    disabled={loading}
+                    selected={query.dateYears}
+                    aggregation={aggregations.count_by_date_years.date_years}
+                    cardinality={aggregations.count_by_date_years.date_years_count}
+                    onChange={handleFilterChange('dateYears')}
+                    sortBuckets={timeBucketSorter}
+                    bucketLabel={formatYear}
+                    bucketValue={formatYear}
                 />
             </Filter>
 
@@ -47,12 +58,22 @@ function Filters({ loading, query, aggregations, applyFilter }) {
                     defaultFrom={query.dateCreatedRange?.from}
                     defaultTo={query.dateCreatedRange?.to}
                 />
+
+                <AggregationFilter
+                    disabled={loading}
+                    selected={query.dateCreatedYears}
+                    aggregation={aggregations.count_by_date_created_years.date_created_years}
+                    cardinality={aggregations.count_by_date_created_years.date_created_years_count}
+                    onChange={handleFilterChange('dateCreatedYears')}
+                    sortBuckets={timeBucketSorter}
+                    bucketLabel={formatYear}
+                    bucketValue={formatYear}
+                />
             </Filter>
 
             <Filter title="File type" defaultOpen={!!query.fileType?.length}>
                 <AggregationFilter
                     disabled={loading}
-                    title=""
                     selected={query.fileType}
                     aggregation={aggregations.count_by_filetype.filetype}
                     cardinality={aggregations.count_by_filetype.filetype_count}
@@ -81,54 +102,12 @@ function Filters({ loading, query, aggregations, applyFilter }) {
                 defaultOpen={!!query.emailDomains?.length}>
                 <AggregationFilter
                     disabled={loading}
-                    aggregation={
-                        aggregations.count_by_email_domains.email_domains
-                    }
-                    cardinality={
-                        aggregations.count_by_email_domains.email_domains_count
-                    }
+                    aggregation={aggregations.count_by_email_domains.email_domains}
+                    cardinality={aggregations.count_by_email_domains.email_domains_count}
                     selected={query.emailDomains}
                     onChange={handleFilterChange('emailDomains')}
                     size={query.facets?.emailDomains || DEFAULT_FACET_SIZE}
                     onLoadMore={handleLoadMore('emailDomains')}
-                />
-            </Filter>
-
-            <Filter
-                enabled={false}
-                title="Years"
-                defaultOpen={
-                    !!(query.dateYears?.length || query.dateCreatedYears?.length)
-                }>
-                <AggregationFilter
-                    disabled={loading}
-                    aggregation={aggregations.count_by_date_years.date_years}
-                    selected={query.dateYears}
-                    title="Year"
-                    onChange={handleFilterChange('dateYears')}
-                    sortBuckets={timeBucketSorter}
-                    bucketLabel={formatYear}
-                    bucketValue={formatYear}
-                />
-
-                <AggregationFilter
-                    disabled={loading}
-                    aggregation={
-                        aggregations
-                            .count_by_date_created_years
-                            .date_created_years
-                    }
-                    cardinality={
-                        aggregations.
-                            count_by_date_created_years
-                            .date_created_years_count
-                    }
-                    selected={query.dateCreatedYears}
-                    title="Year created"
-                    onChange={handleFilterChange('dateCreatedYears')}
-                    sortBuckets={timeBucketSorter}
-                    bucketLabel={formatYear}
-                    bucketValue={formatYear}
                 />
             </Filter>
         </List>

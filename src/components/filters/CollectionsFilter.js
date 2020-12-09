@@ -1,103 +1,107 @@
 import React, { memo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Checkbox, FormControlLabel, FormGroup, ListItem, Typography } from '@material-ui/core'
+import { Checkbox, List, ListItem, ListItemText, Typography } from '@material-ui/core'
 import { formatThousands } from '../../utils'
 
 const useStyles = makeStyles(theme => ({
-    root: {
-        display: 'flex',
+    checkbox: {
+        padding: 5,
     },
-    formControlLabel: {
-        width: '100%',
-    },
-    count: {
-        color: theme.palette.grey[500]
+    label: {
+        margin: 0,
     },
     progress: {
-        color: '#999',
-        'font-size': '7.5pt',
+        fontSize: '7.5pt',
     },
 }))
 
 function CollectionsFilter({ collections, selected, changeSelection, counts }) {
     const classes = useStyles()
 
-    const handleChange = event => {
-        const { name, checked } = event.target
-        let newSelection
-        if (checked) {
-            newSelection = [...selected, name]
+    const handleChange = name => () => {
+        const selection = new Set(selected || [])
+
+        if (selection.has(name)) {
+            selection.delete(name)
         } else {
-            newSelection = selected.filter(c => c !== name);
+            selection.add(name)
         }
-        changeSelection(newSelection)
+
+        changeSelection(Array.from(selection))
     }
 
-    const handleAllChange = event => {
-        if (event.target.checked) {
-            changeSelection(collections.map(c => c.name))
-        } else {
+    const handleAllChange = () => {
+        if (collections.length === selected.length) {
             changeSelection([])
+        } else {
+            changeSelection(collections.map(c => c.name))
         }
-    }
-
-    const collectionLabel = collection => {
-        let collectionCount = ''
-        if (counts && counts[collection.name]) {
-            collectionCount = formatThousands(counts[collection.name])
-        }
-        return (
-            <>
-                <span>
-                    {collection.title}
-                </span>
-                {' '}
-                <span className={classes.count}>
-                    {collectionCount}
-                </span>
-                <br/>
-                <i className={classes.progress}>
-                    {collection.stats.progress_str}
-                </i>
-            </>
-        )
     }
 
     return (
-        <ListItem dense>
-            <FormGroup>
-                {!collections?.length ? <Typography>no collections available</Typography> :
-                    <>
-                        {collections.map(collection =>
-                            <FormControlLabel
-                                key={collection.name}
-                                className={classes.formControlLabel}
-                                control={
-                                    <Checkbox
-                                        name={collection.name}
-                                        checked={selected.includes(collection.name)}
-                                        onChange={handleChange}
-                                    />
-                                }
-                                label={collectionLabel(collection)}
+        <List>
+            {!collections?.length ? <Typography>no collections available</Typography> :
+                <>
+                    {collections.map(collection =>
+                        <ListItem
+                            key={collection.name}
+                            role={undefined}
+                            dense
+                            button
+                            onClick={handleChange(collection.name)}
+                        >
+                            <Checkbox
+                                size="small"
+                                tabIndex={-1}
+                                disableRipple
+                                classes={{ root: classes.checkbox }}
+                                checked={selected.includes(collection.name)}
+                                onChange={handleChange(collection.name)}
                             />
-                        )}
-                        {collections.length > 1 &&
-                        <FormControlLabel
-                            className={classes.formControlLabel}
-                            control={
-                                <Checkbox
-                                    checked={collections.every(c => selected.includes(c.name))}
-                                    onChange={handleAllChange}
-                                />
-                            }
-                            label="Select all"
-                        />
-                        }
-                    </>
-                }
-            </FormGroup>
-        </ListItem>
+
+                            <ListItemText
+                                primary={collection.name}
+                                secondary={collection.stats.progress_str}
+                                className={classes.label}
+                                secondaryTypographyProps={{
+                                    className: classes.progress
+                                }}
+                            />
+
+                            <ListItemText
+                                primary={
+                                    <Typography variant="caption">
+                                        {counts && counts[collection.name] &&
+                                            formatThousands(counts[collection.name])
+                                        }
+                                    </Typography>
+                                }
+                                disableTypography
+                                align="right"
+                            />
+                        </ListItem>
+                    )}
+                    {collections.length > 1 &&
+                        <ListItem
+                            dense
+                            button
+                            onClick={handleAllChange}
+                        >
+                            <Checkbox
+                                size="small"
+                                tabIndex={-1}
+                                disableRipple
+                                classes={{ root: classes.checkbox }}
+                                checked={collections.length === selected.length}
+                                onChange={handleAllChange}
+                            />
+
+                            <ListItemText primary="Select all" />
+                        </ListItem>
+                    }
+                </>
+            }
+        </List>
     )
 }
 

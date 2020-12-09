@@ -7,7 +7,7 @@ import { isPrintMode, searchPath } from '../../utils'
 import {
     SEARCH_FROM,
     SEARCH_IN_REPLY_TO,
-    SEARCH_MODIFICATION_DATE,
+    SEARCH_DATE,
     SEARCH_SUBJECT,
     SEARCH_THREAD_INDEX,
     SEARCH_TO
@@ -71,7 +71,7 @@ function EmailSection({ doc, collection }) {
                     <TableRow>
                         <TableCell>
                             {data.date && !printMode ?
-                                <Link href={searchPath(data.date, SEARCH_MODIFICATION_DATE, collection)} shallow>
+                                <Link href={searchPath(data.date, SEARCH_DATE, collection)} shallow>
                                     <a title="search sent this date">Date</a>
                                 </Link>
                                 :

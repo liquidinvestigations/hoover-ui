@@ -13,8 +13,8 @@ export const SEARCH_MESSAGE_ID = 'message-id'
 export const SEARCH_IN_REPLY_TO = 'in-reply-to'
 export const SEARCH_THREAD_INDEX = 'thread-index'
 export const SEARCH_REFERENCES = 'references'
-export const SEARCH_MODIFICATION_DATE = 'date'
-export const SEARCH_CREATION_DATE = 'date-created'
+export const SEARCH_DATE = 'date'
+export const SEARCH_DATE_CREATED = 'date-created'
 export const SEARCH_OCR = 'ocr'
 export const SEARCH_QUERY_PREFIXES = [
     SEARCH_MD5,
@@ -31,8 +31,8 @@ export const SEARCH_QUERY_PREFIXES = [
     SEARCH_IN_REPLY_TO,
     SEARCH_THREAD_INDEX,
     SEARCH_REFERENCES,
-    SEARCH_MODIFICATION_DATE,
-    SEARCH_CREATION_DATE,
+    SEARCH_DATE,
+    SEARCH_DATE_CREATED,
     SEARCH_OCR,
 ]
 export const SIZE_OPTIONS = [10, 50, 200, 1000]

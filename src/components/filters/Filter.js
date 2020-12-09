@@ -58,12 +58,14 @@ function Filter({ title, children, defaultOpen, enabled = true, colorIfFiltered 
 
                     <Grid item>
                         <IconButton
+                            size="small"
                             className={cn(classes.expand, {
                                 [classes.expandOpen]: open,
                             })}
                             onClick={toggle}
                             aria-expanded={open}
-                            aria-label="Show more">
+                            aria-label="Show more"
+                        >
                             <ExpandMore
                                 color={
                                     defaultOpen && colorIfFiltered

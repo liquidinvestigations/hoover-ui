@@ -51,7 +51,7 @@ const HIGHLIGHT_SETTINGS = {
     post_tags: ['</mark>'],
 };
 
-function buildQuery(q, { dateCreatedRange, dateModifiedRange }) {
+function buildQuery(q, { dateRange, dateCreatedRange }) {
     const qs = {
         query_string: {
             query: q,
@@ -63,11 +63,11 @@ function buildQuery(q, { dateCreatedRange, dateModifiedRange }) {
     }
 
     const queryRanges = []
+    if (dateRange) {
+        queryRanges.push(['date', dateRange])
+    }
     if (dateCreatedRange) {
         queryRanges.push(['date-created', dateCreatedRange])
-    }
-    if (dateModifiedRange) {
-        queryRanges.push(['date', dateModifiedRange])
     }
 
     const ranges = []
@@ -147,7 +147,7 @@ function buildYearField(name, value, { field = name } = {}) {
                       bool: {
                           should: value.map(year => ({
                               range: {
-                                  date: {
+                                  [field]: {
                                       gte: `${year}-01-01`,
                                       lte: `${year}-12-31`,
                                   },
@@ -197,17 +197,17 @@ export default function buildSearchQuery({
     q = '*',
     order = null,
     collections = [],
+    dateRange,
+    dateCreatedRange,
     dateYears = null,
     dateCreatedYears = null,
-    dateCreatedRange,
-    dateModifiedRange,
     searchAfter = '',
     fileType = null,
     language = null,
     emailDomains = null,
     facets = {},
 } = {}) {
-    const query = buildQuery(q, { dateCreatedRange, dateModifiedRange });
+    const query = buildQuery(q, { dateRange, dateCreatedRange });
     const sort = buildSortQuery(order);
 
     const fields = [
@@ -217,20 +217,14 @@ export default function buildSearchQuery({
             size: facets.emailDomains,
         }),
         buildTermsField('lang', language, { size: facets.language }),
-        buildYearField('date_years', dateYears, {
-            field: 'date',
-            size: facets.dateYears,
-        }),
-        buildYearField('date_created_years', dateCreatedYears, {
-            field: 'date-created',
-            size: facets.dateCreatedYears,
-        }),
+        buildYearField('date_years', dateYears, { field: 'date' }),
+        buildYearField('date_created_years', dateCreatedYears, { field: 'date-created' }),
     ];
 
     const postFilter = buildFilter(fields);
     const aggs = buildAggs(fields);
 
-    var highlightFields = {};
+    const highlightFields = {};
     // TODO replace with fields.highlight from api.searchFields()
     ALL_FIELDS.forEach((x) => {
         highlightFields[x] = HIGHLIGHT_SETTINGS;

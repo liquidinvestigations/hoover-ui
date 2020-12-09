@@ -2,6 +2,7 @@ import React, { useCallback, useContext, useEffect, useState } from 'react'
 import Router, { useRouter } from 'next/router'
 import Link from 'next/link'
 import qs from 'qs'
+import parser from 'lucene-query-parser'
 import { makeStyles } from '@material-ui/core/styles'
 import { Grid, List, Typography } from '@material-ui/core'
 import ChipInput from 'material-ui-chip-input'
@@ -16,11 +17,14 @@ import Document from '../src/components/document/Document'
 import { ProgressIndicatorContext } from '../src/components/ProgressIndicator'
 import { SEARCH_GUIDE, SEARCH_QUERY_PREFIXES } from '../src/constants'
 import { authorizeApiSSR, copyMetadata, documentViewUrl } from '../src/utils'
+import { rollupParams, unwindParams } from '../src/queryUtils'
 import fixLegacyQuery from '../src/fixLegacyQuery'
 import api from '../src/api'
-import { rollupParams, unwindParams } from '../src/queryUtils'
 
 const extractFields = query => {
+    const results = query && parser.parse(query)
+    console.log(results)
+
     const fields = []
     const queryParts = query ? query.match(/(?:[^\s"\[{]+|"[^"]*"|[\[{][^\]}]*[\]}])+/g) : []
     const otherInput = []

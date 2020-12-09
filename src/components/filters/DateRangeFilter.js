@@ -1,5 +1,4 @@
 import React, { memo, useEffect, useState } from 'react'
-import { DateTime } from 'luxon'
 import { ArrowLeft, ArrowRight, Event } from '@material-ui/icons'
 import { Button, Grid, List, ListItem } from '@material-ui/core'
 import { KeyboardDatePicker } from '@material-ui/pickers'
@@ -11,19 +10,26 @@ const icons = {
     keyboardIcon: <Event />,
 }
 
+const emptyLabel = 'YYYY-MM-DD'
+
 function DateRangeFilter({ defaultFrom, defaultTo, onChange }) {
-    const currentDate = DateTime.local().toFormat(DATE_FORMAT)
+    const [from, setFrom] = useState(defaultFrom)
+    const [to, setTo] = useState(defaultTo)
 
-    const [from, setFrom] = useState(defaultFrom || currentDate)
-    const [to, setTo] = useState(defaultTo || currentDate)
-
-    const handleFromChange = date => setFrom(date.toFormat(DATE_FORMAT))
-    const handleToChange = date => setTo(date.toFormat(DATE_FORMAT))
+    const handleFromChange = date => setFrom(date?.toFormat(DATE_FORMAT))
+    const handleToChange = date => setTo(date?.toFormat(DATE_FORMAT))
 
     const handleApply = () => onChange({ from, to })
     const handleReset = () => onChange(null)
 
     const unedited = defaultFrom === from && defaultTo === to
+
+    const labelFunc = field => (date, invalidLabel) => {
+        if (!field) {
+            return ''
+        }
+        return date.isValid ? date.toFormat(DATE_FORMAT) : invalidLabel
+    }
 
     useEffect(() => {
         setFrom(defaultFrom)
@@ -35,6 +41,8 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange }) {
             <ListItem>
                 <KeyboardDatePicker
                     value={from}
+                    label={from ? null : emptyLabel}
+                    labelFunc={labelFunc(from)}
                     format={DATE_FORMAT}
                     onChange={handleFromChange}
                     maxDate={to}
@@ -48,6 +56,8 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange }) {
             <ListItem>
                 <KeyboardDatePicker
                     value={to}
+                    label={from ? null : emptyLabel}
+                    labelFunc={labelFunc(to)}
                     format={DATE_FORMAT}
                     minDate={from}
                     onChange={handleToChange}
