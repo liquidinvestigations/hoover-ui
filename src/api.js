@@ -23,7 +23,7 @@ const api = {
             if (process.env.API_URL) {
                 apiUrl = process.env.API_URL + url
             } else if (process.env.ALLOW_CLIENT_API_URL) {
-                apiUrl = 'http://' + api.host + url
+                apiUrl = 'http://' + api.headers.host + url
             }
         }
         const res = await fetch(apiUrl, {
@@ -34,7 +34,6 @@ const api = {
                 ...(api.headers || {}),
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                Cookie: api.cookie,
             },
         })
 
