@@ -18,7 +18,14 @@ const api = {
     },
 
     fetchJson: async (url, opts = {}) => {
-        const apiUrl = typeof window === 'undefined' ? 'http://' + api.host + url : url
+        let apiUrl = url
+        if (typeof window === 'undefined') {
+            if (process.env.API_URL) {
+                apiUrl = process.env.API_URL
+            } else if (process.env.ALLOW_CLIENT_API_URL) {
+                apiUrl = 'http://' + api.host + url
+            }
+        }
         const res = await fetch(apiUrl, {
             ...opts,
             credentials: 'same-origin',
