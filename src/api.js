@@ -21,7 +21,7 @@ const api = {
         let apiUrl = url
         if (typeof window === 'undefined') {
             if (process.env.API_URL) {
-                apiUrl = process.env.API_URL
+                apiUrl = process.env.API_URL + url
             } else if (process.env.ALLOW_CLIENT_API_URL) {
                 apiUrl = 'http://' + api.host + url
             }
