@@ -45,4 +45,5 @@ export const SORTABLE_FIELDS = {
 }
 export const DATE_FORMAT = 'yyyy-MM-dd'
 export const DEFAULT_FACET_SIZE = 10
+export const DEFAULT_INTERVAL = 'year'
 export const JSS_CSS = 'jss-server-side'

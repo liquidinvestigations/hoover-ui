@@ -1,6 +1,7 @@
 import React, { memo } from 'react'
 import Link from 'next/link'
 import url from 'url'
+import { DateTime } from 'luxon'
 import { List, ListItem, ListItemText } from '@material-ui/core'
 import { getLanguageName, humanFileSize, isPrintMode, searchPath } from '../../utils'
 import Section from './Section'
@@ -12,7 +13,6 @@ import {
     SEARCH_PATH_PARTS,
     SEARCH_SHA1
 } from '../../constants'
-import { DateTime } from 'luxon'
 
 function MetaSection({ doc, collection, baseUrl }) {
     const printMode = isPrintMode()
@@ -114,7 +114,7 @@ function MetaSection({ doc, collection, baseUrl }) {
                                     </Link>
                                 }
                                 secondary={DateTime.fromISO(data.date, { locale: 'en-US' })
-                                    .toLocaleString(DateTime.DATE_FULL)}
+                                    .toLocaleString(DateTime.DATETIME_FULL)}
                             />
                         </ListItem>
                     }
@@ -127,7 +127,7 @@ function MetaSection({ doc, collection, baseUrl }) {
                                     </Link>
                                 }
                                 secondary={DateTime.fromISO(data['date-created'], { locale: 'en-US' })
-                                        .toLocaleString(DateTime.DATE_FULL)}
+                                        .toLocaleString(DateTime.DATETIME_FULL)}
                             />
                         </ListItem>
                     }

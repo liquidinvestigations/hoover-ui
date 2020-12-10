@@ -60,32 +60,27 @@ function SortingChips({ order, changeOrder }) {
             <Droppable droppableId="sorting" direction="horizontal">
                 {provided => (
                     <div {...provided.droppableProps} ref={provided.innerRef} className={classes.chips}>
-                        {Array.isArray(order) &&
-                            order.filter(([field, direction = 'asc']) =>
-                                Object.keys(SORTABLE_FIELDS).includes(field) && ['asc', 'desc'].includes(direction)
-                            )
-                            .map(([field, direction = 'asc'], index) =>
-                                <Draggable key={field} draggableId={field} index={index}>
-                                    {provided => (
-                                        <Chip
-                                            ref={provided.innerRef}
-                                            {...provided.draggableProps}
-                                            {...provided.dragHandleProps}
-                                            size="small"
-                                            icon={<ArrowUpward />}
-                                            label={SORTABLE_FIELDS[field]}
-                                            onClick={handleClick(field)}
-                                            onDelete={handleDelete(field)}
-                                            classes={{
-                                                icon: cn(classes.icon, {
-                                                    [classes.iconDown]: direction === 'desc'
-                                                })
-                                            }}
-                                        />
-                                    )}
-                                </Draggable>
-                            )
-                        }
+                        {order?.map(([field, direction = 'asc'], index) =>
+                            <Draggable key={field} draggableId={field} index={index}>
+                                {provided => (
+                                    <Chip
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                        size="small"
+                                        icon={<ArrowUpward />}
+                                        label={SORTABLE_FIELDS[field]}
+                                        onClick={handleClick(field)}
+                                        onDelete={handleDelete(field)}
+                                        classes={{
+                                            icon: cn(classes.icon, {
+                                                [classes.iconDown]: direction === 'desc'
+                                            })
+                                        }}
+                                    />
+                                )}
+                            </Draggable>
+                        )}
                         {provided.placeholder}
                     </div>
                 )}

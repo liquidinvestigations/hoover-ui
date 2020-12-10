@@ -1,4 +1,5 @@
-import { DEFAULT_FACET_SIZE, SORTABLE_FIELDS } from './constants'
+import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL } from './constants'
+import { DateTime } from 'luxon'
 
 // remove this list from here
 const ALL_FIELDS = [
@@ -51,7 +52,7 @@ const HIGHLIGHT_SETTINGS = {
     post_tags: ['</mark>'],
 };
 
-function buildQuery(q, { dateRange, dateCreatedRange }) {
+function buildQuery(q = '*', { dateRange, dateCreatedRange }) {
     const qs = {
         query_string: {
             query: q,
@@ -62,22 +63,15 @@ function buildQuery(q, { dateRange, dateCreatedRange }) {
         },
     }
 
-    const queryRanges = []
-    if (dateRange) {
-        queryRanges.push(['date', dateRange])
-    }
-    if (dateCreatedRange) {
-        queryRanges.push(['date-created', dateCreatedRange])
-    }
-
-    const ranges = []
-    queryRanges.forEach(([field, dateRange]) => {
-        if (dateRange && dateRange.from && dateRange.to) {
+    const ranges = [];
+    ['date', 'date-created'].forEach(field => {
+        const value = params[field]
+        if (value?.from && value?.to) {
             ranges.push({
                 range: {
                     [field]: {
-                        gte: dateRange.from,
-                        lte: dateRange.to,
+                        gte: value.from,
+                        lte: value.to,
                     },
                 },
             })
@@ -95,131 +89,119 @@ function buildQuery(q, { dateRange, dateCreatedRange }) {
     return qs
 }
 
-function buildSortQuery(order) {
-    let sort = [];
+const buildSortQuery = order => order?.reverse().map(([field, direction = 'asc']) => field.startsWith('_') ?
+    {[field]: {order: direction}} :
+    {[field]: {order: direction, missing: '_last'}}
+) || []
 
-    Array.isArray(order) && order.filter(([field, direction = 'asc']) =>
-        Object.keys(SORTABLE_FIELDS).includes(field) && ['asc', 'desc'].includes(direction)
-    ).reverse().forEach(([field, direction = 'asc']) => {
-        if (field.startsWith('_')) {
-            sort = [{[field]: {order: direction}}, ...sort]
-        } else {
-            sort = [{[field]: {order: direction, missing: '_last'}}, ...sort]
-        }
-    })
+const buildTermsField = (field, terms, size = DEFAULT_FACET_SIZE) => ({
+    field,
+    aggregation: {
+        terms: { field, size },
+    },
+    filterClause: terms?.length ? {
+        terms: { [field]: terms },
+    } : null,
+})
 
-    return sort;
+const daysInMonth = interval => {
+    const [, year, month] = /(\d{4})-(\d{2})/.exec(interval)
+    return new Date(year, month, 0).getDate()
 }
 
-function buildTermsField(
-    name,
-    terms,
-    { field = name, size = DEFAULT_FACET_SIZE } = {}
-) {
-    return {
-        name,
-        field,
-        aggregation: {
-            terms: { field, size },
+const intervalFormat = (interval, param) => {
+    switch (interval) {
+        case 'year':
+            return {
+                gte: `${param}-01-01`,
+                lte: `${param}-12-31`,
+            }
+
+        case 'month':
+            return {
+                gte: `${param}-01`,
+                lte: `${param}-${daysInMonth(param)}`,
+            }
+
+        case 'week':
+            return {
+                gte: param,
+                lt: DateTime.fromISO(param).plus({days: 7}).toISODate()
+            }
+
+        case 'day':
+            return {
+                gte: param,
+                lte: param,
+            }
+
+        case 'hour':
+            return {
+                gte: `${param}:00:00.000Z`,
+                lte: `${param}:59:59.999Z`,
+            }
+    }
+}
+
+const buildHistogramField = (field, { interval = DEFAULT_INTERVAL, intervals = [] } = {}) => ({
+    field,
+    aggregation: {
+        date_histogram: {
+            field,
+            interval,
         },
-        filterClause:
-            terms && terms.length
-                ? {
-                      terms: { [field]: terms },
-                  }
-                : null,
-    };
-}
-
-function buildYearField(name, value, { field = name } = {}) {
-    return {
-        name,
-        field,
-        aggregation: {
-            date_histogram: {
-                field,
-                interval: 'year',
-            },
+    },
+    filterClause: intervals.length ? {
+        bool: {
+            should: intervals.map(selected => ({
+                range: {
+                    [field]: intervalFormat(interval, selected),
+                },
+            })),
         },
-        filterClause:
-            value && value.length
-                ? {
-                      bool: {
-                          should: value.map(year => ({
-                              range: {
-                                  [field]: {
-                                      gte: `${year}-01-01`,
-                                      lte: `${year}-12-31`,
-                                  },
-                              },
-                          })),
-                      },
-                  }
-                : null,
-    };
-}
+    } : null,
+})
 
-function buildFilter(fields) {
-    const must = fields.map(f => f.filterClause).filter(Boolean);
+const buildFilter = fields => {
+    const must = fields.map(field => field.filterClause).filter(Boolean)
 
     if (must.length) {
         return {
             bool: {
                 must,
             },
-        };
+        }
     } else {
-        return { bool: {} };
+        return { bool: {} }
     }
 }
 
-function buildAggs(fields) {
-    return fields.reduce(
-        (result, field) => ({
-            ...result,
-            [`count_by_${field.name}`]: {
-                aggs: {
-                    [field.name]: field.aggregation,
-                    [`${field.name}_count`]: { cardinality: { field: field.field } },
-                },
-                filter: buildFilter(
-                    fields.filter(other => other.name !== field.name)
-                ),
-            },
-        }),
-        {}
-    );
-}
+const buildAggs = fields => fields.reduce((result, field) => ({
+    ...result,
+    [field.field]: {
+        aggs: {
+            values: field.aggregation,
+            count: { cardinality: { field: field.field } },
+        },
+        filter: buildFilter(
+            fields.filter(other => other.field !== field.field)
+        ),
+    },
+}), {})
 
-export default function buildSearchQuery({
-    page = 1,
-    size = 0,
-    q = '*',
-    order = null,
-    collections = [],
-    dateRange,
-    dateCreatedRange,
-    dateYears = null,
-    dateCreatedYears = null,
-    searchAfter = '',
-    fileType = null,
-    language = null,
-    emailDomains = null,
-    facets = {},
-} = {}) {
-    const query = buildQuery(q, { dateRange, dateCreatedRange });
-    const sort = buildSortQuery(order);
+const buildSearchQuery = params => {
+    const { page = 1, size = 0, order, collections = [], facets = {} } = params
+    const query = buildQuery(params)
+    const sort = buildSortQuery(order)
 
     const fields = [
-        buildTermsField('filetype', fileType, { size: facets.fileType }),
-        buildTermsField('email_domains', emailDomains, {
-            field: 'email-domains',
-            size: facets.emailDomains,
-        }),
-        buildTermsField('lang', language, { size: facets.language }),
-        buildYearField('date_years', dateYears, { field: 'date' }),
-        buildYearField('date_created_years', dateCreatedYears, { field: 'date-created' }),
-    ];
+        ...['lang', 'filetype', 'email-domains'].map(field =>
+            buildTermsField(field, params[field], facets[field])
+        ),
+        ...['date', 'date-created'].map(field =>
+            buildHistogramField(field, params[field]),
+        ),
+    ]
 
     const postFilter = buildFilter(fields);
     const aggs = buildAggs(fields);
@@ -232,17 +214,18 @@ export default function buildSearchQuery({
 
     return {
         from: (page - 1) * size,
-        size: size,
+        size,
         query,
-        search_after: searchAfter,
         sort,
         post_filter: postFilter,
         aggs,
-        collections: collections,
+        collections,
         // TODO replace with fields._source from api.searchFields()
         _source: ALL_FIELDS,
         highlight: {
             fields: highlightFields,
         },
-    };
+    }
 }
+
+export default buildSearchQuery

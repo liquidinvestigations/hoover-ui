@@ -1,4 +1,5 @@
 import React, { memo } from 'react'
+import cn from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
 import { Button, Checkbox, Grid, List, ListItem, ListItemText, ListSubheader, Typography } from '@material-ui/core'
 import { formatThousands } from '../../utils'
@@ -14,10 +15,16 @@ const useStyles = makeStyles(theme => ({
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
     },
+    labelWithSub: {
+        margin: 0,
+    },
+    subLabel: {
+        fontSize: '8.5pt',
+    },
 }))
 
-function AggregationFilter({ aggregation, cardinality, size, title, disabled, onChange,
-                               onLoadMore, selected, bucketLabel, bucketValue, sortBuckets }) {
+function AggregationFilter({ aggregation, cardinality, size, title, disabled, onChange, onLoadMore,
+                               selected, bucketLabel, bucketSubLabel, bucketValue, sortBuckets }) {
 
     const classes = useStyles()
 
@@ -46,6 +53,7 @@ function AggregationFilter({ aggregation, cardinality, size, title, disabled, on
 
     const renderBucket = bucket => {
         const label = bucketLabel ? bucketLabel(bucket) : bucket.key
+        const subLabel = bucketSubLabel ? bucketSubLabel(bucket) : null
         const value = bucketValue ? bucketValue(bucket) : bucket.key
         const checked = selected?.includes(value) || false
 
@@ -72,7 +80,14 @@ function AggregationFilter({ aggregation, cardinality, size, title, disabled, on
                     onChange={handleChange(value)}
                 />
 
-                <ListItemText primary={label} className={classes.label} />
+                <ListItemText
+                    primary={label}
+                    secondary={subLabel}
+                    className={cn(classes.label, {[classes.labelWithSub]: subLabel})}
+                    secondaryTypographyProps={{
+                        className: classes.subLabel
+                    }}
+                />
 
                 <ListItemText
                     primary={

@@ -12,7 +12,7 @@ const icons = {
 
 const emptyLabel = 'YYYY-MM-DD'
 
-function DateRangeFilter({ defaultFrom, defaultTo, onChange }) {
+function DateRangeFilter({ defaultFrom, defaultTo, onChange, disabled }) {
     const [from, setFrom] = useState(defaultFrom)
     const [to, setTo] = useState(defaultTo)
 
@@ -20,7 +20,11 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange }) {
     const handleToChange = date => setTo(date?.toFormat(DATE_FORMAT))
 
     const handleApply = () => onChange({ from, to })
-    const handleReset = () => onChange(null)
+    const handleReset = () => {
+        setFrom(null)
+        setTo(null)
+        from && to && onChange(null)
+    }
 
     const unedited = defaultFrom === from && defaultTo === to
 
@@ -47,6 +51,7 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange }) {
                     onChange={handleFromChange}
                     maxDate={to}
                     openTo="year"
+                    disabled={disabled}
                     autoOk
                     fullWidth
                     {...icons}
@@ -56,12 +61,13 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange }) {
             <ListItem>
                 <KeyboardDatePicker
                     value={to}
-                    label={from ? null : emptyLabel}
+                    label={to ? null : emptyLabel}
                     labelFunc={labelFunc(to)}
                     format={DATE_FORMAT}
                     minDate={from}
                     onChange={handleToChange}
                     openTo="year"
+                    disabled={disabled}
                     autoOk
                     fullWidth
                     {...icons}
@@ -74,7 +80,7 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange }) {
                         <Button
                             size="small"
                             onClick={handleReset}
-                            disabled={!from && !to}>
+                            disabled={disabled || (!from && !to)}>
                             Reset
                         </Button>
                     </Grid>
@@ -82,7 +88,7 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange }) {
                         <Button
                             size="small"
                             onClick={handleApply}
-                            disabled={unedited}>
+                            disabled={disabled || !from || !to || unedited}>
                             Apply
                         </Button>
                     </Grid>

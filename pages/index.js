@@ -330,7 +330,7 @@ export default function Index({ collections, serverQuery }) {
             <SplitPaneLayout
                 left={
                     <>
-                        <List dense>
+                        <List dense style={{ paddingBottom: 0 }}>
                             <Filter
                                 title={`Collections (${selectedCollections.length})`}
                                 colorIfFiltered={false}
@@ -350,6 +350,7 @@ export default function Index({ collections, serverQuery }) {
                             query={query}
                             aggregations={results?.aggregations}
                             applyFilter={handleFilterApply}
+                            style={{ paddingTop: 0 }}
                         />
                     </>
                 }
