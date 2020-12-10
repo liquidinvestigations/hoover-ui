@@ -189,7 +189,7 @@ const buildAggs = fields => fields.reduce((result, field) => ({
     },
 }), {})
 
-const buildSearchQuery = params => {
+const buildSearchQuery = (params = {}) => {
     const { page = 1, size = 0, order, collections = [], facets = {} } = params
     const query = buildQuery(params)
     const sort = buildSortQuery(order)
