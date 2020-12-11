@@ -65,9 +65,9 @@ const api = {
         body: JSON.stringify(query),
     }),
 
-    search: params => api.fetchJson(api.buildUrl('search'), {
+    search: (params, type) => api.fetchJson(api.buildUrl('search'), {
         method: 'POST',
-        body: JSON.stringify(buildSearchQuery(params)),
+        body: JSON.stringify(buildSearchQuery(params, type)),
     }),
 
     downloadUrl: (docUrl, filename) => api.buildUrl(docUrl, 'raw', filename),

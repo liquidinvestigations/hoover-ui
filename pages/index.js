@@ -48,15 +48,14 @@ const defaultParams = {
     size: 10,
 }
 
-export const buildUrlQuery = (params) => {
-    const { q, collections, fields, text, ...rest } = params
-    return qs.stringify(rollupParams({
+export const buildUrlQuery = ({ q, collections, fields, text, ...rest }) => (
+    qs.stringify(rollupParams({
         q: (fields?.length ? fields.join(' ') + ' ' : '') + (text || ''),
         ...defaultParams,
         collections: collections.join('+'),
         ...rest,
     }))
-}
+)
 
 const useStyles = makeStyles(theme => ({
     error: {
@@ -188,7 +187,7 @@ export default function Index({ collections, serverQuery }) {
     const [results, setResults] = useState()
     const [resultsLoading, setResultsLoading] = useState(!!query.q)
     useEffect(() => {
-        if (collections && query.q) {
+        if (query.q) {
             const [ queryFields, queryText ] = extractFields(query.q)
             setChips(queryFields)
             setText(queryText)
@@ -196,7 +195,7 @@ export default function Index({ collections, serverQuery }) {
             setError(null)
             setResultsLoading(true)
 
-            api.search(query).then(results => {
+            api.search(query, 'results').then(results => {
                 setResults(results)
                 setResultsLoading(false)
 
@@ -213,7 +212,49 @@ export default function Index({ collections, serverQuery }) {
                 setResultsLoading(false)
             })
         }
-    }, [collections, JSON.stringify(query)])
+    }, [JSON.stringify({
+        ...query,
+        facets: null,
+        date: {
+            from: query.date?.from,
+            to: query.date?.to,
+            intervals: query.date?.intervals,
+        },
+        ['date-created']: {
+            from: query['date-created']?.from,
+            to: query['date-created']?.to,
+            intervals: query['date-created']?.intervals,
+        },
+    })])
+
+
+    const [aggregations, setAggregations] = useState()
+    const [aggregationsLoading, setAggregationsLoading] = useState(!!query.q)
+    useEffect(() => {
+        if (query.q) {
+            setAggregationsLoading(true)
+
+            api.search(query, 'aggregations').then(results => {
+                setAggregations(results.aggregations)
+                setAggregationsLoading(false)
+            }).catch(error => {
+                setAggregations(null)
+                //setError(error.reason ? error.reason : error.message)
+                setAggregationsLoading(false)
+            })
+        }
+    }, [JSON.stringify({
+        ...query,
+        page: null,
+        size: null,
+        order: null,
+    })])
+
+
+    const [prevQuery, setPrevQuery] = useState()
+    useEffect(() => {
+        setPrevQuery(query)
+    }, [JSON.stringify(query)])
 
 
     const clearResults = url => {
@@ -346,9 +387,9 @@ export default function Index({ collections, serverQuery }) {
                         </List>
 
                         <Filters
-                            loading={resultsLoading}
+                            loading={aggregationsLoading || resultsLoading}
                             query={query}
-                            aggregations={results?.aggregations}
+                            aggregations={aggregations}
                             applyFilter={handleFilterApply}
                             style={{ paddingTop: 0 }}
                         />

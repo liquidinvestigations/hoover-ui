@@ -4,13 +4,11 @@ const PARAMS_MAP = {
     p: 'page',
     s: 'size',
     o: 'order',
-    m: 'dateRange',
-    r: 'dateCreatedRange',
-    f: 'fileType',
-    l: 'language',
-    e: 'emailDomains',
-    y: 'dateYears',
-    d: 'dateCreatedYears',
+    d: 'date',
+    r: 'date-created',
+    f: 'filetype',
+    l: 'lang',
+    e: 'email-domains',
     t: 'facets',
 }
 

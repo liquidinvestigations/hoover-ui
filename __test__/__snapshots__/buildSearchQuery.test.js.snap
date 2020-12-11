@@ -15,15 +15,22 @@ Object {
   "aggs": Object {
     "date": Object {
       "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "date",
-          },
-        },
         "values": Object {
+          "aggs": Object {
+            "bucket_truncate": Object {
+              "bucket_sort": Object {
+                "from": 0,
+                "size": 10,
+              },
+            },
+          },
           "date_histogram": Object {
             "field": "date",
             "interval": "year",
+            "min_doc_count": 1,
+            "order": Object {
+              "_key": "desc",
+            },
           },
         },
       },
@@ -33,15 +40,22 @@ Object {
     },
     "date-created": Object {
       "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "date-created",
-          },
-        },
         "values": Object {
+          "aggs": Object {
+            "bucket_truncate": Object {
+              "bucket_sort": Object {
+                "from": 0,
+                "size": 10,
+              },
+            },
+          },
           "date_histogram": Object {
             "field": "date-created",
             "interval": "year",
+            "min_doc_count": 1,
+            "order": Object {
+              "_key": "desc",
+            },
           },
         },
       },
@@ -51,12 +65,15 @@ Object {
     },
     "email-domains": Object {
       "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "email-domains",
-          },
-        },
         "values": Object {
+          "aggs": Object {
+            "bucket_truncate": Object {
+              "bucket_sort": Object {
+                "from": 0,
+                "size": 10,
+              },
+            },
+          },
           "terms": Object {
             "field": "email-domains",
             "size": 10,
@@ -69,12 +86,15 @@ Object {
     },
     "filetype": Object {
       "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "filetype",
-          },
-        },
         "values": Object {
+          "aggs": Object {
+            "bucket_truncate": Object {
+              "bucket_sort": Object {
+                "from": 0,
+                "size": 10,
+              },
+            },
+          },
           "terms": Object {
             "field": "filetype",
             "size": 10,
@@ -87,12 +107,15 @@ Object {
     },
     "lang": Object {
       "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "lang",
-          },
-        },
         "values": Object {
+          "aggs": Object {
+            "bucket_truncate": Object {
+              "bucket_sort": Object {
+                "from": 0,
+                "size": 10,
+              },
+            },
+          },
           "terms": Object {
             "field": "lang",
             "size": 10,

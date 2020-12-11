@@ -45,8 +45,8 @@ it('builds a query with a date histogram by years filter', () => {
                 {
                     range: {
                         date: {
-                            gte: '2009-01-01',
-                            lte: '2009-12-31',
+                            gte: '2009-01-01T00:00:00.000Z',
+                            lte: '2009-12-31T23:59:59.999Z',
                         },
                     },
                 },

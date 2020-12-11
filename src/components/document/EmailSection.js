@@ -12,6 +12,7 @@ import {
     SEARCH_THREAD_INDEX,
     SEARCH_TO
 } from '../../constants'
+import { DateTime } from 'luxon'
 
 const useStyles = makeStyles({
     preWrap: {
@@ -80,7 +81,8 @@ function EmailSection({ doc, collection }) {
                         </TableCell>
                         <TableCell>
                             <pre className={classes.preWrap}>
-                                {data.date}
+                                {DateTime.fromISO(data.date, { locale: 'en-US' })
+                                    .toLocaleString(DateTime.DATETIME_FULL)}
                             </pre>
                         </TableCell>
                     </TableRow>

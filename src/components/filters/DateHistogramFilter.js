@@ -6,7 +6,6 @@ import DateRangeFilter from './DateRangeFilter'
 import AggregationFilter from './AggregationFilter'
 import { DEFAULT_INTERVAL } from '../../constants'
 
-const timeBucketSorter = (a, b) => b.key - a.key
 const formatsLabel = {
     year: 'y',
     month: 'MMMM y',
@@ -22,31 +21,32 @@ export const formatsValue = {
     hour: "yyyy-MM-dd'T'HH",
 }
 
-function DateIntervalsFilter({ title, value, aggregation, disabled, onChange }) {
+function DateHistogramFilter({ title, field, query, aggregations, disabled, onChange, onPagination }) {
+    const value = query[field]
+    const interval = value?.interval || DEFAULT_INTERVAL
+
     const onRangeChange = range => {
         const { from, to, interval, intervals, ...rest } = value || {}
         if (range?.from && range?.to) {
-            onChange({...range, ...rest})
+            onChange(field, {...range, ...rest}, true)
         } else {
-            onChange(rest)
+            onChange(field, rest, true)
         }
     }
 
     const onIntervalChange = event => {
         const { interval, intervals, ...rest } = value || {}
-        onChange({interval: event.target.value, ...rest})
+        onChange(field, {interval: event.target.value, ...rest}, true)
     }
 
-    const onSelectionChange = newIntervals => {
+    const onSelectionChange = (field, newIntervals, resetPage) => {
         const { intervals, ...rest } = value || {}
         if (newIntervals.length) {
-            onChange({ intervals: newIntervals, ...rest })
+            onChange(field, { intervals: newIntervals, ...rest }, resetPage)
         } else {
-            onChange(rest)
+            onChange(field, rest, resetPage)
         }
     }
-
-    const interval = value?.interval || DEFAULT_INTERVAL
 
     const formatLabel = useCallback(
         bucket => DateTime.fromISO(bucket.key_as_string).toFormat(formatsLabel[interval]),
@@ -92,11 +92,13 @@ function DateIntervalsFilter({ title, value, aggregation, disabled, onChange }) 
             </ListItem>
 
             <AggregationFilter
+                field={field}
+                query={query}
+                queryField="intervals"
+                aggregations={aggregations}
                 disabled={disabled}
-                selected={value?.intervals}
-                aggregation={aggregation}
                 onChange={onSelectionChange}
-                sortBuckets={timeBucketSorter}
+                onPagination={onPagination}
                 bucketLabel={formatLabel}
                 bucketSubLabel={interval === 'week' ? formatWeekStart : null}
                 bucketValue={formatValue}
@@ -105,4 +107,4 @@ function DateIntervalsFilter({ title, value, aggregation, disabled, onChange }) 
     )
 }
 
-export default memo(DateIntervalsFilter)
+export default memo(DateHistogramFilter)

@@ -52,7 +52,7 @@ const HIGHLIGHT_SETTINGS = {
     post_tags: ['</mark>'],
 };
 
-function buildQuery(q = '*', { dateRange, dateCreatedRange }) {
+const buildQuery = ({ q = '*', ...rest }) => {
     const qs = {
         query_string: {
             query: q,
@@ -65,7 +65,7 @@ function buildQuery(q = '*', { dateRange, dateCreatedRange }) {
 
     const ranges = [];
     ['date', 'date-created'].forEach(field => {
-        const value = params[field]
+        const value = rest[field]
         if (value?.from && value?.to) {
             ranges.push({
                 range: {
@@ -94,18 +94,26 @@ const buildSortQuery = order => order?.reverse().map(([field, direction = 'asc']
     {[field]: {order: direction, missing: '_last'}}
 ) || []
 
-const buildTermsField = (field, terms, size = DEFAULT_FACET_SIZE) => ({
+const buildTermsField = (field, terms, page = 1, size = DEFAULT_FACET_SIZE) => ({
     field,
     aggregation: {
-        terms: { field, size },
+        terms: { field, size: page * size },
+        aggs: {
+            bucket_truncate: {
+                bucket_sort: {
+                    from: (page - 1) * size,
+                    size
+                }
+            }
+        }
     },
     filterClause: terms?.length ? {
         terms: { [field]: terms },
     } : null,
 })
 
-const daysInMonth = interval => {
-    const [, year, month] = /(\d{4})-(\d{2})/.exec(interval)
+const daysInMonth = param => {
+    const [, year, month] = /(\d{4})-(\d{2})/.exec(param)
     return new Date(year, month, 0).getDate()
 }
 
@@ -113,26 +121,26 @@ const intervalFormat = (interval, param) => {
     switch (interval) {
         case 'year':
             return {
-                gte: `${param}-01-01`,
-                lte: `${param}-12-31`,
+                gte: `${param}-01-01T00:00:00.000Z`,
+                lte: `${param}-12-31T23:59:59.999Z`,
             }
 
         case 'month':
             return {
-                gte: `${param}-01`,
-                lte: `${param}-${daysInMonth(param)}`,
+                gte: `${param}-01T00:00:00.000Z`,
+                lte: `${param}-${daysInMonth(param)}T23:59:59.999Z`,
             }
 
         case 'week':
             return {
-                gte: param,
-                lt: DateTime.fromISO(param).plus({days: 7}).toISODate()
+                gte: `${param}T00:00:00.000Z`,
+                lt: `${DateTime.fromISO(param).plus({days: 7}).toISODate()}T23:59:59.999Z`,
             }
 
         case 'day':
             return {
-                gte: param,
-                lte: param,
+                gte: `${param}T00:00:00.000Z`,
+                lte: `${param}T23:59:59.999Z`,
             }
 
         case 'hour':
@@ -143,13 +151,24 @@ const intervalFormat = (interval, param) => {
     }
 }
 
-const buildHistogramField = (field, { interval = DEFAULT_INTERVAL, intervals = [] } = {}) => ({
+const buildHistogramField = (field, { interval = DEFAULT_INTERVAL, intervals = [] } = {},
+                             page = 1, size = DEFAULT_FACET_SIZE) => ({
     field,
     aggregation: {
         date_histogram: {
             field,
             interval,
+            min_doc_count: 1,
+            order: { '_key': 'desc' },
         },
+        aggs: {
+            bucket_truncate: {
+                bucket_sort: {
+                    from: (page - 1) * size,
+                    size
+                }
+            }
+        }
     },
     filterClause: intervals.length ? {
         bool: {
@@ -181,7 +200,6 @@ const buildAggs = fields => fields.reduce((result, field) => ({
     [field.field]: {
         aggs: {
             values: field.aggregation,
-            count: { cardinality: { field: field.field } },
         },
         filter: buildFilter(
             fields.filter(other => other.field !== field.field)
@@ -189,17 +207,16 @@ const buildAggs = fields => fields.reduce((result, field) => ({
     },
 }), {})
 
-const buildSearchQuery = (params = {}) => {
-    const { page = 1, size = 0, order, collections = [], facets = {} } = params
-    const query = buildQuery(params)
+const buildSearchQuery = ({ page = 1, size = 0, order, collections = [], facets = {}, ...rest } = {}, type) => {
+    const query = buildQuery(rest)
     const sort = buildSortQuery(order)
 
     const fields = [
-        ...['lang', 'filetype', 'email-domains'].map(field =>
-            buildTermsField(field, params[field], facets[field])
-        ),
         ...['date', 'date-created'].map(field =>
-            buildHistogramField(field, params[field]),
+            buildHistogramField(field, rest[field], facets[field]),
+        ),
+        ...['filetype', 'lang', 'email-domains'].map(field =>
+            buildTermsField(field, rest[field], facets[field])
         ),
     ]
 
@@ -214,11 +231,11 @@ const buildSearchQuery = (params = {}) => {
 
     return {
         from: (page - 1) * size,
-        size,
+        size: type === 'aggregations' ? 0 : size,
         query,
         sort,
         post_filter: postFilter,
-        aggs,
+        aggs: type === 'results' ? {} : aggs,
         collections,
         // TODO replace with fields._source from api.searchFields()
         _source: ALL_FIELDS,

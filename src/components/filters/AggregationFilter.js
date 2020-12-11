@@ -1,10 +1,10 @@
 import React, { memo } from 'react'
 import cn from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
-import { Button, Checkbox, Grid, List, ListItem, ListItemText, ListSubheader, Typography } from '@material-ui/core'
+import { Button, Checkbox, Grid, IconButton, List, ListItem, ListItemText, Typography } from '@material-ui/core'
 import { formatThousands } from '../../utils'
-
-const defaultBucketSorter = (a, b) => b.doc_count - a.doc_count;
+import { DEFAULT_FACET_SIZE } from '../../constants'
+import { NavigateBefore, NavigateNext } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
     checkbox: {
@@ -23,8 +23,14 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function AggregationFilter({ aggregation, cardinality, size, title, disabled, onChange, onLoadMore,
-                               selected, bucketLabel, bucketSubLabel, bucketValue, sortBuckets }) {
+function AggregationFilter({ field, query, queryField, aggregations, disabled, onChange, onPagination,
+                               bucketLabel, bucketSubLabel, bucketValue }) {
+
+    const aggregation = aggregations[field]?.values
+    const selected = queryField ? query[field]?.[queryField] : query[field]
+
+    const pageParam = parseInt(query.facets?.[field])
+    const page = isNaN(pageParam) ? 1 : pageParam
 
     const classes = useStyles()
 
@@ -37,29 +43,19 @@ function AggregationFilter({ aggregation, cardinality, size, title, disabled, on
             selection.add(value)
         }
 
-        onChange(Array.from(selection))
+        onChange(field, Array.from(selection))
     }
 
-    const reset = () => onChange([])
+    const handleReset = () => onChange(field, [], true)
 
-    const buckets = (aggregation && aggregation.buckets
-        ? aggregation.buckets
-        : []
-    ).sort(sortBuckets || defaultBucketSorter)
-
-    if (!buckets.length) {
-        return null
-    }
+    const handlePrev = () => onPagination(field, page - 1)
+    const handleNext = () => onPagination(field, page + 1)
 
     const renderBucket = bucket => {
         const label = bucketLabel ? bucketLabel(bucket) : bucket.key
         const subLabel = bucketSubLabel ? bucketSubLabel(bucket) : null
         const value = bucketValue ? bucketValue(bucket) : bucket.key
         const checked = selected?.includes(value) || false
-
-        if (!checked && !bucket.doc_count) {
-            return null
-        }
 
         return (
             <ListItem
@@ -102,33 +98,41 @@ function AggregationFilter({ aggregation, cardinality, size, title, disabled, on
         )
     }
 
+    const hasNext = aggregation?.buckets.length >= DEFAULT_FACET_SIZE
+    const hasPrev = page > 1
+
     return (
-        <List subheader={title ? <ListSubheader>{title}</ListSubheader> : null}>
-            {buckets.map(renderBucket).filter(Boolean)}
+        <List dense>
+            {aggregation?.buckets.map(renderBucket).filter(Boolean)}
 
             <ListItem dense>
                 <Grid container alignItems="center" justify="space-between">
                     <Grid item>
-                        {onLoadMore &&
-                        cardinality &&
-                        size &&
-                        cardinality.value > size ? (
-                            <Button
-                                size="small"
-                                disabled={disabled}
-                                variant="text"
-                                onClick={onLoadMore}>
-                                More ({cardinality.value - size})
-                            </Button>
-                        ) : null}
-                    </Grid>
+                        {(hasPrev || hasNext) &&
+                            <Grid container justify="flex-end">
+                                <IconButton
+                                    size="small"
+                                    tabIndex="-1"
+                                    onClick={handlePrev}
+                                    disabled={disabled || !hasPrev}>
+                                    <NavigateBefore/>
+                                </IconButton>
 
+                                <IconButton
+                                    size="small"
+                                    onClick={handleNext}
+                                    disabled={disabled || !hasNext}>
+                                    <NavigateNext/>
+                                </IconButton>
+                            </Grid>
+                        }
+                    </Grid>
                     <Grid item>
                         <Button
                             size="small"
                             variant="text"
-                            disabled={disabled || !selected?.length}
-                            onClick={reset}>
+                            disabled={disabled || (!selected?.length && page === 1)}
+                            onClick={handleReset}>
                             Reset
                         </Button>
                     </Grid>
