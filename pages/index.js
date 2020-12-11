@@ -251,12 +251,6 @@ export default function Index({ collections, serverQuery }) {
     })])
 
 
-    const [prevQuery, setPrevQuery] = useState()
-    useEffect(() => {
-        setPrevQuery(query)
-    }, [JSON.stringify(query)])
-
-
     const clearResults = url => {
         if (url === '/') {
             setResults(null)
