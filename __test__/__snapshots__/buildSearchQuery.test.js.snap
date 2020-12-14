@@ -15,6 +15,11 @@ Object {
   "aggs": Object {
     "date": Object {
       "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "date",
+          },
+        },
         "values": Object {
           "aggs": Object {
             "bucket_truncate": Object {
@@ -40,6 +45,11 @@ Object {
     },
     "date-created": Object {
       "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "date-created",
+          },
+        },
         "values": Object {
           "aggs": Object {
             "bucket_truncate": Object {
@@ -65,15 +75,12 @@ Object {
     },
     "email-domains": Object {
       "aggs": Object {
-        "values": Object {
-          "aggs": Object {
-            "bucket_truncate": Object {
-              "bucket_sort": Object {
-                "from": 0,
-                "size": 10,
-              },
-            },
+        "count": Object {
+          "cardinality": Object {
+            "field": "email-domains",
           },
+        },
+        "values": Object {
           "terms": Object {
             "field": "email-domains",
             "size": 10,
@@ -86,15 +93,12 @@ Object {
     },
     "filetype": Object {
       "aggs": Object {
-        "values": Object {
-          "aggs": Object {
-            "bucket_truncate": Object {
-              "bucket_sort": Object {
-                "from": 0,
-                "size": 10,
-              },
-            },
+        "count": Object {
+          "cardinality": Object {
+            "field": "filetype",
           },
+        },
+        "values": Object {
           "terms": Object {
             "field": "filetype",
             "size": 10,
@@ -107,15 +111,12 @@ Object {
     },
     "lang": Object {
       "aggs": Object {
-        "values": Object {
-          "aggs": Object {
-            "bucket_truncate": Object {
-              "bucket_sort": Object {
-                "from": 0,
-                "size": 10,
-              },
-            },
+        "count": Object {
+          "cardinality": Object {
+            "field": "lang",
           },
+        },
+        "values": Object {
           "terms": Object {
             "field": "lang",
             "size": 10,
