@@ -24,9 +24,10 @@ const useStyles = makeStyles(theme => ({
 }))
 
 function AggregationFilter({ field, query, queryField, aggregations, disabled, onChange, onPagination,
-                               bucketLabel, bucketSubLabel, bucketValue }) {
+                               onLoadMore, triState, bucketLabel, bucketSubLabel, bucketValue }) {
 
     const aggregation = aggregations[field]?.values
+    const cardinality = aggregations[field]?.count
     const selected = queryField ? query[field]?.[queryField] : query[field]
 
     const pageParam = parseInt(query.facets?.[field])
@@ -36,9 +37,15 @@ function AggregationFilter({ field, query, queryField, aggregations, disabled, o
 
     const handleChange = value => () => {
         const selection = new Set(selected || [])
+        const excludeValue = `!${value}`
 
         if (selection.has(value)) {
             selection.delete(value)
+            if (triState) {
+                selection.add(`!${value}`)
+            }
+        } else if (selection.has(excludeValue)) {
+            selection.delete(excludeValue)
         } else {
             selection.add(value)
         }
@@ -50,12 +57,13 @@ function AggregationFilter({ field, query, queryField, aggregations, disabled, o
 
     const handlePrev = () => onPagination(field, page - 1)
     const handleNext = () => onPagination(field, page + 1)
+    const handleLoadMore = () => onLoadMore(field, page + 1)
 
     const renderBucket = bucket => {
         const label = bucketLabel ? bucketLabel(bucket) : bucket.key
         const subLabel = bucketSubLabel ? bucketSubLabel(bucket) : null
         const value = bucketValue ? bucketValue(bucket) : bucket.key
-        const checked = selected?.includes(value) || false
+        const checked = selected?.includes(value) || selected?.includes(`!${value}`) || false
 
         return (
             <ListItem
@@ -71,6 +79,7 @@ function AggregationFilter({ field, query, queryField, aggregations, disabled, o
                     disableRipple
                     value={value}
                     checked={checked}
+                    indeterminate={triState && selected?.includes(`!${value}`)}
                     classes={{ root: classes.checkbox }}
                     disabled={disabled || !bucket.doc_count}
                     onChange={handleChange(value)}
@@ -98,8 +107,9 @@ function AggregationFilter({ field, query, queryField, aggregations, disabled, o
         )
     }
 
-    const hasNext = aggregation?.buckets.length >= DEFAULT_FACET_SIZE
-    const hasPrev = page > 1
+    const hasNext = onPagination && aggregation?.buckets.length >= DEFAULT_FACET_SIZE
+    const hasPrev = onPagination && page > 1
+    const hasMore = onLoadMore && cardinality?.value > page * DEFAULT_FACET_SIZE
 
     return (
         <List dense>
@@ -125,6 +135,15 @@ function AggregationFilter({ field, query, queryField, aggregations, disabled, o
                                     <NavigateNext/>
                                 </IconButton>
                             </Grid>
+                        }
+                        {hasMore &&
+                            <Button
+                                size="small"
+                                disabled={disabled}
+                                variant="text"
+                                onClick={handleLoadMore}>
+                                More ({cardinality.value - page * DEFAULT_FACET_SIZE})
+                            </Button>
                         }
                     </Grid>
                     <Grid item>

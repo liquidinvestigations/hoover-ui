@@ -94,23 +94,22 @@ const buildSortQuery = order => order?.reverse().map(([field, direction = 'asc']
     {[field]: {order: direction, missing: '_last'}}
 ) || []
 
-const buildTermsField = (field, terms, page = 1, size = DEFAULT_FACET_SIZE) => ({
-    field,
-    aggregation: {
-        terms: { field, size: page * size },
-        aggs: {
-            bucket_truncate: {
-                bucket_sort: {
-                    from: (page - 1) * size,
-                    size
-                }
-            }
-        }
-    },
-    filterClause: terms?.length ? {
-        terms: { [field]: terms },
-    } : null,
-})
+const buildTermsField = (field, terms, page = 1, size = DEFAULT_FACET_SIZE) => {
+    const includeTerms = terms?.filter(term => !term.startsWith('!'))
+    const excludeTerms = terms?.filter(term => term.startsWith('!')).map(term => term.substring(1))
+    return {
+        field,
+        aggregation: {
+            terms: { field, size: page * size },
+        },
+        filterClause: includeTerms?.length ? {
+            terms: { [field]: includeTerms },
+        } : null,
+        filterExclude: excludeTerms?.length ? {
+            terms: { [field]: excludeTerms },
+        } : null,
+    }
+}
 
 const daysInMonth = param => {
     const [, year, month] = /(\d{4})-(\d{2})/.exec(param)
@@ -183,11 +182,13 @@ const buildHistogramField = (field, { interval = DEFAULT_INTERVAL, intervals = [
 
 const buildFilter = fields => {
     const must = fields.map(field => field.filterClause).filter(Boolean)
+    const must_not = fields.map(field => field.filterExclude).filter(Boolean)
 
-    if (must.length) {
+    if (must.length || must_not.length) {
         return {
             bool: {
                 must,
+                must_not,
             },
         }
     } else {
@@ -200,6 +201,7 @@ const buildAggs = fields => fields.reduce((result, field) => ({
     [field.field]: {
         aggs: {
             values: field.aggregation,
+            count: { cardinality: { field: field.field } },
         },
         filter: buildFilter(
             fields.filter(other => other.field !== field.field)

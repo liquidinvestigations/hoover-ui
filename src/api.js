@@ -29,6 +29,7 @@ const api = {
         const res = await fetch(apiUrl, {
             ...opts,
             credentials: 'same-origin',
+            timeout: 60000,
             headers: {
                 ...(opts.headers || {}),
                 ...(api.headers || {}),

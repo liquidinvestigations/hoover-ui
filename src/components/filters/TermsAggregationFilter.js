@@ -19,6 +19,7 @@ function TermsAggregationFilter({ title, field, query, aggregations, emptyDisabl
                 field={field}
                 query={query}
                 aggregations={aggregations}
+                triState
                 {...rest}
             />
         </Filter>
