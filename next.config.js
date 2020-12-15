@@ -26,7 +26,7 @@ module.exports = withSass({
     compress: false,
     redirects: () => [{
         source: '/doc/:collection/:id/raw/:file*',
-        destination: '/api/v0/doc/:collection/:id/raw/:file*',
+        destination: '/api/download/doc/:collection/:id/:file*',
         permanent: true
     }],
 })

@@ -1,4 +1,4 @@
-import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL } from './constants'
+import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL } from '../constants'
 import { DateTime } from 'luxon'
 
 // remove this list from here

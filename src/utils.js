@@ -2,6 +2,8 @@ import React from 'react'
 import url from 'url'
 import copy from 'copy-text-to-clipboard'
 import langs from 'langs'
+import { SEARCH_DATE, SEARCH_DATE_CREATED } from './constants'
+import { buildUrlQuery } from '../pages'
 
 import file from '../icons/file-line.svg';
 import folder from '../icons/folder-line.svg';
@@ -10,9 +12,6 @@ import email from '../icons/mail-line.svg';
 import pdf from '../icons/file-pdf-line.svg';
 import doc from '../icons/file-word-line.svg';
 import xls from '../icons/file-excel-line.svg';
-import { SEARCH_DATE, SEARCH_DATE_CREATED } from './constants'
-import { buildUrlQuery } from '../pages'
-import api from './api'
 
 export function getIconImageElement(fileType) {
     const srcMap = {
@@ -153,6 +152,10 @@ export const humanFileSize = (bytes, si=false, dp=1) => {
     return bytes.toFixed(dp) + ' ' + units[u]
 }
 
-export const authorizeApiSSR = (req, api) => {
+export const getDownloadUrl = (docUrl, filename) => `/api/download${docUrl}/${filename}`
+
+export const getOcrUrl = (docUrl, tag) => `/api/ocr${docUrl}/${tag}`
+
+export const authorizeBackendApi = (req, api) => {
     api.headers = req.headers
 }

@@ -6,6 +6,7 @@ import { CloudDownload as IconCloudDownload } from '@material-ui/icons'
 import api from '../../api'
 import Section from './Section'
 import Loading from '../Loading'
+import { getDownloadUrl } from '../../utils'
 
 function FilesSection({ data, page, hasNextPage, baseUrl, docUrl, title, fullPage }) {
     const [files, setFiles] = useState(data)
@@ -31,7 +32,7 @@ function FilesSection({ data, page, hasNextPage, baseUrl, docUrl, title, fullPag
                 <TableCell>
                     {digest && (
                         <a
-                            href={api.downloadUrl(url.resolve(baseUrl, digest), filename)}
+                            href={getDownloadUrl(url.resolve(baseUrl, digest), filename)}
                             target={fullPage ? null : '_blank'}
                             title="Original file">
                             <IconCloudDownload />

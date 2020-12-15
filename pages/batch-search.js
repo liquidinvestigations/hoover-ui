@@ -6,7 +6,8 @@ import Filter from '../src/components/filters/Filter'
 import CollectionsFilter from '../src/components/filters/CollectionsFilter'
 import BatchResults from '../src/components/BatchResults'
 import Loading from '../src/components/Loading'
-import { authorizeApiSSR, searchPath } from '../src/utils'
+import { authorizeBackendApi, searchPath } from '../src/utils'
+import backend from '../src/backend/api'
 import api from '../src/api'
 
 const useStyles = makeStyles(theme => ({
@@ -175,9 +176,9 @@ export default function BatchSearch({ collections, limits }) {
 }
 
 export async function getServerSideProps({ req }) {
-    authorizeApiSSR(req, api)
-    const collections = await api.collections()
-    const limits = await api.limits()
+    authorizeBackendApi(req, backend)
+    const collections = await backend.collections()
+    const limits = await backend.limits()
 
     return { props: { collections, limits }}
 }

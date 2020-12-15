@@ -10,7 +10,7 @@ import TextSection from './TextSection'
 import FilesSection from './FilesSection'
 import MetaSection from './MetaSection'
 import Loading from '../Loading'
-import api from '../../api'
+import { getDownloadUrl, getOcrUrl } from '../../utils'
 
 const useStyles = makeStyles(theme => ({
     toolbar: {
@@ -44,12 +44,12 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
 
     let digest = data.id
     let digestUrl = docUrl
-    let docRawUrl = api.downloadUrl(`${collectionBaseUrl}${digest}`, data.content.filename)
+    let docRawUrl = getDownloadUrl(`${collectionBaseUrl}${digest}`, data.content.filename)
 
     if (data.id.startsWith('_file_')) {
         digest = data.digest
         digestUrl = [url.resolve(docUrl, './'), data.digest].join('/')
-        docRawUrl = api.downloadUrl(`${collectionBaseUrl}${digest}`, data.content.filename)
+        docRawUrl = getDownloadUrl(`${collectionBaseUrl}${digest}`, data.content.filename)
     }
 
     if (data.id.startsWith('_directory_')) {
@@ -90,9 +90,10 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
     headerLinks.push(
         ...ocrData.map(({tag}) => {
             return {
-                href: api.ocrUrl(digestUrl, tag),
+                href: getOcrUrl(digestUrl, tag),
                 text: `OCR ${tag}`,
                 icon: <ChromeReaderMode />,
+                target: fullPage ? null : '_blank',
             };
         })
     )

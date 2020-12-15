@@ -16,14 +16,17 @@ import CollectionsFilter from '../src/components/filters/CollectionsFilter'
 import Document from '../src/components/document/Document'
 import { ProgressIndicatorContext } from '../src/components/ProgressIndicator'
 import { SEARCH_GUIDE, SEARCH_QUERY_PREFIXES } from '../src/constants'
-import { authorizeApiSSR, copyMetadata, documentViewUrl } from '../src/utils'
+import { authorizeBackendApi, copyMetadata, documentViewUrl } from '../src/utils'
 import { rollupParams, unwindParams } from '../src/queryUtils'
 import fixLegacyQuery from '../src/fixLegacyQuery'
+import backend from '../src/backend/api'
 import api from '../src/api'
 
 const extractFields = query => {
+    /*
     const results = query && parser.parse(query)
     console.log(results)
+    */
 
     const fields = []
     const queryParts = query ? query.match(/(?:[^\s"\[{]+|"[^"]*"|[\[{][^\]}]*[\]}])+/g) : []
@@ -195,7 +198,7 @@ export default function Index({ collections, serverQuery }) {
             setError(null)
             setResultsLoading(true)
 
-            api.search(query, 'results').then(results => {
+            api.search(query).then(results => {
                 setResults(results)
                 setResultsLoading(false)
 
@@ -234,7 +237,7 @@ export default function Index({ collections, serverQuery }) {
         if (query.q) {
             setAggregationsLoading(true)
 
-            api.search(query, 'aggregations').then(results => {
+            api.aggregations(query).then(results => {
                 setAggregations(results.aggregations)
                 setAggregationsLoading(false)
             }).catch(error => {
@@ -471,8 +474,8 @@ export default function Index({ collections, serverQuery }) {
 }
 
 export async function getServerSideProps({ req }) {
-    authorizeApiSSR(req, api)
-    const collections = await api.collections()
+    authorizeBackendApi(req, backend)
+    const collections = await backend.collections()
 
     const serverQuery = req.url.split('?')[1] || ''
 

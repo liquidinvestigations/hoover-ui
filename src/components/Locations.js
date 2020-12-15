@@ -14,7 +14,7 @@ function Locations({ url: docUrl, data }) {
 
     useEffect(() => {
         if (docUrl) {
-            api.locationsFor(docUrl, page).then(response => {
+            api.locations(docUrl, page).then(response => {
                 setLocations(response.locations)
                 setHasNextPage(response.has_next_page)
             })
@@ -24,7 +24,7 @@ function Locations({ url: docUrl, data }) {
     const loadMore = async event => {
         event.preventDefault()
         setLoadingNextPage(true)
-        const response = await api.locationsFor(docUrl, page + 1)
+        const response = await api.locations(docUrl, page + 1)
         setPage(page + 1)
         setLocations([...locations, ...response.locations])
         setHasNextPage(response.has_next_page)
