@@ -1,5 +1,5 @@
-import api from '../../../src/backend/api'
-import streamDownload from '../../../src/backend/streamDownload'
+import api from '../../../../../../src/backend/api'
+import streamDownload from '../../../../../../src/backend/streamDownload'
 
 export const config = {
     api: {
@@ -18,8 +18,8 @@ export default function handler(req, res) {
         res.end()
     }
 
-    const [,collection, id, tag] = req.query.slug
-    const url = api.ocrUrl(`/doc/${collection}/${id}`, encodeURIComponent(tag))
+    const { collection, id, filename } = req.query
+    const url = api.downloadUrl(`/doc/${collection}/${id}`, encodeURIComponent(filename))
 
     return streamDownload(url, req.headers.cookie, res)
 }

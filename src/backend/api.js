@@ -24,6 +24,11 @@ const api = {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
                 Cookie: api.headers.cookie,
+                ...Object.fromEntries(
+                    Object.keys(api.headers)
+                        .filter(key => key.startsWith('x-forwarded'))
+                        .map(key => [key, api.headers[key]])
+                )
             },
         })
 
