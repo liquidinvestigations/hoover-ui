@@ -21,5 +21,5 @@ export default function handler(req, res) {
     const { collection, id, tag } = req.query
     const url = api.ocrUrl(`/doc/${collection}/${id}`, encodeURIComponent(tag))
 
-    return streamDownload(url, req.headers.cookie, res)
+    return streamDownload(url, req, res)
 }

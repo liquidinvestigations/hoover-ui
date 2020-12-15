@@ -1,6 +1,8 @@
 import https from 'https'
 
-export default function streamDownload(url, cookie, res) {
+let index = 0
+
+export default function streamDownload(url, req, res) {
     return new Promise((resolve, reject) => {
         const apiHost = new URL(process.env.API_URL).host
 
@@ -9,7 +11,12 @@ export default function streamDownload(url, cookie, res) {
             path: url,
             port: 443,
             headers: {
-                'Cookie': cookie
+                'Cookie': req.headers.cookie,
+                ...Object.fromEntries(
+                    Object.keys(req.headers)
+                        .filter(key => key.startsWith('x-forwarded'))
+                        .map(key => [key, req.headers[key]])
+                )
             }
         }, resp => {
             Object.entries(resp.headers).forEach(([header, value]) => {

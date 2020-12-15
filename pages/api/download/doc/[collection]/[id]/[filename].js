@@ -21,5 +21,5 @@ export default function handler(req, res) {
     const { collection, id, filename } = req.query
     const url = api.downloadUrl(`/doc/${collection}/${id}`, encodeURIComponent(filename))
 
-    return streamDownload(url, req.headers.cookie, res)
+    return streamDownload(url, req, res)
 }
