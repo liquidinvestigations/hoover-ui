@@ -1,10 +1,64 @@
 import { DEFAULT_FACET_SIZE, SORTABLE_FIELDS } from './constants'
 
+// remove this list from here
+const ALL_FIELDS = [
+    'attachments',
+    'broken',
+    'content-type',
+    'date',
+    'date-created',
+    'email-domains',
+    'email.*',
+    'filename',
+    'filetype',
+    'from',
+    'id',
+    'in-reply-to',
+    'lang',
+    'location',
+    'md5',
+    'message',
+    'message-id',
+    'ocr',
+    'ocrimage',
+    'ocrpdf',
+    'ocrtext.*',
+    'path',
+    'path-parts',
+    'path-text',
+    'pgp',
+    'references',
+    'rev',
+    'sha1',
+    'size',
+    'subject',
+    'text',
+    'thread-index',
+    'to',
+    'word-count',
+
+    'tags',
+    // FIXME the api route returns username here
+    "private-tags.root",
+];
+
+
+const HIGHLIGHT_SETTINGS = {
+    fragment_size: 150,
+    number_of_fragments: 3,
+    require_field_match: false,
+    pre_tags: ['<mark>'],
+    post_tags: ['</mark>'],
+};
+
 function buildQuery(q, { dateCreatedRange, dateModifiedRange }) {
     const qs = {
         query_string: {
             query: q,
             default_operator: 'AND',
+            // TODO replace with fields.all from api.searchFields()
+            fields: ALL_FIELDS,
+            lenient: true,
         },
     }
 
@@ -176,6 +230,12 @@ export default function buildSearchQuery({
     const postFilter = buildFilter(fields);
     const aggs = buildAggs(fields);
 
+    var highlightFields = {};
+    // TODO replace with fields.highlight from api.searchFields()
+    ALL_FIELDS.forEach((x) => {
+        highlightFields[x] = HIGHLIGHT_SETTINGS;
+    });
+
     return {
         from: (page - 1) * size,
         size: size,
@@ -185,26 +245,10 @@ export default function buildSearchQuery({
         post_filter: postFilter,
         aggs,
         collections: collections,
-        _source: [
-            'path',
-            'url',
-            'mime_type',
-            'attachments',
-            'filename',
-            'word-count',
-            'date',
-            'date-created',
-        ],
+        // TODO replace with fields._source from api.searchFields()
+        _source: ALL_FIELDS,
         highlight: {
-            fields: {
-                '*': {
-                    fragment_size: 150,
-                    number_of_fragments: 3,
-                    require_field_match: false,
-                    pre_tags: ['<mark>'],
-                    post_tags: ['</mark>'],
-                },
-            },
+            fields: highlightFields,
         },
     };
 }

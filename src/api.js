@@ -46,6 +46,8 @@ const api = {
 
     collections: () => api.fetchJson(api.buildUrl('collections')),
 
+    searchFields: () => api.fetchJson(api.buildUrl('search_fields')),
+
     limits: () => api.fetchJson(api.buildUrl('limits')),
 
     locationsFor: memoize((docUrl, pageIndex) => api.fetchJson(
