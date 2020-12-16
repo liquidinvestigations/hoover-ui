@@ -6,9 +6,9 @@ import Filter from '../src/components/filters/Filter'
 import CollectionsFilter from '../src/components/filters/CollectionsFilter'
 import BatchResults from '../src/components/BatchResults'
 import Loading from '../src/components/Loading'
-import { authorizeBackendApi, searchPath } from '../src/utils'
-import backend from '../src/backend/api'
-import api from '../src/api'
+import { searchPath } from '../src/queryUtils'
+import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
+import { batch, collections as collectionsAPI, limits as limitsAPI } from '../src/backend/api'
 
 const useStyles = makeStyles(theme => ({
     main: {
@@ -49,7 +49,7 @@ export default function BatchSearch({ collections, limits }) {
         setResultsLoading(true)
         const termsPage = terms.trim().split('\n').slice(offset, offset + limits.batch);
 
-        api.batch({
+        batch({
             query_strings: termsPage,
             collections,
         }).then(response => {
@@ -176,9 +176,9 @@ export default function BatchSearch({ collections, limits }) {
 }
 
 export async function getServerSideProps({ req }) {
-    authorizeBackendApi(req, backend)
-    const collections = await backend.collections()
-    const limits = await backend.limits()
+    const headers = getAuthorizationHeaders(req)
+    const collections = await collectionsAPI(headers)
+    const limits = await limitsAPI(headers)
 
     return { props: { collections, limits }}
 }

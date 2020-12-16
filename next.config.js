@@ -1,6 +1,8 @@
 const withSass = require('@zeit/next-sass')
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
 
+const { API_URL, REWRITE_API } = process.env
+
 module.exports = withSass({
     cssModules: false,
     webpack(config, options) {
@@ -27,6 +29,25 @@ module.exports = withSass({
     redirects: () => [{
         source: '/doc/:collection/:id/raw/:file*',
         destination: '/api/download/doc/:collection/:id/:file*',
-        permanent: true
+        permanent: true,
     }],
+    rewrites: () => REWRITE_API ? [{
+        source: '/api/v0/whoami',
+        destination: API_URL + '/api/v0/whoami',
+    },{
+        source: '/api/v0/batch',
+        destination: API_URL + '/api/v0/batch',
+    },{
+        source: '/api/v0/doc/:collection/:id/json',
+        destination: API_URL + '/api/v0/doc/:collection/:id/json',
+    },{
+        source: '/api/v0/doc/:collection/:id/locations',
+        destination: API_URL + '/api/v0/doc/:collection/:id/locations',
+    },{
+        source: '/api/v0/doc/:collection/:id/raw/:filename',
+        destination: API_URL + '/api/v0/doc/:collection/:id/raw/:filename',
+    },{
+        source: '/api/v0/doc/:collection/:id/ocr/:tag',
+        destination: API_URL + '/api/v0/doc/:collection/:id/ocr/:tag',
+    }] : [],
 })

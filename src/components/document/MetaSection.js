@@ -3,7 +3,8 @@ import Link from 'next/link'
 import url from 'url'
 import { DateTime } from 'luxon'
 import { List, ListItem, ListItemText } from '@material-ui/core'
-import { getLanguageName, humanFileSize, isPrintMode, searchPath } from '../../utils'
+import { getLanguageName, humanFileSize, isPrintMode } from '../../utils'
+import { searchPath } from '../../queryUtils'
 import Section from './Section'
 import {
     SEARCH_DATE_CREATED,

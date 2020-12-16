@@ -1,5 +1,5 @@
-import api from '../../src/backend/api'
-import { authorizeBackendApi } from '../../src/utils'
+import { search } from '../../src/backend/api'
+import getAuthorizationHeaders from '../../src/backend/getAuthorizationHeaders'
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -8,8 +8,8 @@ export default async function handler(req, res) {
     }
 
     try {
-        authorizeBackendApi(req, api)
-        const response = await api.search(req.body, 'aggregations')
+        const headers = getAuthorizationHeaders(req)
+        const response = await search(headers, req.body, 'aggregations')
         res.json(response)
         res.end()
 

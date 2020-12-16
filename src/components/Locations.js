@@ -4,7 +4,7 @@ import url from 'url'
 import { List, ListItem, ListItemIcon, Typography } from '@material-ui/core'
 import { Folder } from '@material-ui/icons'
 import Loading from './Loading'
-import api from '../api'
+import { locations as locationsAPI } from '../backend/api'
 
 function Locations({ url: docUrl, data }) {
     const [locations, setLocations] = useState([])
@@ -14,7 +14,7 @@ function Locations({ url: docUrl, data }) {
 
     useEffect(() => {
         if (docUrl) {
-            api.locations(docUrl, page).then(response => {
+            locationsAPI(docUrl, page).then(response => {
                 setLocations(response.locations)
                 setHasNextPage(response.has_next_page)
             })
@@ -24,7 +24,7 @@ function Locations({ url: docUrl, data }) {
     const loadMore = async event => {
         event.preventDefault()
         setLoadingNextPage(true)
-        const response = await api.locations(docUrl, page + 1)
+        const response = await locationsAPI(docUrl, page + 1)
         setPage(page + 1)
         setLocations([...locations, ...response.locations])
         setHasNextPage(response.has_next_page)

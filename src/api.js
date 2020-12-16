@@ -1,44 +1,26 @@
-import memoize from 'lodash/memoize'
+export const fetchJson = async (url, opts = {}) => {
+    const res = await fetch(url, {
+        ...opts,
+        credentials: 'same-origin',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+        },
+    })
 
-const api = {
-    fetchJson: async (url, params, opts = {}) => {
-        let apiUrl = url
-        if (params) {
-            apiUrl += '?' + new URLSearchParams(params)
-        }
-        const res = await fetch(apiUrl, {
-            ...opts,
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            },
-        })
-
-        if (res.ok) {
-            return res.json()
-        } else {
-            throw await res.json()
-        }
-    },
-
-    doc: memoize((docUrl, pageIndex = 1) => api.fetchJson(
-        '/api/doc', { docUrl, pageIndex }
-    ), (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`),
-
-    locations: memoize((docUrl, pageIndex) => api.fetchJson(
-        '/api/locations', { docUrl, pageIndex }
-    ), (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`),
-
-    search: params => api.fetchJson('/api/search', null, {
-        method: 'POST',
-        body: JSON.stringify(params),
-    }),
-
-    aggregations: params => api.fetchJson('/api/aggregations', null, {
-        method: 'POST',
-        body: JSON.stringify(params),
-    }),
+    if (res.ok) {
+        return res.json()
+    } else {
+        throw await res.json()
+    }
 }
 
-export default api
+export const search = params => fetchJson('/api/search', {
+    method: 'POST',
+    body: JSON.stringify(params),
+})
+
+export const aggregations = params => fetchJson('/api/aggregations', {
+    method: 'POST',
+    body: JSON.stringify(params),
+})

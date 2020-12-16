@@ -4,11 +4,11 @@ import LuxonUtils from '@date-io/luxon'
 import { ThemeProvider } from '@material-ui/core/styles'
 import { CssBaseline } from '@material-ui/core'
 import { MuiPickersUtilsProvider } from '@material-ui/pickers'
-import { authorizeBackendApi } from '../src/utils'
 import { JSS_CSS } from "../src/constants"
 import Layout from '../src/components/Layout'
 import theme from '../src/theme'
-import backend from '../src/backend/api'
+import { whoami } from '../src/backend/api'
+import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
 import '../styles/main.scss'
 
 export const UserContext = createContext(null)
@@ -39,8 +39,8 @@ export default function HooverApp({ Component, pageProps, whoAmI }) {
 HooverApp.getInitialProps = async appContext => {
     const appProps = await App.getInitialProps(appContext)
 
-    authorizeBackendApi(appContext.ctx.req, backend)
-    const whoAmI = await backend.whoami()
+    const headers = getAuthorizationHeaders(appContext.ctx.req)
+    const whoAmI = await whoami(headers)
     appContext.ctx.req.whoAmI = whoAmI
 
     return { ...appProps, whoAmI }

@@ -1,9 +1,11 @@
 import React, { memo } from 'react'
 import Link from 'next/link'
+import { DateTime } from 'luxon'
 import { Table, TableBody, TableCell, TableRow } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import Section from './Section'
-import { isPrintMode, searchPath } from '../../utils'
+import { isPrintMode } from '../../utils'
+import { searchPath } from '../../queryUtils'
 import {
     SEARCH_FROM,
     SEARCH_IN_REPLY_TO,
@@ -12,7 +14,6 @@ import {
     SEARCH_THREAD_INDEX,
     SEARCH_TO
 } from '../../constants'
-import { DateTime } from 'luxon'
 
 const useStyles = makeStyles({
     preWrap: {

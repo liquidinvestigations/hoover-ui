@@ -10,7 +10,7 @@ import Finder from '../../../src/components/Finder'
 import SplitPaneLayout from '../../../src/components/SplitPaneLayout'
 import HotKeysWithHelp from '../../../src/components/HotKeysWithHelp'
 import { copyMetadata, documentViewUrl } from '../../../src/utils'
-import api from '../../../src/api'
+import { doc as docAPI } from '../../../src/backend/api'
 
 const useStyles = makeStyles(theme => ({
     splitPane: {
@@ -66,7 +66,7 @@ export default function Doc() {
             }
             setPathname(path)
             setLoading(true)
-            api.doc(path).then(data => {
+            docAPI(path).then(data => {
                 if (data.id.startsWith('_')) {
                     if (data.id.startsWith('_file_')) {
                         setDigest(data.digest)

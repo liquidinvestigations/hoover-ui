@@ -52,7 +52,7 @@ document.addEventListener('webviewerloaded', function(event) {
     }
 
     // hoover ui: get hypothesis url from /api/v0/whoami
-    fetch('/api/whoami')
+    fetch('/api/v0/whoami')
       .then((response) => {
         return response.json()
       })

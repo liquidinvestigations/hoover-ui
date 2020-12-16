@@ -16,11 +16,12 @@ import CollectionsFilter from '../src/components/filters/CollectionsFilter'
 import Document from '../src/components/document/Document'
 import { ProgressIndicatorContext } from '../src/components/ProgressIndicator'
 import { SEARCH_GUIDE, SEARCH_QUERY_PREFIXES } from '../src/constants'
-import { authorizeBackendApi, copyMetadata, documentViewUrl } from '../src/utils'
-import { rollupParams, unwindParams } from '../src/queryUtils'
+import { copyMetadata, documentViewUrl } from '../src/utils'
+import { buildSearchQuerystring, defaultSearchParams, unwindParams } from '../src/queryUtils'
 import fixLegacyQuery from '../src/fixLegacyQuery'
-import backend from '../src/backend/api'
-import api from '../src/api'
+import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
+import { collections as collectionsAPI, doc as docAPI } from '../src/backend/api'
+import { aggregations as aggregationsAPI, search as searchAPI } from '../src/api'
 
 const extractFields = query => {
     /*
@@ -45,20 +46,6 @@ const extractFields = query => {
     })
     return [fields, otherInput.join(' ')]
 }
-
-const defaultParams = {
-    page: 1,
-    size: 10,
-}
-
-export const buildUrlQuery = ({ q, collections, fields, text, ...rest }) => (
-    qs.stringify(rollupParams({
-        q: (fields?.length ? fields.join(' ') + ' ' : '') + (text || ''),
-        ...defaultParams,
-        collections: collections.join('+'),
-        ...rest,
-    }))
-)
 
 const useStyles = makeStyles(theme => ({
     error: {
@@ -100,7 +87,7 @@ export default function Index({ collections, serverQuery }) {
 
     const search = params => {
         const stateParams = { fields: chips, text, size, order, page, collections: selectedCollections }
-        const newQuery = buildUrlQuery({ ...query, ...stateParams, ...params })
+        const newQuery = buildSearchQuerystring({ ...query, ...stateParams, ...params })
         router.push(
             { pathname, search: newQuery },
             undefined,
@@ -115,21 +102,21 @@ export default function Index({ collections, serverQuery }) {
         search({ collections, page: 1 })
     }
 
-    const [size, setSize] = useState(query.size || defaultParams.size)
+    const [size, setSize] = useState(query.size || defaultSearchParams.size)
     const handleSizeChange = size => {
         setSize(size)
         setPage(1)
         search({ size, page: 1 })
     }
 
-    const [order, setOrder] = useState(query.order || defaultParams.order)
+    const [order, setOrder] = useState(query.order)
     const handleOrderChange = order => {
         setOrder(order)
         setPage(1)
         search({ order, page: 1 })
     }
 
-    const [page, setPage] = useState(query.page || defaultParams.page)
+    const [page, setPage] = useState(query.page || defaultSearchParams.page)
     const handlePageChange = page => {
         setPage(page)
         search({ page })
@@ -179,7 +166,7 @@ export default function Index({ collections, serverQuery }) {
     const handleDocPreview = useCallback(url => {
         setSelectedDocUrl(url)
         setPreviewLoading(true)
-        api.doc(url).then(data => {
+        docAPI(url).then(data => {
             setSelectedDocData(data)
             setPreviewLoading(false)
         })
@@ -198,7 +185,7 @@ export default function Index({ collections, serverQuery }) {
             setError(null)
             setResultsLoading(true)
 
-            api.search(query).then(results => {
+            searchAPI(query).then(results => {
                 setResults(results)
                 setResultsLoading(false)
 
@@ -237,7 +224,7 @@ export default function Index({ collections, serverQuery }) {
         if (query.q) {
             setAggregationsLoading(true)
 
-            api.aggregations(query).then(results => {
+            aggregationsAPI(query).then(results => {
                 setAggregations(results.aggregations)
                 setAggregationsLoading(false)
             }).catch(error => {
@@ -474,8 +461,8 @@ export default function Index({ collections, serverQuery }) {
 }
 
 export async function getServerSideProps({ req }) {
-    authorizeBackendApi(req, backend)
-    const collections = await backend.collections()
+    const headers = getAuthorizationHeaders(req)
+    const collections = await collectionsAPI(headers)
 
     const serverQuery = req.url.split('?')[1] || ''
 

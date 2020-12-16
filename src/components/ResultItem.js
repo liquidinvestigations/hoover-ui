@@ -4,7 +4,8 @@ import { DateTime } from 'luxon'
 import { makeStyles } from '@material-ui/core/styles'
 import { Box, Card, CardContent, CardHeader, Grid, IconButton, Tooltip, Typography } from '@material-ui/core'
 import { AttachFile, CloudDownloadOutlined } from '@material-ui/icons'
-import { getDownloadUrl, makeUnsearchable, truncatePath } from '../utils'
+import { makeUnsearchable, truncatePath } from '../utils'
+import { createDownloadUrl } from '../backend/api'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -69,7 +70,7 @@ function ResultItem({ hit, url, index, onPreview, isPreview, unsearchable }) {
 
     const fields = hit._source || {}
     const highlights = hit.highlight || {}
-    const downloadUrl = getDownloadUrl(url, fields.filename)
+    const downloadUrl = createDownloadUrl(url, fields.filename)
 
     return (
         <Card

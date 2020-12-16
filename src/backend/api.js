@@ -1,71 +1,71 @@
 import fetch from 'node-fetch'
 import { stringify } from 'qs'
+import memoize from 'lodash/memoize'
 import buildSearchQuery from './buildSearchQuery'
 
-const api = {
-    prefix: '/api/v0/',
+const { API_URL } = process.env
 
-    buildUrl: (...paths) => {
-        const queryObj = paths.reduce((prev, curr, index) => {
-            if (typeof curr !== 'string' && typeof curr === 'object' && curr !== null) {
-                paths.splice(index, 1)
-                return Object.assign(prev || {}, curr)
-            }
-        }, undefined)
-        return [api.prefix, ...paths].join('/').replace(/\/+/g, '/')
-            + (queryObj ? `?${stringify(queryObj)}` : '')
-    },
+const prefix = '/api/v0/'
 
-    fetchJson: async (url, opts = {}) => {
-        const res = await fetch(process.env.API_URL + url, {
-            ...opts,
-            timeout: 60000,
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-                Cookie: api.headers.cookie,
-                ...Object.fromEntries(
-                    Object.keys(api.headers)
-                        .filter(key => key.startsWith('x-forwarded'))
-                        .map(key => [key, api.headers[key]])
-                )
-            },
-        })
-
-        if (res.ok) {
-            return res.json();
-        } else {
-            throw await res.json()
+const buildUrl = (...paths) => {
+    const queryObj = paths.reduce((prev, curr, index) => {
+        if (typeof curr !== 'string' && typeof curr === 'object' && curr !== null) {
+            paths.splice(index, 1)
+            return Object.assign(prev || {}, curr)
         }
-    },
-
-    collections: () => api.fetchJson(api.buildUrl('collections')),
-
-    limits: () => api.fetchJson(api.buildUrl('limits')),
-
-    whoami: () => api.fetchJson(api.buildUrl('whoami')),
-
-    doc: (docUrl, pageIndex = 1) => api.fetchJson(
-        api.buildUrl(docUrl, 'json', { children_page: pageIndex })
-    ),
-
-    locations: (docUrl, pageIndex) => api.fetchJson(
-        api.buildUrl(docUrl, 'locations', { page: pageIndex })
-    ),
-
-    search: (params, type) => api.fetchJson(api.buildUrl('search'), {
-        method: 'POST',
-        body: JSON.stringify(buildSearchQuery(params, type)),
-    }),
-
-    batch: query => api.fetchJson(api.buildUrl('batch'), {
-        method: 'POST',
-        body: JSON.stringify(query),
-    }),
-
-    downloadUrl: (docUrl, filename) => api.buildUrl(docUrl, 'raw', filename),
-
-    ocrUrl: (docUrl, tag) => api.buildUrl(docUrl, 'ocr', tag),
+    }, undefined)
+    return [prefix, ...paths].join('/').replace(/\/+/g, '/')
+        + (queryObj ? `?${stringify(queryObj)}` : '')
 }
 
-export default api
+const fetchJson = async (url, opts = {}) => {
+    const res = await fetch((typeof window === 'undefined' ? API_URL : '') + url, {
+        ...opts,
+        timeout: 60000,
+        headers: {
+            ...(opts.headers || {}),
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+        },
+    })
+
+    if (res.ok) {
+        return res.json();
+    } else {
+        throw await res.json()
+    }
+}
+
+/*
+ called only by node.js
+ */
+export const whoami = headers => fetchJson(buildUrl('whoami'), { headers })
+export const limits = headers => fetchJson(buildUrl('limits'), { headers })
+export const collections = headers => fetchJson(buildUrl('collections'), { headers })
+export const search = (headers, params, type) => fetchJson(buildUrl('search'), {
+    headers,
+    method: 'POST',
+    body: JSON.stringify(buildSearchQuery(params, type)),
+})
+
+/*
+ called only by browser
+ */
+export const doc = memoize((docUrl, pageIndex = 1) => fetchJson(
+    buildUrl(docUrl, 'json', { children_page: pageIndex })
+), (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`)
+
+export const locations = memoize((docUrl, pageIndex) => fetchJson(
+    buildUrl(docUrl, 'locations', { page: pageIndex })
+), (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`)
+
+export const batch = query => fetchJson(buildUrl('batch'), {
+    method: 'POST',
+    body: JSON.stringify(query),
+})
+
+/*
+ URL building only
+ */
+export const createDownloadUrl = (docUrl, filename) => buildUrl(docUrl, 'raw', filename)
+export const createOcrUrl = (docUrl, tag) => buildUrl(docUrl, 'ocr', tag)
