@@ -27,8 +27,8 @@ module.exports = withSass({
     reactStrictMode: false,
     compress: false,
     redirects: () => [{
-        source: '/doc/:collection/:id/raw/:file*',
-        destination: '/api/download/doc/:collection/:id/:file*',
+        source: '/doc/:collection/:id/raw/:filename',
+        destination: '/api/v0/doc/:collection/:id/raw/:filename',
         permanent: true,
     }],
     rewrites: () => REWRITE_API ? [{
