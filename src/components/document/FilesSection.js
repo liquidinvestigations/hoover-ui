@@ -7,7 +7,7 @@ import Section from './Section'
 import Loading from '../Loading'
 import { createDownloadUrl, doc as docAPI } from '../../backend/api'
 
-function FilesSection({ data, page, hasNextPage, baseUrl, docUrl, title, fullPage }) {
+function FilesSection({ data, page, hasNextPage, baseUrl, docUrl, fullPage }) {
     const [files, setFiles] = useState(data)
     const [currentPage, setCurrentPage] = useState(page)
     const [currentHasNextPage, setCurrentHasNextPage] = useState(hasNextPage)
@@ -53,7 +53,7 @@ function FilesSection({ data, page, hasNextPage, baseUrl, docUrl, title, fullPag
 
     return (
         filesRows.length > 0 && (
-            <Section title={title} scrollX={true}>
+            <Section title="Files" scrollX={true}>
                 <Table>
                     <TableBody>
                         {filesRows}

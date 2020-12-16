@@ -42,7 +42,7 @@ const useStyles = makeStyles({
     },
 })
 
-function PreviewSection({ type, url, title, docTitle }) {
+function PreviewSection({ type, url, docTitle }) {
     const classes = useStyles()
 
     if (!type || !url) return null;
@@ -81,7 +81,7 @@ function PreviewSection({ type, url, title, docTitle }) {
     }
 
     return (
-        <Section title={title}>
+        <Section title="Preview">
             {preview}
         </Section>
     )

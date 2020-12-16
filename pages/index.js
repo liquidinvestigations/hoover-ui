@@ -129,21 +129,6 @@ export default function Index({ collections, serverQuery }) {
 
     const handleInputChange = useCallback(event => setText(event.target.value), [])
 
-    const handleBeforeChipAdd = useCallback(chip => {
-        if (chip.indexOf(':') > 0) {
-            const chipParts = chip.split(':')
-            if (SEARCH_QUERY_PREFIXES.indexOf(chipParts[0]) >= 0 && chipParts[1].length > 0) {
-                return true
-            }
-        }
-        return false
-    }, [])
-
-    const handleChipAdd = chip => {
-        setChips([...chips, chip])
-        setText(text.replace(chip, ''))
-    }
-
     const handleChipDelete = (chip, chipIndex) => {
         const fields = [...chips]
         fields.splice(chipIndex, 1)
@@ -399,8 +384,6 @@ export default function Index({ collections, serverQuery }) {
                                     newChipKeyCodes={[]}
                                     newChipKeys={[]}
                                     onUpdateInput={handleInputChange}
-                                    onBeforeAdd={handleBeforeChipAdd}
-                                    onAdd={handleChipAdd}
                                     onDelete={handleChipDelete}
                                     autoFocus
                                     fullWidth

@@ -44,6 +44,12 @@ module.exports = withSass({
         source: '/api/v0/doc/:collection/:id/locations',
         destination: API_URL + '/api/v0/doc/:collection/:id/locations',
     },{
+        source: '/api/v0/doc/:collection/:id/tags',
+        destination: API_URL + '/api/v0/doc/:collection/:id/tags',
+    },{
+        source: '/api/v0/doc/:collection/:id/tags/:id',
+        destination: API_URL + '/api/v0/doc/:collection/:id/tags/:id',
+    },{
         source: '/api/v0/doc/:collection/:id/raw/:filename',
         destination: API_URL + '/api/v0/doc/:collection/:id/raw/:filename',
     },{

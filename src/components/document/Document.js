@@ -11,6 +11,7 @@ import FilesSection from './FilesSection'
 import MetaSection from './MetaSection'
 import Loading from '../Loading'
 import { createDownloadUrl, createOcrUrl } from '../../backend/api'
+import TagsSection from './TagsSection'
 
 const useStyles = makeStyles(theme => ({
     toolbar: {
@@ -116,19 +117,17 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
                 </Toolbar>
             )}
 
+            <TagsSection docUrl={docUrl} />
+
             <EmailSection doc={data} collection={collection} />
 
             <PreviewSection
-                title="Preview"
                 docTitle={data.content.filename}
                 type={data.content["content-type"]}
                 url={docRawUrl}
             />
 
-            <HTMLSection
-                html={data.safe_html}
-                title="HTML"
-            />
+            <HTMLSection html={data.safe_html} />
 
             <TextSection
                 title="Text"
@@ -153,7 +152,6 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
             ))}
 
             <FilesSection
-                title="Files"
                 data={data.children || []}
                 page={data.children_page}
                 hasNextPage={data.children_has_next_page}

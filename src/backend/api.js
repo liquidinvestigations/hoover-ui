@@ -60,6 +60,22 @@ export const locations = memoize((docUrl, pageIndex) => fetchJson(
     buildUrl(docUrl, 'locations', { page: pageIndex })
 ), (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`)
 
+export const tags = docUrl => fetchJson(buildUrl(docUrl, 'tags'))
+
+export const tag = (docUrl, tagId) => fetchJson(buildUrl(docUrl, 'tags', tagId))
+
+export const createTag = (docUrl, data) => fetchJson(buildUrl(docUrl, 'tags'), {
+    method: 'POST',
+    body: JSON.stringify(data)
+})
+
+export const updateTag = (docUrl, tagId, data) => fetchJson(buildUrl(docUrl, 'tags', tagId), {
+    method: 'PATCH',
+    body: JSON.stringify(data)
+})
+
+export const deleteTag = (docUrl, tagId) => fetchJson(buildUrl(docUrl, 'tags', tagId), { method: 'DELETE' })
+
 export const batch = query => fetchJson(buildUrl('batch'), {
     method: 'POST',
     body: JSON.stringify(query),
