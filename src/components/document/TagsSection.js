@@ -22,8 +22,8 @@ function TagsSection({ docUrl }) {
     const [mutating, setMutating] = useState(false)
     const handleTagAdd = tag => {
         setMutating(true)
-        createTag(docUrl, { tag, public: false }).then(() => {
-            tagsAPI(docUrl).then(setTags)
+        createTag(docUrl, { tag, public: false }).then(newTag => {
+            setTags([...tags, newTag])
             setMutating(false)
         }).catch(() => {
             setMutating(false)
@@ -34,7 +34,7 @@ function TagsSection({ docUrl }) {
         tag.isMutating = true
         setTags([...tags])
         deleteTag(docUrl, tag.id).then(() => {
-            tagsAPI(docUrl).then(setTags)
+            setTags([...(tags.filter(t => t.id !== tag.id))])
         }).catch(() => {
             tag.isMutating = false
             setTags([...tags])
@@ -44,8 +44,12 @@ function TagsSection({ docUrl }) {
     const handleClick = tag => () => {
         tag.isMutating = true
         setTags([...tags])
-        updateTag(docUrl, tag.id, { public: !tag.public }).then(() => {
-            tagsAPI(docUrl).then(setTags)
+        updateTag(docUrl, tag.id, { public: !tag.public }).then(changedTag => {
+            Object.assign(tag, {
+                ...changedTag,
+                isMutating: false,
+            })
+            setTags([...tags])
         }).catch(() => {
             tag.isMutating = false
             setTags([...tags])

@@ -30,7 +30,10 @@ const fetchJson = async (url, opts = {}) => {
     })
 
     if (res.ok) {
-        return res.json();
+        if (res.status === 204) {
+            return true
+        }
+        return res.json()
     } else {
         throw await res.json()
     }
