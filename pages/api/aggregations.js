@@ -1,4 +1,4 @@
-import { search } from '../../src/backend/api'
+import { search, searchFields } from '../../src/backend/api'
 import getAuthorizationHeaders from '../../src/backend/getAuthorizationHeaders'
 
 export default async function handler(req, res) {
@@ -9,7 +9,8 @@ export default async function handler(req, res) {
 
     try {
         const headers = getAuthorizationHeaders(req)
-        const response = await search(headers, req.body, 'aggregations')
+        const fields = await searchFields(headers)
+        const response = await search(headers, req.body, 'aggregations', fields.fields)
         res.json(response)
         res.end()
 

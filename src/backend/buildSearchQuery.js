@@ -1,64 +1,12 @@
-import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL } from '../constants'
+import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL, HIGHLIGHT_SETTINGS } from '../constants'
 import { DateTime } from 'luxon'
 
-// remove this list from here
-const ALL_FIELDS = [
-    'attachments',
-    'broken',
-    'content-type',
-    'date',
-    'date-created',
-    'email-domains',
-    'email.*',
-    'filename',
-    'filetype',
-    'from',
-    'id',
-    'in-reply-to',
-    'lang',
-    'location',
-    'md5',
-    'message',
-    'message-id',
-    'ocr',
-    'ocrimage',
-    'ocrpdf',
-    'ocrtext.*',
-    'path',
-    'path-parts',
-    'path-text',
-    'pgp',
-    'references',
-    'rev',
-    'sha1',
-    'size',
-    'subject',
-    'text',
-    'thread-index',
-    'to',
-    'word-count',
-
-    'tags',
-    // FIXME the api route returns username here
-    "private-tags.root",
-];
-
-
-const HIGHLIGHT_SETTINGS = {
-    fragment_size: 150,
-    number_of_fragments: 3,
-    require_field_match: false,
-    pre_tags: ['<mark>'],
-    post_tags: ['</mark>'],
-};
-
-const buildQuery = ({ q = '*', ...rest }) => {
+const buildQuery = ({ q = '*', ...rest }, searchFields) => {
     const qs = {
         query_string: {
             query: q,
             default_operator: 'AND',
-            // TODO replace with fields.all from api.searchFields()
-            fields: ALL_FIELDS,
+            fields: searchFields.all,
             lenient: true,
         },
     }
@@ -209,8 +157,10 @@ const buildAggs = fields => fields.reduce((result, field) => ({
     },
 }), {})
 
-const buildSearchQuery = ({ page = 1, size = 0, order, collections = [], facets = {}, ...rest } = {}, type) => {
-    const query = buildQuery(rest)
+const buildSearchQuery = ({ page = 1, size = 0, order, collections = [], facets = {}, ...rest } = {},
+                          type, searchFields) => {
+
+    const query = buildQuery(rest, searchFields)
     const sort = buildSortQuery(order)
 
     const fields = [
@@ -225,11 +175,10 @@ const buildSearchQuery = ({ page = 1, size = 0, order, collections = [], facets 
     const postFilter = buildFilter(fields);
     const aggs = buildAggs(fields);
 
-    const highlightFields = {};
-    // TODO replace with fields.highlight from api.searchFields()
-    ALL_FIELDS.forEach((x) => {
-        highlightFields[x] = HIGHLIGHT_SETTINGS;
-    });
+    const highlightFields = {}
+    searchFields.highlight.forEach(field => {
+        highlightFields[field] = HIGHLIGHT_SETTINGS
+    })
 
     return {
         from: (page - 1) * size,
@@ -239,8 +188,7 @@ const buildSearchQuery = ({ page = 1, size = 0, order, collections = [], facets 
         post_filter: postFilter,
         aggs: type === 'results' ? {} : aggs,
         collections,
-        // TODO replace with fields._source from api.searchFields()
-        _source: ALL_FIELDS,
+        _source: searchFields._source,
         highlight: {
             fields: highlightFields,
         },
