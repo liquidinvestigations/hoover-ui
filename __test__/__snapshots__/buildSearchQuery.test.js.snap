@@ -2,16 +2,7 @@
 
 exports[`builds a default query 1`] = `
 Object {
-  "_source": Array [
-    "path",
-    "url",
-    "mime_type",
-    "attachments",
-    "filename",
-    "word-count",
-    "date",
-    "date-created",
-  ],
+  "_source": Array [],
   "aggs": Object {
     "date": Object {
       "aggs": Object {
@@ -131,19 +122,7 @@ Object {
   "collections": Array [],
   "from": 0,
   "highlight": Object {
-    "fields": Object {
-      "*": Object {
-        "fragment_size": 150,
-        "number_of_fragments": 3,
-        "post_tags": Array [
-          "</mark>",
-        ],
-        "pre_tags": Array [
-          "<mark>",
-        ],
-        "require_field_match": false,
-      },
-    },
+    "fields": Object {},
   },
   "post_filter": Object {
     "bool": Object {},
@@ -151,6 +130,8 @@ Object {
   "query": Object {
     "query_string": Object {
       "default_operator": "AND",
+      "fields": Array [],
+      "lenient": true,
       "query": "*",
     },
   },

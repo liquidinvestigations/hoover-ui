@@ -31,7 +31,7 @@ All servers listen on port 8000.
 
 Run Liquid Investigations with `mount_local_repos` = True.
 
-To run UI on localhost set environment variable `API_URL=https://your.server.url`
+To run UI on localhost set environment variable `API_URL=https://your.server.url` and `REWRITE_API=true`
 
 In order to get authorized just copy OAuth2 proxy cookie.
 

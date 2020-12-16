@@ -1,12 +1,18 @@
 import buildSearchQuery from '../src/backend/buildSearchQuery'
 
+const searchFields = {
+    all: [],
+    _source: [],
+    highlight: []
+}
+
 it('builds a default query', () => {
-    const query = buildSearchQuery()
+    const query = buildSearchQuery({}, null, searchFields)
     expect(query).toMatchSnapshot()
 })
 
 it('builds a query with a filetype filter', () => {
-    const query = buildSearchQuery({ filetype: ['email', 'pdf'] })
+    const query = buildSearchQuery({ filetype: ['email', 'pdf'] }, null, searchFields)
 
     expect(query.post_filter).toMatchObject({
         bool: {
@@ -37,7 +43,7 @@ it('builds a query with a filetype filter', () => {
 })
 
 it('builds a query with a date histogram by years filter', () => {
-    const query = buildSearchQuery({ date: { intervals: ['2009'] } })
+    const query = buildSearchQuery({ date: { intervals: ['2009'] } }, null, searchFields)
 
     const yearFilter = {
         bool: {
@@ -89,7 +95,7 @@ it('builds a query with multiple fields filtered', () => {
     const query = buildSearchQuery({
         filetype: ['doc', 'email'],
         'email-domains': ['gmail.com'],
-    })
+    }, null, searchFields)
 
     expect(query.post_filter).toMatchObject({
         bool: {
