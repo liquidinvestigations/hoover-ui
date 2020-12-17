@@ -1,12 +1,22 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useContext, useEffect, useState } from 'react'
 import { blue } from '@material-ui/core/colors'
 import ChipInput from 'material-ui-chip-input'
-import { Chip } from '@material-ui/core'
+import { Chip, IconButton } from '@material-ui/core'
+import { Lock, LockOpen } from '@material-ui/icons';
 import Section from './Section'
 import Loading from '../Loading'
+import { UserContext } from '../../../pages/_app'
 import { createTag, deleteTag, tags as tagsAPI, updateTag } from '../../backend/api'
 
-function TagsSection({ docUrl }) {
+function TagsSection({ collection, digest }) {
+    if (!collection || ! digest) {
+        return null
+    }
+
+    const whoAmI = useContext(UserContext)
+
+    const docUrl = `/doc/${collection}/${digest}`
+
     const [tags, setTags] = useState([])
     const [loading, setLoading] = useState(!!docUrl)
     useEffect(() => {
@@ -17,7 +27,7 @@ function TagsSection({ docUrl }) {
                 setLoading(false)
             })
         }
-    }, [docUrl])
+    }, [collection, digest])
 
     const [mutating, setMutating] = useState(false)
     const handleTagAdd = tag => {
@@ -42,31 +52,36 @@ function TagsSection({ docUrl }) {
     }
 
     const handleClick = tag => () => {
-        tag.isMutating = true
-        setTags([...tags])
-        updateTag(docUrl, tag.id, { public: !tag.public }).then(changedTag => {
-            Object.assign(tag, {
-                ...changedTag,
-                isMutating: false,
+        if (tag.user === whoAmI.username) {
+            tag.isMutating = true
+            setTags([...tags])
+            updateTag(docUrl, tag.id, {public: !tag.public}).then(changedTag => {
+                Object.assign(tag, {
+                    ...changedTag,
+                    isMutating: false,
+                })
+                setTags([...tags])
+            }).catch(() => {
+                tag.isMutating = false
+                setTags([...tags])
             })
-            setTags([...tags])
-        }).catch(() => {
-            tag.isMutating = false
-            setTags([...tags])
-        })
+        }
     }
 
     const renderChip = ({ value, text, chip, isDisabled, isReadOnly, handleDelete, className }, key) => (
         <Chip
             key={key}
+            icon={chip.user === whoAmI.username ? chip.public ?
+                <IconButton size="small" onClick={handleClick(chip)} ><LockOpen /></IconButton> :
+                <IconButton size="small" onClick={handleClick(chip)} ><Lock /></IconButton> : null
+            }
             disabled={chip.isMutating}
             className={className}
             style={{
                 pointerEvents: isDisabled || isReadOnly ? 'none' : undefined,
                 backgroundColor: chip.public ? blue[300] : undefined
             }}
-            onClick={handleClick(chip)}
-            onDelete={handleDelete}
+            onDelete={chip.user === whoAmI.username ? handleDelete : null}
             label={chip.tag}
         />
     )

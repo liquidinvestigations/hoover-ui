@@ -38,22 +38,22 @@ module.exports = withSass({
         source: '/api/v0/batch',
         destination: API_URL + '/api/v0/batch',
     },{
-        source: '/api/v0/doc/:collection/:id/json',
-        destination: API_URL + '/api/v0/doc/:collection/:id/json',
+        source: '/api/v0/doc/:collection/:hash/json',
+        destination: API_URL + '/api/v0/doc/:collection/:hash/json',
     },{
-        source: '/api/v0/doc/:collection/:id/locations',
-        destination: API_URL + '/api/v0/doc/:collection/:id/locations',
+        source: '/api/v0/doc/:collection/:hash/locations',
+        destination: API_URL + '/api/v0/doc/:collection/:hash/locations',
     },{
-        source: '/api/v0/doc/:collection/:id/tags',
-        destination: API_URL + '/api/v0/doc/:collection/:id/tags',
+        source: '/api/v0/doc/:collection/:hash/tags',
+        destination: API_URL + '/api/v0/doc/:collection/:hash/tags',
     },{
-        source: '/api/v0/doc/:collection/:id/tags/:id',
-        destination: API_URL + '/api/v0/doc/:collection/:id/tags/:id',
+        source: '/api/v0/doc/:collection/:hash/tags/:id',
+        destination: API_URL + '/api/v0/doc/:collection/:hash/tags/:id',
     },{
-        source: '/api/v0/doc/:collection/:id/raw/:filename',
-        destination: API_URL + '/api/v0/doc/:collection/:id/raw/:filename',
+        source: '/api/v0/doc/:collection/:hash/raw/:filename',
+        destination: API_URL + '/api/v0/doc/:collection/:hash/raw/:filename',
     },{
-        source: '/api/v0/doc/:collection/:id/ocr/:tag',
-        destination: API_URL + '/api/v0/doc/:collection/:id/ocr/:tag',
+        source: '/api/v0/doc/:collection/:hash/ocr/:tag',
+        destination: API_URL + '/api/v0/doc/:collection/:hash/ocr/:tag',
     }] : [],
 })

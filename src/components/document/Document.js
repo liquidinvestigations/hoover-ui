@@ -117,7 +117,7 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
                 </Toolbar>
             )}
 
-            <TagsSection docUrl={docUrl} />
+            <TagsSection collection={collection} digest={digest} />
 
             <EmailSection doc={data} collection={collection} />
 
