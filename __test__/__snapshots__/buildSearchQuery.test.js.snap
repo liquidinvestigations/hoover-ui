@@ -118,6 +118,24 @@ Object {
         "bool": Object {},
       },
     },
+    "tags": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "tags",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "tags",
+            "size": 10,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
   },
   "collections": Array [],
   "from": 0,
