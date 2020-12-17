@@ -43,6 +43,13 @@ function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
 
     return (
         <List {...rest}>
+            <TermsAggregationFilter
+                title="Tags"
+                field="tags"
+                onLoadMore={handleLoadMore}
+                {...filterProps}
+            />
+
             <DateHistogramFilter
                 title="Date modified"
                 field="date"
