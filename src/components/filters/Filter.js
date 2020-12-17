@@ -29,15 +29,9 @@ function Filter({ title, children, defaultOpen, enabled = true, colorIfFiltered 
     if (!enabled) {
         return null
     }
-
     const classes = useStyles()
-
     const [open, setOpen] = useState(defaultOpen || false)
     const toggle = () => setOpen(!open)
-
-    useEffect(() => {
-        setOpen(defaultOpen)
-    }, [defaultOpen])
 
     return (
         <>

@@ -3,7 +3,6 @@ import { List } from '@material-ui/core'
 import DateHistogramFilter from './DateHistogramFilter'
 import TermsAggregationFilter from './TermsAggregationFilter'
 import { getLanguageName } from '../../utils'
-import { DEFAULT_FACET_SIZE } from '../../constants'
 
 const formatLang = bucket => getLanguageName(bucket.key)
 
