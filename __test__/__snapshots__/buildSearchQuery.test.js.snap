@@ -118,6 +118,24 @@ Object {
         "bool": Object {},
       },
     },
+    "private-tags.undefined.keyword": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "private-tags.undefined.keyword",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "private-tags.undefined.keyword",
+            "size": 10,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
     "tags": Object {
       "aggs": Object {
         "count": Object {
