@@ -180,8 +180,8 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
         <div>
             {headerLinks.length > 0 && showToolbar !== false && (
                 <Toolbar classes={{root: classes.toolbar}}>
-                    {headerLinks.map(({text, icon, ...props}) => (
-                        <Tooltip title={text} key={props.href}>
+                    {headerLinks.map(({text, icon, ...props}, index) => (
+                        <Tooltip title={text} key={index}>
                             <IconButton
                                 size="small"
                                 color="default"

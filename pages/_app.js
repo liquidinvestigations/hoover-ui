@@ -39,9 +39,11 @@ export default function HooverApp({ Component, pageProps, whoAmI }) {
 HooverApp.getInitialProps = async appContext => {
     const appProps = await App.getInitialProps(appContext)
 
-    const headers = getAuthorizationHeaders(appContext.ctx.req)
+    const headers = appContext.ctx.req ? getAuthorizationHeaders(appContext.ctx.req) : {}
     const whoAmI = await whoami(headers)
-    appContext.ctx.req.whoAmI = whoAmI
+    if (appContext.ctx.req) {
+        appContext.ctx.req.whoAmI = whoAmI
+    }
 
     return { ...appProps, whoAmI }
 }

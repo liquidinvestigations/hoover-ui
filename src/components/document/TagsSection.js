@@ -8,6 +8,8 @@ import Loading from '../Loading'
 import { UserContext } from '../../../pages/_app'
 import { createTag, deleteTag, updateTag } from '../../backend/api'
 
+const specialTags = ['important', 'seen', 'trash']
+
 function TagsSection({ loading, digestUrl, tags, onTagsChanged }) {
     const whoAmI = useContext(UserContext)
 
@@ -57,7 +59,7 @@ function TagsSection({ loading, digestUrl, tags, onTagsChanged }) {
     const renderChip = ({ value, text, chip, isDisabled, isReadOnly, handleDelete, className }, key) => (
         <Chip
             key={key}
-            icon={chip.user === whoAmI.username ? chip.public ?
+            icon={chip.user === whoAmI.username && !specialTags.includes(chip.tag) ? chip.public ?
                 <Tooltip title="Make private">
                     <IconButton
                         size="small"
