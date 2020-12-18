@@ -158,7 +158,7 @@ const buildAggs = fields => fields.reduce((result, field) => ({
 }), {})
 
 const buildSearchQuery = ({ page = 1, size = 0, order, collections = [], facets = {}, ...rest } = {},
-                          type, searchFields) => {
+                          type, searchFields, username) => {
 
     const query = buildQuery(rest, searchFields)
     const sort = buildSortQuery(order)
@@ -167,7 +167,7 @@ const buildSearchQuery = ({ page = 1, size = 0, order, collections = [], facets 
         ...['date', 'date-created'].map(field =>
             buildHistogramField(field, rest[field], facets[field]),
         ),
-        ...['tags', 'filetype', 'lang', 'email-domains'].map(field =>
+        ...['tags', `private-tags.${username}.keyword`, 'filetype', 'lang', 'email-domains'].map(field =>
             buildTermsField(field, rest[field], facets[field])
         ),
     ]

@@ -1,15 +1,14 @@
-import React, { memo } from 'react'
+import React, { memo, useContext } from 'react'
 import { List } from '@material-ui/core'
 import DateHistogramFilter from './DateHistogramFilter'
 import TermsAggregationFilter from './TermsAggregationFilter'
 import { getLanguageName } from '../../utils'
+import { UserContext } from '../../../pages/_app'
 
 const formatLang = bucket => getLanguageName(bucket.key)
 
 function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
-    if (!aggregations) {
-        return null
-    }
+    const whoAmI = useContext(UserContext)
 
     const handleChange = (key, value, resetPage) => {
         if (resetPage) {
@@ -41,11 +40,22 @@ function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
         onChange: handleChange,
     }
 
+    if (!aggregations) {
+        return null
+    }
+
     return (
         <List {...rest}>
             <TermsAggregationFilter
-                title="Tags"
+                title="Public tags"
                 field="tags"
+                onLoadMore={handleLoadMore}
+                {...filterProps}
+            />
+
+            <TermsAggregationFilter
+                title="Private tags"
+                field={`private-tags.${whoAmI.username}.keyword`}
                 onLoadMore={handleLoadMore}
                 {...filterProps}
             />

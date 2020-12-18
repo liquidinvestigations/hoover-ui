@@ -1,39 +1,21 @@
 import React, { memo, useContext, useEffect, useState } from 'react'
 import { blue } from '@material-ui/core/colors'
 import ChipInput from 'material-ui-chip-input'
-import { Chip, IconButton } from '@material-ui/core'
+import { Chip, IconButton, Tooltip } from '@material-ui/core'
 import { Lock, LockOpen } from '@material-ui/icons';
 import Section from './Section'
 import Loading from '../Loading'
 import { UserContext } from '../../../pages/_app'
-import { createTag, deleteTag, tags as tagsAPI, updateTag } from '../../backend/api'
+import { createTag, deleteTag, updateTag } from '../../backend/api'
 
-function TagsSection({ collection, digest }) {
-    if (!collection || ! digest) {
-        return null
-    }
-
+function TagsSection({ loading, digestUrl, tags, onTagsChanged }) {
     const whoAmI = useContext(UserContext)
-
-    const docUrl = `/doc/${collection}/${digest}`
-
-    const [tags, setTags] = useState([])
-    const [loading, setLoading] = useState(!!docUrl)
-    useEffect(() => {
-        if (docUrl) {
-            setLoading(true)
-            tagsAPI(docUrl).then(data => {
-                setTags(data)
-                setLoading(false)
-            })
-        }
-    }, [collection, digest])
 
     const [mutating, setMutating] = useState(false)
     const handleTagAdd = tag => {
         setMutating(true)
-        createTag(docUrl, { tag, public: false }).then(newTag => {
-            setTags([...tags, newTag])
+        createTag(digestUrl, { tag, public: false }).then(newTag => {
+            onTagsChanged([...tags, newTag])
             setMutating(false)
         }).catch(() => {
             setMutating(false)
@@ -42,38 +24,56 @@ function TagsSection({ collection, digest }) {
 
     const handleTagDelete = tag => {
         tag.isMutating = true
-        setTags([...tags])
-        deleteTag(docUrl, tag.id).then(() => {
-            setTags([...(tags.filter(t => t.id !== tag.id))])
+        onTagsChanged([...tags])
+        deleteTag(digestUrl, tag.id).then(() => {
+            onTagsChanged([...(tags.filter(t => t.id !== tag.id))])
         }).catch(() => {
             tag.isMutating = false
-            setTags([...tags])
+            onTagsChanged([...tags])
         })
     }
 
     const handleClick = tag => () => {
         if (tag.user === whoAmI.username) {
             tag.isMutating = true
-            setTags([...tags])
-            updateTag(docUrl, tag.id, {public: !tag.public}).then(changedTag => {
+            onTagsChanged([...tags])
+            updateTag(digestUrl, tag.id, {public: !tag.public}).then(changedTag => {
                 Object.assign(tag, {
                     ...changedTag,
                     isMutating: false,
                 })
-                setTags([...tags])
+                onTagsChanged([...tags])
             }).catch(() => {
                 tag.isMutating = false
-                setTags([...tags])
+                onTagsChanged([...tags])
             })
         }
+    }
+
+    if (!digestUrl) {
+        return null
     }
 
     const renderChip = ({ value, text, chip, isDisabled, isReadOnly, handleDelete, className }, key) => (
         <Chip
             key={key}
             icon={chip.user === whoAmI.username ? chip.public ?
-                <IconButton size="small" onClick={handleClick(chip)} ><LockOpen /></IconButton> :
-                <IconButton size="small" onClick={handleClick(chip)} ><Lock /></IconButton> : null
+                <Tooltip title="Make private">
+                    <IconButton
+                        size="small"
+                        onClick={handleClick(chip)}
+                    >
+                        <LockOpen />
+                    </IconButton>
+                </Tooltip> :
+                <Tooltip title="Make public">
+                    <IconButton
+                        size="small"
+                        onClick={handleClick(chip)}
+                    >
+                        <Lock />
+                    </IconButton>
+                </Tooltip> : null
             }
             disabled={chip.isMutating}
             className={className}

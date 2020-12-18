@@ -1,8 +1,19 @@
-import React, { memo } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import url from 'url'
 import { makeStyles } from '@material-ui/core/styles'
+import {
+    ChromeReaderMode,
+    CloudDownload,
+    Delete,
+    Drafts,
+    Launch,
+    Markunread,
+    Print,
+    RestoreFromTrash,
+    Star,
+    StarOutline
+} from '@material-ui/icons'
 import { IconButton, Toolbar, Tooltip } from '@material-ui/core'
-import { ChromeReaderMode, CloudDownload, Launch, Print } from '@material-ui/icons'
 import EmailSection from './EmailSection'
 import PreviewSection from './PreviewSection'
 import HTMLSection from './HTMLSection'
@@ -10,8 +21,8 @@ import TextSection from './TextSection'
 import FilesSection from './FilesSection'
 import MetaSection from './MetaSection'
 import Loading from '../Loading'
-import { createDownloadUrl, createOcrUrl } from '../../backend/api'
 import TagsSection from './TagsSection'
+import { createDownloadUrl, createOcrUrl, createTag, deleteTag, tags as tagsAPI } from '../../backend/api'
 
 const useStyles = makeStyles(theme => ({
     toolbar: {
@@ -24,12 +35,54 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const parseCollection = url => {
-    const [, collection] = url.match(/(?:^|\/)doc\/(.+?)\//) || [];
+    const [, collection] = url?.match(/(?:^|\/)doc\/(.+?)\//) || [];
     return collection;
 }
 
 function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMeta = true }) {
     const classes = useStyles()
+
+    let digestUrl = docUrl
+
+    const collection = parseCollection(docUrl)
+    const collectionBaseUrl = docUrl && url.resolve(docUrl, './')
+    const headerLinks = []
+
+    let digest = data?.id
+    let docRawUrl = createDownloadUrl(`${collectionBaseUrl}${digest}`, data?.content.filename)
+
+    if (data?.id.startsWith('_file_')) {
+        digest = data.digest
+        digestUrl = [url.resolve(docUrl, './'), data.digest].join('/')
+        docRawUrl = createDownloadUrl(`${collectionBaseUrl}${digest}`, data.content.filename)
+    }
+
+    if (data?.id.startsWith('_directory_')) {
+        digest = null
+        digestUrl = null
+        docRawUrl = null
+    }
+
+    const [tags, setTags] = useState([])
+    const [tagsLoading, setTagsLoading] = useState(false)
+    const [importantLock, setImportantLock] = useState(false)
+    const [seenLock, setSeenLock] = useState(false)
+    const [trashLock, setTrashLock] = useState(false)
+    useEffect(() => {
+        if (digestUrl && !digestUrl.includes('_file_') && !digestUrl.includes('_directory_')) {
+            setTagsLoading(true)
+            setImportantLock(true)
+            setSeenLock(true)
+            setTrashLock(true)
+            tagsAPI(digestUrl).then(data => {
+                setTags(data)
+                setTagsLoading(false)
+                setImportantLock(false)
+                setSeenLock(false)
+                setTrashLock(false)
+            })
+        }
+    }, [digestUrl])
 
     if (loading) {
         return <Loading />
@@ -39,24 +92,23 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
         return null
     }
 
-    const collection = parseCollection(docUrl)
-    const collectionBaseUrl = url.resolve(docUrl, './')
-    const headerLinks = []
-
-    let digest = data.id
-    let digestUrl = docUrl
-    let docRawUrl = createDownloadUrl(`${collectionBaseUrl}${digest}`, data.content.filename)
-
-    if (data.id.startsWith('_file_')) {
-        digest = data.digest
-        digestUrl = [url.resolve(docUrl, './'), data.digest].join('/')
-        docRawUrl = createDownloadUrl(`${collectionBaseUrl}${digest}`, data.content.filename)
-    }
-
-    if (data.id.startsWith('_directory_')) {
-        digest = null
-        digestUrl = null
-        docRawUrl = null
+    const handleSpecialTagClick = (tag, name, onLoading) => () => {
+        setImportantLock(true)
+        if (tag) {
+            deleteTag(digestUrl, tag.id).then(() => {
+                setTags([...(tags.filter(t => t.id !== tag.id))])
+                onLoading(false)
+            }).catch(() => {
+                onLoading(false)
+            })
+        } else {
+            createTag(digestUrl, { tag: name, public: false }).then(newTag => {
+                setTags([...tags, newTag])
+                onLoading(false)
+            }).catch(() => {
+                onLoading(false)
+            })
+        }
     }
 
     if (!fullPage) {
@@ -69,16 +121,41 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
     }
 
     if (data.content.filetype !== 'folder') {
+        const important = tags.find(tag => tag.tag === 'important')
+        headerLinks.push({
+            icon: important ? <Star /> : <StarOutline />,
+            style: { color: '#ffb400' },
+            text: important ? 'Unmark important' : 'Mark important',
+            disabled: importantLock,
+            onClick: handleSpecialTagClick(important, 'important', setImportantLock)
+        })
+
+        const seen = tags.find(tag => tag.tag === 'seen')
+        headerLinks.push({
+            icon: seen ? <Drafts /> : <Markunread />,
+            text: seen ? 'Unmark seen' : 'Mark seen',
+            disabled: seenLock,
+            onClick: handleSpecialTagClick(seen, 'seen', setSeenLock)
+        })
+
+        const trash = tags.find(tag => tag.tag === 'trash')
+        headerLinks.push({
+            icon: trash ? <RestoreFromTrash /> : <Delete />,
+            text: trash ? 'Restore from trash' : 'Mark trashed',
+            disabled: trashLock,
+            onClick: handleSpecialTagClick(trash, 'trash', setTrashLock)
+        })
+
         headerLinks.push({
             href: `${docUrl}?print=true`,
-            text: `Print metadata and content`,
+            text: 'Print metadata and content',
             icon: <Print />,
             target: '_blank',
         });
 
         headerLinks.push({
             href: docRawUrl,
-            text: `Download original file`,
+            text: 'Download original file',
             icon: <CloudDownload />,
             target: fullPage ? null : '_blank',
         });
@@ -117,7 +194,12 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
                 </Toolbar>
             )}
 
-            <TagsSection collection={collection} digest={digest} />
+            <TagsSection
+                loading={tagsLoading}
+                digestUrl={digestUrl}
+                tags={tags}
+                onTagsChanged={setTags}
+            />
 
             <EmailSection doc={data} collection={collection} />
 
