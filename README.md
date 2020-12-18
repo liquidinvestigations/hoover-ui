@@ -31,12 +31,8 @@ All servers listen on port 8000.
 
 Run Liquid Investigations with `mount_local_repos` = True.
 
-To run UI on localhost create proxy to backend API, add this configuration to `next.config.js`:
-```
-rewrites: () => [
-    { source: '/api/:path*', destination: 'https://your.server.url/api/:path*' }
-]
-```
+To run UI on localhost set environment variable `API_URL=https://your.server.url` and `REWRITE_API=true`
+
 In order to get authorized just copy OAuth2 proxy cookie.
 
 ## Node upgrade

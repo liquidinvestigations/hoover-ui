@@ -13,8 +13,8 @@ export const SEARCH_MESSAGE_ID = 'message-id'
 export const SEARCH_IN_REPLY_TO = 'in-reply-to'
 export const SEARCH_THREAD_INDEX = 'thread-index'
 export const SEARCH_REFERENCES = 'references'
-export const SEARCH_MODIFICATION_DATE = 'date'
-export const SEARCH_CREATION_DATE = 'date-created'
+export const SEARCH_DATE = 'date'
+export const SEARCH_DATE_CREATED = 'date-created'
 export const SEARCH_OCR = 'ocr'
 export const SEARCH_QUERY_PREFIXES = [
     SEARCH_MD5,
@@ -31,8 +31,8 @@ export const SEARCH_QUERY_PREFIXES = [
     SEARCH_IN_REPLY_TO,
     SEARCH_THREAD_INDEX,
     SEARCH_REFERENCES,
-    SEARCH_MODIFICATION_DATE,
-    SEARCH_CREATION_DATE,
+    SEARCH_DATE,
+    SEARCH_DATE_CREATED,
     SEARCH_OCR,
 ]
 export const SIZE_OPTIONS = [10, 50, 200, 1000]
@@ -45,4 +45,12 @@ export const SORTABLE_FIELDS = {
 }
 export const DATE_FORMAT = 'yyyy-MM-dd'
 export const DEFAULT_FACET_SIZE = 10
+export const DEFAULT_INTERVAL = 'year'
 export const JSS_CSS = 'jss-server-side'
+export const HIGHLIGHT_SETTINGS = {
+    fragment_size: 150,
+    number_of_fragments: 3,
+    require_field_match: false,
+    pre_tags: ['<mark>'],
+    post_tags: ['</mark>'],
+}

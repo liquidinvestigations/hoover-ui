@@ -2,13 +2,13 @@ import React, { createContext, useEffect } from 'react'
 import App from 'next/app'
 import LuxonUtils from '@date-io/luxon'
 import { ThemeProvider } from '@material-ui/core/styles'
-import CssBaseline from '@material-ui/core/CssBaseline'
+import { CssBaseline } from '@material-ui/core'
 import { MuiPickersUtilsProvider } from '@material-ui/pickers'
-import { authorizeApiSSR } from '../src/utils'
 import { JSS_CSS } from "../src/constants"
 import Layout from '../src/components/Layout'
 import theme from '../src/theme'
-import api from '../src/api'
+import { whoami } from '../src/backend/api'
+import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
 import '../styles/main.scss'
 
 export const UserContext = createContext(null)
@@ -39,9 +39,11 @@ export default function HooverApp({ Component, pageProps, whoAmI }) {
 HooverApp.getInitialProps = async appContext => {
     const appProps = await App.getInitialProps(appContext)
 
-    authorizeApiSSR(appContext.ctx.req, api)
-    const whoAmI = await api.whoami()
-    appContext.ctx.req.whoAmI = whoAmI
+    const headers = appContext.ctx.req ? getAuthorizationHeaders(appContext.ctx.req) : {}
+    const whoAmI = await whoami(headers)
+    if (appContext.ctx.req) {
+        appContext.ctx.req.whoAmI = whoAmI
+    }
 
     return { ...appProps, whoAmI }
 }

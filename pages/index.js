@@ -2,6 +2,7 @@ import React, { useCallback, useContext, useEffect, useState } from 'react'
 import Router, { useRouter } from 'next/router'
 import Link from 'next/link'
 import qs from 'qs'
+import parser from 'lucene-query-parser'
 import { makeStyles } from '@material-ui/core/styles'
 import { Grid, List, Typography } from '@material-ui/core'
 import ChipInput from 'material-ui-chip-input'
@@ -15,12 +16,19 @@ import CollectionsFilter from '../src/components/filters/CollectionsFilter'
 import Document from '../src/components/document/Document'
 import { ProgressIndicatorContext } from '../src/components/ProgressIndicator'
 import { SEARCH_GUIDE, SEARCH_QUERY_PREFIXES } from '../src/constants'
-import { authorizeApiSSR, copyMetadata, documentViewUrl } from '../src/utils'
+import { copyMetadata, documentViewUrl } from '../src/utils'
+import { buildSearchQuerystring, defaultSearchParams, unwindParams } from '../src/queryUtils'
 import fixLegacyQuery from '../src/fixLegacyQuery'
-import api from '../src/api'
-import { rollupParams, unwindParams } from '../src/queryUtils'
+import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
+import { collections as collectionsAPI, doc as docAPI } from '../src/backend/api'
+import { aggregations as aggregationsAPI, search as searchAPI } from '../src/api'
 
 const extractFields = query => {
+    /*
+    const results = query && parser.parse(query)
+    console.log(results)
+    */
+
     const fields = []
     const queryParts = query ? query.match(/(?:[^\s"\[{]+|"[^"]*"|[\[{][^\]}]*[\]}])+/g) : []
     const otherInput = []
@@ -37,21 +45,6 @@ const extractFields = query => {
         }
     })
     return [fields, otherInput.join(' ')]
-}
-
-const defaultParams = {
-    page: 1,
-    size: 10,
-}
-
-export const buildUrlQuery = (params) => {
-    const { q, collections, fields, text, ...rest } = params
-    return qs.stringify(rollupParams({
-        q: (fields?.length ? fields.join(' ') + ' ' : '') + (text || ''),
-        ...defaultParams,
-        collections: collections.join('+'),
-        ...rest,
-    }))
 }
 
 const useStyles = makeStyles(theme => ({
@@ -94,7 +87,7 @@ export default function Index({ collections, serverQuery }) {
 
     const search = params => {
         const stateParams = { fields: chips, text, size, order, page, collections: selectedCollections }
-        const newQuery = buildUrlQuery({ ...query, ...stateParams, ...params })
+        const newQuery = buildSearchQuerystring({ ...query, ...stateParams, ...params })
         router.push(
             { pathname, search: newQuery },
             undefined,
@@ -109,21 +102,21 @@ export default function Index({ collections, serverQuery }) {
         search({ collections, page: 1 })
     }
 
-    const [size, setSize] = useState(query.size || defaultParams.size)
+    const [size, setSize] = useState(query.size || defaultSearchParams.size)
     const handleSizeChange = size => {
         setSize(size)
         setPage(1)
         search({ size, page: 1 })
     }
 
-    const [order, setOrder] = useState(query.order || defaultParams.order)
+    const [order, setOrder] = useState(query.order)
     const handleOrderChange = order => {
         setOrder(order)
         setPage(1)
         search({ order, page: 1 })
     }
 
-    const [page, setPage] = useState(query.page || defaultParams.page)
+    const [page, setPage] = useState(query.page || defaultSearchParams.page)
     const handlePageChange = page => {
         setPage(page)
         search({ page })
@@ -135,21 +128,6 @@ export default function Index({ collections, serverQuery }) {
     }
 
     const handleInputChange = useCallback(event => setText(event.target.value), [])
-
-    const handleBeforeChipAdd = useCallback(chip => {
-        if (chip.indexOf(':') > 0) {
-            const chipParts = chip.split(':')
-            if (SEARCH_QUERY_PREFIXES.indexOf(chipParts[0]) >= 0 && chipParts[1].length > 0) {
-                return true
-            }
-        }
-        return false
-    }, [])
-
-    const handleChipAdd = chip => {
-        setChips([...chips, chip])
-        setText(text.replace(chip, ''))
-    }
 
     const handleChipDelete = (chip, chipIndex) => {
         const fields = [...chips]
@@ -173,7 +151,7 @@ export default function Index({ collections, serverQuery }) {
     const handleDocPreview = useCallback(url => {
         setSelectedDocUrl(url)
         setPreviewLoading(true)
-        api.doc(url).then(data => {
+        docAPI(url).then(data => {
             setSelectedDocData(data)
             setPreviewLoading(false)
         })
@@ -184,7 +162,7 @@ export default function Index({ collections, serverQuery }) {
     const [results, setResults] = useState()
     const [resultsLoading, setResultsLoading] = useState(!!query.q)
     useEffect(() => {
-        if (collections && query.q) {
+        if (query.q) {
             const [ queryFields, queryText ] = extractFields(query.q)
             setChips(queryFields)
             setText(queryText)
@@ -192,7 +170,7 @@ export default function Index({ collections, serverQuery }) {
             setError(null)
             setResultsLoading(true)
 
-            api.search(query).then(results => {
+            searchAPI(query).then(results => {
                 setResults(results)
                 setResultsLoading(false)
 
@@ -209,7 +187,43 @@ export default function Index({ collections, serverQuery }) {
                 setResultsLoading(false)
             })
         }
-    }, [collections, JSON.stringify(query)])
+    }, [JSON.stringify({
+        ...query,
+        facets: null,
+        date: {
+            from: query.date?.from,
+            to: query.date?.to,
+            intervals: query.date?.intervals,
+        },
+        ['date-created']: {
+            from: query['date-created']?.from,
+            to: query['date-created']?.to,
+            intervals: query['date-created']?.intervals,
+        },
+    })])
+
+
+    const [aggregations, setAggregations] = useState()
+    const [aggregationsLoading, setAggregationsLoading] = useState(!!query.q)
+    useEffect(() => {
+        if (query.q) {
+            setAggregationsLoading(true)
+
+            aggregationsAPI(query).then(results => {
+                setAggregations(results.aggregations)
+                setAggregationsLoading(false)
+            }).catch(error => {
+                setAggregations(null)
+                //setError(error.reason ? error.reason : error.message)
+                setAggregationsLoading(false)
+            })
+        }
+    }, [JSON.stringify({
+        ...query,
+        page: null,
+        size: null,
+        order: null,
+    })])
 
 
     const clearResults = url => {
@@ -326,7 +340,7 @@ export default function Index({ collections, serverQuery }) {
             <SplitPaneLayout
                 left={
                     <>
-                        <List dense>
+                        <List dense style={{ paddingBottom: 0 }}>
                             <Filter
                                 title={`Collections (${selectedCollections.length})`}
                                 colorIfFiltered={false}
@@ -342,10 +356,11 @@ export default function Index({ collections, serverQuery }) {
                         </List>
 
                         <Filters
-                            loading={resultsLoading}
+                            loading={aggregationsLoading || resultsLoading}
                             query={query}
-                            aggregations={results?.aggregations}
+                            aggregations={aggregations}
                             applyFilter={handleFilterApply}
+                            style={{ paddingTop: 0 }}
                         />
                     </>
                 }
@@ -369,8 +384,6 @@ export default function Index({ collections, serverQuery }) {
                                     newChipKeyCodes={[]}
                                     newChipKeys={[]}
                                     onUpdateInput={handleInputChange}
-                                    onBeforeAdd={handleBeforeChipAdd}
-                                    onAdd={handleChipAdd}
                                     onDelete={handleChipDelete}
                                     autoFocus
                                     fullWidth
@@ -431,8 +444,8 @@ export default function Index({ collections, serverQuery }) {
 }
 
 export async function getServerSideProps({ req }) {
-    authorizeApiSSR(req, api)
-    const collections = await api.collections()
+    const headers = getAuthorizationHeaders(req)
+    const collections = await collectionsAPI(headers)
 
     const serverQuery = req.url.split('?')[1] || ''
 

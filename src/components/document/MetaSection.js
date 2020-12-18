@@ -1,18 +1,19 @@
 import React, { memo } from 'react'
 import Link from 'next/link'
 import url from 'url'
+import { DateTime } from 'luxon'
 import { List, ListItem, ListItemText } from '@material-ui/core'
-import { getLanguageName, humanFileSize, isPrintMode, searchPath } from '../../utils'
+import { getLanguageName, humanFileSize, isPrintMode } from '../../utils'
+import { searchPath } from '../../queryUtils'
 import Section from './Section'
 import {
-    SEARCH_CREATION_DATE,
+    SEARCH_DATE_CREATED,
     SEARCH_FILENAME,
     SEARCH_MD5,
-    SEARCH_MODIFICATION_DATE,
+    SEARCH_DATE,
     SEARCH_PATH_PARTS,
     SEARCH_SHA1
 } from '../../constants'
-import { DateTime } from 'luxon'
 
 function MetaSection({ doc, collection, baseUrl }) {
     const printMode = isPrintMode()
@@ -109,12 +110,12 @@ function MetaSection({ doc, collection, baseUrl }) {
                         <ListItem disableGutters>
                             <ListItemText
                                 primary={printMode ? 'Modified' :
-                                    <Link href={searchPath(data.date, SEARCH_MODIFICATION_DATE, collection)} shallow>
+                                    <Link href={searchPath(data.date, SEARCH_DATE, collection)} shallow>
                                         <a title="search modified this date">Modified</a>
                                     </Link>
                                 }
                                 secondary={DateTime.fromISO(data.date, { locale: 'en-US' })
-                                    .toLocaleString(DateTime.DATE_FULL)}
+                                    .toLocaleString(DateTime.DATETIME_FULL)}
                             />
                         </ListItem>
                     }
@@ -122,12 +123,12 @@ function MetaSection({ doc, collection, baseUrl }) {
                         <ListItem disableGutters>
                             <ListItemText
                                 primary={printMode ? 'Created' :
-                                    <Link href={searchPath(data['date-created'], SEARCH_CREATION_DATE, collection)} shallow>
+                                    <Link href={searchPath(data['date-created'], SEARCH_DATE_CREATED, collection)} shallow>
                                         <a title="search created this date">Created</a>
                                     </Link>
                                 }
                                 secondary={DateTime.fromISO(data['date-created'], { locale: 'en-US' })
-                                        .toLocaleString(DateTime.DATE_FULL)}
+                                        .toLocaleString(DateTime.DATETIME_FULL)}
                             />
                         </ListItem>
                     }

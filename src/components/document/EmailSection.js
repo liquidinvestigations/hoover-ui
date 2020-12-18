@@ -1,13 +1,15 @@
 import React, { memo } from 'react'
 import Link from 'next/link'
+import { DateTime } from 'luxon'
 import { Table, TableBody, TableCell, TableRow } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import Section from './Section'
-import { isPrintMode, searchPath } from '../../utils'
+import { isPrintMode } from '../../utils'
+import { searchPath } from '../../queryUtils'
 import {
     SEARCH_FROM,
     SEARCH_IN_REPLY_TO,
-    SEARCH_MODIFICATION_DATE,
+    SEARCH_DATE,
     SEARCH_SUBJECT,
     SEARCH_THREAD_INDEX,
     SEARCH_TO
@@ -71,7 +73,7 @@ function EmailSection({ doc, collection }) {
                     <TableRow>
                         <TableCell>
                             {data.date && !printMode ?
-                                <Link href={searchPath(data.date, SEARCH_MODIFICATION_DATE, collection)} shallow>
+                                <Link href={searchPath(data.date, SEARCH_DATE, collection)} shallow>
                                     <a title="search sent this date">Date</a>
                                 </Link>
                                 :
@@ -80,7 +82,8 @@ function EmailSection({ doc, collection }) {
                         </TableCell>
                         <TableCell>
                             <pre className={classes.preWrap}>
-                                {data.date}
+                                {DateTime.fromISO(data.date, { locale: 'en-US' })
+                                    .toLocaleString(DateTime.DATETIME_FULL)}
                             </pre>
                         </TableCell>
                     </TableRow>

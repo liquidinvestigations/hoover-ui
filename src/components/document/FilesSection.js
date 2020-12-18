@@ -3,11 +3,11 @@ import Link from 'next/link'
 import url from 'url'
 import { Table, TableBody, TableCell, TableRow } from '@material-ui/core'
 import { CloudDownload as IconCloudDownload } from '@material-ui/icons'
-import api from '../../api'
 import Section from './Section'
 import Loading from '../Loading'
+import { createDownloadUrl, doc as docAPI } from '../../backend/api'
 
-function FilesSection({ data, page, hasNextPage, baseUrl, docUrl, title, fullPage }) {
+function FilesSection({ data, page, hasNextPage, baseUrl, docUrl, fullPage }) {
     const [files, setFiles] = useState(data)
     const [currentPage, setCurrentPage] = useState(page)
     const [currentHasNextPage, setCurrentHasNextPage] = useState(hasNextPage)
@@ -16,7 +16,7 @@ function FilesSection({ data, page, hasNextPage, baseUrl, docUrl, title, fullPag
     const loadMore = async event => {
         event.preventDefault()
         setFetchingChildrenPage(true)
-        const nextDoc = await api.doc(docUrl, currentPage + 1)
+        const nextDoc = await docAPI(docUrl, currentPage + 1)
         setCurrentPage(nextDoc.children_page)
         setCurrentHasNextPage(nextDoc.children_has_next_page)
         setFiles([...files, ...nextDoc.children])
@@ -31,7 +31,7 @@ function FilesSection({ data, page, hasNextPage, baseUrl, docUrl, title, fullPag
                 <TableCell>
                     {digest && (
                         <a
-                            href={api.downloadUrl(url.resolve(baseUrl, digest), filename)}
+                            href={createDownloadUrl(url.resolve(baseUrl, digest), filename)}
                             target={fullPage ? null : '_blank'}
                             title="Original file">
                             <IconCloudDownload />
@@ -53,7 +53,7 @@ function FilesSection({ data, page, hasNextPage, baseUrl, docUrl, title, fullPag
 
     return (
         filesRows.length > 0 && (
-            <Section title={title} scrollX={true}>
+            <Section title="Files" scrollX={true}>
                 <Table>
                     <TableBody>
                         {filesRows}

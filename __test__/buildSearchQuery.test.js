@@ -1,22 +1,28 @@
-import buildSearchQuery from '../src/buildSearchQuery';
+import buildSearchQuery from '../src/backend/buildSearchQuery'
+
+const searchFields = {
+    all: [],
+    _source: [],
+    highlight: []
+}
 
 it('builds a default query', () => {
-    const query = buildSearchQuery();
-    expect(query).toMatchSnapshot();
-});
+    const query = buildSearchQuery({}, null, searchFields)
+    expect(query).toMatchSnapshot()
+})
 
 it('builds a query with a filetype filter', () => {
-    const query = buildSearchQuery({ fileType: ['email', 'pdf'] });
+    const query = buildSearchQuery({ filetype: ['email', 'pdf'] }, null, searchFields)
 
     expect(query.post_filter).toMatchObject({
         bool: {
             must: [{ terms: { filetype: ['email', 'pdf'] } }],
         },
-    });
+    })
 
-    expect(query.aggs.count_by_email_domains).toMatchObject({
+    expect(query.aggs['email-domains']).toMatchObject({
         aggs: {
-            email_domains: {
+            values: {
                 terms: { field: 'email-domains' },
             },
         },
@@ -25,19 +31,19 @@ it('builds a query with a filetype filter', () => {
                 must: [{ terms: { filetype: ['email', 'pdf'] } }],
             },
         },
-    });
+    })
 
-    expect(query.aggs.count_by_filetype).toMatchObject({
+    expect(query.aggs.filetype).toMatchObject({
         aggs: {
-            filetype: {
+            values: {
                 terms: { field: 'filetype' },
             },
         },
-    });
-});
+    })
+})
 
-it('builds a query with a date year filter', () => {
-    const query = buildSearchQuery({ dateYears: ['2009'] });
+it('builds a query with a date histogram by years filter', () => {
+    const query = buildSearchQuery({ date: { intervals: ['2009'] } }, null, searchFields)
 
     const yearFilter = {
         bool: {
@@ -45,24 +51,24 @@ it('builds a query with a date year filter', () => {
                 {
                     range: {
                         date: {
-                            gte: '2009-01-01',
-                            lte: '2009-12-31',
+                            gte: '2009-01-01T00:00:00.000Z',
+                            lte: '2009-12-31T23:59:59.999Z',
                         },
                     },
                 },
             ],
         },
-    };
+    }
 
     expect(query.post_filter).toMatchObject({
         bool: {
             must: [yearFilter],
         },
-    });
+    })
 
-    expect(query.aggs.count_by_filetype).toMatchObject({
+    expect(query.aggs.filetype).toMatchObject({
         aggs: {
-            filetype: {
+            values: {
                 terms: { field: 'filetype' },
             },
         },
@@ -71,25 +77,25 @@ it('builds a query with a date year filter', () => {
                 must: [yearFilter],
             },
         },
-    });
+    })
 
-    expect(query.aggs.count_by_date_years).toMatchObject({
+    expect(query.aggs.date).toMatchObject({
         aggs: {
-            date_years: {
+            values: {
                 date_histogram: { field: 'date', interval: 'year' },
             },
         },
         filter: {
             bool: {},
         },
-    });
-});
+    })
+})
 
 it('builds a query with multiple fields filtered', () => {
     const query = buildSearchQuery({
-        fileType: ['doc', 'email'],
-        emailDomains: ['gmail.com'],
-    });
+        filetype: ['doc', 'email'],
+        'email-domains': ['gmail.com'],
+    }, null, searchFields)
 
     expect(query.post_filter).toMatchObject({
         bool: {
@@ -98,11 +104,11 @@ it('builds a query with multiple fields filtered', () => {
                 { terms: { 'email-domains': ['gmail.com'] } },
             ],
         },
-    });
+    })
 
-    expect(query.aggs.count_by_filetype).toMatchObject({
+    expect(query.aggs.filetype).toMatchObject({
         aggs: {
-            filetype: {
+            values: {
                 terms: { field: 'filetype' },
             },
         },
@@ -111,11 +117,11 @@ it('builds a query with multiple fields filtered', () => {
                 must: [{ terms: { 'email-domains': ['gmail.com'] } }],
             },
         },
-    });
+    })
 
-    expect(query.aggs.count_by_email_domains).toMatchObject({
+    expect(query.aggs['email-domains']).toMatchObject({
         aggs: {
-            email_domains: {
+            values: {
                 terms: { field: 'email-domains' },
             },
         },
@@ -124,5 +130,5 @@ it('builds a query with multiple fields filtered', () => {
                 must: [{ terms: { filetype: ['doc', 'email'] } }],
             },
         },
-    });
-});
+    })
+})

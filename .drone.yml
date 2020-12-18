@@ -1,23 +1,4 @@
 kind: pipeline
-name: test
-
-steps:
-- name: npm install
-  image: node:14
-  commands:
-  - npm install
-
-- name: npm run build
-  image: node:14
-  commands:
-  - npm run build
-
-- name: npm test
-  image: node:14
-  commands:
-  - npm test
----
-kind: pipeline
 name: publish
 
 trigger:
@@ -26,9 +7,6 @@ trigger:
   event:
   - push
   - tag
-
-depends_on:
-- test
 
 steps:
 - name: docker push branch ${DRONE_COMMIT_BRANCH}
@@ -60,6 +38,28 @@ steps:
     password:
       from_secret: docker_password
 
+---
+kind: pipeline
+name: test
+
+depends_on:
+- publish
+
+steps:
+- name: npm install
+  image: node:14
+  commands:
+  - npm install
+
+- name: npm run build
+  image: node:14
+  commands:
+  - npm run build
+
+- name: npm test
+  image: node:14
+  commands:
+  - npm test
 ---
 kind: secret
 name: docker_username

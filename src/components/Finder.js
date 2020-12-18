@@ -4,7 +4,7 @@ import ErrorBoundary from './ErrorBoundary'
 import last from 'lodash/last'
 import { useRouter } from 'next/router'
 import { getBasePath, getIconImageElement } from '../utils'
-import api from '../api'
+import { doc as docAPI } from '../backend/api'
 
 const filenameFor = item => {
     if (item.filename) {
@@ -118,7 +118,7 @@ function Finder({ loading, data, url }) {
                 {shallow: true},
             )
         } else if (item.fileType === 'more') {
-            const moreItems = await api.doc(
+            const moreItems = await docAPI(
                 getBasePath(url) + item.loadId,
                 item.loadPage
             )
@@ -152,7 +152,7 @@ function Finder({ loading, data, url }) {
             let level = 0;
 
             while (current.parent_id && level <= parentLevels) {
-                current.parent = await api.doc(
+                current.parent = await docAPI(
                     getBasePath(url) + current.parent_id,
                     current.parent_children_page
                 )

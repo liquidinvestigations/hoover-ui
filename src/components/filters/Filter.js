@@ -29,15 +29,9 @@ function Filter({ title, children, defaultOpen, enabled = true, colorIfFiltered 
     if (!enabled) {
         return null
     }
-
     const classes = useStyles()
-
     const [open, setOpen] = useState(defaultOpen || false)
     const toggle = () => setOpen(!open)
-
-    useEffect(() => {
-        setOpen(defaultOpen)
-    }, [defaultOpen])
 
     return (
         <>
@@ -58,12 +52,14 @@ function Filter({ title, children, defaultOpen, enabled = true, colorIfFiltered 
 
                     <Grid item>
                         <IconButton
+                            size="small"
                             className={cn(classes.expand, {
                                 [classes.expandOpen]: open,
                             })}
                             onClick={toggle}
                             aria-expanded={open}
-                            aria-label="Show more">
+                            aria-label="Show more"
+                        >
                             <ExpandMore
                                 color={
                                     defaultOpen && colorIfFiltered

@@ -1,11 +1,11 @@
 import React, { memo } from 'react'
 import Section from './Section';
 
-function HTMLSection({ html, title }) {
+function HTMLSection({ html }) {
     if (!html) return null;
 
     return (
-        <Section title={title}>
+        <Section title="HTML">
             <span dangerouslySetInnerHTML={{ __html: html }} />
         </Section>
     )

@@ -2,28 +2,31 @@
 
 exports[`builds a default query 1`] = `
 Object {
-  "_source": Array [
-    "path",
-    "url",
-    "mime_type",
-    "attachments",
-    "filename",
-    "word-count",
-    "date",
-    "date-created",
-  ],
+  "_source": Array [],
   "aggs": Object {
-    "count_by_date_created_years": Object {
+    "date": Object {
       "aggs": Object {
-        "date_created_years": Object {
-          "date_histogram": Object {
-            "field": "date-created",
-            "interval": "year",
+        "count": Object {
+          "cardinality": Object {
+            "field": "date",
           },
         },
-        "date_created_years_count": Object {
-          "cardinality": Object {
-            "field": "date-created",
+        "values": Object {
+          "aggs": Object {
+            "bucket_truncate": Object {
+              "bucket_sort": Object {
+                "from": 0,
+                "size": 10,
+              },
+            },
+          },
+          "date_histogram": Object {
+            "field": "date",
+            "interval": "year",
+            "min_doc_count": 1,
+            "order": Object {
+              "_key": "desc",
+            },
           },
         },
       },
@@ -31,17 +34,29 @@ Object {
         "bool": Object {},
       },
     },
-    "count_by_date_years": Object {
+    "date-created": Object {
       "aggs": Object {
-        "date_years": Object {
-          "date_histogram": Object {
-            "field": "date",
-            "interval": "year",
+        "count": Object {
+          "cardinality": Object {
+            "field": "date-created",
           },
         },
-        "date_years_count": Object {
-          "cardinality": Object {
-            "field": "date",
+        "values": Object {
+          "aggs": Object {
+            "bucket_truncate": Object {
+              "bucket_sort": Object {
+                "from": 0,
+                "size": 10,
+              },
+            },
+          },
+          "date_histogram": Object {
+            "field": "date-created",
+            "interval": "year",
+            "min_doc_count": 1,
+            "order": Object {
+              "_key": "desc",
+            },
           },
         },
       },
@@ -49,17 +64,35 @@ Object {
         "bool": Object {},
       },
     },
-    "count_by_email_domains": Object {
+    "email-domains": Object {
       "aggs": Object {
-        "email_domains": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "email-domains",
+          },
+        },
+        "values": Object {
           "terms": Object {
             "field": "email-domains",
             "size": 10,
           },
         },
-        "email_domains_count": Object {
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "filetype": Object {
+      "aggs": Object {
+        "count": Object {
           "cardinality": Object {
-            "field": "email-domains",
+            "field": "filetype",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "filetype",
+            "size": 10,
           },
         },
       },
@@ -67,17 +100,17 @@ Object {
         "bool": Object {},
       },
     },
-    "count_by_filetype": Object {
+    "lang": Object {
       "aggs": Object {
-        "filetype": Object {
-          "terms": Object {
-            "field": "filetype",
-            "size": 10,
+        "count": Object {
+          "cardinality": Object {
+            "field": "lang",
           },
         },
-        "filetype_count": Object {
-          "cardinality": Object {
-            "field": "filetype",
+        "values": Object {
+          "terms": Object {
+            "field": "lang",
+            "size": 10,
           },
         },
       },
@@ -85,17 +118,35 @@ Object {
         "bool": Object {},
       },
     },
-    "count_by_lang": Object {
+    "private-tags.undefined.keyword": Object {
       "aggs": Object {
-        "lang": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "private-tags.undefined.keyword",
+          },
+        },
+        "values": Object {
           "terms": Object {
-            "field": "lang",
+            "field": "private-tags.undefined.keyword",
             "size": 10,
           },
         },
-        "lang_count": Object {
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "tags": Object {
+      "aggs": Object {
+        "count": Object {
           "cardinality": Object {
-            "field": "lang",
+            "field": "tags",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "tags",
+            "size": 10,
           },
         },
       },
@@ -107,19 +158,7 @@ Object {
   "collections": Array [],
   "from": 0,
   "highlight": Object {
-    "fields": Object {
-      "*": Object {
-        "fragment_size": 150,
-        "number_of_fragments": 3,
-        "post_tags": Array [
-          "</mark>",
-        ],
-        "pre_tags": Array [
-          "<mark>",
-        ],
-        "require_field_match": false,
-      },
-    },
+    "fields": Object {},
   },
   "post_filter": Object {
     "bool": Object {},
@@ -127,10 +166,11 @@ Object {
   "query": Object {
     "query_string": Object {
       "default_operator": "AND",
+      "fields": Array [],
+      "lenient": true,
       "query": "*",
     },
   },
-  "search_after": "",
   "size": 0,
   "sort": Array [],
 }

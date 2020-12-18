@@ -1,10 +1,9 @@
-import React, { createContext } from 'react'
+import React from 'react'
 import Document, { Html, Head, Main, NextScript } from 'next/document'
 import { ServerStyleSheets } from '@material-ui/core/styles'
 import { resetServerContext } from 'react-beautiful-dnd'
-import { removeCommentsAndSpacing } from "../src/utils"
-import { JSS_CSS } from "../src/constants"
-import api from '../src/api'
+import { removeCommentsAndSpacing } from '../src/utils'
+import { JSS_CSS } from '../src/constants'
 
 class HooverDocument extends Document {
     static async getInitialProps(ctx) {
