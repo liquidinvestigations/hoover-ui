@@ -55,7 +55,7 @@ function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
 
             <TermsAggregationFilter
                 title="Private tags"
-                field={`private-tags.${whoAmI.username}.keyword`}
+                field={`priv-tags.${whoAmI.username}`}
                 onLoadMore={handleLoadMore}
                 {...filterProps}
             />

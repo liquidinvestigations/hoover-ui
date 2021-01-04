@@ -167,7 +167,7 @@ const buildSearchQuery = ({ page = 1, size = 0, order, collections = [], facets 
         ...['date', 'date-created'].map(field =>
             buildHistogramField(field, rest[field], facets[field]),
         ),
-        ...['tags', `private-tags.${username}.keyword`, 'filetype', 'lang', 'email-domains'].map(field =>
+        ...['tags', `priv-tags.${username}`, 'filetype', 'lang', 'email-domains'].map(field =>
             buildTermsField(field, rest[field], facets[field])
         ),
     ]

@@ -118,16 +118,16 @@ Object {
         "bool": Object {},
       },
     },
-    "private-tags.undefined.keyword": Object {
+    "priv-tags.undefined": Object {
       "aggs": Object {
         "count": Object {
           "cardinality": Object {
-            "field": "private-tags.undefined.keyword",
+            "field": "priv-tags.undefined",
           },
         },
         "values": Object {
           "terms": Object {
-            "field": "private-tags.undefined.keyword",
+            "field": "priv-tags.undefined",
             "size": 10,
           },
         },
