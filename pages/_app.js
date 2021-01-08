@@ -41,7 +41,9 @@ HooverApp.getInitialProps = async appContext => {
 
     authorizeApiSSR(appContext.ctx.req, api)
     const whoAmI = await api.whoami()
-    appContext.ctx.req.whoAmI = whoAmI
+    if (appContext.ctx.req) {
+        appContext.ctx.req.whoAmI = whoAmI
+    }
 
     return { ...appProps, whoAmI }
 }

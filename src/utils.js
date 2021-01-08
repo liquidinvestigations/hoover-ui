@@ -154,5 +154,7 @@ export const humanFileSize = (bytes, si=false, dp=1) => {
 }
 
 export const authorizeApiSSR = (req, api) => {
-    api.headers = req.headers
+    if (req) {
+        api.headers = req.headers
+    }
 }
