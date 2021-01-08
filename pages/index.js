@@ -24,10 +24,8 @@ import { collections as collectionsAPI, doc as docAPI } from '../src/backend/api
 import { aggregations as aggregationsAPI, search as searchAPI } from '../src/api'
 
 const extractFields = query => {
-    /*
     const results = query && parser.parse(query)
     console.log(results)
-    */
 
     const fields = []
     const queryParts = query ? query.match(/(?:[^\s"\[{]+|"[^"]*"|[\[{][^\]}]*[\]}])+/g) : []
