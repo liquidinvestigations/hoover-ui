@@ -8,16 +8,23 @@ import Loading from '../Loading'
 import { UserContext } from '../../../pages/_app'
 import { createTag, deleteTag, updateTag } from '../../backend/api'
 
+const onlyAlphanumericRegex = /[^a-z0-9]/gi
 const specialTags = ['important', 'seen', 'trash']
 
 function TagsSection({ loading, digestUrl, tags, onTagsChanged }) {
     const whoAmI = useContext(UserContext)
+
+    const [inputValue, setInputValue] = useState('')
+    const handleTagInputUpdate = event => {
+        setInputValue(event.target.value.replace(onlyAlphanumericRegex, ""))
+    }
 
     const [mutating, setMutating] = useState(false)
     const handleTagAdd = tag => {
         setMutating(true)
         createTag(digestUrl, { tag, public: false }).then(newTag => {
             onTagsChanged([...tags, newTag])
+            setInputValue('')
             setMutating(false)
         }).catch(() => {
             setMutating(false)
@@ -97,6 +104,10 @@ function TagsSection({ loading, digestUrl, tags, onTagsChanged }) {
                     onDelete={handleTagDelete}
                     disabled={mutating}
                     chipRenderer={renderChip}
+                    newChipKeys={['Enter', ' ']}
+                    newChipKeyCodes={[13, 32]}
+                    inputValue={inputValue}
+                    onUpdateInput={handleTagInputUpdate}
                     placeholder="no tags, start typing to add"
                     fullWidth
                 />

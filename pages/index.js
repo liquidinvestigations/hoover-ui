@@ -2,10 +2,9 @@ import React, { useCallback, useContext, useEffect, useState } from 'react'
 import Router, { useRouter } from 'next/router'
 import Link from 'next/link'
 import qs from 'qs'
-import parser from 'lucene-query-parser'
 import { makeStyles } from '@material-ui/core/styles'
-import { Grid, List, Typography } from '@material-ui/core'
-import ChipInput from 'material-ui-chip-input'
+import { Grid, List, TextField, Typography } from '@material-ui/core'
+import SearchQueryChips from '../src/components/SearchQueryChips'
 import HotKeysWithHelp from '../src/components/HotKeysWithHelp'
 import SplitPaneLayout from '../src/components/SplitPaneLayout'
 import Sorting from '../src/components/sorting/Sorting'
@@ -15,35 +14,13 @@ import Filters from '../src/components/filters/Filters'
 import CollectionsFilter from '../src/components/filters/CollectionsFilter'
 import Document from '../src/components/document/Document'
 import { ProgressIndicatorContext } from '../src/components/ProgressIndicator'
-import { SEARCH_GUIDE, SEARCH_QUERY_PREFIXES } from '../src/constants'
+import { SEARCH_GUIDE } from '../src/constants'
 import { copyMetadata, documentViewUrl } from '../src/utils'
 import { buildSearchQuerystring, defaultSearchParams, unwindParams } from '../src/queryUtils'
 import fixLegacyQuery from '../src/fixLegacyQuery'
 import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
 import { collections as collectionsAPI, doc as docAPI } from '../src/backend/api'
 import { aggregations as aggregationsAPI, search as searchAPI } from '../src/api'
-
-const extractFields = query => {
-    const results = query && parser.parse(query)
-    console.log(results)
-
-    const fields = []
-    const queryParts = query ? query.match(/(?:[^\s"\[{]+|"[^"]*"|[\[{][^\]}]*[\]}])+/g) : []
-    const otherInput = []
-    queryParts?.forEach(part => {
-        if (part.indexOf(':') > 0) {
-            const partParts = part.split(':')
-            if (SEARCH_QUERY_PREFIXES.indexOf(partParts[0]) >= 0 && partParts[1].length > 0) {
-                fields.push(part)
-            } else {
-                otherInput.push(part)
-            }
-        } else {
-            otherInput.push(part)
-        }
-    })
-    return [fields, otherInput.join(' ')]
-}
 
 const useStyles = makeStyles(theme => ({
     error: {
@@ -79,12 +56,10 @@ export default function Index({ collections, serverQuery }) {
     let [inputRef, setInputRef] = useState()
     const isInputFocused = () => inputRef === document.activeElement
 
-    const [ queryFields, queryText ] = extractFields(query.q)
-    const [chips, setChips] = useState(queryFields)
-    const [text, setText] = useState(queryText)
+    const [text, setText] = useState(query.q)
 
     const search = params => {
-        const stateParams = { fields: chips, text, size, order, page, collections: selectedCollections }
+        const stateParams = { text, size, order, page, collections: selectedCollections }
         const newQuery = buildSearchQuerystring({ ...query, ...stateParams, ...params })
         router.push(
             { pathname, search: newQuery },
@@ -125,15 +100,7 @@ export default function Index({ collections, serverQuery }) {
         search({ ...filter, page: 1 })
     }
 
-    const handleInputChange = useCallback(event => setText(event.target.value), [])
-
-    const handleChipDelete = (chip, chipIndex) => {
-        const fields = [...chips]
-        fields.splice(chipIndex, 1)
-        setChips(fields)
-        setPage(1)
-        search({ fields, page: 1 })
-    }
+    const handleInputChange = event => setText(event.target.value)
 
     const handleSubmit = event => {
         event.preventDefault()
@@ -161,9 +128,7 @@ export default function Index({ collections, serverQuery }) {
     const [resultsLoading, setResultsLoading] = useState(!!query.q)
     useEffect(() => {
         if (query.q) {
-            const [ queryFields, queryText ] = extractFields(query.q)
-            setChips(queryFields)
-            setText(queryText)
+            setText(query.q)
 
             setError(null)
             setResultsLoading(true)
@@ -227,7 +192,6 @@ export default function Index({ collections, serverQuery }) {
     const clearResults = url => {
         if (url === '/') {
             setResults(null)
-            setChips(null)
             setText('')
         }
     }
@@ -370,24 +334,19 @@ export default function Index({ collections, serverQuery }) {
                     <Grid container>
                         <Grid item sm={12}>
                             <form onSubmit={handleSubmit}>
-                                <ChipInput
+                                <TextField
                                     inputRef={setInputRef}
                                     label="Search"
                                     type="search"
                                     margin="normal"
-                                    value={chips}
-                                    inputValue={text}
-                                    blurBehavior="ignore"
-                                    dataSource={SEARCH_QUERY_PREFIXES}
-                                    newChipKeyCodes={[]}
-                                    newChipKeys={[]}
-                                    onUpdateInput={handleInputChange}
-                                    onDelete={handleChipDelete}
+                                    value={text}
+                                    onChange={handleInputChange}
                                     autoFocus
                                     fullWidth
-                                    fullWidthInput
                                 />
                             </form>
+
+                            <SearchQueryChips query={query.q} />
 
                             <Grid container justify="space-between">
                                 <Grid item>

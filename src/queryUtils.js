@@ -29,9 +29,9 @@ export const unwindParams = query => Object.fromEntries(Object.entries(query).ma
     PARAMS_MAP[field] ? [PARAMS_MAP[field], value] : [field, value])
 )
 
-export const buildSearchQuerystring = ({ q, collections, fields, text, ...rest }) => (
+export const buildSearchQuerystring = ({ q, collections, text, ...rest }) => (
     qs.stringify(rollupParams({
-        q: (fields?.length ? fields.join(' ') + ' ' : '') + (text || ''),
+        q: text || '',
         ...defaultSearchParams,
         collections: collections.join('+'),
         ...rest,
@@ -50,13 +50,9 @@ export const searchPath = (query, prefix, collections) => {
     if (prefix === SEARCH_DATE || prefix === SEARCH_DATE_CREATED) {
         params.text = '*'
         quotedQuery = quotedQuery.substring(0, 10)
-        if (prefix === SEARCH_DATE) {
-            params.dateRange = { from: quotedQuery, to: quotedQuery }
-        } else {
-            params.dateCreatedRange = { from: quotedQuery, to: quotedQuery }
-        }
+        params[prefix] = { from: quotedQuery, to: quotedQuery }
     } else if (prefix) {
-        params.fields = [`${prefix}:${quotedQuery}`]
+        params.text = `${prefix}:${quotedQuery}`
     } else {
         params.text = quotedQuery
     }
