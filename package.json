@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "next build",
-    "dev": "next dev -p 8000 -H 0.0.0.0",
+    "dev": "cross-env API_URL=https://hoover.fuze.xn--vj-qja.ro REWRITE_API=1 NODE_TLS_REJECT_UNAUTHORIZED=0 next dev -p 8000 -H 0.0.0.0",
     "start": "next start -p 8000 -H 0.0.0.0",
     "prod": "cross-env NODE_ENV=production next build && next start -p 8000 -H 0.0.0.0",
     "test": "cross-env NODE_ENV=test jest",
@@ -37,7 +37,7 @@
     "langs": "^2.0.0",
     "lodash": "^4.17.20",
     "lodash-webpack-plugin": "^0.11.6",
-    "lucene-query-parser": "^1.2.0",
+    "lucene": "^2.1.1",
     "luxon": "^1.25.0",
     "material-ui-chip-input": "^1.1.0",
     "next": "^10.0.5",

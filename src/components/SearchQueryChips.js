@@ -1,9 +1,9 @@
 import React, { memo, useEffect, useState } from 'react'
-import parser from 'lucene-query-parser'
-import { Box, Chip, FormControl } from '@material-ui/core'
+import lucene from 'lucene'
+import { Box, Chip, FormControl, Tooltip } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import red from '@material-ui/core/colors/red'
-import { SEARCH_QUERY_PREFIXES } from '../constants'
+import { blue, green, red } from '@material-ui/core/colors'
+import { DEFAULT_OPERATOR, SEARCH_QUERY_PREFIXES } from '../constants'
 
 const useStyles = makeStyles(theme => ({
     box: {
@@ -29,21 +29,32 @@ const useStyles = makeStyles(theme => ({
             borderBottom: 'solid 1px black',
         }
     },
-    implicitBox: {
-
-    },
-    andBox: {
+    AND: {
         '&:after': {
             content: '"AND"',
             color: theme.palette.secondary.main,
             borderColor: theme.palette.secondary.main,
         }
     },
-    orBox: {
+    OR: {
         '&:after': {
             content: '"OR"',
             color: theme.palette.primary.main,
             borderColor: theme.palette.primary.main,
+        }
+    },
+    'AND-NOT': {
+        '&:after': {
+            content: '"AND NOT"',
+            color: red.A700,
+            borderColor: red.A700,
+        }
+    },
+    'OR-NOT': {
+        '&:after': {
+            content: '"OR NOT"',
+            color: blue.A700,
+            borderColor: blue.A700,
         }
     },
     chip: {
@@ -55,9 +66,13 @@ const useStyles = makeStyles(theme => ({
         }
     },
 
+    tooltipChip: {
+        backgroundColor: green.A100,
+    },
+
     fieldChip: {
         backgroundColor: red.A100,
-    }
+    },
 }))
 
 function SearchQueryChips({ query }) {
@@ -66,25 +81,62 @@ function SearchQueryChips({ query }) {
 
     useEffect(() => {
         try {
-            setParsedQuery(parser.parse(query))
+            setParsedQuery(lucene.parse(query))
         } catch {}
     }, [query])
 
-    const build = q => {
+    const build = (q, parentOperator) => {
+        const operator = q.operator === '<implicit>' ? DEFAULT_OPERATOR : q.operator?.replace(' ', '-')
         if (q.field) {
+            let label, className = classes.chip
+
             if (q.field === '<implicit>') {
-                return <Chip label={q.term} className={classes.chip} />
+                label = q.term
             } else if (SEARCH_QUERY_PREFIXES.includes(q.field)) {
-                return <Chip label={`${q.field}:${q.term}`} className={classes.chip + ' ' + classes.fieldChip} />
+                label = q.field + ':' + q.term
+                className += ' ' + classes.fieldChip
+            } else if (q.term) {
+                label = q.field + ':' + q.term
+            } else {
+                label = lucene.toString(q)
             }
-        } else {
-            const boxClass = q.operator === 'AND' ? classes.andBox :
-                q.operator === 'OR' ? classes.orBox : classes.implicitBox
+
+            if (q.prefix || q.similarity || q.proximity || q.boost) {
+                return (
+                    <Tooltip placement="top" title={(
+                        <>
+                            <Box>{q.prefix && 'Prefix: ' + q.prefix}</Box>
+                            <Box>{q.similarity && 'Similarity: ' + q.similarity}</Box>
+                            <Box>{q.proximity && 'Proximity: ' + q.proximity}</Box>
+                            <Box>{q.boost && 'Boost: ' + q.boost}</Box>
+                        </>
+                    )}>
+                        <Chip label={label} className={className + ' ' + classes.tooltipChip} />
+                    </Tooltip>
+                )
+            }
+
+            return <Chip label={label} className={className} />
+
+        } else if (parentOperator === operator) {
+
             return (
-                <Box className={classes.box + ' ' + boxClass}>
-                    {q.left && build(q.left)}
-                    {q.right && build(q.right)}
-                </Box>
+                q.left && q.right ?
+                    <>
+                        {build(q.left, operator)}
+                        {build(q.right, operator)}
+                    </> :
+                q.left ? build(q.left, operator) : null
+            )
+        } else {
+
+            return (
+                q.left && q.right ?
+                    <Box className={classes.box + ' ' + classes[operator]}>
+                        {build(q.left, operator)}
+                        {build(q.right, operator)}
+                    </Box> :
+                q.left ? build(q.left, operator) : null
             )
         }
     }

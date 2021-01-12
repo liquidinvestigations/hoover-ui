@@ -1,11 +1,11 @@
-import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL, HIGHLIGHT_SETTINGS } from '../constants'
+import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL, DEFAULT_OPERATOR, HIGHLIGHT_SETTINGS } from '../constants'
 import { DateTime } from 'luxon'
 
 const buildQuery = ({ q = '*', ...rest }, searchFields) => {
     const qs = {
         query_string: {
             query: q,
-            default_operator: 'AND',
+            default_operator: DEFAULT_OPERATOR,
             fields: searchFields.all,
             lenient: true,
         },
