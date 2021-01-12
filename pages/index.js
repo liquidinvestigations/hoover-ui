@@ -108,6 +108,11 @@ export default function Index({ collections, serverQuery }) {
         search({ text, page: 1 })
     }
 
+    const handleSearch = text => {
+        setText(text)
+        search({ text, page: 1 })
+    }
+
 
     const [previewOnLoad, setPreviewOnLoad] = useState()
     const [selectedDocUrl, setSelectedDocUrl] = useState()
@@ -346,7 +351,7 @@ export default function Index({ collections, serverQuery }) {
                                 />
                             </form>
 
-                            <SearchQueryChips query={query.q} />
+                            <SearchQueryChips query={query.q} onQueryChange={handleSearch} />
 
                             <Grid container justify="space-between">
                                 <Grid item>

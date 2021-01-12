@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState } from 'react'
 import lucene from 'lucene'
-import { Box, Chip, FormControl, Tooltip } from '@material-ui/core'
+import { Box, ButtonBase, Chip, FormControl, Menu, MenuItem, Tooltip } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { blue, green, red } from '@material-ui/core/colors'
 import { DEFAULT_OPERATOR, SEARCH_QUERY_PREFIXES } from '../constants'
@@ -12,56 +12,43 @@ const useStyles = makeStyles(theme => ({
         marginRight: theme.spacing(1),
         marginBottom: theme.spacing(1),
 
-        '&:last-child': {
+        '&:nth-last-child(2)': {
             marginRight: 0,
         },
-
-        '&:after': {
-            content: '""',
-            display: 'block',
-            textAlign: 'center',
-            lineHeight: '30px',
-            fontSize: '10px',
-            height: theme.spacing(1),
-            marginTop: theme.spacing(1) / 2,
-            borderLeft: '1px solid black',
-            borderRight: '1px solid black',
-            borderBottom: 'solid 1px black',
-        }
+    },
+    operator: {
+        display: 'block',
+        textAlign: 'center',
+        lineHeight: '30px',
+        fontSize: '10px',
+        width: '100%',
+        height: theme.spacing(1),
+        marginTop: theme.spacing(1) / 2,
+        borderLeft: '1px solid black',
+        borderRight: '1px solid black',
+        borderBottom: 'solid 1px black',
     },
     AND: {
-        '&:after': {
-            content: '"AND"',
-            color: theme.palette.secondary.main,
-            borderColor: theme.palette.secondary.main,
-        }
+        color: theme.palette.secondary.main,
+        borderColor: theme.palette.secondary.main,
     },
     OR: {
-        '&:after': {
-            content: '"OR"',
-            color: theme.palette.primary.main,
-            borderColor: theme.palette.primary.main,
-        }
+        color: theme.palette.primary.main,
+        borderColor: theme.palette.primary.main,
     },
     'AND-NOT': {
-        '&:after': {
-            content: '"AND NOT"',
-            color: red.A700,
-            borderColor: red.A700,
-        }
+        color: red.A700,
+        borderColor: red.A700,
     },
     'OR-NOT': {
-        '&:after': {
-            content: '"OR NOT"',
-            color: blue.A700,
-            borderColor: blue.A700,
-        }
+        color: blue.A700,
+        borderColor: blue.A700,
     },
     chip: {
         marginRight: theme.spacing(1),
         marginBottom: theme.spacing(1),
 
-        '&:last-child': {
+        '&:nth-last-child(2)': {
             marginRight: 0,
         }
     },
@@ -75,7 +62,35 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function SearchQueryChips({ query }) {
+const replaceNode = (parent, node) => {
+    if (parent.left === node) {
+        if (parent.right) {
+            return {...parent.right, parenthesized: parent.parenthesized}
+        } else {
+            return null
+        }
+    } else if (parent.right === node) {
+        return {...parent.left, parenthesized: parent.parenthesized}
+    } else {
+        return {...parent}
+    }
+}
+
+const rebuildTree = (parent, node) => {
+    if (parent === node) {
+        return null
+    }
+    const root = replaceNode(parent, node)
+    if (root?.left) {
+        root.left = rebuildTree(root.left, node)
+    }
+    if (root?.right) {
+        root.right = rebuildTree(root.right, node)
+    }
+    return root
+}
+
+function SearchQueryChips({ query, onQueryChange }) {
     const classes = useStyles()
     const [parsedQuery, setParsedQuery] = useState()
 
@@ -85,8 +100,25 @@ function SearchQueryChips({ query }) {
         } catch {}
     }, [query])
 
+    const [selectedChip, setSelectedChip] = useState(null)
+    const [isExpression, setExpression] = useState(false)
+    const [anchorEl, setAnchorEl] = useState(null)
+    const handleChipClick = (chip, parentOperator) => event => {
+        setSelectedChip(chip)
+        setExpression(!!parentOperator)
+        setAnchorEl(event.currentTarget)
+    }
+    const handleChipMenuClose = () => {
+        setAnchorEl(null)
+    }
+    const handleDelete = () => {
+        onQueryChange(lucene.toString(rebuildTree(parsedQuery, selectedChip)))
+        handleChipMenuClose()
+    }
+
     const build = (q, parentOperator) => {
-        const operator = q.operator === '<implicit>' ? DEFAULT_OPERATOR : q.operator?.replace(' ', '-')
+        const operator = q.operator === '<implicit>' ? DEFAULT_OPERATOR : q.operator
+        const operatorClass = operator?.replace(' ', '-')
         if (q.field) {
             let label, className = classes.chip
 
@@ -111,12 +143,22 @@ function SearchQueryChips({ query }) {
                             <Box>{q.boost && 'Boost: ' + q.boost}</Box>
                         </>
                     )}>
-                        <Chip label={label} className={className + ' ' + classes.tooltipChip} />
+                        <Chip
+                            label={label}
+                            className={className + ' ' + classes.tooltipChip}
+                            onClick={handleChipClick(q)}
+                        />
                     </Tooltip>
                 )
             }
 
-            return <Chip label={label} className={className} />
+            return (
+                <Chip
+                    label={label}
+                    className={className}
+                    onClick={handleChipClick(q)}
+                />
+            )
 
         } else if (parentOperator === operator) {
 
@@ -132,16 +174,36 @@ function SearchQueryChips({ query }) {
 
             return (
                 q.left && q.right ?
-                    <Box className={classes.box + ' ' + classes[operator]}>
-                        {build(q.left, operator)}
-                        {build(q.right, operator)}
-                    </Box> :
+                    <>
+                        <Box className={classes.box}>
+                            {build(q.left, operator)}
+                            {build(q.right, operator)}
+                            <ButtonBase
+                                className={classes.operator + ' ' + classes[operatorClass]}
+                                onClick={handleChipClick(q, operator)}
+                            >
+                                {operator}
+                            </ButtonBase>
+                        </Box>
+                    </> :
                 q.left ? build(q.left, operator) : null
             )
         }
     }
 
-    return query && parsedQuery ? <FormControl margin="normal">{build(parsedQuery)}</FormControl> : null
+    return query && parsedQuery ?
+        <FormControl margin="normal">
+            {build(parsedQuery)}
+            <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleChipMenuClose}
+            >
+                <MenuItem onClick={handleDelete}>
+                    delete selected {isExpression ? 'expression' : 'term'}
+                </MenuItem>
+            </Menu>
+        </FormControl> : null
 }
 
 export default memo(SearchQueryChips)
