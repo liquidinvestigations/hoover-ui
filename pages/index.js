@@ -366,11 +366,10 @@ export default function Index({ collections, serverQuery }) {
                             <Grid container justify="space-between">
                                 <Grid item>
                                     <Typography variant="caption">
-                                        Refine your search using{' '}
-                                        <a href={SEARCH_GUIDE}>
-                                            this handy guide
-                                        </a>
-                                        .
+                                        Enter to search, Shift+Enter for a new line.<br />
+                                        All lines are combined into a single search.<br />
+                                        Refine your search using {' '}
+                                        <a href={SEARCH_GUIDE}>this handy guide</a>.
                                     </Typography>
                                 </Grid>
 
