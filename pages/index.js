@@ -348,6 +348,7 @@ export default function Index({ collections, serverQuery }) {
                                     onChange={handleInputChange}
                                     autoFocus
                                     fullWidth
+                                    multiline
                                 />
                             </form>
 

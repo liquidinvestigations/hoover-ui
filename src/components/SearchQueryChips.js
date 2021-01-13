@@ -2,11 +2,12 @@ import React, { memo, useEffect, useState } from 'react'
 import lucene from 'lucene'
 import { Box, ButtonBase, Chip, FormControl, Menu, MenuItem, Tooltip } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { blue, green, red } from '@material-ui/core/colors'
+import { green, red } from '@material-ui/core/colors'
 import { DEFAULT_OPERATOR, SEARCH_QUERY_PREFIXES } from '../constants'
 
 const useStyles = makeStyles(theme => ({
     box: {
+        float: 'left',
         display: 'inline-block',
         verticalAlign: 'top',
         marginRight: theme.spacing(1),
@@ -14,6 +15,7 @@ const useStyles = makeStyles(theme => ({
 
         '&:nth-last-child(2)': {
             marginRight: 0,
+            float: 'right',
         },
     },
     operator: {
@@ -36,13 +38,9 @@ const useStyles = makeStyles(theme => ({
         color: theme.palette.primary.main,
         borderColor: theme.palette.primary.main,
     },
-    'AND-NOT': {
+    NOT: {
         color: red.A700,
         borderColor: red.A700,
-    },
-    'OR-NOT': {
-        color: blue.A700,
-        borderColor: blue.A700,
     },
     chip: {
         marginRight: theme.spacing(1),
@@ -90,6 +88,9 @@ const rebuildTree = (parent, node) => {
     return root
 }
 
+const shortenName = name => name.length > 30 ?
+    `${name.substr(0, 17)}...${name.substr(-10)}` : name
+
 function SearchQueryChips({ query, onQueryChange }) {
     const classes = useStyles()
     const [parsedQuery, setParsedQuery] = useState()
@@ -116,57 +117,105 @@ function SearchQueryChips({ query, onQueryChange }) {
         handleChipMenuClose()
     }
 
+    const getChip = (queryNode, label, className) => {
+        return (
+            <Chip
+                label={label}
+                className={className}
+                onClick={handleChipClick(queryNode)}
+            />
+        )
+    }
+
+    const getNotBox = (negation, queryNode, chip) => {
+        if (negation) {
+            return (
+                <Box className={classes.box}>
+                    {chip}
+                    <ButtonBase
+                        className={classes.operator + ' ' + classes.NOT}
+                        onClick={handleChipClick(queryNode, 'NOT')}
+                    >
+                        NOT
+                    </ButtonBase>
+                </Box>
+            )
+        }
+        return chip
+    }
+
     const build = (q, parentOperator) => {
-        const operator = q.operator === '<implicit>' ? DEFAULT_OPERATOR : q.operator
-        const operatorClass = operator?.replace(' ', '-')
+        let operator, leftNegation = q.start === 'NOT', rightNegation = false
+
+        switch (q.operator) {
+            case '<implicit>':
+                operator = DEFAULT_OPERATOR
+                break
+            case 'NOT':
+                operator = DEFAULT_OPERATOR
+                rightNegation = true
+                break
+            case 'AND NOT':
+                operator = 'AND'
+                rightNegation = true
+                break
+            case 'OR NOT':
+                operator = 'OR'
+                rightNegation = true
+                break
+            case 'AND':
+            case 'OR':
+                operator = q.operator
+                break;
+        }
+
         if (q.field) {
             let label, className = classes.chip
-
             if (q.field === '<implicit>') {
-                label = q.term
-            } else if (SEARCH_QUERY_PREFIXES.includes(q.field)) {
-                label = q.field + ':' + q.term
-                className += ' ' + classes.fieldChip
+                label = (
+                    <span>
+                        {q.prefix && <strong>{q.prefix}{' '}</strong>}
+                        {shortenName(q.term)}
+                    </span>
+                )
             } else if (q.term) {
-                label = q.field + ':' + q.term
+                label = (
+                    <span>
+                        {q.prefix && <strong>{q.prefix}{' '}</strong>}
+                        <strong>{q.field}</strong>:{' '}
+                        {shortenName(q.term)}
+                    </span>
+                )
+                if (SEARCH_QUERY_PREFIXES.includes(q.field)) {
+                    className += ' ' + classes.fieldChip
+                }
             } else {
                 label = lucene.toString(q)
             }
 
-            if (q.prefix || q.similarity || q.proximity || q.boost) {
+            if (q.similarity || q.proximity || q.boost) {
                 return (
                     <Tooltip placement="top" title={(
                         <>
-                            <Box>{q.prefix && 'Prefix: ' + q.prefix}</Box>
                             <Box>{q.similarity && 'Similarity: ' + q.similarity}</Box>
                             <Box>{q.proximity && 'Proximity: ' + q.proximity}</Box>
                             <Box>{q.boost && 'Boost: ' + q.boost}</Box>
                         </>
                     )}>
-                        <Chip
-                            label={label}
-                            className={className + ' ' + classes.tooltipChip}
-                            onClick={handleChipClick(q)}
-                        />
+                        {getChip(q, label, className + ' ' + classes.tooltipChip)}
                     </Tooltip>
                 )
             }
 
-            return (
-                <Chip
-                    label={label}
-                    className={className}
-                    onClick={handleChipClick(q)}
-                />
-            )
+            return getChip(q, label, className)
 
-        } else if (parentOperator === operator) {
+        } else if (parentOperator && parentOperator === operator) {
 
             return (
                 q.left && q.right ?
                     <>
                         {build(q.left, operator)}
-                        {build(q.right, operator)}
+                        {getNotBox(rightNegation, q.right, build(q.right, operator))}
                     </> :
                 q.left ? build(q.left, operator) : null
             )
@@ -174,19 +223,17 @@ function SearchQueryChips({ query, onQueryChange }) {
 
             return (
                 q.left && q.right ?
-                    <>
-                        <Box className={classes.box}>
-                            {build(q.left, operator)}
-                            {build(q.right, operator)}
-                            <ButtonBase
-                                className={classes.operator + ' ' + classes[operatorClass]}
-                                onClick={handleChipClick(q, operator)}
-                            >
-                                {operator}
-                            </ButtonBase>
-                        </Box>
-                    </> :
-                q.left ? build(q.left, operator) : null
+                    <Box className={classes.box}>
+                        {getNotBox(leftNegation, q.left, build(q.left, operator))}
+                        {getNotBox(rightNegation, q.right, build(q.right, operator))}
+                        <ButtonBase
+                            className={classes.operator + ' ' + classes[operator]}
+                            onClick={handleChipClick(q, operator)}
+                        >
+                            {operator}
+                        </ButtonBase>
+                    </Box> :
+                q.left ? getNotBox(leftNegation, q.left, build(q.left, operator)) : null
             )
         }
     }
