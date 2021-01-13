@@ -88,7 +88,9 @@ const rebuildTree = (parent, node) => {
     return root
 }
 
-const shortenName = name => name.length > 30 ?
+const ELLIPSIS_TERM_LENGTH = 30
+
+const shortenName = name => name.length > ELLIPSIS_TERM_LENGTH ?
     `${name.substr(0, 17)}...${name.substr(-10)}` : name
 
 function SearchQueryChips({ query, onQueryChange }) {
@@ -193,13 +195,14 @@ function SearchQueryChips({ query, onQueryChange }) {
                 label = lucene.toString(q)
             }
 
-            if (q.similarity || q.proximity || q.boost) {
+            if (q.similarity || q.proximity || q.boost || q.term?.length > ELLIPSIS_TERM_LENGTH) {
                 return (
                     <Tooltip placement="top" title={(
                         <>
-                            <Box>{q.similarity && 'Similarity: ' + q.similarity}</Box>
-                            <Box>{q.proximity && 'Proximity: ' + q.proximity}</Box>
-                            <Box>{q.boost && 'Boost: ' + q.boost}</Box>
+                            {q.term?.length > ELLIPSIS_TERM_LENGTH && <Box>{q.term}</Box>}
+                            {q.similarity && <Box>Similarity:{' '}{q.similarity}</Box>}
+                            {q.proximity && <Box>Proximity:{' '}{q.proximity}</Box>}
+                            {q.boost && <Box>Boost:{' '}{q.boost}</Box>}
                         </>
                     )}>
                         {getChip(q, label, className + ' ' + classes.tooltipChip)}

@@ -113,6 +113,14 @@ export default function Index({ collections, serverQuery }) {
         search({ text, page: 1 })
     }
 
+    const handleInputKey = event => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault()
+            setPage(1)
+            search({ text, page: 1 })
+        }
+    }
+
 
     const [previewOnLoad, setPreviewOnLoad] = useState()
     const [selectedDocUrl, setSelectedDocUrl] = useState()
@@ -346,6 +354,7 @@ export default function Index({ collections, serverQuery }) {
                                     margin="normal"
                                     value={text}
                                     onChange={handleInputChange}
+                                    onKeyDown={handleInputKey}
                                     autoFocus
                                     fullWidth
                                     multiline
