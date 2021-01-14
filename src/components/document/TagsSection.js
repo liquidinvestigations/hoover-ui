@@ -10,9 +10,10 @@ import Loading from '../Loading'
 import { UserContext } from '../../../pages/_app'
 import { createTag, deleteTag, updateTag } from '../../backend/api'
 
-const onlyAlphanumericRegex = /[^a-z0-9]/gi
-const specialTags = ['important', 'seen', 'trash', 'interesting']
+export const specialTags = ['important', 'seen', 'trash', 'interesting']
 export const publicTags = ['interesting']
+
+const onlyAlphanumericRegex = /[^a-z0-9]/gi
 
 const useStyles = makeStyles(theme => ({
     buttons: {
@@ -123,31 +124,34 @@ function TagsSection({ loading, digestUrl, tags, onChanged, toolbarButtons, lock
     }
 
     const renderChip = ({ value, text, chip, isDisabled, isReadOnly, handleDelete, className }, key) => (
-        <Tooltip placement="top" title={
-            <>
-                <Box>
-                    <strong>Created on</strong>:{' '}
-                    {DateTime.fromISO(chip.date_created, { locale: 'en-US' })
-                        .toLocaleString(DateTime.DATETIME_FULL)}
-                </Box>
-                <Box>
-                    {chip.date_indexed ?
-                        <>
-                            Indexed in
-                            <strong>
-                                {DateTime.fromISO(chip.date_indexed)
-                                    .diff(DateTime.fromISO(chip.date_modified))
-                                    .toFormat(' s.SSS ')}
-                            </strong>
-                            seconds
-                        </>:
-                        'Not indexed yet'
-                    }
-                </Box>
-            </>
-        }>
+        <Tooltip
+            key={key}
+            placement="top"
+            title={
+                <>
+                    <Box>
+                        <strong>Created on:</strong>{' '}
+                        {DateTime.fromISO(chip.date_created, { locale: 'en-US' })
+                            .toLocaleString(DateTime.DATETIME_FULL)}
+                    </Box>
+                    <Box>
+                        {chip.date_indexed ?
+                            <>
+                                Indexed in
+                                <strong>
+                                    {DateTime.fromISO(chip.date_indexed)
+                                        .diff(DateTime.fromISO(chip.date_modified))
+                                        .toFormat(' s.SSS ')}
+                                </strong>
+                                seconds
+                            </>:
+                            'Not indexed yet'
+                        }
+                    </Box>
+                </>
+            }
+        >
             <Chip
-                key={key}
                 icon={chip.user === whoAmI.username && !specialTags.includes(chip.tag) ? chip.public ?
                     <Tooltip title="Make private">
                         <IconButton

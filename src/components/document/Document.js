@@ -2,7 +2,6 @@ import React, { memo, useEffect, useState } from 'react'
 import url from 'url'
 import { makeStyles } from '@material-ui/core/styles'
 import {
-    ChromeReaderMode,
     CloudDownload,
     DeleteOutlined,
     Error,
@@ -12,6 +11,7 @@ import {
     RestoreFromTrash,
     Star,
     StarOutline,
+    TextFields,
     Visibility,
     VisibilityOffOutlined
 } from '@material-ui/icons'
@@ -186,7 +186,7 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
             return {
                 href: createOcrUrl(digestUrl, tag),
                 tooltip: `OCR ${tag}`,
-                icon: <ChromeReaderMode />,
+                icon: <TextFields />,
                 target: fullPage ? null : '_blank',
             }
         })

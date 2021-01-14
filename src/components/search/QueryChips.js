@@ -184,7 +184,7 @@ function QueryChips({ query, onQueryChange }) {
                 label = (
                     <span>
                         {q.prefix && <strong>{q.prefix}{' '}</strong>}
-                        <strong>{q.field}</strong>:{' '}
+                        <strong>{q.field}:</strong>{' '}
                         {shortenName(q.term)}
                     </span>
                 )
@@ -200,9 +200,9 @@ function QueryChips({ query, onQueryChange }) {
                     <Tooltip placement="top" title={(
                         <>
                             {q.term?.length > ELLIPSIS_TERM_LENGTH && <Box>{q.term}</Box>}
-                            {q.similarity && <Box><strong>Similarity</strong>:{' '}{q.similarity}</Box>}
-                            {q.proximity && <Box><strong>Proximity</strong>:{' '}{q.proximity}</Box>}
-                            {q.boost && <Box><strong>Boost</strong>:{' '}{q.boost}</Box>}
+                            {q.similarity && <Box><strong>Similarity:</strong>{' '}{q.similarity}</Box>}
+                            {q.proximity && <Box><strong>Proximity:</strong>{' '}{q.proximity}</Box>}
+                            {q.boost && <Box><strong>Boost:</strong>{' '}{q.boost}</Box>}
                         </>
                     )}>
                         {getChip(q, label, className + ' ' + classes.tooltipChip)}

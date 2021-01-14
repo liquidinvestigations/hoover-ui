@@ -152,7 +152,7 @@ function MetaSection({ doc, collection, baseUrl }) {
                         <ListItem disableGutters>
                             <ListItemText
                                 primary="Size"
-                                secondary={humanFileSize(data.size)}
+                                secondary={humanFileSize(data.size, true)}
                             />
                         </ListItem>
                     }
