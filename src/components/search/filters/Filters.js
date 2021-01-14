@@ -2,8 +2,8 @@ import React, { memo, useContext } from 'react'
 import { List } from '@material-ui/core'
 import DateHistogramFilter from './DateHistogramFilter'
 import TermsAggregationFilter from './TermsAggregationFilter'
-import { getLanguageName } from '../../utils'
-import { UserContext } from '../../../pages/_app'
+import { getLanguageName } from '../../../utils'
+import { UserContext } from '../../../../pages/_app'
 
 const formatLang = bucket => getLanguageName(bucket.key)
 

@@ -4,16 +4,19 @@ import { makeStyles } from '@material-ui/core/styles'
 import {
     ChromeReaderMode,
     CloudDownload,
-    Delete,
-    Drafts,
+    DeleteOutlined,
+    Error,
+    ErrorOutline,
     Launch,
-    Markunread,
     Print,
     RestoreFromTrash,
     Star,
-    StarOutline
+    StarOutline,
+    Visibility,
+    VisibilityOffOutlined
 } from '@material-ui/icons'
 import { IconButton, Toolbar, Tooltip } from '@material-ui/core'
+import { brown, green, grey, red } from '@material-ui/core/colors'
 import EmailSection from './EmailSection'
 import PreviewSection from './PreviewSection'
 import HTMLSection from './HTMLSection'
@@ -21,7 +24,7 @@ import TextSection from './TextSection'
 import FilesSection from './FilesSection'
 import MetaSection from './MetaSection'
 import Loading from '../Loading'
-import TagsSection from './TagsSection'
+import TagsSection, { publicTags } from './TagsSection'
 import { createDownloadUrl, createOcrUrl, createTag, deleteTag, tags as tagsAPI } from '../../backend/api'
 
 const useStyles = makeStyles(theme => ({
@@ -47,6 +50,7 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
     const collection = parseCollection(docUrl)
     const collectionBaseUrl = docUrl && url.resolve(docUrl, './')
     const headerLinks = []
+    const tagsLinks = []
 
     let digest = data?.id
     let docRawUrl = createDownloadUrl(`${collectionBaseUrl}${digest}`, data?.content.filename)
@@ -65,21 +69,16 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
 
     const [tags, setTags] = useState([])
     const [tagsLoading, setTagsLoading] = useState(false)
-    const [importantLock, setImportantLock] = useState(false)
-    const [seenLock, setSeenLock] = useState(false)
-    const [trashLock, setTrashLock] = useState(false)
+    const [tagsLocked, setTagsLocked] = useState(false)
+
     useEffect(() => {
         if (digestUrl && !digestUrl.includes('_file_') && !digestUrl.includes('_directory_')) {
             setTagsLoading(true)
-            setImportantLock(true)
-            setSeenLock(true)
-            setTrashLock(true)
+            setTagsLocked(true)
             tagsAPI(digestUrl).then(data => {
                 setTags(data)
                 setTagsLoading(false)
-                setImportantLock(false)
-                setSeenLock(false)
-                setTrashLock(false)
+                setTagsLocked(false)
             })
         }
     }, [digestUrl])
@@ -92,21 +91,22 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
         return null
     }
 
-    const handleSpecialTagClick = (tag, name, onLoading) => () => {
-        setImportantLock(true)
+    const handleSpecialTagClick = (tag, name) => event => {
+        event.stopPropagation()
+        setTagsLocked(true)
         if (tag) {
             deleteTag(digestUrl, tag.id).then(() => {
                 setTags([...(tags.filter(t => t.id !== tag.id))])
-                onLoading(false)
+                setTagsLocked(false)
             }).catch(() => {
-                onLoading(false)
+                setTagsLocked(false)
             })
         } else {
-            createTag(digestUrl, { tag: name, public: false }).then(newTag => {
+            createTag(digestUrl, { tag: name, public: publicTags.includes(name) }).then(newTag => {
                 setTags([...tags, newTag])
-                onLoading(false)
+                setTagsLocked(false)
             }).catch(() => {
-                onLoading(false)
+                setTagsLocked(false)
             })
         }
     }
@@ -114,65 +114,81 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
     if (!fullPage) {
         headerLinks.push({
             href: docUrl,
-            text: 'Open in new tab',
+            tooltip: 'Open in new tab',
             icon: <Launch />,
             target: '_blank',
-        });
+        })
     }
 
     if (data.content.filetype !== 'folder') {
         const important = tags.find(tag => tag.tag === 'important')
         headerLinks.push({
             icon: important ? <Star /> : <StarOutline />,
-            style: { color: '#ffb400' },
-            text: important ? 'Unmark important' : 'Mark important',
-            disabled: importantLock,
-            onClick: handleSpecialTagClick(important, 'important', setImportantLock)
-        })
-
-        const seen = tags.find(tag => tag.tag === 'seen')
-        headerLinks.push({
-            icon: seen ? <Drafts /> : <Markunread />,
-            text: seen ? 'Unmark seen' : 'Mark seen',
-            disabled: seenLock,
-            onClick: handleSpecialTagClick(seen, 'seen', setSeenLock)
-        })
-
-        const trash = tags.find(tag => tag.tag === 'trash')
-        headerLinks.push({
-            icon: trash ? <RestoreFromTrash /> : <Delete />,
-            text: trash ? 'Restore from trash' : 'Mark trashed',
-            disabled: trashLock,
-            onClick: handleSpecialTagClick(trash, 'trash', setTrashLock)
+            style: { color: important ? '#ffb400' : grey[600] },
+            tooltip: important ? 'Unmark important' : 'Mark important',
+            disabled: tagsLocked,
+            onClick: handleSpecialTagClick(important, 'important')
         })
 
         headerLinks.push({
             href: `${docUrl}?print=true`,
-            text: 'Print metadata and content',
+            tooltip: 'Print metadata and content',
             icon: <Print />,
             target: '_blank',
-        });
+        })
 
         headerLinks.push({
             href: docRawUrl,
-            text: 'Download original file',
+            tooltip: 'Download original file',
             icon: <CloudDownload />,
             target: fullPage ? null : '_blank',
-        });
+        })
+
+        const interesting = tags.find(tag => tag.tag === 'interesting')
+        tagsLinks.push({
+            icon: interesting ? <Error /> : <ErrorOutline />,
+            style: { color: interesting ? green[500] : grey[600] },
+            tooltip: 'Mark this document with a public tag so others will see it. ' +
+                'You can exclude these documents by clicking on the "Public Tags" filter on the left.',
+            label: interesting ? 'interesting' : 'not interesting',
+            disabled: tagsLocked,
+            onClick: handleSpecialTagClick(interesting, 'interesting')
+        })
+
+        const seen = tags.find(tag => tag.tag === 'seen')
+        tagsLinks.push({
+            icon: seen ? <Visibility /> : <VisibilityOffOutlined />,
+            style: { color: seen ? brown[500] : grey[600] },
+            tooltip: 'You can exclude these documents by clicking on the "Private Tags" filter on the left.',
+            label: seen ? 'seen' : 'not seen',
+            disabled: tagsLocked,
+            onClick: handleSpecialTagClick(seen, 'seen')
+        })
+
+        const trash = tags.find(tag => tag.tag === 'trash')
+        tagsLinks.push({
+            icon: trash ? <RestoreFromTrash /> : <DeleteOutlined />,
+            style: { color: trash ? red[600] : grey[600] },
+            tooltip: 'By default, documents with the tag "trash" will be excluded from searches. ' +
+                'You can override this by clicking on the "Private Tags" filter on the left.',
+            label: trash ? 'trash' : 'not trash',
+            disabled: tagsLocked,
+            onClick: handleSpecialTagClick(trash, 'trash')
+        })
     }
 
     const ocrData = Object.keys(data.content.ocrtext || {}).map((tag, index) => {
-        return {tag: tag, text: data.content.ocrtext[tag]};
-    });
+        return {tag: tag, text: data.content.ocrtext[tag]}
+    })
 
     headerLinks.push(
         ...ocrData.map(({tag}) => {
             return {
                 href: createOcrUrl(digestUrl, tag),
-                text: `OCR ${tag}`,
+                tooltip: `OCR ${tag}`,
                 icon: <ChromeReaderMode />,
                 target: fullPage ? null : '_blank',
-            };
+            }
         })
     )
 
@@ -180,8 +196,8 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
         <div>
             {headerLinks.length > 0 && showToolbar !== false && (
                 <Toolbar classes={{root: classes.toolbar}}>
-                    {headerLinks.map(({text, icon, ...props}, index) => (
-                        <Tooltip title={text} key={index}>
+                    {headerLinks.map(({tooltip, icon, ...props}, index) => (
+                        <Tooltip title={tooltip} key={index}>
                             <IconButton
                                 size="small"
                                 color="default"
@@ -198,7 +214,10 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
                 loading={tagsLoading}
                 digestUrl={digestUrl}
                 tags={tags}
-                onTagsChanged={setTags}
+                onChanged={setTags}
+                toolbarButtons={tagsLinks}
+                locked={tagsLocked}
+                onLocked={setTagsLocked}
             />
 
             <EmailSection doc={data} collection={collection} />

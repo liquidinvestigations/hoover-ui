@@ -1,7 +1,7 @@
 import React, { memo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Grid, MenuItem, Select, Typography } from '@material-ui/core'
-import { SIZE_OPTIONS } from '../constants'
+import { SIZE_OPTIONS } from '../../constants'
 
 const useStyles = makeStyles(theme => ({
     label: {
@@ -9,7 +9,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function SearchSize ({ size, changeSize }) {
+function Size ({ size, changeSize }) {
     const classes = useStyles()
     const handleSizeChange = event => changeSize(event.target.value)
 
@@ -29,4 +29,4 @@ function SearchSize ({ size, changeSize }) {
     )
 }
 
-export default memo(SearchSize)
+export default memo(Size)

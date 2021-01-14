@@ -1,7 +1,7 @@
 import React, { memo, useState } from 'react'
 import cn from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
-import { Collapse, Divider, Grid, IconButton, ListItem, Typography } from '@material-ui/core'
+import { Button, Collapse, Divider, Grid, IconButton, ListItem, Tooltip, Typography } from '@material-ui/core'
 import { ExpandMore } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
@@ -26,6 +26,11 @@ const useStyles = makeStyles(theme => ({
         padding: '1rem',
     },
 
+    toolbarButton: {
+        textTransform: 'none',
+        color: theme.palette.grey[600],
+    },
+
     sectionContent: {
         margin: '1rem',
         overflowWrap: 'break-word',
@@ -40,7 +45,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function Section({ title, children, defaultOpen = true, scrollX = false }) {
+function Section({ title, toolbarButtons, children, defaultOpen = true, scrollX = false }) {
     const classes = useStyles()
 
     const [open, setOpen] = useState(defaultOpen || false)
@@ -56,6 +61,22 @@ function Section({ title, children, defaultOpen = true, scrollX = false }) {
                             {title}
                         </Typography>
                     </Grid>
+
+                    {toolbarButtons && toolbarButtons.map(({tooltip, label, icon, ...props}, index) => (
+                        <Grid item key={index}>
+                            <Tooltip title={tooltip}>
+                                <Button
+                                    className={classes.toolbarButton}
+                                    color="default"
+                                    size="small"
+                                    component="a"
+                                    endIcon={icon}
+                                    {...props}>
+                                    {label}
+                                </Button>
+                            </Tooltip>
+                        </Grid>
+                    ))}
 
                     <Grid item>
                         <IconButton

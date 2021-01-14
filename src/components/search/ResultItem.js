@@ -3,9 +3,9 @@ import cn from 'classnames'
 import { DateTime } from 'luxon'
 import { makeStyles } from '@material-ui/core/styles'
 import { Box, Card, CardContent, CardHeader, Grid, IconButton, Tooltip, Typography } from '@material-ui/core'
-import { AttachFile, CloudDownloadOutlined } from '@material-ui/icons'
-import { makeUnsearchable, truncatePath } from '../utils'
-import { createDownloadUrl } from '../backend/api'
+import { AttachFile, CloudDownloadOutlined, Launch } from '@material-ui/icons'
+import { makeUnsearchable, truncatePath } from '../../utils'
+import { createDownloadUrl } from '../../backend/api'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -38,14 +38,17 @@ const useStyles = makeStyles(theme => ({
         fontSize: '.7rem',
         color: '#555',
     },
-    download: {
+    iconButton: {
+        marginRight: theme.spacing(0.3),
+    },
+    buttonLink: {
         lineHeight: 0,
     }
 }))
 
 const timeMs = () => new Date().getTime()
 
-function ResultItem({ hit, url, index, onPreview, isPreview, unsearchable }) {
+function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
     const classes = useStyles()
 
     const nodeRef = useRef()
@@ -121,15 +124,21 @@ function ResultItem({ hit, url, index, onPreview, isPreview, unsearchable }) {
                         )}
 
                         <Box>
-                            <Typography variant="caption">
-                                <Tooltip title="Download original file">
-                                    <IconButton size="small">
-                                        <a href={downloadUrl} className={classes.download}>
-                                            <CloudDownloadOutlined color="action" />
-                                        </a>
-                                    </IconButton>
-                                </Tooltip>
-                            </Typography>
+                            <Tooltip title="Open in new tab">
+                                <IconButton size="small" className={classes.iconButton}>
+                                    <a href={url} target="_blank" className={classes.buttonLink}>
+                                        <Launch color="action" />
+                                    </a>
+                                </IconButton>
+                            </Tooltip>
+
+                            <Tooltip title="Download original file">
+                                <IconButton size="small" className={classes.iconButton}>
+                                    <a href={downloadUrl} className={classes.buttonLink}>
+                                        <CloudDownloadOutlined color="action" />
+                                    </a>
+                                </IconButton>
+                            </Tooltip>
                         </Box>
                     </Grid>
                     <Grid item md={8} className={classes.text}>
