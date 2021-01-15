@@ -343,7 +343,13 @@ export default function Index({ collections, serverQuery }) {
                     </>
                 }
                 right={
-                    <Document docUrl={selectedDocUrl} data={selectedDocData} loading={previewLoading} />
+                    <Document
+                        docUrl={selectedDocUrl}
+                        data={selectedDocData}
+                        loading={previewLoading}
+                        onPrev={previewPreviousDoc}
+                        onNext={previewNextDoc}
+                    />
                 }
             >
                 <div className={classes.main}>
@@ -364,19 +370,17 @@ export default function Index({ collections, serverQuery }) {
                                 />
                             </form>
 
-                            <SearchQueryChips query={query.q} onQueryChange={handleSearch} />
-
                             <Grid container justify="space-between">
-                                <Grid item>
+                                <Grid item style={{ flex: 1 }}>
                                     <Typography variant="caption" className={classes.info}>
-                                        Enter to search, Shift+Enter for a new line.<br />
-                                        All lines are combined into a single search.<br />
+                                        Enter to search, Shift+Enter for a new line.
+                                        All lines are combined into a single search.
                                         Refine your search using {' '}
                                         <a href={SEARCH_GUIDE}>this handy guide</a>.
                                     </Typography>
                                 </Grid>
 
-                                <Grid item>
+                                <Grid item style={{ marginLeft: 20 }}>
                                     <Typography variant="caption">
                                         <Link href="/batch-search">
                                             <a>Batch search</a>
@@ -384,6 +388,8 @@ export default function Index({ collections, serverQuery }) {
                                     </Typography>
                                 </Grid>
                             </Grid>
+
+                            <SearchQueryChips query={query.q} onQueryChange={handleSearch} />
 
                             <Sorting
                                 order={order}
