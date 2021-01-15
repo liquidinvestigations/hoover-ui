@@ -2,30 +2,42 @@ import React, { memo, useEffect, useState } from 'react'
 import url from 'url'
 import { makeStyles } from '@material-ui/core/styles'
 import {
+    AccountTreeOutlined,
     CloudDownload,
+    CodeOutlined,
+    Delete,
     DeleteOutlined,
+    EmailOutlined,
     Error,
     ErrorOutline,
+    FolderOutlined,
     Launch,
+    LocalOfferOutlined,
+    NavigateBefore,
+    NavigateNext,
+    PageviewOutlined,
     Print,
-    RestoreFromTrash,
+    SettingsApplicationsOutlined,
     Star,
     StarOutline,
+    Subject,
     TextFields,
     Visibility,
     VisibilityOffOutlined
 } from '@material-ui/icons'
-import { IconButton, Toolbar, Tooltip } from '@material-ui/core'
+import { IconButton, Tab, Tabs, Toolbar, Tooltip } from '@material-ui/core'
 import { brown, green, grey, red } from '@material-ui/core/colors'
-import EmailSection from './EmailSection'
-import PreviewSection from './PreviewSection'
-import HTMLSection from './HTMLSection'
-import TextSection from './TextSection'
-import FilesSection from './FilesSection'
-import MetaSection from './MetaSection'
+import TabPanel from './TabPanel'
+import Email from './Email'
+import Preview, { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './Preview'
+import HTML from './HTML'
+import Text from './Text'
+import Files from './Files'
+import Meta from './Meta'
 import Loading from '../Loading'
-import TagsSection, { publicTags } from './TagsSection'
+import Tags, { publicTags } from './Tags'
 import { createDownloadUrl, createOcrUrl, createTag, deleteTag, tags as tagsAPI } from '../../backend/api'
+import { withStyles } from '@material-ui/styles'
 
 const useStyles = makeStyles(theme => ({
     toolbar: {
@@ -35,14 +47,54 @@ const useStyles = makeStyles(theme => ({
         borderBottomStyle: 'solid',
         justifyContent: 'space-between',
     },
+    toolbarIcons: {
+        marginRight: theme.spacing(1),
+        '&:last-child': {
+            marginRight: 0,
+        }
+    },
+    tabsRoot: {
+        color: theme.palette.primary.contrastText,
+        backgroundColor: theme.palette.primary.main,
+    },
+    tabsIndicator: {
+        top: 0,
+    },
+    lastIconOnLeft: {
+        marginRight: 'auto',
+    },
 }))
+
+const TabStyle = withStyles((theme) => ({
+    root: {
+        minWidth: 80,
+        '&:hover': {
+            opacity: 1,
+        },
+        '&$selected': {
+            color: theme.palette.text.primary,
+            backgroundColor: theme.palette.background.default,
+        },
+    },
+    wrapper: {
+        flexDirection: 'row',
+        '& > *:first-child': {
+            marginRight: 6,
+            marginBottom: '0 !important',
+        }
+    },
+    labelIcon: {
+        minHeight: 48,
+    },
+    selected: {},
+}))((props) => <Tab {...props} />)
 
 const parseCollection = url => {
     const [, collection] = url?.match(/(?:^|\/)doc\/(.+?)\//) || [];
     return collection;
 }
 
-function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMeta = true }) {
+function Document({ docUrl, data, loading, onPrev, onNext, fullPage, showToolbar = true }) {
     const classes = useStyles()
 
     let digestUrl = docUrl
@@ -66,6 +118,12 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
         digestUrl = null
         docRawUrl = null
     }
+
+    const [tab, setTab] = React.useState(0);
+
+    const handleTabChange = (event, newValue) => {
+        setTab(newValue);
+    };
 
     const [tags, setTags] = useState([])
     const [tagsLoading, setTagsLoading] = useState(false)
@@ -111,15 +169,6 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
         }
     }
 
-    if (!fullPage) {
-        headerLinks.push({
-            href: docUrl,
-            tooltip: 'Open in new tab',
-            icon: <Launch />,
-            target: '_blank',
-        })
-    }
-
     if (data.content.filetype !== 'folder') {
         const important = tags.find(tag => tag.tag === 'important')
         headerLinks.push({
@@ -129,6 +178,42 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
             disabled: tagsLocked,
             onClick: handleSpecialTagClick(important, 'important')
         })
+
+        const interesting = tags.find(tag => tag.tag === 'interesting')
+        headerLinks.push({
+            icon: interesting ? <Error /> : <ErrorOutline />,
+            style: { color: interesting ? green[500] : grey[600] },
+            tooltip: important ? 'Unmark interesting' : 'Mark interesting',
+            label: interesting ? 'interesting' : 'not interesting',
+            disabled: tagsLocked,
+            className: classes.lastIconOnLeft,
+            onClick: handleSpecialTagClick(interesting, 'interesting')
+        })
+
+        if (onPrev) {
+            headerLinks.push({
+                icon: <NavigateBefore />,
+                tooltip: 'Previous result',
+                onClick: onPrev
+            })
+        }
+
+        if (onNext) {
+            headerLinks.push({
+                icon: <NavigateNext />,
+                tooltip: 'Next result',
+                onClick: onNext
+            })
+        }
+
+        if (!fullPage) {
+            headerLinks.push({
+                href: docUrl,
+                tooltip: 'Open in new tab',
+                icon: <Launch />,
+                target: '_blank',
+            })
+        }
 
         headerLinks.push({
             href: `${docUrl}?print=true`,
@@ -144,17 +229,6 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
             target: fullPage ? null : '_blank',
         })
 
-        const interesting = tags.find(tag => tag.tag === 'interesting')
-        tagsLinks.push({
-            icon: interesting ? <Error /> : <ErrorOutline />,
-            style: { color: interesting ? green[500] : grey[600] },
-            tooltip: 'Mark this document with a public tag so others will see it. ' +
-                'You can exclude these documents by clicking on the "Public Tags" filter on the left.',
-            label: interesting ? 'interesting' : 'not interesting',
-            disabled: tagsLocked,
-            onClick: handleSpecialTagClick(interesting, 'interesting')
-        })
-
         const seen = tags.find(tag => tag.tag === 'seen')
         tagsLinks.push({
             icon: seen ? <Visibility /> : <VisibilityOffOutlined />,
@@ -167,7 +241,7 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
 
         const trash = tags.find(tag => tag.tag === 'trash')
         tagsLinks.push({
-            icon: trash ? <RestoreFromTrash /> : <DeleteOutlined />,
+            icon: trash ? <Delete /> : <DeleteOutlined />,
             style: { color: trash ? red[600] : grey[600] },
             tooltip: 'By default, documents with the tag "trash" will be excluded from searches. ' +
                 'You can override this by clicking on the "Private Tags" filter on the left.',
@@ -192,16 +266,32 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
         })
     )
 
+    let tabIndex = 0
+
+    const tabsClasses = {
+        root: classes.tabsRoot,
+        indicator: classes.tabsIndicator,
+    }
+    const tabClasses = {
+        root: classes.tabRoot,
+    }
+
+    const hasPreview = docRawUrl && data.content['content-type'] && (
+        data.content['content-type'] === 'application/pdf' ||
+        PREVIEWABLE_MIME_TYPE_SUFFEXES.some(x => data.content['content-type'].endsWith(x))
+    )
+
     return (
         <div>
             {headerLinks.length > 0 && showToolbar !== false && (
-                <Toolbar classes={{root: classes.toolbar}}>
+                <Toolbar variant="dense" classes={{root: classes.toolbar}}>
                     {headerLinks.map(({tooltip, icon, ...props}, index) => (
                         <Tooltip title={tooltip} key={index}>
                             <IconButton
                                 size="small"
-                                color="default"
                                 component="a"
+                                color="default"
+                                className={classes.toolbarIcons}
                                 {...props}>
                                 {icon}
                             </IconButton>
@@ -210,63 +300,125 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
                 </Toolbar>
             )}
 
-            <TagsSection
-                loading={tagsLoading}
-                digestUrl={digestUrl}
-                tags={tags}
-                onChanged={setTags}
-                toolbarButtons={tagsLinks}
-                locked={tagsLocked}
-                onLocked={setTagsLocked}
-            />
+            <Tabs
+                value={tab}
+                onChange={handleTabChange}
+                classes={tabsClasses}
+                variant="scrollable"
+                scrollButtons="auto"
+            >
+                {!!data.content.text && (
+                    <TabStyle icon={<Subject />} label="Text" classes={tabClasses} />
+                )}
 
-            <EmailSection doc={data} collection={collection} />
+                {hasPreview && (
+                    <TabStyle icon={<PageviewOutlined />} label="Preview" classes={tabClasses} />
+                )}
 
-            <PreviewSection
-                docTitle={data.content.filename}
-                type={data.content["content-type"]}
-                url={docRawUrl}
-            />
+                {data.content.filetype !== 'folder' && (
+                    <TabStyle icon={<LocalOfferOutlined />} label="Tags" classes={tabClasses} />
+                )}
 
-            <HTMLSection html={data.safe_html} />
+                {!!data.content && (
+                    <TabStyle icon={<SettingsApplicationsOutlined />} label="Meta" classes={tabClasses} />
+                )}
 
-            <TextSection
-                title="Text"
-                text={data.content.text}
-                fullPage={fullPage}
-            />
+                {data.content.filetype === 'email' && (
+                    <TabStyle icon={<EmailOutlined />} label="Email" classes={tabClasses} />
+                )}
 
-            <TextSection
-                title="Headers &amp; Parts"
-                text={data.content.tree}
-                fullPage={fullPage}
-            />
+                {!!data.safe_html && (
+                    <TabStyle icon={<CodeOutlined />} label="HTML" classes={tabClasses} />
+                )}
+
+                {!!data.content.tree && (
+                    <TabStyle icon={<AccountTreeOutlined />} label="Headers &amp; Parts" classes={tabClasses} />
+                )}
+
+                {ocrData.map(({tag}) => (
+                    <TabStyle icon={<TextFields />} label={"OCR " + tag} classes={tabClasses} key={tag} />
+                ))}
+
+                {!!data.children?.length && (
+                    <TabStyle icon={<FolderOutlined />} label="Files" classes={tabClasses} />
+                )}
+            </Tabs>
+
+            {!!data.content.text && (
+                <TabPanel value={tab} index={tabIndex++}>
+                    <Text content={data.content.text} />
+                </TabPanel>
+            )}
+
+            {hasPreview && (
+                <TabPanel value={tab} index={tabIndex++}>
+                    <Preview
+                        docTitle={data.content.filename}
+                        type={data.content["content-type"]}
+                        url={docRawUrl}
+                    />
+                </TabPanel>
+            )}
+
+            {data.content.filetype !== 'folder' && (
+                <TabPanel value={tab} index={tabIndex++}>
+                    <Tags
+                        loading={tagsLoading}
+                        digestUrl={digestUrl}
+                        tags={tags}
+                        onChanged={setTags}
+                        toolbarButtons={tagsLinks}
+                        locked={tagsLocked}
+                        onLocked={setTagsLocked}
+                    />
+                </TabPanel>
+            )}
+
+            {!!data.content && (
+                <TabPanel value={tab} index={tabIndex++}>
+                    <Meta
+                        doc={data}
+                        collection={collection}
+                        baseUrl={collectionBaseUrl}
+                    />
+                </TabPanel>
+            )}
+
+            {data.content.filetype === 'email' && (
+                <TabPanel value={tab} index={tabIndex++}>
+                    <Email doc={data} collection={collection} />
+                </TabPanel>
+            )}
+
+            {!!data.safe_html && (
+                <TabPanel value={tab} index={tabIndex++}>
+                    <HTML html={data.safe_html} />
+                </TabPanel>
+            )}
+
+            {!!data.content.tree && (
+                <TabPanel value={tab} index={tabIndex++}>
+                    <Text content={data.content.tree} />
+                </TabPanel>
+            )}
 
             {ocrData.map(({tag, text}) => (
-                <TextSection
-                    key={tag}
-                    title={"OCR " + tag}
-                    text={text}
-                    fullPage={fullPage}
-                    omitIfEmpty={false}
-                />
+                <TabPanel value={tab} index={tabIndex++} key={tag}>
+                    <Text content={text} />
+                </TabPanel>
             ))}
 
-            <FilesSection
-                data={data.children || []}
-                page={data.children_page}
-                hasNextPage={data.children_has_next_page}
-                fullPage={fullPage}
-                docUrl={docUrl}
-                baseUrl={collectionBaseUrl}
-            />
-
-            {showMeta && (
-                <MetaSection
-                    doc={data}
-                    collection={collection}
-                    baseUrl={collectionBaseUrl}
-                />
+            {!!data.children?.length && (
+                <TabPanel value={tab} index={tabIndex++}>
+                    <Files
+                        data={data.children}
+                        page={data.children_page}
+                        hasNextPage={data.children_has_next_page}
+                        fullPage={fullPage}
+                        docUrl={docUrl}
+                        baseUrl={collectionBaseUrl}
+                    />
+                </TabPanel>
             )}
         </div>
     )

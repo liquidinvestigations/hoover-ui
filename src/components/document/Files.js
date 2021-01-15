@@ -1,13 +1,12 @@
 import React, { memo, useState } from 'react'
 import Link from 'next/link'
 import url from 'url'
-import { Table, TableBody, TableCell, TableRow } from '@material-ui/core'
+import { Box, Table, TableBody, TableCell, TableRow } from '@material-ui/core'
 import { CloudDownload as IconCloudDownload } from '@material-ui/icons'
-import Section from './Section'
 import Loading from '../Loading'
 import { createDownloadUrl, doc as docAPI } from '../../backend/api'
 
-function FilesSection({ data, page, hasNextPage, baseUrl, docUrl, fullPage }) {
+function Files({ data, page, hasNextPage, baseUrl, docUrl, fullPage }) {
     const [files, setFiles] = useState(data)
     const [currentPage, setCurrentPage] = useState(page)
     const [currentHasNextPage, setCurrentHasNextPage] = useState(hasNextPage)
@@ -52,27 +51,25 @@ function FilesSection({ data, page, hasNextPage, baseUrl, docUrl, fullPage }) {
     })
 
     return (
-        filesRows.length > 0 && (
-            <Section title="Files" scrollX={true}>
-                <Table>
-                    <TableBody>
-                        {filesRows}
-                        {currentHasNextPage &&
-                            <TableRow>
-                                <TableCell colSpan={4} style={{borderBottom: 'none'}}>
-                                    {isFetchingChildrenPage ?
-                                        <Loading/>
-                                        :
-                                        <a href="#" onClick={loadMore}>load more...</a>
-                                    }
-                                </TableCell>
-                            </TableRow>
-                        }
-                    </TableBody>
-                </Table>
-            </Section>
-        )
+        <Box style={{ overflowX: 'auto' }}>
+            <Table>
+                <TableBody>
+                    {filesRows}
+                    {currentHasNextPage &&
+                    <TableRow>
+                        <TableCell colSpan={4} style={{borderBottom: 'none'}}>
+                            {isFetchingChildrenPage ?
+                                <Loading/>
+                                :
+                                <a href="#" onClick={loadMore}>load more...</a>
+                            }
+                        </TableCell>
+                    </TableRow>
+                    }
+                </TableBody>
+            </Table>
+        </Box>
     )
 }
 
-export default memo(FilesSection)
+export default memo(Files)

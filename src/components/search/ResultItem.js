@@ -30,16 +30,35 @@ import { brown, green, red } from '@material-ui/core/colors'
 import { UserContext } from '../../../pages/_app'
 import { getIconReactComponent, humanFileSize, makeUnsearchable, truncatePath } from '../../utils'
 import { createDownloadUrl } from '../../backend/api'
-import { specialTags } from '../document/TagsSection'
+import { specialTags } from '../document/Tags'
 
 const useStyles = makeStyles(theme => ({
     card: {
         cursor: 'pointer',
+        position: 'relative',
         marginTop: theme.spacing(1),
         borderLeft: '3px solid transparent',
         transition: theme.transitions.create('border', {
             duration: theme.transitions.duration.short,
         }),
+    },
+    cardContentRoot: {
+        '&:last-child': {
+            paddingBottom: 32,
+        },
+    },
+    cardHeaderAction: {
+        left: 16,
+        bottom: 4,
+        position: 'absolute',
+    },
+    cardHeaderContent: {
+        width: '100%',
+    },
+    title: {
+        display: 'block',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
     },
     selected: {
         borderLeft: `3px solid ${theme.palette.secondary.main}`,
@@ -63,10 +82,14 @@ const useStyles = makeStyles(theme => ({
         fontSize: '.7rem',
         color: '#555',
     },
-    icons: {
-        paddingRight: theme.spacing(1),
+    actionIcon: {
+        fontSize: 18,
+        color: theme.palette.grey[600],
     },
-    iconButton: {
+    infoIcon: {
+        fontSize: 18,
+        verticalAlign: 'sub',
+        color: theme.palette.grey[600],
         marginRight: theme.spacing(0.3),
     },
     buttonLink: {
@@ -104,6 +127,14 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
     const highlights = hit.highlight || {}
     const downloadUrl = createDownloadUrl(url, fields.filename)
 
+    const cardHeaderClasses = {
+        action: classes.cardHeaderAction,
+        content: classes.cardHeaderContent,
+    }
+    const cardContentClasses = {
+        root: classes.cardContentRoot
+    }
+
     return (
         <Card
             ref={nodeRef}
@@ -113,15 +144,113 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
             onMouseUp={handleMouseUp}
         >
             <CardHeader
+                classes={cardHeaderClasses}
                 title={
-                    <span>
+                    <span className={classes.title}>
                         {index}. {fields.filename}
                     </span>
                 }
-                action={!!fields.attachments && <AttachFile style={{ fontSize: 18 }} />}
-                subheader={truncatePath(fields.path)}
+                subheader={
+                    <span className={classes.title}>
+                        {truncatePath(fields.path)}
+                    </span>
+                }
+                action={
+                    <>
+                        <Grid container alignItems="center">
+                            <Grid item>
+                                <Tooltip title="Download original file">
+                                    <IconButton size="small">
+                                        <a href={downloadUrl} className={classes.buttonLink}>
+                                            <CloudDownloadOutlined className={classes.actionIcon} />
+                                        </a>
+                                    </IconButton>
+                                </Tooltip>
+                            </Grid>
+
+                            <Grid item>
+                                <Tooltip title="Open in new tab">
+                                    <IconButton size="small" style={{ marginRight: 15 }}>
+                                        <a href={url} target="_blank" className={classes.buttonLink}>
+                                            <Launch className={classes.actionIcon} />
+                                        </a>
+                                    </IconButton>
+                                </Tooltip>
+                            </Grid>
+
+                            {fields[`priv-tags.${whoAmI.username}`]?.includes('important') && (
+                                <Grid item>
+                                    <Tooltip placement="top" title="important">
+                                        <Star className={classes.infoIcon} style={{ color: '#ffb400' }} />
+                                    </Tooltip>
+                                </Grid>
+                            )}
+
+                            {fields.tags?.includes('interesting') && (
+                                <Grid item>
+                                    <Tooltip placement="top" title="interesting">
+                                        <Error className={classes.infoIcon} style={{ color: green[500] }} />
+                                    </Tooltip>
+                                </Grid>
+                            )}
+
+                            {fields[`priv-tags.${whoAmI.username}`]?.includes('seen') && (
+                                <Grid item>
+                                    <Tooltip placement="top" title="seen">
+                                        <Visibility className={classes.infoIcon} style={{ color: brown[500] }} />
+                                    </Tooltip>
+                                </Grid>
+                            )}
+
+                            {fields[`priv-tags.${whoAmI.username}`]?.includes('trash') && (
+                                <Grid item>
+                                    <Tooltip placement="top" title="trashed">
+                                        <Delete className={classes.infoIcon} style={{ color: red[600] }} />
+                                    </Tooltip>
+                                </Grid>
+                            )}
+
+                            {fields.ocr && (
+                                <Grid item>
+                                    <Tooltip placement="top" title="OCR">
+                                        <TextFields className={classes.infoIcon} color="action" />
+                                    </Tooltip>
+                                </Grid>
+                            )}
+
+                            {fields.pgp && (
+                                <Grid item>
+                                    <Tooltip placement="top" title="encrypted">
+                                        <Lock className={classes.infoIcon} color="action" />
+                                    </Tooltip>
+                                </Grid>
+                            )}
+
+                            <Grid item>
+                                <Tooltip placement="top" title={fields['content-type']}>
+                                    <Box>
+                                        <SvgIcon
+                                            className={classes.infoIcon}
+                                            component={getIconReactComponent(fields.filetype)}
+                                        />
+                                    </Box>
+                                </Tooltip>
+                            </Grid>
+
+                            {!!fields.attachments && (
+                                <Grid item>
+                                    <Tooltip placement="top" title="has attachment(s)">
+                                        <Box>
+                                            <AttachFile className={classes.actionIcon} />
+                                        </Box>
+                                    </Tooltip>
+                                </Grid>
+                            )}
+                        </Grid>
+                    </>
+                }
             />
-            <CardContent>
+            <CardContent classes={cardContentClasses}>
                 <Grid container alignItems="flex-end">
                     <Grid item md={4}>
                         {!!fields['word-count'] && (
@@ -161,16 +290,16 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
                             </Box>
                         )}
 
-                        {fields.tags?.filter(tag => !specialTags.includes(tag)).length > 0 &&
+                        {fields.tags?.filter(tag => !specialTags.includes(tag)).length > 0 && (
                             <Box>
                                 <Typography variant="caption">
                                     <strong>Public tags:</strong>{' '}
                                     {fields.tags.filter(tag => !specialTags.includes(tag)).join(', ')}
                                 </Typography>
                             </Box>
-                        }
+                        )}
 
-                        {fields[`priv-tags.${whoAmI.username}`]?.filter(tag => !specialTags.includes(tag)).length > 0 &&
+                        {fields[`priv-tags.${whoAmI.username}`]?.filter(tag => !specialTags.includes(tag)).length > 0 && (
                             <Box>
                                 <Typography variant="caption">
                                     <strong>Private tags:</strong>{' '}
@@ -181,85 +310,7 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
                                     }
                                 </Typography>
                             </Box>
-                        }
-
-                        <Grid container className={classes.icons}>
-                            <Grid item className={classes.iconButton}>
-                                <Tooltip title="Open in new tab">
-                                    <IconButton size="small">
-                                        <a href={url} target="_blank" className={classes.buttonLink}>
-                                            <Launch color="action" />
-                                        </a>
-                                    </IconButton>
-                                </Tooltip>
-                            </Grid>
-
-                            <Grid item className={classes.iconButton} style={{ flex: 1 }}>
-                                <Tooltip title="Download original file">
-                                    <IconButton size="small">
-                                        <a href={downloadUrl} className={classes.buttonLink}>
-                                            <CloudDownloadOutlined color="action" />
-                                        </a>
-                                    </IconButton>
-                                </Tooltip>
-                            </Grid>
-
-                            <Grid item className={classes.iconButton}>
-                                <Tooltip title={fields['content-type']}>
-                                    <Box>
-                                        <SvgIcon component={getIconReactComponent(fields.filetype)} color="action" />
-                                    </Box>
-                                </Tooltip>
-                            </Grid>
-
-                            {fields[`priv-tags.${whoAmI.username}`]?.includes('important') &&
-                                <Grid item className={classes.iconButton}>
-                                    <Tooltip title="important">
-                                        <Star style={{ color: '#ffb400' }} />
-                                    </Tooltip>
-                                </Grid>
-                            }
-
-                            {fields.tags?.includes('interesting') &&
-                                <Grid item className={classes.iconButton}>
-                                    <Tooltip title="interesting">
-                                        <Error style={{ color: green[500] }} />
-                                    </Tooltip>
-                                </Grid>
-                            }
-
-                            {fields[`priv-tags.${whoAmI.username}`]?.includes('seen') &&
-                                <Grid item className={classes.iconButton}>
-                                    <Tooltip title="seen">
-                                        <Visibility style={{ color: brown[500] }} />
-                                    </Tooltip>
-                                </Grid>
-                            }
-
-                            {fields[`priv-tags.${whoAmI.username}`]?.includes('trash') &&
-                                <Grid item className={classes.iconButton}>
-                                    <Tooltip title="trash">
-                                        <Delete style={{ color: red[600] }} />
-                                    </Tooltip>
-                                </Grid>
-                            }
-
-                            {fields.ocr &&
-                                <Grid item className={classes.iconButton}>
-                                    <Tooltip title="OCR">
-                                        <TextFields color="action" />
-                                    </Tooltip>
-                                </Grid>
-                            }
-
-                            {fields.pgp &&
-                                <Grid item className={classes.iconButton}>
-                                    <Tooltip title="encrypted">
-                                        <Lock color="action" />
-                                    </Tooltip>
-                                </Grid>
-                            }
-                        </Grid>
+                        )}
                     </Grid>
                     <Grid item md={8} className={classes.text}>
                         {Object.entries(highlights).map(([key, highlight]) =>

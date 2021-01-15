@@ -37,12 +37,12 @@ function AggregationFilter({ field, query, queryField, aggregations, disabled, o
 
     const handleChange = value => () => {
         const selection = new Set(selected || [])
-        const excludeValue = `!${value}`
+        const excludeValue = `~${value}`
 
         if (selection.has(value)) {
             selection.delete(value)
             if (triState) {
-                selection.add(`!${value}`)
+                selection.add(`~${value}`)
             }
         } else if (selection.has(excludeValue)) {
             selection.delete(excludeValue)
@@ -63,7 +63,7 @@ function AggregationFilter({ field, query, queryField, aggregations, disabled, o
         const label = bucketLabel ? bucketLabel(bucket) : bucket.key
         const subLabel = bucketSubLabel ? bucketSubLabel(bucket) : null
         const value = bucketValue ? bucketValue(bucket) : bucket.key
-        const checked = selected?.includes(value) || selected?.includes(`!${value}`) || false
+        const checked = selected?.includes(value) || selected?.includes(`~${value}`) || false
 
         return (
             <ListItem
@@ -79,7 +79,7 @@ function AggregationFilter({ field, query, queryField, aggregations, disabled, o
                     disableRipple
                     value={value}
                     checked={checked}
-                    indeterminate={triState && selected?.includes(`!${value}`)}
+                    indeterminate={triState && selected?.includes(`~${value}`)}
                     classes={{ root: classes.checkbox }}
                     disabled={disabled || !bucket.doc_count}
                     onChange={handleChange(value)}

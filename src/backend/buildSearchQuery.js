@@ -43,8 +43,8 @@ const buildSortQuery = order => order?.reverse().map(([field, direction = 'asc']
 ) || []
 
 const buildTermsField = (field, terms, page = 1, size = DEFAULT_FACET_SIZE) => {
-    const includeTerms = terms?.filter(term => !term.startsWith('!'))
-    const excludeTerms = terms?.filter(term => term.startsWith('!')).map(term => term.substring(1))
+    const includeTerms = terms?.filter(term => !term.startsWith('~'))
+    const excludeTerms = terms?.filter(term => term.startsWith('~')).map(term => term.substring(1))
     return {
         field,
         aggregation: {

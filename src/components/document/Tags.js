@@ -5,7 +5,6 @@ import { Box, Button, ButtonGroup, Chip, Grid, IconButton, Tooltip, Typography }
 import { Lock, LockOpen } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles'
 import { blue, brown, green, red } from '@material-ui/core/colors'
-import Section from './Section'
 import Loading from '../Loading'
 import { UserContext } from '../../../pages/_app'
 import { createTag, deleteTag, updateTag } from '../../backend/api'
@@ -13,9 +12,15 @@ import { createTag, deleteTag, updateTag } from '../../backend/api'
 export const specialTags = ['important', 'seen', 'trash', 'interesting']
 export const publicTags = ['interesting']
 
-const onlyAlphanumericRegex = /[^a-z0-9]/gi
+const onlyAlphanumericRegex = /[^a-z0-9_!@#$%^&*()-=+:,./?]/gi
 
 const useStyles = makeStyles(theme => ({
+    toolbarButtons: {
+        marginBottom: theme.spacing(3),
+    },
+    toolbarButton: {
+        textTransform: 'none',
+    },
     buttons: {
         marginTop: theme.spacing(1),
     },
@@ -47,7 +52,7 @@ const getChipColor = chip => {
     }
 }
 
-function TagsSection({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onLocked }) {
+function Tags({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onLocked }) {
     const classes = useStyles()
     const whoAmI = useContext(UserContext)
 
@@ -183,56 +188,72 @@ function TagsSection({ loading, digestUrl, tags, onChanged, toolbarButtons, lock
     )
 
     return (
-        <Section title="Tags" toolbarButtons={toolbarButtons}>
-            {loading ? <Loading /> :
-                <>
-                    <ChipInput
-                        value={tags.filter(tag => tag.user === whoAmI.username)}
-                        onAdd={handleTagAdd}
-                        onDelete={handleTagDelete}
-                        disabled={locked}
-                        chipRenderer={renderChip}
-                        newChipKeys={['Enter', ' ']}
-                        newChipKeyCodes={[13, 32]}
-                        inputValue={inputValue}
-                        onUpdateInput={handleTagInputUpdate}
-                        placeholder="no tags, start typing to add"
-                        fullWidth
-                    />
+        loading ? <Loading /> :
+            <>
+                <ButtonGroup className={classes.toolbarButtons}>
+                    {toolbarButtons && toolbarButtons.map(({tooltip, label, icon, ...props}, index) => (
+                        <Tooltip title={tooltip} key={index}>
+                            <Button
+                                className={classes.toolbarButton}
+                                color="default"
+                                size="small"
+                                component="a"
+                                endIcon={icon}
+                                {...props}>
+                                {label}
+                            </Button>
+                        </Tooltip>
+                    ))}
+                </ButtonGroup>
 
-                    <Grid container className={classes.buttons} justify="flex-end">
-                        <Grid item>
-                            <ButtonGroup size="small" color="primary">
-                                <Button onClick={handleButtonClick(false)}>Private</Button>
-                                <Button onClick={handleButtonClick(true)}>Public</Button>
-                            </ButtonGroup>
-                        </Grid>
+                <ChipInput
+                    value={tags.filter(tag => tag.user === whoAmI.username)}
+                    onAdd={handleTagAdd}
+                    onDelete={handleTagDelete}
+                    disabled={locked}
+                    chipRenderer={renderChip}
+                    newChipKeys={['Enter', ' ']}
+                    newChipKeyCodes={[13, 32]}
+                    inputValue={inputValue}
+                    onUpdateInput={handleTagInputUpdate}
+                    placeholder="no tags, start typing to add"
+                    fullWidth
+                />
+
+                <Grid container className={classes.buttons} justify="flex-end">
+                    <Grid item>
+                        <ButtonGroup size="small" color="primary">
+                            <Button onClick={handleButtonClick(false)}>Private</Button>
+                            <Button onClick={handleButtonClick(true)}>Public</Button>
+                        </ButtonGroup>
                     </Grid>
+                </Grid>
 
-                    <Typography variant="caption" className={classes.info}>
-                        Changes to tags may take a minute to appear in search.
-                    </Typography>
+                <Typography variant="caption" className={classes.info}>
+                    Tags are made of lowercase ASCII letters, digits, and symbols:{' '}
+                    <code>_!@#$%^&*()-=+:,./?</code>.<br />
+                    Changes to tags may take a minute to appear in search.<br />
+                    Tags must be matched exactly when searching.
+                </Typography>
 
 
-                    {otherUsersTags.map(([user, tags], index) =>
-                        <Box key={index} my={3} pb={0.7} className={classes.otherTags}>
-                            <Typography variant="subtitle2" className={classes.otherTagsInfo}>
-                                Public tags from <i>{user}</i>:
-                            </Typography>
+                {otherUsersTags.map(([user, tags], index) =>
+                    <Box key={index} my={3} pb={0.7} className={classes.otherTags}>
+                        <Typography variant="subtitle2" className={classes.otherTagsInfo}>
+                            Public tags from <i>{user}</i>:
+                        </Typography>
 
-                            <Grid container>
-                                {tags.map((chip, key) =>
-                                    <Grid item>
-                                        {renderChip({chip}, key)}
-                                    </Grid>
-                                )}
-                            </Grid>
-                        </Box>
-                    )}
-                </>
-            }
-        </Section>
+                        <Grid container>
+                            {tags.map((chip, key) =>
+                                <Grid item>
+                                    {renderChip({chip}, key)}
+                                </Grid>
+                            )}
+                        </Grid>
+                    </Box>
+                )}
+            </>
     )
 }
 
-export default memo(TagsSection)
+export default memo(Tags)

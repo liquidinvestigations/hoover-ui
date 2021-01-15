@@ -101,9 +101,8 @@ export default function Doc() {
             docUrl={pathname}
             data={data}
             loading={loading}
-            fullPage
-            showMeta
             showToolbar={!printMode}
+            fullPage
         />
     )
 
