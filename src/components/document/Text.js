@@ -11,7 +11,7 @@ function Text({ content }) {
     const classes = useStyles()
 
     return !content ?
-        <i> (empty) </i> :
+        <i>No text</i> :
         <pre className={classes.preWrap}>{content.trim()}</pre>
 }
 

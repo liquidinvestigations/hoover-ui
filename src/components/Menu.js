@@ -8,6 +8,13 @@ function Menu() {
     const router = useRouter()
     const whoAmI = useContext(UserContext)
 
+    const { query } = router
+    const printMode = query.print && query.print !== 'false'
+
+    if (printMode) {
+        return null
+    }
+
     const links = () => ([{
             name: 'search',
             url: '/',

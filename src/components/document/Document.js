@@ -1,4 +1,5 @@
 import React, { memo, useEffect, useState } from 'react'
+import Link from 'next/link'
 import url from 'url'
 import { makeStyles } from '@material-ui/core/styles'
 import {
@@ -25,8 +26,9 @@ import {
     Visibility,
     VisibilityOffOutlined
 } from '@material-ui/icons'
-import { Chip, Grid, IconButton, Tab, Tabs, Toolbar, Tooltip, Typography } from '@material-ui/core'
+import { Box, Chip, Grid, IconButton, Tab, Tabs, Toolbar, Tooltip, Typography } from '@material-ui/core'
 import { brown, green, grey, red } from '@material-ui/core/colors'
+import StyledTab from './StyledTab'
 import TabPanel from './TabPanel'
 import Email from './Email'
 import Preview, { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './Preview'
@@ -37,7 +39,6 @@ import Meta from './Meta'
 import Loading from '../Loading'
 import Tags, { publicTags, specialTags } from './Tags'
 import { createDownloadUrl, createOcrUrl, createTag, deleteTag, tags as tagsAPI } from '../../backend/api'
-import { withStyles } from '@material-ui/styles'
 
 const useStyles = makeStyles(theme => ({
     toolbar: {
@@ -62,10 +63,10 @@ const useStyles = makeStyles(theme => ({
         backgroundColor: theme.palette.primary.main,
         padding: theme.spacing(1),
         paddingTop: theme.spacing(0.5),
-        paddingBottom: theme.spacing(2),
     },
     tag: {
         marginRight: theme.spacing(1),
+        marginBottom: theme.spacing(1),
     },
     tabsRoot: {
         color: theme.palette.primary.contrastText,
@@ -77,38 +78,22 @@ const useStyles = makeStyles(theme => ({
     lastIconOnLeft: {
         marginRight: 'auto',
     },
+    printTitle: {
+        margin: theme.spacing(2),
+    },
+    printBackLink: {
+        float: 'right',
+        margin: theme.spacing(1),
+        color: theme.palette.primary.contrastText,
+    }
 }))
-
-const TabStyle = withStyles((theme) => ({
-    root: {
-        minWidth: 80,
-        '&:hover': {
-            opacity: 1,
-        },
-        '&$selected': {
-            color: theme.palette.text.primary,
-            backgroundColor: theme.palette.background.default,
-        },
-    },
-    wrapper: {
-        flexDirection: 'row',
-        '& > *:first-child': {
-            marginRight: 6,
-            marginBottom: '0 !important',
-        }
-    },
-    labelIcon: {
-        minHeight: 48,
-    },
-    selected: {},
-}))((props) => <Tab {...props} />)
 
 const parseCollection = url => {
     const [, collection] = url?.match(/(?:^|\/)doc\/(.+?)\//) || [];
     return collection;
 }
 
-function Document({ docUrl, data, loading, onPrev, onNext, fullPage, showToolbar = true }) {
+function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }) {
     const classes = useStyles()
 
     let digestUrl = docUrl
@@ -140,7 +125,7 @@ function Document({ docUrl, data, loading, onPrev, onNext, fullPage, showToolbar
     };
 
     const [tags, setTags] = useState([])
-    const [tagsLoading, setTagsLoading] = useState(false)
+    const [tagsLoading, setTagsLoading] = useState(true)
     const [tagsLocked, setTagsLocked] = useState(false)
 
     useEffect(() => {
@@ -154,6 +139,12 @@ function Document({ docUrl, data, loading, onPrev, onNext, fullPage, showToolbar
             })
         }
     }, [digestUrl])
+
+    useEffect(() => {
+        if (printMode && !loading && !tagsLoading) {
+            window.setTimeout(window.print)
+        }
+    }, [printMode, loading, tagsLoading])
 
     if (loading) {
         return <Loading />
@@ -184,24 +175,24 @@ function Document({ docUrl, data, loading, onPrev, onNext, fullPage, showToolbar
     }
 
     if (data.content.filetype !== 'folder') {
-        const important = tags.find(tag => tag.tag === 'important')
+        const starred = tags.find(tag => tag.tag === 'starred')
         headerLinks.push({
-            icon: important ? <Star /> : <StarOutline />,
-            style: { color: important ? '#ffb400' : grey[600] },
-            tooltip: important ? 'Unmark important' : 'Mark important',
+            icon: starred ? <Star /> : <StarOutline />,
+            style: { color: starred ? '#ffb400' : grey[600] },
+            tooltip: starred ? 'Unmark starred' : 'Mark starred',
             disabled: tagsLocked,
-            onClick: handleSpecialTagClick(important, 'important')
+            onClick: handleSpecialTagClick(starred, 'starred')
         })
 
-        const interesting = tags.find(tag => tag.tag === 'interesting')
+        const recommended = tags.find(tag => tag.tag === 'recommended')
         headerLinks.push({
-            icon: interesting ? <Error /> : <ErrorOutline />,
-            style: { color: interesting ? green[500] : grey[600] },
-            tooltip: important ? 'Unmark interesting' : 'Mark interesting',
-            label: interesting ? 'interesting' : 'not interesting',
+            icon: recommended ? <Error /> : <ErrorOutline />,
+            style: { color: recommended ? green[500] : grey[600] },
+            tooltip: recommended ? 'Unmark recommended' : 'Mark recommended',
+            label: recommended ? 'recommended' : 'not recommended',
             disabled: tagsLocked,
             className: classes.lastIconOnLeft,
-            onClick: handleSpecialTagClick(interesting, 'interesting')
+            onClick: handleSpecialTagClick(recommended, 'recommended')
         })
 
         if (onPrev) {
@@ -280,8 +271,6 @@ function Document({ docUrl, data, loading, onPrev, onNext, fullPage, showToolbar
         })
     )
 
-    const headerTags = tags.filter(({ tag }) => !specialTags.includes(tag))
-
     let tabIndex = 0
 
     const tabsClasses = {
@@ -297,9 +286,80 @@ function Document({ docUrl, data, loading, onPrev, onNext, fullPage, showToolbar
         PREVIEWABLE_MIME_TYPE_SUFFEXES.some(x => data.content['content-type'].endsWith(x))
     )
 
+    const tabsData = [{
+        name: 'Text',
+        icon: <Subject />,
+        visible: true,
+        content: <Text content={data.content.text} />,
+    },{
+        name: 'Preview',
+        icon: <PageviewOutlined />,
+        visible: hasPreview,
+        content: <Preview
+            docTitle={data.content.filename}
+            type={data.content['content-type']}
+            url={docRawUrl}
+        />,
+    },{
+        name: 'Tags',
+        icon: <LocalOfferOutlined />,
+        visible: data.content.filetype !== 'folder',
+        content: <Tags
+            loading={tagsLoading}
+            digestUrl={digestUrl}
+            tags={tags}
+            onChanged={setTags}
+            toolbarButtons={tagsLinks}
+            locked={tagsLocked}
+            onLocked={setTagsLocked}
+            printMode={printMode}
+        />,
+    },{
+        name: 'Meta',
+        icon: <SettingsApplicationsOutlined />,
+        visible: true,
+        content: <Meta
+            doc={data}
+            collection={collection}
+            baseUrl={collectionBaseUrl}
+            printMode={printMode}
+        />,
+    },{
+        name: 'Email',
+        icon: <EmailOutlined />,
+        visible: data.content.filetype === 'email',
+        content: <Email
+            doc={data}
+            collection={collection}
+            printMode={printMode}
+        />,
+    },{
+        name: 'HTML',
+        icon: <CodeOutlined />,
+        visible: !!data.safe_html,
+        content: <HTML html={data.safe_html} />,
+    },{
+        name: 'Headers & Parts',
+        icon: <AccountTreeOutlined />,
+        visible: !!data.content.tree,
+        content: <Text content={data.content.tree} />,
+    },{
+        name: 'Files',
+        icon: <FolderOutlined />,
+        visible: !!data.children?.length,
+        content: <Files
+            data={data.children}
+            page={data.children_page}
+            hasNextPage={data.children_has_next_page}
+            fullPage={fullPage}
+            docUrl={docUrl}
+            baseUrl={collectionBaseUrl}
+        />
+    }]
+
     return (
         <div>
-            {headerLinks.length > 0 && showToolbar !== false && (
+            {headerLinks.length > 0 && !printMode && (
                 <Toolbar variant="dense" classes={{root: classes.toolbar}}>
                     {headerLinks.map(({tooltip, icon, ...props}, index) => (
                         <Tooltip title={tooltip} key={index}>
@@ -316,138 +376,58 @@ function Document({ docUrl, data, loading, onPrev, onNext, fullPage, showToolbar
                 </Toolbar>
             )}
 
+            {printMode && (
+                <Link href={docUrl}>
+                    <a className={classes.printBackLink}>← Back to <b>normal view</b></a>
+                </Link>
+            )}
+
             <Typography variant="h5" className={classes.filename}>
                 {data.content.filename}
             </Typography>
 
-            {!!headerTags.length && <Grid container className={classes.tags}>
-                {headerTags.map(({ tag }) => (
-                    <Grid item className={classes.tag}>
-                        <Chip size="small" label={tag} />
-                    </Grid>
-                ))}
-            </Grid>}
-
-            <Tabs
-                value={tab}
-                onChange={handleTabChange}
-                classes={tabsClasses}
-                variant="scrollable"
-                scrollButtons="auto"
-            >
-                {!!data.content.text && (
-                    <TabStyle icon={<Subject />} label="Text" classes={tabClasses} />
-                )}
-
-                {hasPreview && (
-                    <TabStyle icon={<PageviewOutlined />} label="Preview" classes={tabClasses} />
-                )}
-
-                {data.content.filetype !== 'folder' && (
-                    <TabStyle icon={<LocalOfferOutlined />} label="Tags" classes={tabClasses} />
-                )}
-
-                {!!data.content && (
-                    <TabStyle icon={<SettingsApplicationsOutlined />} label="Meta" classes={tabClasses} />
-                )}
-
-                {data.content.filetype === 'email' && (
-                    <TabStyle icon={<EmailOutlined />} label="Email" classes={tabClasses} />
-                )}
-
-                {!!data.safe_html && (
-                    <TabStyle icon={<CodeOutlined />} label="HTML" classes={tabClasses} />
-                )}
-
-                {!!data.content.tree && (
-                    <TabStyle icon={<AccountTreeOutlined />} label="Headers &amp; Parts" classes={tabClasses} />
-                )}
-
-                {ocrData.map(({tag}) => (
-                    <TabStyle icon={<TextFields />} label={"OCR " + tag} classes={tabClasses} key={tag} />
-                ))}
-
-                {!!data.children?.length && (
-                    <TabStyle icon={<FolderOutlined />} label="Files" classes={tabClasses} />
-                )}
-            </Tabs>
-
-            {!!data.content.text && (
-                <TabPanel value={tab} index={tabIndex++}>
-                    <Text content={data.content.text} />
-                </TabPanel>
+            {!!tags.length && (
+                <Grid container className={classes.tags}>
+                    {tags.map(({ tag }, index) => (
+                        <Grid item className={classes.tag} key={index}>
+                            <Chip size="small" label={tag} />
+                        </Grid>
+                    ))}
+                </Grid>
             )}
 
-            {hasPreview && (
-                <TabPanel value={tab} index={tabIndex++}>
-                    <Preview
-                        docTitle={data.content.filename}
-                        type={data.content["content-type"]}
-                        url={docRawUrl}
-                    />
-                </TabPanel>
+            {!printMode && (
+                <Tabs
+                    value={tab}
+                    onChange={handleTabChange}
+                    classes={tabsClasses}
+                    variant="scrollable"
+                    scrollButtons="auto"
+                >
+                    {tabsData.filter(tabData => tabData.visible).map((tabData, index) => (
+                        <StyledTab icon={tabData.icon} label={tabData.name} classes={tabClasses} key={index} />
+                    ))}
+
+                    {/*ocrData.map(({tag}) => (
+                        <TabStyle icon={<TextFields />} label={"OCR " + tag} classes={tabClasses} key={tag} />
+                    ))*/}
+                </Tabs>
             )}
 
-            {data.content.filetype !== 'folder' && (
-                <TabPanel value={tab} index={tabIndex++}>
-                    <Tags
-                        loading={tagsLoading}
-                        digestUrl={digestUrl}
-                        tags={tags}
-                        onChanged={setTags}
-                        toolbarButtons={tagsLinks}
-                        locked={tagsLocked}
-                        onLocked={setTagsLocked}
-                    />
-                </TabPanel>
-            )}
+            {tabsData.filter(tabData => tabData.visible).map((tabData, index) => (
+                <Box key={index}>
+                    {printMode && <Typography variant="h3" className={classes.printTitle}>{tabData.name}</Typography>}
+                    <TabPanel value={tab} index={tabIndex++} alwaysVisible={printMode}>
+                        {tabData.content}
+                    </TabPanel>
+                </Box>
+            ))}
 
-            {!!data.content && (
-                <TabPanel value={tab} index={tabIndex++}>
-                    <Meta
-                        doc={data}
-                        collection={collection}
-                        baseUrl={collectionBaseUrl}
-                    />
-                </TabPanel>
-            )}
-
-            {data.content.filetype === 'email' && (
-                <TabPanel value={tab} index={tabIndex++}>
-                    <Email doc={data} collection={collection} />
-                </TabPanel>
-            )}
-
-            {!!data.safe_html && (
-                <TabPanel value={tab} index={tabIndex++}>
-                    <HTML html={data.safe_html} />
-                </TabPanel>
-            )}
-
-            {!!data.content.tree && (
-                <TabPanel value={tab} index={tabIndex++}>
-                    <Text content={data.content.tree} />
-                </TabPanel>
-            )}
-
-            {ocrData.map(({tag, text}) => (
+            {/*ocrData.map(({tag, text}) => (
                 <TabPanel value={tab} index={tabIndex++} key={tag}>
                     <Text content={text} />
                 </TabPanel>
-            ))}
-
-            {!!data.children?.length && (
-                <TabPanel value={tab} index={tabIndex++}>
-                    <Files
-                        data={data.children}
-                        page={data.children_page}
-                        hasNextPage={data.children_has_next_page}
-                        fullPage={fullPage}
-                        docUrl={docUrl}
-                        baseUrl={collectionBaseUrl}
-                    />
-                </TabPanel>
-            )}
+            ))*/}
         </div>
     )
 }

@@ -9,8 +9,20 @@ import Loading from '../Loading'
 import { UserContext } from '../../../pages/_app'
 import { createTag, deleteTag, updateTag } from '../../backend/api'
 
-export const specialTags = ['important', 'seen', 'trash', 'interesting']
-export const publicTags = ['interesting']
+/*export const specialTags = [{
+    tag: 'starred',
+
+},{
+    tag: 'seen',
+},{
+    tag: 'trash',
+},{
+    tag: 'recommended',
+    public: true,
+}]*/
+
+export const specialTags = ['starred', 'seen', 'trash', 'recommended']
+export const publicTags = ['recommended']
 
 const onlyAlphanumericRegex = /[^a-z0-9_!@#$%^&*()-=+:,./?]/gi
 
@@ -35,6 +47,9 @@ const useStyles = makeStyles(theme => ({
     otherTagsInfo: {
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
+    },
+    tag: {
+        marginRight: theme.spacing(1),
     }
 }))
 
@@ -43,16 +58,16 @@ const getChipColor = chip => {
         return brown[200]
     } else if (chip.tag === 'trash') {
         return red[200]
-    } else if (chip.tag === 'important') {
+    } else if (chip.tag === 'starred') {
         return 'rgba(255,180,0,0.5)'
-    } else if (chip.tag === 'interesting') {
+    } else if (chip.tag === 'recommended') {
         return green[200]
     } else if (chip.public) {
         return blue[200]
     }
 }
 
-function Tags({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onLocked }) {
+function Tags({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onLocked, printMode }) {
     const classes = useStyles()
     const whoAmI = useContext(UserContext)
 
@@ -73,6 +88,36 @@ function Tags({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onL
 
     if (!digestUrl) {
         return null
+    }
+
+    const simpleTags = tags => (
+        <Grid container>
+            {tags.map(({ tag }, index) => (
+                <Grid item className={classes.tag} key={index}>
+                    <Chip label={tag} />
+                </Grid>
+            ))}
+        </Grid>
+    )
+
+    if (printMode) {
+        return (
+            <>
+                <Box my={3} pb={0.7}>
+                    {simpleTags(tags)}
+                </Box>
+
+                {otherUsersTags.map(([user, tags], index) =>
+                    <Box key={index} my={3} pb={0.7}>
+                        <Typography variant="subtitle2" className={classes.otherTagsInfo}>
+                            Public tags from <i>{user}</i>:
+                        </Typography>
+
+                        {simpleTags(tags)}
+                    </Box>
+                )}
+            </>
+        )
     }
 
     const handleTagInputUpdate = event => {
@@ -235,7 +280,6 @@ function Tags({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onL
                     Changes to tags may take a minute to appear in search.<br />
                     Tags must be matched exactly when searching.
                 </Typography>
-
 
                 {otherUsersTags.map(([user, tags], index) =>
                     <Box key={index} my={3} pb={0.7} className={classes.otherTags}>

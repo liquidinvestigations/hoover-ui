@@ -90,18 +90,12 @@ export default function Doc() {
 
     const printMode = query.print && query.print !== 'false'
 
-    useEffect(() => {
-        if (printMode && !loading) {
-            window.setTimeout(window.print)
-        }
-    }, [printMode, loading])
-
     const doc = (
         <Document
             docUrl={pathname}
             data={data}
             loading={loading}
-            showToolbar={!printMode}
+            printMode={printMode}
             fullPage
         />
     )

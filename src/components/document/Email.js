@@ -3,7 +3,6 @@ import Link from 'next/link'
 import { DateTime } from 'luxon'
 import { Table, TableBody, TableCell, TableRow } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { isPrintMode } from '../../utils'
 import { searchPath } from '../../queryUtils'
 import {
     SEARCH_FROM,
@@ -20,9 +19,8 @@ const useStyles = makeStyles({
     },
 })
 
-function Email({ doc, collection }) {
+function Email({ doc, collection, printMode }) {
     const classes = useStyles()
-    const printMode = isPrintMode()
     const to = (doc.content.to || []).filter(Boolean).join(', ')
 
     return (

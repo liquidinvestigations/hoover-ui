@@ -178,7 +178,7 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
                                 </Tooltip>
                             </Grid>
 
-                            {fields[`priv-tags.${whoAmI.username}`]?.includes('important') && (
+                            {fields[`priv-tags.${whoAmI.username}`]?.includes('starred') && (
                                 <Grid item>
                                     <Tooltip placement="top" title="important">
                                         <Star className={classes.infoIcon} style={{ color: '#ffb400' }} />
@@ -186,9 +186,9 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
                                 </Grid>
                             )}
 
-                            {fields.tags?.includes('interesting') && (
+                            {fields.tags?.includes('recommended') && (
                                 <Grid item>
-                                    <Tooltip placement="top" title="interesting">
+                                    <Tooltip placement="top" title="recommended">
                                         <Error className={classes.infoIcon} style={{ color: green[500] }} />
                                     </Tooltip>
                                 </Grid>

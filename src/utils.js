@@ -93,13 +93,6 @@ export const truncatePath = str => {
 export const formatThousands = n =>
     String(n).replace(/(?<!\..*)(\d)(?=(?:\d{3})+(?:\.|$))/g, '$1,')
 
-export const parseLocation = () =>  url.parse(window.location.href, true)
-
-export const isPrintMode = () => {
-    const { query } = parseLocation()
-    return query.print && query.print !== 'false'
-}
-
 export const copyMetadata = doc => {
     const string = [doc.content.md5, doc.content.path].join('\n');
 
