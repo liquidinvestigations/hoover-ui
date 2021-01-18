@@ -1,9 +1,10 @@
 import React from 'react'
-import Document, { Html, Head, Main, NextScript } from 'next/document'
+import Document, { Head, Html, Main, NextScript } from 'next/document'
 import { ServerStyleSheets } from '@material-ui/core/styles'
 import { resetServerContext } from 'react-beautiful-dnd'
 import { removeCommentsAndSpacing } from '../src/utils'
 import { JSS_CSS } from '../src/constants'
+import theme from '../src/theme'
 
 class HooverDocument extends Document {
     static async getInitialProps(ctx) {
@@ -21,7 +22,6 @@ class HooverDocument extends Document {
 
         return {
             ...initialProps,
-            whoAmI: ctx.req.whoAmI,
             // Styles fragment is rendered after the app and page rendering finish.
             styles: [
                 ...React.Children.toArray(initialProps.styles),
@@ -37,25 +37,9 @@ class HooverDocument extends Document {
     }
 
     render() {
-        const { whoAmI } = this.props
         return (
             <Html>
-                <Head>
-                    {whoAmI.urls.hypothesis_embed && (
-                        <>
-                            <script async src={whoAmI.urls.hypothesis_embed} />
-                            <script dangerouslySetInnerHTML={{
-                                __html: 'window.hypothesisConfig = function() {'+
-                                    'return {'+
-                                        'showHighlights: true,'+
-                                        "appType: 'bookmarklet'"+
-                                    '}'+
-                                '}'
-                            }}>
-                            </script>
-                        </>
-                    )}
-                </Head>
+                <Head />
                 <body>
                     <Main />
                     <NextScript />
