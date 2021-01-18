@@ -13,7 +13,7 @@ import { brown, green, grey, red } from '@material-ui/core/colors'
 
 export const specialTags = [{
     tag: 'starred',
-    color: 'rgba(255,180,0,0.5)',
+    color: '#ffda80',
     public: false,
     tooltip: 'mark/unmark as starred (private, for yourself)',
     present: {

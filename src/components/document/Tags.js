@@ -39,7 +39,7 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-const getChipColor = chip => {
+export const getChipColor = chip => {
     const data = specialTags.find(tag => tag.tag === chip.tag)
     if (data?.color) {
         return data.color

@@ -28,7 +28,7 @@ import Text from './Text'
 import Files from './Files'
 import Meta from './Meta'
 import Loading from '../Loading'
-import Tags from './Tags'
+import Tags, { getChipColor } from './Tags'
 import { createDownloadUrl, createOcrUrl, createTag, deleteTag, tags as tagsAPI } from '../../backend/api'
 import { publicTagsList, specialTags } from './specialTags'
 
@@ -48,7 +48,14 @@ const useStyles = makeStyles(theme => ({
     },
     filename: {
         padding: theme.spacing(1),
+        paddingBottom: 0,
         color: theme.palette.primary.contrastText,
+        backgroundColor: theme.palette.primary.main,
+    },
+    collection: {
+        padding: theme.spacing(1),
+        paddingTop: 0,
+        color: 'rgba(255,255,255,0.7)',
         backgroundColor: theme.palette.primary.main,
     },
     tags: {
@@ -355,11 +362,15 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
                 {data.content.filename}
             </Typography>
 
+            <Typography variant="subtitle1" className={classes.collection}>
+                {collection}
+            </Typography>
+
             {!!tags.length && (
                 <Grid container className={classes.tags}>
-                    {tags.map(({ tag }, index) => (
+                    {tags.map((chip, index) => (
                         <Grid item className={classes.tag} key={index}>
-                            <Chip size="small" label={tag} />
+                            <Chip size="small" label={chip.tag} style={{ backgroundColor: getChipColor(chip) }} />
                         </Grid>
                     ))}
                 </Grid>
