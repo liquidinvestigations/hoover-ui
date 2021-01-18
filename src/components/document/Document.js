@@ -25,7 +25,7 @@ import {
     Visibility,
     VisibilityOffOutlined
 } from '@material-ui/icons'
-import { IconButton, Tab, Tabs, Toolbar, Tooltip } from '@material-ui/core'
+import { Chip, Grid, IconButton, Tab, Tabs, Toolbar, Tooltip, Typography } from '@material-ui/core'
 import { brown, green, grey, red } from '@material-ui/core/colors'
 import TabPanel from './TabPanel'
 import Email from './Email'
@@ -35,7 +35,7 @@ import Text from './Text'
 import Files from './Files'
 import Meta from './Meta'
 import Loading from '../Loading'
-import Tags, { publicTags } from './Tags'
+import Tags, { publicTags, specialTags } from './Tags'
 import { createDownloadUrl, createOcrUrl, createTag, deleteTag, tags as tagsAPI } from '../../backend/api'
 import { withStyles } from '@material-ui/styles'
 
@@ -52,6 +52,20 @@ const useStyles = makeStyles(theme => ({
         '&:last-child': {
             marginRight: 0,
         }
+    },
+    filename: {
+        padding: theme.spacing(1),
+        color: theme.palette.primary.contrastText,
+        backgroundColor: theme.palette.primary.main,
+    },
+    tags: {
+        backgroundColor: theme.palette.primary.main,
+        padding: theme.spacing(1),
+        paddingTop: theme.spacing(0.5),
+        paddingBottom: theme.spacing(2),
+    },
+    tag: {
+        marginRight: theme.spacing(1),
     },
     tabsRoot: {
         color: theme.palette.primary.contrastText,
@@ -266,6 +280,8 @@ function Document({ docUrl, data, loading, onPrev, onNext, fullPage, showToolbar
         })
     )
 
+    const headerTags = tags.filter(({ tag }) => !specialTags.includes(tag))
+
     let tabIndex = 0
 
     const tabsClasses = {
@@ -299,6 +315,18 @@ function Document({ docUrl, data, loading, onPrev, onNext, fullPage, showToolbar
                     ))}
                 </Toolbar>
             )}
+
+            <Typography variant="h5" className={classes.filename}>
+                {data.content.filename}
+            </Typography>
+
+            {!!headerTags.length && <Grid container className={classes.tags}>
+                {headerTags.map(({ tag }) => (
+                    <Grid item className={classes.tag}>
+                        <Chip size="small" label={tag} />
+                    </Grid>
+                ))}
+            </Grid>}
 
             <Tabs
                 value={tab}
