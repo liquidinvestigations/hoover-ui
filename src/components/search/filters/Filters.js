@@ -98,6 +98,22 @@ function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
             />
 
             <TermsAggregationFilter
+                title="From"
+                field="from.keyword"
+                onLoadMore={handleLoadMore}
+                emptyDisabled
+                {...filterProps}
+            />
+
+            <TermsAggregationFilter
+                title="To"
+                field="to.keyword"
+                onLoadMore={handleLoadMore}
+                emptyDisabled
+                {...filterProps}
+            />
+
+            <TermsAggregationFilter
                 title="Path parts"
                 field="path-parts"
                 onLoadMore={handleLoadMore}
