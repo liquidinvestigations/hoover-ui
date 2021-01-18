@@ -51,6 +51,7 @@ document.addEventListener('webviewerloaded', function(event) {
       };
     }
 
+
     // hoover ui: get hypothesis url from /api/v0/whoami
     fetch('/api/v0/whoami')
       .then((response) => {
@@ -58,12 +59,13 @@ document.addEventListener('webviewerloaded', function(event) {
       })
       .then((whoami) => {
         // Load the Hypothesis client.
-        var embedScript = document.createElement('script');
-        const url = whoami.urls.hypothesis_embed;
-        console.log('Loading hypothesis embed script from ' + url);
-        embedScript.src = url;
-        document.body.appendChild(embedScript);
+        var url = whoami.urls.hypothesis_embed;
+        if (url) {
+          var embedScript = document.createElement('script');
+          console.log('Loading hypothesis embed script from ' + url);
+          embedScript.src = url;
+          document.body.appendChild(embedScript);
+        }
       });
-
   });
 });

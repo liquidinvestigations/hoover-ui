@@ -1,8 +1,7 @@
 import React, { memo, useState } from 'react'
 import Head from 'next/head'
-import Header from './Header'
-import theme from '../theme'
 import ProgressIndicator, { ProgressIndicatorContext } from './ProgressIndicator'
+import Header from './Header'
 import ErrorBoundary from './ErrorBoundary'
 
 function Layout({ children }) {
@@ -11,9 +10,8 @@ function Layout({ children }) {
     return (
         <>
             <Head>
-                <meta charSet="utf-8" />
                 <title>Hoover</title>
-
+                <meta charSet="utf-8" />
                 <meta
                     name="viewport"
                     content={
@@ -21,18 +19,16 @@ function Layout({ children }) {
                         'minimum-scale=1, width=device-width, height=device-height'
                     }
                 />
-
-                <meta name="theme-color" content={theme.palette.primary.main} />
             </Head>
 
             <ProgressIndicatorContext.Provider value={{ loading, setLoading }}>
                 <ProgressIndicator type="linear" />
-                <div>
+                <>
                     <Header />
                     <ErrorBoundary>
                         {children}
                     </ErrorBoundary>
-                </div>
+                </>
             </ProgressIndicatorContext.Provider>
         </>
     )

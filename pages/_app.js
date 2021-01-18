@@ -41,9 +41,6 @@ HooverApp.getInitialProps = async appContext => {
 
     const headers = appContext.ctx.req ? getAuthorizationHeaders(appContext.ctx.req) : {}
     const whoAmI = await whoami(headers)
-    if (appContext.ctx.req) {
-        appContext.ctx.req.whoAmI = whoAmI
-    }
 
     return { ...appProps, whoAmI }
 }

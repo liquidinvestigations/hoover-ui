@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 import url from 'url'
 import { Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import SplitPane from 'react-split-pane'
+import { UserContext } from '../../_app'
 import Document  from '../../../src/components/document/Document'
 import Locations from '../../../src/components/Locations'
 import Finder from '../../../src/components/Finder'
@@ -46,6 +48,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Doc() {
     const classes = useStyles()
+    const whoAmI = useContext(UserContext)
 
     const router = useRouter()
     const { query } = router
@@ -187,10 +190,29 @@ export default function Doc() {
     }
 
     return (
-        <HotKeysWithHelp keys={keys}>
-            <div tabIndex="-1">
-                {content}
-            </div>
-        </HotKeysWithHelp>
+        <>
+            <Head>
+                <title>Hoover {data && `- ${data?.content.filename}`}</title>
+                {whoAmI.urls.hypothesis_embed && (
+                    <>
+                        <script async src={whoAmI.urls.hypothesis_embed} />
+                        <script dangerouslySetInnerHTML={{
+                            __html: 'window.hypothesisConfig = function() {'+
+                                'return {'+
+                                'showHighlights: true,'+
+                                "appType: 'bookmarklet'"+
+                                '}'+
+                                '}'
+                        }}>
+                        </script>
+                    </>
+                )}
+            </Head>
+            <HotKeysWithHelp keys={keys}>
+                <div tabIndex="-1">
+                    {content}
+                </div>
+            </HotKeysWithHelp>
+        </>
     )
 }
