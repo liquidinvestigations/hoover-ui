@@ -1,4 +1,4 @@
-import React, { memo, useContext, useEffect, useRef } from 'react'
+import React, { cloneElement, memo, useContext, useEffect, useRef } from 'react'
 import cn from 'classnames'
 import { DateTime } from 'luxon'
 import { makeStyles } from '@material-ui/core/styles'
@@ -30,7 +30,7 @@ import { brown, green, red } from '@material-ui/core/colors'
 import { UserContext } from '../../../pages/_app'
 import { getIconReactComponent, humanFileSize, makeUnsearchable, truncatePath } from '../../utils'
 import { createDownloadUrl } from '../../backend/api'
-import { specialTags } from '../document/Tags'
+import { specialTags, specialTagsList } from '../document/specialTags'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -178,37 +178,21 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
                                 </Tooltip>
                             </Grid>
 
-                            {fields[`priv-tags.${whoAmI.username}`]?.includes('starred') && (
-                                <Grid item>
-                                    <Tooltip placement="top" title="important">
-                                        <Star className={classes.infoIcon} style={{ color: '#ffb400' }} />
-                                    </Tooltip>
-                                </Grid>
-                            )}
-
-                            {fields.tags?.includes('recommended') && (
-                                <Grid item>
-                                    <Tooltip placement="top" title="recommended">
-                                        <Error className={classes.infoIcon} style={{ color: green[500] }} />
-                                    </Tooltip>
-                                </Grid>
-                            )}
-
-                            {fields[`priv-tags.${whoAmI.username}`]?.includes('seen') && (
-                                <Grid item>
-                                    <Tooltip placement="top" title="seen">
-                                        <Visibility className={classes.infoIcon} style={{ color: brown[500] }} />
-                                    </Tooltip>
-                                </Grid>
-                            )}
-
-                            {fields[`priv-tags.${whoAmI.username}`]?.includes('trash') && (
-                                <Grid item>
-                                    <Tooltip placement="top" title="trashed">
-                                        <Delete className={classes.infoIcon} style={{ color: red[600] }} />
-                                    </Tooltip>
-                                </Grid>
-                            )}
+                            {specialTags.map((s, k) => {
+                                const tagsField = s.public ? fields.tags : fields[`priv-tags.${whoAmI.username}`]
+                                if (tagsField?.includes(s.tag)) {
+                                    return (
+                                        <Grid item>
+                                            <Tooltip placement="top" title={s.tag}>
+                                                {cloneElement(s.present.icon, {
+                                                    className: classes.infoIcon,
+                                                    style: { color: s.present.color }
+                                                })}
+                                            </Tooltip>
+                                        </Grid>
+                                    )
+                                }
+                            })}
 
                             {fields.ocr && (
                                 <Grid item>
@@ -290,22 +274,22 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
                             </Box>
                         )}
 
-                        {fields.tags?.filter(tag => !specialTags.includes(tag)).length > 0 && (
+                        {fields.tags?.filter(tag => !specialTagsList.includes(tag)).length > 0 && (
                             <Box>
                                 <Typography variant="caption">
                                     <strong>Public tags:</strong>{' '}
-                                    {fields.tags.filter(tag => !specialTags.includes(tag)).join(', ')}
+                                    {fields.tags.filter(tag => !specialTagsList.includes(tag)).join(', ')}
                                 </Typography>
                             </Box>
                         )}
 
-                        {fields[`priv-tags.${whoAmI.username}`]?.filter(tag => !specialTags.includes(tag)).length > 0 && (
+                        {fields[`priv-tags.${whoAmI.username}`]?.filter(tag => !specialTagsList.includes(tag)).length > 0 && (
                             <Box>
                                 <Typography variant="caption">
                                     <strong>Private tags:</strong>{' '}
                                     {
                                         fields[`priv-tags.${whoAmI.username}`]
-                                        .filter(tag => !specialTags.includes(tag))
+                                        .filter(tag => !specialTagsList.includes(tag))
                                         .join(', ')
                                     }
                                 </Typography>

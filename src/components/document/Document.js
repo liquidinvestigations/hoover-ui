@@ -6,11 +6,7 @@ import {
     AccountTreeOutlined,
     CloudDownload,
     CodeOutlined,
-    Delete,
-    DeleteOutlined,
     EmailOutlined,
-    Error,
-    ErrorOutline,
     FolderOutlined,
     Launch,
     LocalOfferOutlined,
@@ -19,15 +15,10 @@ import {
     PageviewOutlined,
     Print,
     SettingsApplicationsOutlined,
-    Star,
-    StarOutline,
     Subject,
-    TextFields,
-    Visibility,
-    VisibilityOffOutlined
+    TextFields
 } from '@material-ui/icons'
 import { Box, Chip, Grid, IconButton, Tab, Tabs, Toolbar, Tooltip, Typography } from '@material-ui/core'
-import { brown, green, grey, red } from '@material-ui/core/colors'
 import StyledTab from './StyledTab'
 import TabPanel from './TabPanel'
 import Email from './Email'
@@ -37,8 +28,9 @@ import Text from './Text'
 import Files from './Files'
 import Meta from './Meta'
 import Loading from '../Loading'
-import Tags, { publicTags, specialTags } from './Tags'
+import Tags from './Tags'
 import { createDownloadUrl, createOcrUrl, createTag, deleteTag, tags as tagsAPI } from '../../backend/api'
+import { publicTagsList, specialTags } from './specialTags'
 
 const useStyles = makeStyles(theme => ({
     toolbar: {
@@ -165,7 +157,7 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
                 setTagsLocked(false)
             })
         } else {
-            createTag(digestUrl, { tag: name, public: publicTags.includes(name) }).then(newTag => {
+            createTag(digestUrl, { tag: name, public: publicTagsList.includes(name) }).then(newTag => {
                 setTags([...tags, newTag])
                 setTagsLocked(false)
             }).catch(() => {
@@ -175,24 +167,22 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
     }
 
     if (data.content.filetype !== 'folder') {
-        const starred = tags.find(tag => tag.tag === 'starred')
-        headerLinks.push({
-            icon: starred ? <Star /> : <StarOutline />,
-            style: { color: starred ? '#ffb400' : grey[600] },
-            tooltip: starred ? 'Unmark starred' : 'Mark starred',
-            disabled: tagsLocked,
-            onClick: handleSpecialTagClick(starred, 'starred')
-        })
-
-        const recommended = tags.find(tag => tag.tag === 'recommended')
-        headerLinks.push({
-            icon: recommended ? <Error /> : <ErrorOutline />,
-            style: { color: recommended ? green[500] : grey[600] },
-            tooltip: recommended ? 'Unmark recommended' : 'Mark recommended',
-            label: recommended ? 'recommended' : 'not recommended',
-            disabled: tagsLocked,
-            className: classes.lastIconOnLeft,
-            onClick: handleSpecialTagClick(recommended, 'recommended')
+        specialTags.forEach(s => {
+            const present = tags.find(tag => tag.tag === s.tag)
+            const link = {
+                icon: present ? s.present.icon : s.absent.icon,
+                label: present ? s.present.label : s.absent.label,
+                style: { color: present ? s.present.color : s.absent.color },
+                tooltip: s.tooltip,
+                disabled: tagsLocked,
+                onClick: handleSpecialTagClick(present, s.tag)
+            }
+            if (s.showInToolbar) {
+                headerLinks.push(link)
+            }
+            if (s.showInTagsTab) {
+                tagsLinks.push(link)
+            }
         })
 
         if (onPrev) {
@@ -232,27 +222,6 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
             tooltip: 'Download original file',
             icon: <CloudDownload />,
             target: fullPage ? null : '_blank',
-        })
-
-        const seen = tags.find(tag => tag.tag === 'seen')
-        tagsLinks.push({
-            icon: seen ? <Visibility /> : <VisibilityOffOutlined />,
-            style: { color: seen ? brown[500] : grey[600] },
-            tooltip: 'You can exclude these documents by clicking on the "Private Tags" filter on the left.',
-            label: seen ? 'seen' : 'not seen',
-            disabled: tagsLocked,
-            onClick: handleSpecialTagClick(seen, 'seen')
-        })
-
-        const trash = tags.find(tag => tag.tag === 'trash')
-        tagsLinks.push({
-            icon: trash ? <Delete /> : <DeleteOutlined />,
-            style: { color: trash ? red[600] : grey[600] },
-            tooltip: 'By default, documents with the tag "trash" will be excluded from searches. ' +
-                'You can override this by clicking on the "Private Tags" filter on the left.',
-            label: trash ? 'trash' : 'not trash',
-            disabled: tagsLocked,
-            onClick: handleSpecialTagClick(trash, 'trash')
         })
     }
 

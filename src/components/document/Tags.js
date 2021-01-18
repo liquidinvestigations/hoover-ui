@@ -2,27 +2,13 @@ import React, { memo, useContext, useMemo, useState } from 'react'
 import { DateTime } from 'luxon'
 import ChipInput from 'material-ui-chip-input'
 import { Box, Button, ButtonGroup, Chip, Grid, IconButton, Tooltip, Typography } from '@material-ui/core'
-import { Lock, LockOpen } from '@material-ui/icons';
+import { Lock, LockOpen } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles'
-import { blue, brown, green, red } from '@material-ui/core/colors'
+import { blue } from '@material-ui/core/colors'
 import Loading from '../Loading'
 import { UserContext } from '../../../pages/_app'
 import { createTag, deleteTag, updateTag } from '../../backend/api'
-
-/*export const specialTags = [{
-    tag: 'starred',
-
-},{
-    tag: 'seen',
-},{
-    tag: 'trash',
-},{
-    tag: 'recommended',
-    public: true,
-}]*/
-
-export const specialTags = ['starred', 'seen', 'trash', 'recommended']
-export const publicTags = ['recommended']
+import { publicTagsList, specialTags, specialTagsList } from './specialTags'
 
 const onlyAlphanumericRegex = /[^a-z0-9_!@#$%^&*()-=+:,./?]/gi
 
@@ -54,14 +40,9 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const getChipColor = chip => {
-    if (chip.tag === 'seen') {
-        return brown[200]
-    } else if (chip.tag === 'trash') {
-        return red[200]
-    } else if (chip.tag === 'starred') {
-        return 'rgba(255,180,0,0.5)'
-    } else if (chip.tag === 'recommended') {
-        return green[200]
+    const data = specialTags.find(tag => tag.tag === chip.tag)
+    if (data?.color) {
+        return data.color
     } else if (chip.public) {
         return blue[200]
     }
@@ -126,7 +107,7 @@ function Tags({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onL
 
     const handleTagAdd = (tag, publicTag = false) => {
         onLocked(true)
-        createTag(digestUrl, { tag, public: publicTags.includes(tag) || publicTag }).then(newTag => {
+        createTag(digestUrl, { tag, public: publicTagsList.includes(tag) || publicTag }).then(newTag => {
             onChanged([...tags, newTag])
             setInputValue('')
             onLocked(false)
@@ -202,8 +183,8 @@ function Tags({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onL
             }
         >
             <Chip
-                icon={chip.user === whoAmI.username && !specialTags.includes(chip.tag) ? chip.public ?
-                    <Tooltip title="Make private">
+                icon={chip.user === whoAmI.username && !specialTagsList.includes(chip.tag) ? chip.public ?
+                    <Tooltip title="make private">
                         <IconButton
                             size="small"
                             onClick={handleClick(chip)}
@@ -211,7 +192,7 @@ function Tags({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onL
                             <LockOpen />
                         </IconButton>
                     </Tooltip> :
-                    <Tooltip title="Make public">
+                    <Tooltip title="make public">
                         <IconButton
                             size="small"
                             onClick={handleClick(chip)}
