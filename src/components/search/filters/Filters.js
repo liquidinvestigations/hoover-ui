@@ -96,6 +96,14 @@ function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
                 emptyDisabled
                 {...filterProps}
             />
+
+            <TermsAggregationFilter
+                title="Path parts"
+                field="path-parts"
+                onLoadMore={handleLoadMore}
+                emptyDisabled
+                {...filterProps}
+            />
         </List>
     )
 }
