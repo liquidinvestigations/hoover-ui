@@ -61,7 +61,7 @@ const useStyles = makeStyles(theme => ({
         textOverflow: 'ellipsis',
     },
     selected: {
-        borderLeft: `3px solid ${theme.palette.secondary.main}`,
+        border: `2px solid ${theme.palette.secondary.main}`,
     },
     spaceBottom: {
         marginBottom: theme.spacing(1),

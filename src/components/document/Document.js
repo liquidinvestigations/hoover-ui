@@ -6,7 +6,6 @@ import {
     AccountTreeOutlined,
     CloudDownload,
     CodeOutlined,
-    EmailOutlined,
     FolderOutlined,
     Launch,
     LocalOfferOutlined,
@@ -15,13 +14,12 @@ import {
     PageviewOutlined,
     Print,
     SettingsApplicationsOutlined,
-    Subject,
-    TextFields
+    TextFields,
+    Toc
 } from '@material-ui/icons'
 import { Box, Chip, Grid, IconButton, Tab, Tabs, Toolbar, Tooltip, Typography } from '@material-ui/core'
 import StyledTab from './StyledTab'
 import TabPanel from './TabPanel'
-import Email from './Email'
 import Preview, { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './Preview'
 import HTML from './HTML'
 import Text from './Text'
@@ -31,6 +29,7 @@ import Loading from '../Loading'
 import Tags, { getChipColor } from './Tags'
 import { createDownloadUrl, createOcrUrl, createTag, deleteTag, tags as tagsAPI } from '../../backend/api'
 import { publicTagsList, specialTags } from './specialTags'
+import TextSubTabs from './TextSubTabs'
 
 const useStyles = makeStyles(theme => ({
     toolbar: {
@@ -117,11 +116,8 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
         docRawUrl = null
     }
 
-    const [tab, setTab] = React.useState(0);
-
-    const handleTabChange = (event, newValue) => {
-        setTab(newValue);
-    };
+    const [tab, setTab] = useState(0)
+    const handleTabChange = (event, newValue) => setTab(newValue)
 
     const [tags, setTags] = useState([])
     const [tagsLoading, setTagsLoading] = useState(true)
@@ -237,14 +233,12 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
     })
 
     headerLinks.push(
-        ...ocrData.map(({tag}) => {
-            return {
-                href: createOcrUrl(digestUrl, tag),
-                tooltip: `OCR ${tag}`,
-                icon: <TextFields />,
-                target: fullPage ? null : '_blank',
-            }
-        })
+        ...ocrData.map(({tag}) => ({
+            href: createOcrUrl(digestUrl, tag),
+            tooltip: `OCR ${tag}`,
+            icon: <TextFields />,
+            target: fullPage ? null : '_blank',
+        }))
     )
 
     let tabIndex = 0
@@ -264,9 +258,15 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
 
     const tabsData = [{
         name: 'Text',
-        icon: <Subject />,
+        icon: <Toc />,
         visible: true,
-        content: <Text content={data.content.text} />,
+        padding: 0,
+        content: <TextSubTabs
+            data={data}
+            ocrData={ocrData}
+            collection={collection}
+            printMode={printMode}
+        />,
     },{
         name: 'Preview',
         icon: <PageviewOutlined />,
@@ -298,15 +298,6 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
             doc={data}
             collection={collection}
             baseUrl={collectionBaseUrl}
-            printMode={printMode}
-        />,
-    },{
-        name: 'Email',
-        icon: <EmailOutlined />,
-        visible: data.content.filetype === 'email',
-        content: <Email
-            doc={data}
-            collection={collection}
             printMode={printMode}
         />,
     },{
@@ -387,27 +378,17 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
                     {tabsData.filter(tabData => tabData.visible).map((tabData, index) => (
                         <StyledTab icon={tabData.icon} label={tabData.name} classes={tabClasses} key={index} />
                     ))}
-
-                    {/*ocrData.map(({tag}) => (
-                        <TabStyle icon={<TextFields />} label={"OCR " + tag} classes={tabClasses} key={tag} />
-                    ))*/}
                 </Tabs>
             )}
 
             {tabsData.filter(tabData => tabData.visible).map((tabData, index) => (
                 <Box key={index}>
                     {printMode && <Typography variant="h3" className={classes.printTitle}>{tabData.name}</Typography>}
-                    <TabPanel value={tab} index={tabIndex++} alwaysVisible={printMode}>
+                    <TabPanel value={tab} index={tabIndex++} padding={tabData.padding} alwaysVisible={printMode}>
                         {tabData.content}
                     </TabPanel>
                 </Box>
             ))}
-
-            {/*ocrData.map(({tag, text}) => (
-                <TabPanel value={tab} index={tabIndex++} key={tag}>
-                    <Text content={text} />
-                </TabPanel>
-            ))*/}
         </div>
     )
 }

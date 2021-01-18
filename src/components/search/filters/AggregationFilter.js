@@ -23,6 +23,8 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
+const excludedValue = value => `~${value}`
+
 function AggregationFilter({ field, query, queryField, aggregations, disabled, onChange, onPagination,
                                onLoadMore, triState, bucketLabel, bucketSubLabel, bucketValue }) {
 
@@ -37,15 +39,14 @@ function AggregationFilter({ field, query, queryField, aggregations, disabled, o
 
     const handleChange = value => () => {
         const selection = new Set(selected || [])
-        const excludeValue = `~${value}`
 
         if (selection.has(value)) {
             selection.delete(value)
             if (triState) {
-                selection.add(`~${value}`)
+                selection.add(excludedValue(value))
             }
-        } else if (selection.has(excludeValue)) {
-            selection.delete(excludeValue)
+        } else if (selection.has(excludedValue(value))) {
+            selection.delete(excludedValue(value))
         } else {
             selection.add(value)
         }
@@ -63,7 +64,7 @@ function AggregationFilter({ field, query, queryField, aggregations, disabled, o
         const label = bucketLabel ? bucketLabel(bucket) : bucket.key
         const subLabel = bucketSubLabel ? bucketSubLabel(bucket) : null
         const value = bucketValue ? bucketValue(bucket) : bucket.key
-        const checked = selected?.includes(value) || selected?.includes(`~${value}`) || false
+        const checked = selected?.includes(value) || selected?.includes(excludedValue(value)) || false
 
         return (
             <ListItem
@@ -79,7 +80,7 @@ function AggregationFilter({ field, query, queryField, aggregations, disabled, o
                     disableRipple
                     value={value}
                     checked={checked}
-                    indeterminate={triState && selected?.includes(`~${value}`)}
+                    indeterminate={triState && selected?.includes(excludedValue(value))}
                     classes={{ root: classes.checkbox }}
                     disabled={disabled || !bucket.doc_count}
                     onChange={handleChange(value)}
