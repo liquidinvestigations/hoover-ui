@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useContext, useEffect, useState } from 'react'
 import Link from 'next/link'
 import url from 'url'
 import { makeStyles } from '@material-ui/core/styles'
@@ -17,7 +17,7 @@ import {
     TextFields,
     Toc
 } from '@material-ui/icons'
-import { Box, Chip, Grid, IconButton, Tab, Tabs, Toolbar, Tooltip, Typography } from '@material-ui/core'
+import { Badge, Box, Chip, Grid, IconButton, Tab, Tabs, Toolbar, Tooltip, Typography } from '@material-ui/core'
 import StyledTab from './StyledTab'
 import TabPanel from './TabPanel'
 import Preview, { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './Preview'
@@ -26,10 +26,11 @@ import Text from './Text'
 import Files from './Files'
 import Meta from './Meta'
 import Loading from '../Loading'
+import TextSubTabs from './TextSubTabs'
 import Tags, { getChipColor } from './Tags'
+import { UserContext } from '../../../pages/_app'
 import { createDownloadUrl, createOcrUrl, createTag, deleteTag, tags as tagsAPI } from '../../backend/api'
 import { publicTagsList, specialTags } from './specialTags'
-import TextSubTabs from './TextSubTabs'
 
 const useStyles = makeStyles(theme => ({
     toolbar: {
@@ -61,6 +62,7 @@ const useStyles = makeStyles(theme => ({
         backgroundColor: theme.palette.primary.main,
         padding: theme.spacing(1),
         paddingTop: theme.spacing(0.5),
+        minHeight: 44,
     },
     tag: {
         marginRight: theme.spacing(1),
@@ -90,6 +92,7 @@ const parseCollection = url => {
 
 function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }) {
     const classes = useStyles()
+    const whoAmI = useContext(UserContext)
 
     let digestUrl = docUrl
 
@@ -173,7 +176,8 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
 
     if (data.content.filetype !== 'folder') {
         specialTags.forEach(s => {
-            const present = tags.find(tag => tag.tag === s.tag)
+            const present = tags.find(tag => tag.tag === s.tag && tag.user === whoAmI.username)
+            const count = tags.filter(tag => tag.tag === s.tag && tag.user !== whoAmI.username)?.length || null
             const link = {
                 icon: present ? s.present.icon : s.absent.icon,
                 label: present ? s.present.label : s.absent.label,
@@ -181,6 +185,7 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
                 tooltip: s.tooltip,
                 disabled: tagsLocked,
                 onClick: handleSpecialTagClick(present, s.tag),
+                count: present && count ? count + 1: count,
             }
             if (s.showInToolbar) {
                 headerLinks.tags.push(link)
@@ -331,8 +336,8 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
             {!printMode && (
                 <Toolbar variant="dense" classes={{root: classes.toolbar}}>
                     {Object.entries(headerLinks).map(([group, links]) => (
-                        <Box>
-                            {links.map(({tooltip, icon, ...props}, index) => (
+                        <Box key={group}>
+                            {links.map(({tooltip, icon, count, ...props}, index) => (
                                 <Tooltip title={tooltip} key={index}>
                                     <IconButton
                                         size="small"
@@ -340,7 +345,9 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
                                         color="default"
                                         className={classes.toolbarIcons}
                                         {...props}>
-                                        {icon}
+                                        <Badge badgeContent={count} color="secondary">
+                                            {icon}
+                                        </Badge>
                                     </IconButton>
                                 </Tooltip>
                             ))}
@@ -363,15 +370,13 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
                 {collection}
             </Typography>
 
-            {!!tags.length && (
-                <Grid container className={classes.tags}>
-                    {tags.map((chip, index) => (
-                        <Grid item className={classes.tag} key={index}>
-                            <Chip size="small" label={chip.tag} style={{ backgroundColor: getChipColor(chip) }} />
-                        </Grid>
-                    ))}
-                </Grid>
-            )}
+            <Grid container className={classes.tags}>
+                {tags.map((chip, index) => (
+                    <Grid item className={classes.tag} key={index}>
+                        <Chip size="small" label={chip.tag} style={{ backgroundColor: getChipColor(chip) }} />
+                    </Grid>
+                ))}
+            </Grid>
 
             {!printMode && (
                 <Tabs

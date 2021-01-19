@@ -2,7 +2,7 @@ import React, { memo, useState } from 'react'
 import Text from './Text'
 import { Box, Tab, Tabs, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { Subject } from '@material-ui/icons'
+import { Subject, TextFields } from '@material-ui/icons'
 import TabPanel from './TabPanel'
 import Email from './Email'
 
@@ -15,7 +15,7 @@ const useStyles = makeStyles(theme => ({
 function TextSubTabs({ data, ocrData, collection, printMode }) {
     const classes = useStyles()
 
-    const [tab, setTab] = useState(0)
+    const [tab, setTab] = useState(ocrData?.length ? 1 : 0)
     const handleTabChange = (event, newValue) => setTab(newValue)
 
     if (!data || !collection || !ocrData) {
@@ -31,7 +31,7 @@ function TextSubTabs({ data, ocrData, collection, printMode }) {
     tabs.push(
         ...ocrData.map(({tag, text}) => ({
             name: `OCR ${tag}`,
-            icon: <TextSubTabs />,
+            icon: <TextFields />,
             content: <Text content={text} />,
         }))
     )

@@ -105,7 +105,7 @@ function Tags({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onL
         setInputValue(event.target.value.replace(onlyAlphanumericRegex, ""))
     }
 
-    const handleTagAdd = (tag, publicTag = false) => {
+    const handleTagAdd = (tag, publicTag = true) => {
         onLocked(true)
         createTag(digestUrl, { tag, public: publicTagsList.includes(tag) || publicTag }).then(newTag => {
             onChanged([...tags, newTag])
@@ -130,7 +130,7 @@ function Tags({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onL
         })
     }
 
-    const handleClick = tag => () => {
+    const handleLockClick = tag => () => {
         tag.isMutating = true
         onChanged([...tags])
         onLocked(true)
@@ -187,7 +187,7 @@ function Tags({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onL
                     <Tooltip title="make private">
                         <IconButton
                             size="small"
-                            onClick={handleClick(chip)}
+                            onClick={handleLockClick(chip)}
                         >
                             <LockOpen />
                         </IconButton>
@@ -195,7 +195,7 @@ function Tags({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onL
                     <Tooltip title="make public">
                         <IconButton
                             size="small"
-                            onClick={handleClick(chip)}
+                            onClick={handleLockClick(chip)}
                         >
                             <Lock />
                         </IconButton>

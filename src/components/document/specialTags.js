@@ -15,7 +15,7 @@ export const specialTags = [{
     tag: 'starred',
     color: '#ffda80',
     public: false,
-    tooltip: 'mark/unmark as starred (private, for yourself)',
+    tooltip: 'mark / unmark as starred (private, for yourself)',
     present: {
         icon: <Star />,
         color: '#ffb400',
@@ -30,7 +30,7 @@ export const specialTags = [{
     tag: 'recommended',
     color: green[200],
     public: true,
-    tooltip: 'mark/unmark as recommended (public, for everybody)',
+    tooltip: 'mark / unmark as recommended (public, for everybody)',
     present: {
         icon: <Error />,
         color: green[500],
@@ -56,8 +56,8 @@ export const specialTags = [{
         icon: <VisibilityOffOutlined />,
         color: grey[600],
     },
-    showInToolbar: false,
-    showInTagsTab: true,
+    showInToolbar: true,
+    showInTagsTab: false,
 },{
     tag: 'trash',
     color: red[200],
@@ -73,8 +73,8 @@ export const specialTags = [{
         icon: <DeleteOutlined />,
         color: grey[600],
     },
-    showInToolbar: false,
-    showInTagsTab: true,
+    showInToolbar: true,
+    showInTagsTab: false,
 }]
 
 export const specialTagsList = specialTags.map(tag => tag.tag)

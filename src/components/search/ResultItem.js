@@ -182,7 +182,7 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
                                 const tagsField = s.public ? fields.tags : fields[`priv-tags.${whoAmI.username}`]
                                 if (tagsField?.includes(s.tag)) {
                                     return (
-                                        <Grid item>
+                                        <Grid item key={k}>
                                             <Tooltip placement="top" title={s.tag}>
                                                 {cloneElement(s.present.icon, {
                                                     className: classes.infoIcon,
