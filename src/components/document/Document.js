@@ -73,9 +73,6 @@ const useStyles = makeStyles(theme => ({
     tabsIndicator: {
         top: 0,
     },
-    lastIconOnLeft: {
-        marginRight: 'auto',
-    },
     printTitle: {
         margin: theme.spacing(2),
     },
@@ -98,7 +95,11 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
 
     const collection = parseCollection(docUrl)
     const collectionBaseUrl = docUrl && url.resolve(docUrl, './')
-    const headerLinks = []
+    const headerLinks = {
+        tags: [],
+        navigation: [],
+        actions: [],
+    }
     const tagsLinks = []
 
     let digest = data?.id
@@ -125,6 +126,7 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
 
     useEffect(() => {
         if (digestUrl && !digestUrl.includes('_file_') && !digestUrl.includes('_directory_')) {
+            setTab(0)
             setTagsLoading(true)
             setTagsLocked(true)
             tagsAPI(digestUrl).then(data => {
@@ -178,10 +180,10 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
                 style: { color: present ? s.present.color : s.absent.color },
                 tooltip: s.tooltip,
                 disabled: tagsLocked,
-                onClick: handleSpecialTagClick(present, s.tag)
+                onClick: handleSpecialTagClick(present, s.tag),
             }
             if (s.showInToolbar) {
-                headerLinks.push(link)
+                headerLinks.tags.push(link)
             }
             if (s.showInTagsTab) {
                 tagsLinks.push(link)
@@ -189,23 +191,23 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
         })
 
         if (onPrev) {
-            headerLinks.push({
+            headerLinks.navigation.push({
                 icon: <NavigateBefore />,
                 tooltip: 'Previous result',
-                onClick: onPrev
+                onClick: onPrev,
             })
         }
 
         if (onNext) {
-            headerLinks.push({
+            headerLinks.navigation.push({
                 icon: <NavigateNext />,
                 tooltip: 'Next result',
-                onClick: onNext
+                onClick: onNext,
             })
         }
 
         if (!fullPage) {
-            headerLinks.push({
+            headerLinks.actions.push({
                 href: docUrl,
                 tooltip: 'Open in new tab',
                 icon: <Launch />,
@@ -213,14 +215,14 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
             })
         }
 
-        headerLinks.push({
+        headerLinks.actions.push({
             href: `${docUrl}?print=true`,
             tooltip: 'Print metadata and content',
             icon: <Print />,
             target: '_blank',
         })
 
-        headerLinks.push({
+        headerLinks.actions.push({
             href: docRawUrl,
             tooltip: 'Download original file',
             icon: <CloudDownload />,
@@ -232,7 +234,7 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
         return {tag: tag, text: data.content.ocrtext[tag]}
     })
 
-    headerLinks.push(
+    headerLinks.actions.push(
         ...ocrData.map(({tag}) => ({
             href: createOcrUrl(digestUrl, tag),
             tooltip: `OCR ${tag}`,
@@ -326,19 +328,23 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
 
     return (
         <div>
-            {headerLinks.length > 0 && !printMode && (
+            {!printMode && (
                 <Toolbar variant="dense" classes={{root: classes.toolbar}}>
-                    {headerLinks.map(({tooltip, icon, ...props}, index) => (
-                        <Tooltip title={tooltip} key={index}>
-                            <IconButton
-                                size="small"
-                                component="a"
-                                color="default"
-                                className={classes.toolbarIcons}
-                                {...props}>
-                                {icon}
-                            </IconButton>
-                        </Tooltip>
+                    {Object.entries(headerLinks).map(([group, links]) => (
+                        <Box>
+                            {links.map(({tooltip, icon, ...props}, index) => (
+                                <Tooltip title={tooltip} key={index}>
+                                    <IconButton
+                                        size="small"
+                                        component="a"
+                                        color="default"
+                                        className={classes.toolbarIcons}
+                                        {...props}>
+                                        {icon}
+                                    </IconButton>
+                                </Tooltip>
+                            ))}
+                        </Box>
                     ))}
                 </Toolbar>
             )}
