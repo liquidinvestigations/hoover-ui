@@ -29,6 +29,7 @@ const useStyles = makeStyles(theme => ({
         color: theme.palette.grey.A700,
     },
     otherTags: {
+        paddingBottom: 0,
         borderBottom: '1px solid rgba(0, 0, 0, 0.42)',
     },
     otherTagsInfo: {
@@ -37,6 +38,7 @@ const useStyles = makeStyles(theme => ({
     },
     tag: {
         marginRight: theme.spacing(1),
+        marginBottom: theme.spacing(1),
     }
 }))
 
@@ -245,7 +247,7 @@ function Tags({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onL
 
                         <Grid container>
                             {tags.map((chip, key) =>
-                                <Grid item>
+                                <Grid item className={classes.tag} key={key}>
                                     {renderChip({chip}, key)}
                                 </Grid>
                             )}

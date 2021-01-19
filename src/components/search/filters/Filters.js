@@ -98,7 +98,7 @@ function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
             />
 
             <TermsAggregationFilter
-                title="From"
+                title="Email from"
                 field="from.keyword"
                 onLoadMore={handleLoadMore}
                 emptyDisabled
@@ -106,7 +106,7 @@ function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
             />
 
             <TermsAggregationFilter
-                title="To"
+                title="Email to"
                 field="to.keyword"
                 onLoadMore={handleLoadMore}
                 emptyDisabled
@@ -114,7 +114,7 @@ function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
             />
 
             <TermsAggregationFilter
-                title="Path parts"
+                title="Path"
                 field="path-parts"
                 onLoadMore={handleLoadMore}
                 emptyDisabled

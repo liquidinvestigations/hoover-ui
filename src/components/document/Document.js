@@ -50,20 +50,21 @@ const useStyles = makeStyles(theme => ({
     filename: {
         padding: theme.spacing(1),
         paddingBottom: 0,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
         color: theme.palette.primary.contrastText,
         backgroundColor: theme.palette.primary.main,
     },
-    collection: {
-        padding: theme.spacing(1),
-        paddingTop: 0,
-        color: 'rgba(255,255,255,0.7)',
-        backgroundColor: theme.palette.primary.main,
-    },
-    tags: {
+    subtitle: {
         backgroundColor: theme.palette.primary.main,
         padding: theme.spacing(1),
         paddingTop: theme.spacing(0.5),
-        minHeight: 44,
+        alignItems: 'baseline',
+    },
+    collection: {
+        minHeight: 34,
+        marginRight: theme.spacing(3),
+        color: 'rgba(255,255,255,0.7)',
     },
     tag: {
         marginRight: theme.spacing(1),
@@ -367,11 +368,13 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
                 {data.content.filename}
             </Typography>
 
-            <Typography variant="subtitle1" className={classes.collection}>
-                {collection}
-            </Typography>
+            <Grid container className={classes.subtitle}>
+                <Grid item>
+                    <Typography variant="subtitle1" className={classes.collection}>
+                        {collection}
+                    </Typography>
+                </Grid>
 
-            <Grid container className={classes.tags}>
                 {tags.filter((item, pos, self) =>
                     self.findIndex(tag => tag.tag === item.tag) === pos)
                     .map((chip, index) => {
@@ -380,7 +383,13 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
                             <Grid item className={classes.tag} key={index}>
                                 <TagTooltip chip={chip} count={count}>
                                     <Badge badgeContent={count > 1 ? count : null} color="secondary">
-                                        <Chip size="small" label={chip.tag} style={{ backgroundColor: getChipColor(chip) }} />
+                                        <Chip
+                                            size="small"
+                                            label={chip.tag}
+                                            style={{
+                                                height: 20,
+                                                backgroundColor: getChipColor(chip),
+                                            }} />
                                     </Badge>
                                 </TagTooltip>
                             </Grid>
