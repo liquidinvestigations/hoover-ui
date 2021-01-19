@@ -6,6 +6,7 @@ import { Lock, LockOpen } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles'
 import { blue } from '@material-ui/core/colors'
 import Loading from '../Loading'
+import TagTooltip from './TagTooltip'
 import { UserContext } from '../../../pages/_app'
 import { createTag, deleteTag, updateTag } from '../../backend/api'
 import { publicTagsList, specialTags, specialTagsList } from './specialTags'
@@ -155,33 +156,7 @@ function Tags({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onL
     }
 
     const renderChip = ({ value, text, chip, isDisabled, isReadOnly, handleDelete, className }, key) => (
-        <Tooltip
-            key={key}
-            placement="top"
-            title={
-                <>
-                    <Box>
-                        <strong>Created on:</strong>{' '}
-                        {DateTime.fromISO(chip.date_created, { locale: 'en-US' })
-                            .toLocaleString(DateTime.DATETIME_FULL)}
-                    </Box>
-                    <Box>
-                        {chip.date_indexed ?
-                            <>
-                                Indexed in
-                                <strong>
-                                    {DateTime.fromISO(chip.date_indexed)
-                                        .diff(DateTime.fromISO(chip.date_modified))
-                                        .toFormat(' s.SSS ')}
-                                </strong>
-                                seconds
-                            </>:
-                            'Not indexed yet'
-                        }
-                    </Box>
-                </>
-            }
-        >
+        <TagTooltip key={key} chip={chip}>
             <Chip
                 icon={chip.user === whoAmI.username && !specialTagsList.includes(chip.tag) ? chip.public ?
                     <Tooltip title="make private">
@@ -210,7 +185,7 @@ function Tags({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onL
                 onDelete={chip.user === whoAmI.username ? handleDelete : null}
                 label={chip.tag}
             />
-        </Tooltip>
+        </TagTooltip>
     )
 
     return (

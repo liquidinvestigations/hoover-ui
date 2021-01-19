@@ -17,7 +17,7 @@ import {
     TextFields,
     Toc
 } from '@material-ui/icons'
-import { Badge, Box, Chip, Grid, IconButton, Tab, Tabs, Toolbar, Tooltip, Typography } from '@material-ui/core'
+import { Badge, Box, Chip, Grid, IconButton, Tabs, Toolbar, Tooltip, Typography } from '@material-ui/core'
 import StyledTab from './StyledTab'
 import TabPanel from './TabPanel'
 import Preview, { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './Preview'
@@ -26,6 +26,7 @@ import Text from './Text'
 import Files from './Files'
 import Meta from './Meta'
 import Loading from '../Loading'
+import TagTooltip from './TagTooltip'
 import TextSubTabs from './TextSubTabs'
 import Tags, { getChipColor } from './Tags'
 import { UserContext } from '../../../pages/_app'
@@ -371,11 +372,21 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
             </Typography>
 
             <Grid container className={classes.tags}>
-                {tags.map((chip, index) => (
-                    <Grid item className={classes.tag} key={index}>
-                        <Chip size="small" label={chip.tag} style={{ backgroundColor: getChipColor(chip) }} />
-                    </Grid>
-                ))}
+                {tags.filter((item, pos, self) =>
+                    self.findIndex(tag => tag.tag === item.tag) === pos)
+                    .map((chip, index) => {
+                        const count = tags.filter(tag => tag.tag === chip.tag).length
+                        return (
+                            <Grid item className={classes.tag} key={index}>
+                                <TagTooltip chip={chip} count={count}>
+                                    <Badge badgeContent={count > 1 ? count : null} color="secondary">
+                                        <Chip size="small" label={chip.tag} style={{ backgroundColor: getChipColor(chip) }} />
+                                    </Badge>
+                                </TagTooltip>
+                            </Grid>
+                        )
+                    })
+                }
             </Grid>
 
             {!printMode && (
