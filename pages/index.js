@@ -4,14 +4,14 @@ import Link from 'next/link'
 import qs from 'qs'
 import { makeStyles } from '@material-ui/core/styles'
 import { Grid, List, TextField, Typography } from '@material-ui/core'
-import SearchQueryChips from '../src/components/SearchQueryChips'
+import SearchQueryChips from '../src/components/search/QueryChips'
 import HotKeysWithHelp from '../src/components/HotKeysWithHelp'
 import SplitPaneLayout from '../src/components/SplitPaneLayout'
-import Sorting from '../src/components/sorting/Sorting'
-import SearchResults from '../src/components/SearchResults'
-import Filter from '../src/components/filters/Filter'
-import Filters from '../src/components/filters/Filters'
-import CollectionsFilter from '../src/components/filters/CollectionsFilter'
+import Sorting from '../src/components/search/sorting/Sorting'
+import SearchResults from '../src/components/search/Results'
+import Filter from '../src/components/search/filters/Filter'
+import Filters from '../src/components/search/filters/Filters'
+import CollectionsFilter from '../src/components/search/filters/CollectionsFilter'
 import Document from '../src/components/document/Document'
 import { ProgressIndicatorContext } from '../src/components/ProgressIndicator'
 import { SEARCH_GUIDE } from '../src/constants'
@@ -37,6 +37,9 @@ const useStyles = makeStyles(theme => ({
         boxShadow: theme.shadows[5],
         padding: theme.spacing(4),
     },
+    info: {
+        color: theme.palette.grey.A700,
+    }
 }))
 
 export default function Index({ collections, serverQuery }) {
@@ -340,7 +343,13 @@ export default function Index({ collections, serverQuery }) {
                     </>
                 }
                 right={
-                    <Document docUrl={selectedDocUrl} data={selectedDocData} loading={previewLoading} />
+                    <Document
+                        docUrl={selectedDocUrl}
+                        data={selectedDocData}
+                        loading={previewLoading}
+                        onPrev={previewPreviousDoc}
+                        onNext={previewNextDoc}
+                    />
                 }
             >
                 <div className={classes.main}>
@@ -361,19 +370,17 @@ export default function Index({ collections, serverQuery }) {
                                 />
                             </form>
 
-                            <SearchQueryChips query={query.q} onQueryChange={handleSearch} />
-
                             <Grid container justify="space-between">
-                                <Grid item>
-                                    <Typography variant="caption">
-                                        Enter to search, Shift+Enter for a new line.<br />
-                                        All lines are combined into a single search.<br />
+                                <Grid item style={{ flex: 1 }}>
+                                    <Typography variant="caption" className={classes.info}>
+                                        Enter to search, Shift+Enter for a new line.
+                                        All lines are combined into a single search.
                                         Refine your search using {' '}
                                         <a href={SEARCH_GUIDE}>this handy guide</a>.
                                     </Typography>
                                 </Grid>
 
-                                <Grid item>
+                                <Grid item style={{ marginLeft: 20 }}>
                                     <Typography variant="caption">
                                         <Link href="/batch-search">
                                             <a>Batch search</a>
@@ -381,6 +388,8 @@ export default function Index({ collections, serverQuery }) {
                                     </Typography>
                                 </Grid>
                             </Grid>
+
+                            <SearchQueryChips query={query.q} onQueryChange={handleSearch} />
 
                             <Sorting
                                 order={order}

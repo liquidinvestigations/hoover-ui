@@ -1,28 +1,37 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useContext, useEffect, useState } from 'react'
+import Link from 'next/link'
 import url from 'url'
 import { makeStyles } from '@material-ui/core/styles'
 import {
-    ChromeReaderMode,
+    AccountTreeOutlined,
     CloudDownload,
-    Delete,
-    Drafts,
+    CodeOutlined,
+    FolderOutlined,
     Launch,
-    Markunread,
+    LocalOfferOutlined,
+    NavigateBefore,
+    NavigateNext,
+    PageviewOutlined,
     Print,
-    RestoreFromTrash,
-    Star,
-    StarOutline
+    SettingsApplicationsOutlined,
+    TextFields,
+    Toc
 } from '@material-ui/icons'
-import { IconButton, Toolbar, Tooltip } from '@material-ui/core'
-import EmailSection from './EmailSection'
-import PreviewSection from './PreviewSection'
-import HTMLSection from './HTMLSection'
-import TextSection from './TextSection'
-import FilesSection from './FilesSection'
-import MetaSection from './MetaSection'
+import { Badge, Box, Chip, Grid, IconButton, Tabs, Toolbar, Tooltip, Typography } from '@material-ui/core'
+import StyledTab from './StyledTab'
+import TabPanel from './TabPanel'
+import Preview, { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './Preview'
+import HTML from './HTML'
+import Text from './Text'
+import Files from './Files'
+import Meta from './Meta'
 import Loading from '../Loading'
-import TagsSection from './TagsSection'
+import TagTooltip from './TagTooltip'
+import TextSubTabs from './TextSubTabs'
+import Tags, { getChipColor } from './Tags'
+import { UserContext } from '../../../pages/_app'
 import { createDownloadUrl, createOcrUrl, createTag, deleteTag, tags as tagsAPI } from '../../backend/api'
+import { publicTagsList, specialTags } from './specialTags'
 
 const useStyles = makeStyles(theme => ({
     toolbar: {
@@ -32,6 +41,50 @@ const useStyles = makeStyles(theme => ({
         borderBottomStyle: 'solid',
         justifyContent: 'space-between',
     },
+    toolbarIcons: {
+        marginRight: theme.spacing(1),
+        '&:last-child': {
+            marginRight: 0,
+        }
+    },
+    filename: {
+        padding: theme.spacing(1),
+        paddingBottom: 0,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        color: theme.palette.primary.contrastText,
+        backgroundColor: theme.palette.primary.main,
+    },
+    subtitle: {
+        backgroundColor: theme.palette.primary.main,
+        padding: theme.spacing(1),
+        paddingTop: theme.spacing(0.5),
+        alignItems: 'baseline',
+    },
+    collection: {
+        minHeight: 34,
+        marginRight: theme.spacing(3),
+        color: 'rgba(255,255,255,0.7)',
+    },
+    tag: {
+        marginRight: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+    },
+    tabsRoot: {
+        color: theme.palette.primary.contrastText,
+        backgroundColor: theme.palette.primary.main,
+    },
+    tabsIndicator: {
+        top: 0,
+    },
+    printTitle: {
+        margin: theme.spacing(2),
+    },
+    printBackLink: {
+        float: 'right',
+        margin: theme.spacing(1),
+        color: theme.palette.primary.contrastText,
+    }
 }))
 
 const parseCollection = url => {
@@ -39,14 +92,20 @@ const parseCollection = url => {
     return collection;
 }
 
-function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMeta = true }) {
+function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }) {
     const classes = useStyles()
+    const whoAmI = useContext(UserContext)
 
     let digestUrl = docUrl
 
     const collection = parseCollection(docUrl)
     const collectionBaseUrl = docUrl && url.resolve(docUrl, './')
-    const headerLinks = []
+    const headerLinks = {
+        tags: [],
+        navigation: [],
+        actions: [],
+    }
+    const tagsLinks = []
 
     let digest = data?.id
     let docRawUrl = createDownloadUrl(`${collectionBaseUrl}${digest}`, data?.content.filename)
@@ -63,26 +122,31 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
         docRawUrl = null
     }
 
+    const [tab, setTab] = useState(0)
+    const handleTabChange = (event, newValue) => setTab(newValue)
+
     const [tags, setTags] = useState([])
-    const [tagsLoading, setTagsLoading] = useState(false)
-    const [importantLock, setImportantLock] = useState(false)
-    const [seenLock, setSeenLock] = useState(false)
-    const [trashLock, setTrashLock] = useState(false)
+    const [tagsLoading, setTagsLoading] = useState(true)
+    const [tagsLocked, setTagsLocked] = useState(false)
+
     useEffect(() => {
         if (digestUrl && !digestUrl.includes('_file_') && !digestUrl.includes('_directory_')) {
+            setTab(0)
             setTagsLoading(true)
-            setImportantLock(true)
-            setSeenLock(true)
-            setTrashLock(true)
+            setTagsLocked(true)
             tagsAPI(digestUrl).then(data => {
                 setTags(data)
                 setTagsLoading(false)
-                setImportantLock(false)
-                setSeenLock(false)
-                setTrashLock(false)
+                setTagsLocked(false)
             })
         }
     }, [digestUrl])
+
+    useEffect(() => {
+        if (printMode && !loading && !tagsLoading) {
+            window.setTimeout(window.print)
+        }
+    }, [printMode, loading, tagsLoading])
 
     if (loading) {
         return <Loading />
@@ -92,163 +156,270 @@ function Document({ docUrl, data, loading, fullPage, showToolbar = true, showMet
         return null
     }
 
-    const handleSpecialTagClick = (tag, name, onLoading) => () => {
-        setImportantLock(true)
+    const handleSpecialTagClick = (tag, name) => event => {
+        event.stopPropagation()
+        setTagsLocked(true)
         if (tag) {
             deleteTag(digestUrl, tag.id).then(() => {
                 setTags([...(tags.filter(t => t.id !== tag.id))])
-                onLoading(false)
+                setTagsLocked(false)
             }).catch(() => {
-                onLoading(false)
+                setTagsLocked(false)
             })
         } else {
-            createTag(digestUrl, { tag: name, public: false }).then(newTag => {
+            createTag(digestUrl, { tag: name, public: publicTagsList.includes(name) }).then(newTag => {
                 setTags([...tags, newTag])
-                onLoading(false)
+                setTagsLocked(false)
             }).catch(() => {
-                onLoading(false)
+                setTagsLocked(false)
             })
         }
     }
 
-    if (!fullPage) {
-        headerLinks.push({
-            href: docUrl,
-            text: 'Open in new tab',
-            icon: <Launch />,
-            target: '_blank',
-        });
-    }
-
     if (data.content.filetype !== 'folder') {
-        const important = tags.find(tag => tag.tag === 'important')
-        headerLinks.push({
-            icon: important ? <Star /> : <StarOutline />,
-            style: { color: '#ffb400' },
-            text: important ? 'Unmark important' : 'Mark important',
-            disabled: importantLock,
-            onClick: handleSpecialTagClick(important, 'important', setImportantLock)
+        specialTags.forEach(s => {
+            const present = tags.find(tag => tag.tag === s.tag && tag.user === whoAmI.username)
+            const count = tags.filter(tag => tag.tag === s.tag && tag.user !== whoAmI.username)?.length || null
+            const link = {
+                icon: present ? s.present.icon : s.absent.icon,
+                label: present ? s.present.label : s.absent.label,
+                style: { color: present ? s.present.color : s.absent.color },
+                tooltip: s.tooltip,
+                disabled: tagsLocked,
+                onClick: handleSpecialTagClick(present, s.tag),
+                count: present && count ? count + 1: count,
+            }
+            if (s.showInToolbar) {
+                headerLinks.tags.push(link)
+            }
+            if (s.showInTagsTab) {
+                tagsLinks.push(link)
+            }
         })
 
-        const seen = tags.find(tag => tag.tag === 'seen')
-        headerLinks.push({
-            icon: seen ? <Drafts /> : <Markunread />,
-            text: seen ? 'Unmark seen' : 'Mark seen',
-            disabled: seenLock,
-            onClick: handleSpecialTagClick(seen, 'seen', setSeenLock)
-        })
+        if (onPrev) {
+            headerLinks.navigation.push({
+                icon: <NavigateBefore />,
+                tooltip: 'Previous result',
+                onClick: onPrev,
+            })
+        }
 
-        const trash = tags.find(tag => tag.tag === 'trash')
-        headerLinks.push({
-            icon: trash ? <RestoreFromTrash /> : <Delete />,
-            text: trash ? 'Restore from trash' : 'Mark trashed',
-            disabled: trashLock,
-            onClick: handleSpecialTagClick(trash, 'trash', setTrashLock)
-        })
+        if (onNext) {
+            headerLinks.navigation.push({
+                icon: <NavigateNext />,
+                tooltip: 'Next result',
+                onClick: onNext,
+            })
+        }
 
-        headerLinks.push({
+        if (!fullPage) {
+            headerLinks.actions.push({
+                href: docUrl,
+                tooltip: 'Open in new tab',
+                icon: <Launch />,
+                target: '_blank',
+            })
+        }
+
+        headerLinks.actions.push({
             href: `${docUrl}?print=true`,
-            text: 'Print metadata and content',
+            tooltip: 'Print metadata and content',
             icon: <Print />,
             target: '_blank',
-        });
+        })
 
-        headerLinks.push({
+        headerLinks.actions.push({
             href: docRawUrl,
-            text: 'Download original file',
+            tooltip: 'Download original file',
             icon: <CloudDownload />,
             target: fullPage ? null : '_blank',
-        });
+        })
     }
 
     const ocrData = Object.keys(data.content.ocrtext || {}).map((tag, index) => {
-        return {tag: tag, text: data.content.ocrtext[tag]};
-    });
+        return {tag: tag, text: data.content.ocrtext[tag]}
+    })
 
-    headerLinks.push(
-        ...ocrData.map(({tag}) => {
-            return {
-                href: createOcrUrl(digestUrl, tag),
-                text: `OCR ${tag}`,
-                icon: <ChromeReaderMode />,
-                target: fullPage ? null : '_blank',
-            };
-        })
+    headerLinks.actions.push(
+        ...ocrData.map(({tag}) => ({
+            href: createOcrUrl(digestUrl, tag),
+            tooltip: `OCR ${tag}`,
+            icon: <TextFields />,
+            target: fullPage ? null : '_blank',
+        }))
     )
+
+    let tabIndex = 0
+
+    const tabsClasses = {
+        root: classes.tabsRoot,
+        indicator: classes.tabsIndicator,
+    }
+    const tabClasses = {
+        root: classes.tabRoot,
+    }
+
+    const hasPreview = docRawUrl && data.content['content-type'] && (
+        data.content['content-type'] === 'application/pdf' ||
+        PREVIEWABLE_MIME_TYPE_SUFFEXES.some(x => data.content['content-type'].endsWith(x))
+    )
+
+    const tabsData = [{
+        name: 'Text',
+        icon: <Toc />,
+        visible: true,
+        padding: 0,
+        content: <TextSubTabs
+            data={data}
+            ocrData={ocrData}
+            collection={collection}
+            printMode={printMode}
+        />,
+    },{
+        name: 'Preview',
+        icon: <PageviewOutlined />,
+        visible: hasPreview,
+        content: <Preview
+            docTitle={data.content.filename}
+            type={data.content['content-type']}
+            url={docRawUrl}
+        />,
+    },{
+        name: 'Tags',
+        icon: <LocalOfferOutlined />,
+        visible: data.content.filetype !== 'folder',
+        content: <Tags
+            loading={tagsLoading}
+            digestUrl={digestUrl}
+            tags={tags}
+            onChanged={setTags}
+            toolbarButtons={tagsLinks}
+            locked={tagsLocked}
+            onLocked={setTagsLocked}
+            printMode={printMode}
+        />,
+    },{
+        name: 'Meta',
+        icon: <SettingsApplicationsOutlined />,
+        visible: true,
+        content: <Meta
+            doc={data}
+            collection={collection}
+            baseUrl={collectionBaseUrl}
+            printMode={printMode}
+        />,
+    },{
+        name: 'HTML',
+        icon: <CodeOutlined />,
+        visible: !!data.safe_html,
+        content: <HTML html={data.safe_html} />,
+    },{
+        name: 'Headers & Parts',
+        icon: <AccountTreeOutlined />,
+        visible: !!data.content.tree,
+        content: <Text content={data.content.tree} />,
+    },{
+        name: 'Files',
+        icon: <FolderOutlined />,
+        visible: !!data.children?.length,
+        content: <Files
+            data={data.children}
+            page={data.children_page}
+            hasNextPage={data.children_has_next_page}
+            fullPage={fullPage}
+            docUrl={docUrl}
+            baseUrl={collectionBaseUrl}
+        />
+    }]
 
     return (
         <div>
-            {headerLinks.length > 0 && showToolbar !== false && (
-                <Toolbar classes={{root: classes.toolbar}}>
-                    {headerLinks.map(({text, icon, ...props}, index) => (
-                        <Tooltip title={text} key={index}>
-                            <IconButton
-                                size="small"
-                                color="default"
-                                component="a"
-                                {...props}>
-                                {icon}
-                            </IconButton>
-                        </Tooltip>
+            {!printMode && (
+                <Toolbar variant="dense" classes={{root: classes.toolbar}}>
+                    {Object.entries(headerLinks).map(([group, links]) => (
+                        <Box key={group}>
+                            {links.map(({tooltip, icon, count, ...props}, index) => (
+                                <Tooltip title={tooltip} key={index}>
+                                    <IconButton
+                                        size="small"
+                                        component="a"
+                                        color="default"
+                                        className={classes.toolbarIcons}
+                                        {...props}>
+                                        <Badge badgeContent={count} color="secondary">
+                                            {icon}
+                                        </Badge>
+                                    </IconButton>
+                                </Tooltip>
+                            ))}
+                        </Box>
                     ))}
                 </Toolbar>
             )}
 
-            <TagsSection
-                loading={tagsLoading}
-                digestUrl={digestUrl}
-                tags={tags}
-                onTagsChanged={setTags}
-            />
-
-            <EmailSection doc={data} collection={collection} />
-
-            <PreviewSection
-                docTitle={data.content.filename}
-                type={data.content["content-type"]}
-                url={docRawUrl}
-            />
-
-            <HTMLSection html={data.safe_html} />
-
-            <TextSection
-                title="Text"
-                text={data.content.text}
-                fullPage={fullPage}
-            />
-
-            <TextSection
-                title="Headers &amp; Parts"
-                text={data.content.tree}
-                fullPage={fullPage}
-            />
-
-            {ocrData.map(({tag, text}) => (
-                <TextSection
-                    key={tag}
-                    title={"OCR " + tag}
-                    text={text}
-                    fullPage={fullPage}
-                    omitIfEmpty={false}
-                />
-            ))}
-
-            <FilesSection
-                data={data.children || []}
-                page={data.children_page}
-                hasNextPage={data.children_has_next_page}
-                fullPage={fullPage}
-                docUrl={docUrl}
-                baseUrl={collectionBaseUrl}
-            />
-
-            {showMeta && (
-                <MetaSection
-                    doc={data}
-                    collection={collection}
-                    baseUrl={collectionBaseUrl}
-                />
+            {printMode && (
+                <Link href={docUrl}>
+                    <a className={classes.printBackLink}>← Back to <b>normal view</b></a>
+                </Link>
             )}
+
+            <Typography variant="h5" className={classes.filename}>
+                {data.content.filename}
+            </Typography>
+
+            <Grid container className={classes.subtitle}>
+                <Grid item>
+                    <Typography variant="subtitle1" className={classes.collection}>
+                        {collection}
+                    </Typography>
+                </Grid>
+
+                {tags.filter((item, pos, self) =>
+                    self.findIndex(tag => tag.tag === item.tag) === pos)
+                    .map((chip, index) => {
+                        const count = tags.filter(tag => tag.tag === chip.tag).length
+                        return (
+                            <Grid item className={classes.tag} key={index}>
+                                <TagTooltip chip={chip} count={count}>
+                                    <Badge badgeContent={count > 1 ? count : null} color="secondary">
+                                        <Chip
+                                            size="small"
+                                            label={chip.tag}
+                                            style={{
+                                                height: 20,
+                                                backgroundColor: getChipColor(chip),
+                                            }} />
+                                    </Badge>
+                                </TagTooltip>
+                            </Grid>
+                        )
+                    })
+                }
+            </Grid>
+
+            {!printMode && (
+                <Tabs
+                    value={tab}
+                    onChange={handleTabChange}
+                    classes={tabsClasses}
+                    variant="scrollable"
+                    scrollButtons="auto"
+                >
+                    {tabsData.filter(tabData => tabData.visible).map((tabData, index) => (
+                        <StyledTab icon={tabData.icon} label={tabData.name} classes={tabClasses} key={index} />
+                    ))}
+                </Tabs>
+            )}
+
+            {tabsData.filter(tabData => tabData.visible).map((tabData, index) => (
+                <Box key={index}>
+                    {printMode && <Typography variant="h3" className={classes.printTitle}>{tabData.name}</Typography>}
+                    <TabPanel value={tab} index={tabIndex++} padding={tabData.padding} alwaysVisible={printMode}>
+                        {tabData.content}
+                    </TabPanel>
+                </Box>
+            ))}
         </div>
     )
 }

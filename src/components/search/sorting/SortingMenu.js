@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Sort } from '@material-ui/icons'
 import { Fab, Menu, MenuItem } from '@material-ui/core'
-import { SORTABLE_FIELDS } from '../../constants'
+import { SORTABLE_FIELDS } from '../../../constants'
 
 export default function SortingMenu({ order, addSorting }) {
     const sortOptions = Object.entries(SORTABLE_FIELDS).filter(

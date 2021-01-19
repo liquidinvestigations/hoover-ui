@@ -1,8 +1,8 @@
 import React, { memo } from 'react'
 import { Grid, IconButton, Typography } from '@material-ui/core'
 import { NavigateBefore, NavigateNext } from '@material-ui/icons'
-import { formatThousands } from '../utils';
-import SearchSize from './SearchSize'
+import { formatThousands } from '../../utils';
+import SearchSize from './Size'
 
 function Pagination({ total, size, page, changePage, changeSize }) {
     const handleNext = () => changePage(page + 1)

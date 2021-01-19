@@ -8,7 +8,7 @@ module.exports = withSass({
     webpack(config, options) {
         config.plugins.push(new LodashModuleReplacementPlugin());
         config.module.rules.push({
-            test: /\.(png|jpg|gif|svg)$/i,
+            test: /\.(png|jpg|gif)$/i,
             use: [
                 {
                     loader: 'url-loader',
@@ -17,6 +17,9 @@ module.exports = withSass({
                     },
                 },
             ],
+        },{
+            test: /\.svg$/,
+            use: ['@svgr/webpack', 'url-loader'],
         });
 
         return config;

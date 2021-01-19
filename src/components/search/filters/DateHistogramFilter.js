@@ -4,7 +4,7 @@ import { FormControl, FormHelperText, ListItem, MenuItem, Select } from '@materi
 import Filter from './Filter'
 import DateRangeFilter from './DateRangeFilter'
 import AggregationFilter from './AggregationFilter'
-import { DEFAULT_INTERVAL } from '../../constants'
+import { DEFAULT_INTERVAL } from '../../../constants'
 
 const formatsLabel = {
     year: 'y',

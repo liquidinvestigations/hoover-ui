@@ -100,6 +100,24 @@ Object {
         "bool": Object {},
       },
     },
+    "from.keyword": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "from.keyword",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "from.keyword",
+            "size": 10,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
     "lang": Object {
       "aggs": Object {
         "count": Object {
@@ -110,6 +128,24 @@ Object {
         "values": Object {
           "terms": Object {
             "field": "lang",
+            "size": 10,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "path-parts": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "path-parts",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "path-parts",
             "size": 10,
           },
         },
@@ -146,6 +182,24 @@ Object {
         "values": Object {
           "terms": Object {
             "field": "tags",
+            "size": 10,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "to.keyword": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "to.keyword",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "to.keyword",
             "size": 10,
           },
         },

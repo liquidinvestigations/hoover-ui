@@ -2,8 +2,8 @@ import React, { memo, useContext } from 'react'
 import { List } from '@material-ui/core'
 import DateHistogramFilter from './DateHistogramFilter'
 import TermsAggregationFilter from './TermsAggregationFilter'
-import { getLanguageName } from '../../utils'
-import { UserContext } from '../../../pages/_app'
+import { getLanguageName } from '../../../utils'
+import { UserContext } from '../../../../pages/_app'
 
 const formatLang = bucket => getLanguageName(bucket.key)
 
@@ -92,6 +92,30 @@ function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
             <TermsAggregationFilter
                 title="Email domain"
                 field="email-domains"
+                onLoadMore={handleLoadMore}
+                emptyDisabled
+                {...filterProps}
+            />
+
+            <TermsAggregationFilter
+                title="Email from"
+                field="from.keyword"
+                onLoadMore={handleLoadMore}
+                emptyDisabled
+                {...filterProps}
+            />
+
+            <TermsAggregationFilter
+                title="Email to"
+                field="to.keyword"
+                onLoadMore={handleLoadMore}
+                emptyDisabled
+                {...filterProps}
+            />
+
+            <TermsAggregationFilter
+                title="Path"
+                field="path-parts"
                 onLoadMore={handleLoadMore}
                 emptyDisabled
                 {...filterProps}

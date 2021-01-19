@@ -43,8 +43,8 @@ const buildSortQuery = order => order?.reverse().map(([field, direction = 'asc']
 ) || []
 
 const buildTermsField = (field, terms, page = 1, size = DEFAULT_FACET_SIZE) => {
-    const includeTerms = terms?.filter(term => !term.startsWith('!'))
-    const excludeTerms = terms?.filter(term => term.startsWith('!')).map(term => term.substring(1))
+    const includeTerms = terms?.filter(term => !term.startsWith('~'))
+    const excludeTerms = terms?.filter(term => term.startsWith('~')).map(term => term.substring(1))
     return {
         field,
         aggregation: {
@@ -167,7 +167,8 @@ const buildSearchQuery = ({ page = 1, size = 0, order, collections = [], facets 
         ...['date', 'date-created'].map(field =>
             buildHistogramField(field, rest[field], facets[field]),
         ),
-        ...['tags', `priv-tags.${username}`, 'filetype', 'lang', 'email-domains'].map(field =>
+        ...['tags', `priv-tags.${username}`, 'filetype', 'lang',
+            'email-domains', 'from.keyword', 'to.keyword', 'path-parts'].map(field =>
             buildTermsField(field, rest[field], facets[field])
         ),
     ]

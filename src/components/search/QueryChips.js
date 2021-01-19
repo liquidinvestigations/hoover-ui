@@ -3,7 +3,7 @@ import lucene from 'lucene'
 import { Box, ButtonBase, Chip, FormControl, Menu, MenuItem, Tooltip } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { green, red } from '@material-ui/core/colors'
-import { DEFAULT_OPERATOR, SEARCH_QUERY_PREFIXES } from '../constants'
+import { DEFAULT_OPERATOR, SEARCH_QUERY_PREFIXES } from '../../constants'
 
 const useStyles = makeStyles(theme => ({
     box: {
@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
         fontSize: '10px',
         width: '100%',
         height: theme.spacing(1),
-        marginTop: theme.spacing(1) / 2,
+        marginTop: theme.spacing(0.5),
         borderLeft: '1px solid black',
         borderRight: '1px solid black',
         borderBottom: 'solid 1px black',
@@ -93,7 +93,7 @@ const ELLIPSIS_TERM_LENGTH = 30
 const shortenName = name => name.length > ELLIPSIS_TERM_LENGTH ?
     `${name.substr(0, 17)}...${name.substr(-10)}` : name
 
-function SearchQueryChips({ query, onQueryChange }) {
+function QueryChips({ query, onQueryChange }) {
     const classes = useStyles()
     const [parsedQuery, setParsedQuery] = useState()
 
@@ -184,7 +184,7 @@ function SearchQueryChips({ query, onQueryChange }) {
                 label = (
                     <span>
                         {q.prefix && <strong>{q.prefix}{' '}</strong>}
-                        <strong>{q.field}</strong>:{' '}
+                        <strong>{q.field}:</strong>{' '}
                         {shortenName(q.term)}
                     </span>
                 )
@@ -200,9 +200,9 @@ function SearchQueryChips({ query, onQueryChange }) {
                     <Tooltip placement="top" title={(
                         <>
                             {q.term?.length > ELLIPSIS_TERM_LENGTH && <Box>{q.term}</Box>}
-                            {q.similarity && <Box>Similarity:{' '}{q.similarity}</Box>}
-                            {q.proximity && <Box>Proximity:{' '}{q.proximity}</Box>}
-                            {q.boost && <Box>Boost:{' '}{q.boost}</Box>}
+                            {q.similarity && <Box><strong>Similarity:</strong>{' '}{q.similarity}</Box>}
+                            {q.proximity && <Box><strong>Proximity:</strong>{' '}{q.proximity}</Box>}
+                            {q.boost && <Box><strong>Boost:</strong>{' '}{q.boost}</Box>}
                         </>
                     )}>
                         {getChip(q, label, className + ' ' + classes.tooltipChip)}
@@ -256,4 +256,4 @@ function SearchQueryChips({ query, onQueryChange }) {
         </FormControl> : null
 }
 
-export default memo(SearchQueryChips)
+export default memo(QueryChips)

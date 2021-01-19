@@ -2,9 +2,9 @@ import React, { memo } from 'react'
 import ReactPlaceholder from 'react-placeholder'
 import Pagination from './Pagination'
 import ResultItem from './ResultItem'
-import { documentViewUrl } from '../utils'
+import { documentViewUrl } from '../../utils'
 
-function SearchResults({ loading, results, query, changePage, changeSize, selectedDocUrl, onPreview }) {
+function Results({ loading, results, query, changePage, changeSize, selectedDocUrl, onPreview }) {
     const start = 1 + (query.page - 1) * query.size
 
     return (
@@ -50,4 +50,4 @@ function SearchResults({ loading, results, query, changePage, changeSize, select
     )
 }
 
-export default memo(SearchResults)
+export default memo(Results)

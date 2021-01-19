@@ -3,13 +3,13 @@ import url from 'url'
 import copy from 'copy-text-to-clipboard'
 import langs from 'langs'
 
-import file from '../icons/file-line.svg'
-import folder from '../icons/folder-line.svg'
-import archive from '../icons/file-zip-line.svg'
-import email from '../icons/mail-line.svg'
-import pdf from '../icons/file-pdf-line.svg'
-import doc from '../icons/file-word-line.svg'
-import xls from '../icons/file-excel-line.svg'
+import file, { ReactComponent as FileIcon } from '../icons/file-line.svg'
+import folder, { ReactComponent as FolderIcon } from '../icons/folder-line.svg'
+import archive, { ReactComponent as ArchiveIcon } from '../icons/file-zip-line.svg'
+import email, { ReactComponent as EmailIcon } from '../icons/mail-line.svg'
+import pdf, { ReactComponent as PdfIcon } from '../icons/file-pdf-line.svg'
+import doc, { ReactComponent as DocIcon } from '../icons/file-word-line.svg'
+import xls, { ReactComponent as XlsIcon } from '../icons/file-excel-line.svg'
 
 export const getIconImageElement = fileType => {
     const srcMap = {
@@ -25,6 +25,20 @@ export const getIconImageElement = fileType => {
     const img = document.createElement('img');
     img.src = (srcMap[fileType] || srcMap.default);
     return img
+}
+
+export const getIconReactComponent = fileType => {
+    const iconMap = {
+        folder: FolderIcon,
+        archive: ArchiveIcon,
+        email: EmailIcon,
+        pdf: PdfIcon,
+        doc: DocIcon,
+        xls: XlsIcon,
+        'email-archive': ArchiveIcon,
+        default: FileIcon
+    }
+    return iconMap[fileType] || iconMap.default
 }
 
 export const getLanguageName = key => {
@@ -78,13 +92,6 @@ export const truncatePath = str => {
 
 export const formatThousands = n =>
     String(n).replace(/(?<!\..*)(\d)(?=(?:\d{3})+(?:\.|$))/g, '$1,')
-
-export const parseLocation = () =>  url.parse(window.location.href, true)
-
-export const isPrintMode = () => {
-    const { query } = parseLocation()
-    return query.print && query.print !== 'false'
-}
 
 export const copyMetadata = doc => {
     const string = [doc.content.md5, doc.content.path].join('\n');

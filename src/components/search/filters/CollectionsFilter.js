@@ -1,7 +1,7 @@
 import React, { memo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Checkbox, List, ListItem, ListItemText, Typography } from '@material-ui/core'
-import { formatThousands } from '../../utils'
+import { formatThousands } from '../../../utils'
 
 const useStyles = makeStyles(theme => ({
     checkbox: {

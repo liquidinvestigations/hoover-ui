@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Chip } from '@material-ui/core'
 import { ArrowUpward } from '@material-ui/icons'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
-import { SORTABLE_FIELDS } from '../../constants'
+import { SORTABLE_FIELDS } from '../../../constants'
 
 const useStyles = makeStyles(theme => ({
     icon: {
