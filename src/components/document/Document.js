@@ -6,7 +6,6 @@ import {
     AccountTreeOutlined,
     CloudDownload,
     CodeOutlined,
-    FolderOutlined,
     Launch,
     LocalOfferOutlined,
     NavigateBefore,
@@ -23,7 +22,6 @@ import TabPanel from './TabPanel'
 import Preview, { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './Preview'
 import HTML from './HTML'
 import Text from './Text'
-import Files from './Files'
 import Meta from './Meta'
 import Loading from '../Loading'
 import TagTooltip from './TagTooltip'
@@ -101,9 +99,9 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
     const collection = parseCollection(docUrl)
     const collectionBaseUrl = docUrl && url.resolve(docUrl, './')
     const headerLinks = {
-        tags: [],
-        navigation: [],
         actions: [],
+        navigation: [],
+        tags: [],
     }
     const tagsLinks = []
 
@@ -156,6 +154,10 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
         return null
     }
 
+    const ocrData = Object.keys(data.content.ocrtext || {}).map((tag, index) => {
+        return {tag: tag, text: data.content.ocrtext[tag]}
+    })
+
     const handleSpecialTagClick = (tag, name) => event => {
         event.stopPropagation()
         setTagsLocked(true)
@@ -177,42 +179,6 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
     }
 
     if (data.content.filetype !== 'folder') {
-        specialTags.forEach(s => {
-            const present = tags.find(tag => tag.tag === s.tag && tag.user === whoAmI.username)
-            const count = tags.filter(tag => tag.tag === s.tag && tag.user !== whoAmI.username)?.length || null
-            const link = {
-                icon: present ? s.present.icon : s.absent.icon,
-                label: present ? s.present.label : s.absent.label,
-                style: { color: present ? s.present.color : s.absent.color },
-                tooltip: s.tooltip,
-                disabled: tagsLocked,
-                onClick: handleSpecialTagClick(present, s.tag),
-                count: present && count ? count + 1: count,
-            }
-            if (s.showInToolbar) {
-                headerLinks.tags.push(link)
-            }
-            if (s.showInTagsTab) {
-                tagsLinks.push(link)
-            }
-        })
-
-        if (onPrev) {
-            headerLinks.navigation.push({
-                icon: <NavigateBefore />,
-                tooltip: 'Previous result',
-                onClick: onPrev,
-            })
-        }
-
-        if (onNext) {
-            headerLinks.navigation.push({
-                icon: <NavigateNext />,
-                tooltip: 'Next result',
-                onClick: onNext,
-            })
-        }
-
         if (!fullPage) {
             headerLinks.actions.push({
                 href: docUrl,
@@ -235,20 +201,52 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
             icon: <CloudDownload />,
             target: fullPage ? null : '_blank',
         })
+
+        headerLinks.actions.push(
+            ...ocrData.map(({tag}) => ({
+                href: createOcrUrl(digestUrl, tag),
+                tooltip: `OCR ${tag}`,
+                icon: <TextFields />,
+                target: fullPage ? null : '_blank',
+            }))
+        )
+
+        if (onPrev) {
+            headerLinks.navigation.push({
+                icon: <NavigateBefore />,
+                tooltip: 'Previous result',
+                onClick: onPrev,
+            })
+        }
+
+        if (onNext) {
+            headerLinks.navigation.push({
+                icon: <NavigateNext />,
+                tooltip: 'Next result',
+                onClick: onNext,
+            })
+        }
+
+        specialTags.forEach(s => {
+            const present = tags.find(tag => tag.tag === s.tag && tag.user === whoAmI.username)
+            const count = tags.filter(tag => tag.tag === s.tag && tag.user !== whoAmI.username)?.length || null
+            const link = {
+                icon: present ? s.present.icon : s.absent.icon,
+                label: present ? s.present.label : s.absent.label,
+                style: { color: present ? s.present.color : s.absent.color },
+                tooltip: s.tooltip,
+                disabled: tagsLocked,
+                onClick: handleSpecialTagClick(present, s.tag),
+                count: present && count ? count + 1: count,
+            }
+            if (s.showInToolbar) {
+                headerLinks.tags.push(link)
+            }
+            if (s.showInTagsTab) {
+                tagsLinks.push(link)
+            }
+        })
     }
-
-    const ocrData = Object.keys(data.content.ocrtext || {}).map((tag, index) => {
-        return {tag: tag, text: data.content.ocrtext[tag]}
-    })
-
-    headerLinks.actions.push(
-        ...ocrData.map(({tag}) => ({
-            href: createOcrUrl(digestUrl, tag),
-            tooltip: `OCR ${tag}`,
-            icon: <TextFields />,
-            target: fullPage ? null : '_blank',
-        }))
-    )
 
     let tabIndex = 0
 
@@ -266,7 +264,7 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
     )
 
     const tabsData = [{
-        name: 'Text',
+        name: data.content.filetype,
         icon: <Toc />,
         visible: true,
         padding: 0,
@@ -275,6 +273,9 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
             ocrData={ocrData}
             collection={collection}
             printMode={printMode}
+            fullPage={fullPage}
+            docUrl={docUrl}
+            baseUrl={collectionBaseUrl}
         />,
     },{
         name: 'Preview',
@@ -319,18 +320,6 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
         icon: <AccountTreeOutlined />,
         visible: !!data.content.tree,
         content: <Text content={data.content.tree} />,
-    },{
-        name: 'Files',
-        icon: <FolderOutlined />,
-        visible: !!data.children?.length,
-        content: <Files
-            data={data.children}
-            page={data.children_page}
-            hasNextPage={data.children_has_next_page}
-            fullPage={fullPage}
-            docUrl={docUrl}
-            baseUrl={collectionBaseUrl}
-        />
     }]
 
     return (
@@ -344,7 +333,6 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
                                     <IconButton
                                         size="small"
                                         component="a"
-                                        color="default"
                                         className={classes.toolbarIcons}
                                         {...props}>
                                         <Badge badgeContent={count} color="secondary">

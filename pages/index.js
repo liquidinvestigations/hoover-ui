@@ -3,13 +3,13 @@ import Router, { useRouter } from 'next/router'
 import Link from 'next/link'
 import qs from 'qs'
 import { makeStyles } from '@material-ui/core/styles'
-import { Grid, List, TextField, Typography } from '@material-ui/core'
+import { Divider, Grid, List, TextField, Typography } from '@material-ui/core'
 import SearchQueryChips from '../src/components/search/QueryChips'
 import HotKeysWithHelp from '../src/components/HotKeysWithHelp'
 import SplitPaneLayout from '../src/components/SplitPaneLayout'
 import Sorting from '../src/components/search/sorting/Sorting'
 import SearchResults from '../src/components/search/Results'
-import Filter from '../src/components/search/filters/Filter'
+import Expandable from '../src/components/Expandable'
 import Filters from '../src/components/search/filters/Filters'
 import CollectionsFilter from '../src/components/search/filters/CollectionsFilter'
 import Document from '../src/components/document/Document'
@@ -319,10 +319,10 @@ export default function Index({ collections, serverQuery }) {
                 left={
                     <>
                         <List dense style={{ paddingBottom: 0 }}>
-                            <Filter
+                            <Expandable
                                 title={`Collections (${selectedCollections.length})`}
-                                colorIfFiltered={false}
                                 defaultOpen
+                                highlight={false}
                             >
                                 <CollectionsFilter
                                     collections={collections}
@@ -330,7 +330,8 @@ export default function Index({ collections, serverQuery }) {
                                     changeSelection={handleSelectedCollectionsChange}
                                     counts={results?.count_by_index}
                                 />
-                            </Filter>
+                                <Divider />
+                            </Expandable>
                         </List>
 
                         <Filters

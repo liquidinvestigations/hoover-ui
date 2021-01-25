@@ -2,17 +2,23 @@ import React, { memo, useState } from 'react'
 import Text from './Text'
 import { Box, Tab, Tabs, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { Subject, TextFields } from '@material-ui/icons'
+import { FolderOutlined, Subject, TextFields } from '@material-ui/icons'
+import Expandable from '../Expandable'
 import TabPanel from './TabPanel'
 import Email from './Email'
+import Files from './Files'
 
 const useStyles = makeStyles(theme => ({
     printTitle: {
         margin: theme.spacing(2),
     },
+    icon: {
+        verticalAlign: 'bottom',
+        marginRight: theme.spacing(1),
+    }
 }))
 
-function TextSubTabs({ data, ocrData, collection, printMode }) {
+function TextSubTabs({ data, ocrData, collection, printMode, fullPage, docUrl, baseUrl }) {
     const classes = useStyles()
 
     const [tab, setTab] = useState(ocrData?.length ? 1 : 0)
@@ -48,7 +54,29 @@ function TextSubTabs({ data, ocrData, collection, printMode }) {
                 />
             )}
 
-            {!printMode && (
+            {!!data.children?.length && (
+                <Expandable
+                    defaultOpen
+                    highlight={false}
+                    title={
+                        <>
+                            <FolderOutlined className={classes.icon} />
+                            Files
+                        </>
+                    }
+                >
+                    <Files
+                        data={data.children}
+                        page={data.children_page}
+                        hasNextPage={data.children_has_next_page}
+                        fullPage={fullPage}
+                        docUrl={docUrl}
+                        baseUrl={baseUrl}
+                    />
+                </Expandable>
+            )}
+
+            {!printMode && tabs.length > 1 && (
                 <Tabs
                     value={tab}
                     onChange={handleTabChange}

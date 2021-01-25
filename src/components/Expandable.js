@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useState } from 'react'
 import cn from 'classnames';
 import { makeStyles } from '@material-ui/core/styles'
 import { Collapse, Divider, Grid, IconButton, ListItem, Typography } from '@material-ui/core'
@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function Filter({ title, children, defaultOpen, enabled = true, colorIfFiltered = true }) {
+function Expandable({ title, children, defaultOpen, enabled = true, highlight = true }) {
     if (!enabled) {
         return null
     }
@@ -42,7 +42,7 @@ function Filter({ title, children, defaultOpen, enabled = true, colorIfFiltered 
                             variant="body2"
                             className={classes.upper}
                             color={
-                                defaultOpen && colorIfFiltered
+                                defaultOpen && highlight
                                     ? 'secondary'
                                     : 'initial'
                             }>
@@ -62,7 +62,7 @@ function Filter({ title, children, defaultOpen, enabled = true, colorIfFiltered 
                         >
                             <ExpandMore
                                 color={
-                                    defaultOpen && colorIfFiltered
+                                    defaultOpen && highlight
                                         ? 'secondary'
                                         : 'action'
                                 }
@@ -74,10 +74,9 @@ function Filter({ title, children, defaultOpen, enabled = true, colorIfFiltered 
 
             <Collapse in={open}>
                 {children}
-                <Divider />
             </Collapse>
         </>
     )
 }
 
-export default memo(Filter)
+export default memo(Expandable)

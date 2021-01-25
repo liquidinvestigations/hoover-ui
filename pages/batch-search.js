@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
-import { Button, Grid, List, TextField, Typography } from '@material-ui/core'
-import Filter from '../src/components/search/filters/Filter'
+import { Button, Divider, Grid, List, TextField, Typography } from '@material-ui/core'
+import Expandable from '../src/components/Expandable'
 import CollectionsFilter from '../src/components/search/filters/CollectionsFilter'
 import BatchResults from '../src/components/search/BatchResults'
 import Loading from '../src/components/Loading'
@@ -108,17 +108,19 @@ export default function BatchSearch({ collections, limits }) {
         <Grid container>
             <Grid item sm={2}>
                 <List dense>
-                    <Filter
+                    <Expandable
                         title="Collections"
                         defaultOpen
-                        colorIfFiltered={false}>
+                        highlight={false}
+                    >
                         <CollectionsFilter
                             collections={collections}
                             selected={selectedCollections}
                             changeSelection={handleSelectedCollectionsChange}
                             counts={results?.count_by_index}
                         />
-                    </Filter>
+                        <Divider />
+                    </Expandable>
                 </List>
             </Grid>
             <Grid item sm={6}>

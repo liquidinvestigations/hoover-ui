@@ -1,5 +1,6 @@
 import React, { memo } from 'react'
-import Filter from './Filter'
+import { Divider } from '@material-ui/core'
+import Expandable from '../../Expandable'
 import AggregationFilter from './AggregationFilter'
 
 function TermsAggregationFilter({ title, field, query, aggregations, emptyDisabled = false, ...rest }) {
@@ -10,7 +11,7 @@ function TermsAggregationFilter({ title, field, query, aggregations, emptyDisabl
     const defaultOpen = !!query?.[field]?.length
 
     return (
-        <Filter
+        <Expandable
             title={title}
             enabled={enabled}
             defaultOpen={defaultOpen}
@@ -22,7 +23,9 @@ function TermsAggregationFilter({ title, field, query, aggregations, emptyDisabl
                 triState
                 {...rest}
             />
-        </Filter>
+
+            <Divider />
+        </Expandable>
     )
 }
 
