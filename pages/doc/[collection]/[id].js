@@ -11,7 +11,7 @@ import Locations from '../../../src/components/Locations'
 import Finder from '../../../src/components/Finder'
 import SplitPaneLayout from '../../../src/components/SplitPaneLayout'
 import HotKeysWithHelp from '../../../src/components/HotKeysWithHelp'
-import { copyMetadata, documentViewUrl } from '../../../src/utils'
+import { copyMetadata, documentViewUrl, shortenName } from '../../../src/utils'
 import { doc as docAPI } from '../../../src/backend/api'
 
 const useStyles = makeStyles(theme => ({
@@ -116,7 +116,7 @@ export default function Doc() {
             {!!digest ?
                 <SplitPaneLayout
                     container={false}
-                    left={loading ? null : <Locations data={data} url={digestUrl}/>}
+                    left={loading ? null : <Locations data={data} url={digestUrl} />}
                     defaultSizeLeft="25%"
                     defaultSizeMiddle="70%"
                 >
@@ -139,7 +139,7 @@ export default function Doc() {
                     <Typography variant="subtitle2" className={classes.title}>
                         Document <b>{data?.id}</b>
                         {' '}
-                        filename: <b>{data?.content.filename}</b>
+                        filename: <b>{shortenName(data?.content.filename, 50)}</b>
                         {' '}
                         - please pick a location to see the Finder
                     </Typography>

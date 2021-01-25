@@ -2,7 +2,8 @@ import React from 'react'
 import url from 'url'
 import copy from 'copy-text-to-clipboard'
 import langs from 'langs'
-
+import { Tooltip } from '@material-ui/core'
+import { ELLIPSIS_TERM_LENGTH } from './constants'
 import file, { ReactComponent as FileIcon } from '../icons/file-line.svg'
 import folder, { ReactComponent as FolderIcon } from '../icons/folder-line.svg'
 import archive, { ReactComponent as ArchiveIcon } from '../icons/file-zip-line.svg'
@@ -89,6 +90,11 @@ export const truncatePath = str => {
         ...parts.slice(-(parts.length / 3)),
     ].join('/')
 }
+
+export const shortenName = (name, length = ELLIPSIS_TERM_LENGTH) => name && name.length > length ?
+    <Tooltip title={name}>
+        <span>{`${name.substr(0, 2/3*length-3)}...${name.substr(-1/3*length)}`}</span>
+    </Tooltip> : name
 
 export const formatThousands = n =>
     String(n).replace(/(?<!\..*)(\d)(?=(?:\d{3})+(?:\.|$))/g, '$1,')

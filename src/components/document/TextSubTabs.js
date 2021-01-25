@@ -42,8 +42,6 @@ function TextSubTabs({ data, ocrData, collection, printMode, fullPage, docUrl, b
         }))
     )
 
-    let tabIndex = 0
-
     return (
         <>
             {data.content.filetype === 'email' && (
@@ -84,15 +82,30 @@ function TextSubTabs({ data, ocrData, collection, printMode, fullPage, docUrl, b
                     scrollButtons="auto"
                 >
                     {tabs.map((tabData, index) => (
-                        <Tab icon={tabData.icon} label={tabData.name} key={index} />
+                        <Tab
+                            key={index}
+                            icon={tabData.icon}
+                            label={tabData.name}
+                        />
                     ))}
                 </Tabs>
             )}
 
             {tabs.map((tabData, index) => (
                 <Box key={index}>
-                    {printMode && <Typography variant="h5" className={classes.printTitle}>{tabData.name}</Typography>}
-                    <TabPanel value={tab} index={tabIndex++} alwaysVisible={printMode}>
+                    {printMode && tabs.length > 1 && (
+                        <Typography
+                            variant="h5"
+                            className={classes.printTitle}
+                        >
+                            {tabData.name}
+                        </Typography>
+                    )}
+                    <TabPanel
+                        value={tab}
+                        index={index}
+                        alwaysVisible={printMode}
+                    >
                         {tabData.content}
                     </TabPanel>
                 </Box>

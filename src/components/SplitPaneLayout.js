@@ -45,6 +45,10 @@ function SplitPaneLayout({ left, children, right,  defaultSizeLeft = '20%',
 
     const classes = useStyles()
 
+    if (!left || !children) {
+        return null
+    }
+
     return (
         <div className={container ? classes.container : null}>
             <SplitPane
@@ -52,32 +56,21 @@ function SplitPaneLayout({ left, children, right,  defaultSizeLeft = '20%',
                 defaultSize={defaultSizeLeft}
                 allowResize
                 pane1ClassName={classes.left}
-                pane2ClassName={right ? null : classes.middle}>
-                <div>
-                    {left}
-                </div>
+                pane2ClassName={right ? null : classes.middle}
+            >
+                {left}
                 {right ? (
                     <SplitPane
                         split="vertical"
                         defaultSize={defaultSizeMiddle}
                         allowResize
                         pane1ClassName={classes.middle}
-                        pane2ClassName={classes.right}>
-                        <div>
-                            {children}
-                        </div>
-
-                        {right && (
-                            <div>
-                                {right}
-                            </div>
-                        )}
-                    </SplitPane>
-                ) : (
-                    <div>
+                        pane2ClassName={classes.right}
+                    >
                         {children}
-                    </div>
-                )}
+                        {right}
+                    </SplitPane>
+                ) : (children)}
             </SplitPane>
         </div>
     )

@@ -43,11 +43,12 @@ export const SORTABLE_FIELDS = {
     size: 'Size',
     'word-count': 'Word count',
 }
+export const JSS_CSS = 'jss-server-side'
 export const DATE_FORMAT = 'yyyy-MM-dd'
 export const DEFAULT_FACET_SIZE = 10
 export const DEFAULT_INTERVAL = 'year'
 export const DEFAULT_OPERATOR = 'AND'
-export const JSS_CSS = 'jss-server-side'
+export const ELLIPSIS_TERM_LENGTH = 30
 export const HIGHLIGHT_SETTINGS = {
     fragment_size: 150,
     number_of_fragments: 3,

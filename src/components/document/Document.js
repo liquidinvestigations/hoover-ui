@@ -32,6 +32,11 @@ import { createDownloadUrl, createOcrUrl, createTag, deleteTag, tags as tagsAPI 
 import { publicTagsList, specialTags } from './specialTags'
 
 const useStyles = makeStyles(theme => ({
+    root: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
     toolbar: {
         backgroundColor: theme.palette.grey[100],
         borderBottomColor: theme.palette.grey[400],
@@ -75,13 +80,19 @@ const useStyles = makeStyles(theme => ({
     tabsIndicator: {
         top: 0,
     },
+    activeTab: {
+        height: '100%',
+        overflow: 'auto',
+    },
     printTitle: {
         margin: theme.spacing(2),
     },
     printBackLink: {
-        float: 'right',
-        margin: theme.spacing(1),
+        position: 'absolute',
+        top: theme.spacing(2),
+        right: theme.spacing(2),
         color: theme.palette.primary.contrastText,
+        zIndex: theme.zIndex.drawer + 2,
     }
 }))
 
@@ -248,8 +259,6 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
         })
     }
 
-    let tabIndex = 0
-
     const tabsClasses = {
         root: classes.tabsRoot,
         indicator: classes.tabsIndicator,
@@ -323,8 +332,8 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
     }]
 
     return (
-        <div>
-            {!printMode && (
+        <div className={classes.root}>
+            {!printMode && data.content.filetype !== 'folder' && (
                 <Toolbar variant="dense" classes={{root: classes.toolbar}}>
                     {Object.entries(headerLinks).map(([group, links]) => (
                         <Box key={group}>
@@ -352,9 +361,11 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
                 </Link>
             )}
 
-            <Typography variant="h5" className={classes.filename}>
-                {data.content.filename}
-            </Typography>
+            <Box>
+                <Typography variant="h5" className={classes.filename}>
+                    {data.content.filename}
+                </Typography>
+            </Box>
 
             <Grid container className={classes.subtitle}>
                 <Grid item>
@@ -395,15 +406,35 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
                     scrollButtons="auto"
                 >
                     {tabsData.filter(tabData => tabData.visible).map((tabData, index) => (
-                        <StyledTab icon={tabData.icon} label={tabData.name} classes={tabClasses} key={index} />
+                        <StyledTab
+                            key={index}
+                            icon={tabData.icon}
+                            label={tabData.name}
+                            classes={tabClasses}
+                        />
                     ))}
                 </Tabs>
             )}
 
             {tabsData.filter(tabData => tabData.visible).map((tabData, index) => (
-                <Box key={index}>
-                    {printMode && <Typography variant="h3" className={classes.printTitle}>{tabData.name}</Typography>}
-                    <TabPanel value={tab} index={tabIndex++} padding={tabData.padding} alwaysVisible={printMode}>
+                <Box
+                    key={index}
+                    className={index === tab ? classes.activeTab : null}
+                >
+                    {printMode && (
+                        <Typography
+                            variant="h3"
+                            className={classes.printTitle}
+                        >
+                            {tabData.name}
+                        </Typography>
+                    )}
+                    <TabPanel
+                        value={tab}
+                        index={index}
+                        padding={tabData.padding}
+                        alwaysVisible={printMode}
+                    >
                         {tabData.content}
                     </TabPanel>
                 </Box>
