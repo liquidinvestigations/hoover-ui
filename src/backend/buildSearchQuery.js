@@ -1,7 +1,20 @@
-import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL, DEFAULT_OPERATOR, HIGHLIGHT_SETTINGS } from '../constants'
 import { DateTime } from 'luxon'
+import {
+    DEFAULT_FACET_SIZE,
+    DEFAULT_INTERVAL,
+    DEFAULT_OPERATOR,
+    HIGHLIGHT_SETTINGS,
+    PRIVATE_FIELDS,
+} from '../constants'
 
-const buildQuery = ({ q = '*', ...rest }, searchFields) => {
+const expandPrivate = (field, username) => {
+    if (PRIVATE_FIELDS.includes(field)) {
+        return `${field}.${username}`
+    }
+    return field
+}
+
+const buildQuery = (q, filters, searchFields) => {
     const qs = {
         query_string: {
             query: q,
@@ -13,7 +26,7 @@ const buildQuery = ({ q = '*', ...rest }, searchFields) => {
 
     const ranges = [];
     ['date', 'date-created'].forEach(field => {
-        const value = rest[field]
+        const value = filters[field]
         if (value?.from && value?.to) {
             ranges.push({
                 range: {
@@ -42,22 +55,18 @@ const buildSortQuery = order => order?.reverse().map(([field, direction = 'asc']
     {[field]: {order: direction, missing: '_last'}}
 ) || []
 
-const buildTermsField = (field, terms, page = 1, size = DEFAULT_FACET_SIZE) => {
-    const includeTerms = terms?.filter(term => !term.startsWith('~'))
-    const excludeTerms = terms?.filter(term => term.startsWith('~')).map(term => term.substring(1))
-    return {
-        field,
-        aggregation: {
-            terms: { field, size: page * size },
-        },
-        filterClause: includeTerms?.length ? {
-            terms: { [field]: includeTerms },
-        } : null,
-        filterExclude: excludeTerms?.length ? {
-            terms: { [field]: excludeTerms },
-        } : null,
-    }
-}
+const buildTermsField = (field, username, terms, page = 1, size = DEFAULT_FACET_SIZE) => ({
+    field,
+    aggregation: {
+        terms: { field: expandPrivate(field, username), size: page * size },
+    },
+    filterClause: terms?.include?.length ? {
+        terms: { [expandPrivate(field, username)]: terms?.include },
+    } : null,
+    filterExclude: terms?.exclude?.length ? {
+        terms: { [expandPrivate(field, username)]: terms?.exclude },
+    } : null,
+})
 
 const daysInMonth = param => {
     const [, year, month] = /(\d{4})-(\d{2})/.exec(param)
@@ -98,12 +107,12 @@ const intervalFormat = (interval, param) => {
     }
 }
 
-const buildHistogramField = (field, { interval = DEFAULT_INTERVAL, intervals = [] } = {},
+const buildHistogramField = (field, username, { interval = DEFAULT_INTERVAL, intervals = [] } = {},
                              page = 1, size = DEFAULT_FACET_SIZE) => ({
     field,
     aggregation: {
         date_histogram: {
-            field,
+            field: expandPrivate(field, username),
             interval,
             min_doc_count: 1,
             order: { '_key': 'desc' },
@@ -121,7 +130,7 @@ const buildHistogramField = (field, { interval = DEFAULT_INTERVAL, intervals = [
         bool: {
             should: intervals.map(selected => ({
                 range: {
-                    [field]: intervalFormat(interval, selected),
+                    [expandPrivate(field, username)]: intervalFormat(interval, selected),
                 },
             })),
         },
@@ -157,19 +166,19 @@ const buildAggs = fields => fields.reduce((result, field) => ({
     },
 }), {})
 
-const buildSearchQuery = ({ page = 1, size = 0, order, collections = [], facets = {}, ...rest } = {},
+const buildSearchQuery = ({ q = '*', page = 1, size = 0, order, collections = [], facets = {}, filters = {} } = {},
                           type, searchFields, username) => {
 
-    const query = buildQuery(rest, searchFields)
+    const query = buildQuery(q, filters, searchFields)
     const sort = buildSortQuery(order)
 
     const fields = [
         ...['date', 'date-created'].map(field =>
-            buildHistogramField(field, rest[field], facets[field]),
+            buildHistogramField(field, username, filters[field], facets[field]),
         ),
-        ...['tags', `priv-tags.${username}`, 'filetype', 'lang',
+        ...['tags', 'priv-tags', 'filetype', 'lang',
             'email-domains', 'from.keyword', 'to.keyword', 'path-parts'].map(field =>
-            buildTermsField(field, rest[field], facets[field])
+            buildTermsField(field, username, filters[field], facets[field])
         ),
     ]
 

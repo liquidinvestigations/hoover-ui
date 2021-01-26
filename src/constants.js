@@ -43,6 +43,7 @@ export const SORTABLE_FIELDS = {
     size: 'Size',
     'word-count': 'Word count',
 }
+export const PRIVATE_FIELDS = ['priv-tags']
 export const DATE_FORMAT = 'yyyy-MM-dd'
 export const DEFAULT_FACET_SIZE = 10
 export const DEFAULT_INTERVAL = 'year'

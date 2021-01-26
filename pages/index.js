@@ -59,10 +59,10 @@ export default function Index({ collections, serverQuery }) {
     let [inputRef, setInputRef] = useState()
     const isInputFocused = () => inputRef === document.activeElement
 
-    const [text, setText] = useState(query.q)
+    const [q, setQ] = useState(query.q)
 
     const search = params => {
-        const stateParams = { text, size, order, page, collections: selectedCollections }
+        const stateParams = { q, size, order, page, collections: selectedCollections }
         const newQuery = buildSearchQuerystring({ ...query, ...stateParams, ...params })
         router.push(
             { pathname, search: newQuery },
@@ -109,29 +109,32 @@ export default function Index({ collections, serverQuery }) {
         search({ page })
     }
 
+    const [filters, setFilters] = useState(query.filters)
     const handleFilterApply = filter => {
+        const newFilters = { ...filters, ...filter }
+        setFilters(newFilters)
         setPage(1)
-        search({ ...filter, page: 1 })
+        search({ filters: newFilters, page: 1 })
     }
 
-    const handleInputChange = event => setText(event.target.value)
+    const handleInputChange = event => setQ(event.target.value)
 
     const handleSubmit = event => {
         event.preventDefault()
         setPage(1)
-        search({ text, page: 1 })
+        search({ q, page: 1 })
     }
 
-    const handleSearch = text => {
-        setText(text)
-        search({ text, page: 1 })
+    const handleSearch = q => {
+        setQ(q)
+        search({ q, page: 1 })
     }
 
     const handleInputKey = event => {
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault()
             setPage(1)
-            search({ text, page: 1 })
+            search({ q, page: 1 })
         }
     }
 
@@ -155,7 +158,7 @@ export default function Index({ collections, serverQuery }) {
     const [resultsLoading, setResultsLoading] = useState(!!query.q)
     useEffect(() => {
         if (query.q) {
-            setText(query.q)
+            setQ(query.q)
 
             setError(null)
             setResultsLoading(true)
@@ -219,7 +222,7 @@ export default function Index({ collections, serverQuery }) {
     const clearResults = url => {
         if (url === '/') {
             setResults(null)
-            setText('')
+            setQ('')
         }
     }
 
@@ -240,7 +243,7 @@ export default function Index({ collections, serverQuery }) {
                 if (currentIndex === results.hits.hits.length - 1) {
                     setPage(parseInt(page) + 1)
                     setPreviewOnLoad('first')
-                    search({page: parseInt(page) + 1})
+                    search({ page: parseInt(page) + 1 })
                 } else {
                     handleDocPreview(documentViewUrl(results.hits.hits[currentIndex + 1]))
                 }
@@ -255,7 +258,7 @@ export default function Index({ collections, serverQuery }) {
                 if (currentIndex === 0 && page > 1) {
                     setPage(parseInt(page) - 1)
                     setPreviewOnLoad('last')
-                    search({page: parseInt(page) - 1})
+                    search({ page: parseInt(page) - 1 })
                 } else {
                     handleDocPreview(documentViewUrl(results.hits.hits[currentIndex - 1]))
                 }
@@ -372,7 +375,7 @@ export default function Index({ collections, serverQuery }) {
                                     label="Search"
                                     type="search"
                                     margin="normal"
-                                    value={text}
+                                    value={q}
                                     onChange={handleInputChange}
                                     onKeyDown={handleInputKey}
                                     autoFocus

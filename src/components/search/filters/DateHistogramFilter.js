@@ -22,7 +22,7 @@ export const formatsValue = {
 }
 
 function DateHistogramFilter({ title, field, query, aggregations, disabled, onChange, onPagination }) {
-    const value = query[field]
+    const value = query.filters?.[field]
     const interval = value?.interval || DEFAULT_INTERVAL
 
     const onRangeChange = range => {
