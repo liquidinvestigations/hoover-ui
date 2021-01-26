@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import Router, { useRouter } from 'next/router'
 import Link from 'next/link'
 import qs from 'qs'
@@ -14,7 +14,7 @@ import Filters from '../src/components/search/filters/Filters'
 import CollectionsFilter from '../src/components/search/filters/CollectionsFilter'
 import Document from '../src/components/document/Document'
 import { ProgressIndicatorContext } from '../src/components/ProgressIndicator'
-import { SEARCH_GUIDE } from '../src/constants'
+import { DEFAULT_MAX_RESULTS, SEARCH_GUIDE } from '../src/constants'
 import { copyMetadata, documentViewUrl } from '../src/utils'
 import { buildSearchQuerystring, defaultSearchParams, unwindParams } from '../src/queryUtils'
 import fixLegacyQuery from '../src/fixLegacyQuery'
@@ -77,6 +77,17 @@ export default function Index({ collections, serverQuery }) {
         setPage(1)
         search({ collections, page: 1 })
     }
+
+    const maxResultsCount = useMemo(() => collections
+        .filter(collection => selectedCollections.includes(collection.name))
+        .reduce((accumulator, collection) => {
+            if (!isNaN(collection.max_result_window) && collection.max_result_window < accumulator) {
+                return collection.max_result_window
+            }
+            return accumulator
+        }, DEFAULT_MAX_RESULTS),
+        [collections, selectedCollections]
+    )
 
     const [size, setSize] = useState(query.size || defaultSearchParams.size)
     const handleSizeChange = size => {
@@ -408,6 +419,7 @@ export default function Index({ collections, serverQuery }) {
                         <Grid item sm={12}>
                             <SearchResults
                                 results={results}
+                                maxCount={maxResultsCount}
                                 loading={resultsLoading}
                                 query={query}
                                 changePage={handlePageChange}
