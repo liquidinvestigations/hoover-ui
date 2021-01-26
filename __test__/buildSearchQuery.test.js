@@ -7,12 +7,18 @@ const searchFields = {
 }
 
 it('builds a default query', () => {
-    const query = buildSearchQuery({}, null, searchFields)
+    const query = buildSearchQuery({}, null, searchFields, 'testuser')
     expect(query).toMatchSnapshot()
 })
 
 it('builds a query with a filetype filter', () => {
-    const query = buildSearchQuery({ filetype: ['email', 'pdf'] }, null, searchFields)
+    const query = buildSearchQuery({
+        filters: {
+            filetype: {
+                include: ['email', 'pdf']
+            }
+        }
+    }, null, searchFields, 'testuser')
 
     expect(query.post_filter).toMatchObject({
         bool: {
@@ -43,7 +49,13 @@ it('builds a query with a filetype filter', () => {
 })
 
 it('builds a query with a date histogram by years filter', () => {
-    const query = buildSearchQuery({ date: { intervals: ['2009'] } }, null, searchFields)
+    const query = buildSearchQuery({
+        filters: {
+            date: {
+                intervals: ['2009']
+            }
+        }
+    }, null, searchFields, 'testuser')
 
     const yearFilter = {
         bool: {
@@ -93,9 +105,15 @@ it('builds a query with a date histogram by years filter', () => {
 
 it('builds a query with multiple fields filtered', () => {
     const query = buildSearchQuery({
-        filetype: ['doc', 'email'],
-        'email-domains': ['gmail.com'],
-    }, null, searchFields)
+        filters: {
+            filetype: {
+                include: ['doc', 'email']
+            },
+            'email-domains': {
+                include: ['gmail.com']
+            },
+        },
+    }, null, searchFields, 'testuser')
 
     expect(query.post_filter).toMatchObject({
         bool: {
