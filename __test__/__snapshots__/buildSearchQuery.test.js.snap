@@ -154,16 +154,16 @@ Object {
         "bool": Object {},
       },
     },
-    "priv-tags.undefined": Object {
+    "priv-tags": Object {
       "aggs": Object {
         "count": Object {
           "cardinality": Object {
-            "field": "priv-tags.undefined",
+            "field": "priv-tags",
           },
         },
         "values": Object {
           "terms": Object {
-            "field": "priv-tags.undefined",
+            "field": "priv-tags.testuser",
             "size": 10,
           },
         },
