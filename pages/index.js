@@ -183,16 +183,19 @@ export default function Index({ collections, serverQuery }) {
     }, [JSON.stringify({
         ...query,
         facets: null,
-        date: {
-            from: query.date?.from,
-            to: query.date?.to,
-            intervals: query.date?.intervals,
-        },
-        ['date-created']: {
-            from: query['date-created']?.from,
-            to: query['date-created']?.to,
-            intervals: query['date-created']?.intervals,
-        },
+        filters: {
+            ...query.filters || {},
+            date: {
+                from: query.filters?.date?.from,
+                to: query.filters?.date?.to,
+                intervals: query.filters?.date?.intervals,
+            },
+            ['date-created']: {
+                from: query.filters?.['date-created']?.from,
+                to: query.filters?.['date-created']?.to,
+                intervals: query.filters?.['date-created']?.intervals,
+            },
+        }
     })])
 
 
