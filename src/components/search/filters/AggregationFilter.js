@@ -34,12 +34,12 @@ function AggregationFilter({ field, queryFilter, queryFilterField, queryFacets, 
     const cardinality = aggregations?.count
     const selected = queryFilterField ? queryFilter?.[queryFilterField] : queryFilter
 
-    const pageParam = parseInt(queryFacets?.[field])
+    const pageParam = parseInt(queryFacets)
     const page = isNaN(pageParam) ? 1 : pageParam
 
     const handleChange = value => () => {
-        const include = new Set(selection?.include || [])
-        const exclude = new Set(selection?.exclude || [])
+        const include = new Set(selected?.include || [])
+        const exclude = new Set(selected?.exclude || [])
 
         if (include.has(value)) {
             include.delete(value)
@@ -68,8 +68,8 @@ function AggregationFilter({ field, queryFilter, queryFilterField, queryFacets, 
         const label = bucketLabel ? bucketLabel(bucket) : bucket.key
         const subLabel = bucketSubLabel ? bucketSubLabel(bucket) : null
         const value = bucketValue ? bucketValue(bucket) : bucket.key
-        const checked = selection?.include?.includes(value) ||
-            selection?.exclude?.includes(value) || false
+        const checked = selected?.include?.includes(value) ||
+            selected?.exclude?.includes(value) || false
 
         return (
             <ListItem
@@ -85,7 +85,7 @@ function AggregationFilter({ field, queryFilter, queryFilterField, queryFacets, 
                     disableRipple
                     value={value}
                     checked={checked}
-                    indeterminate={triState && selection?.exclude?.includes(value)}
+                    indeterminate={triState && selected?.exclude?.includes(value)}
                     classes={{ root: classes.checkbox }}
                     disabled={disabled || !bucket.doc_count}
                     onChange={handleChange(value)}
@@ -116,7 +116,7 @@ function AggregationFilter({ field, queryFilter, queryFilterField, queryFacets, 
     const hasNext = onPagination && aggregation?.buckets.length >= DEFAULT_FACET_SIZE
     const hasPrev = onPagination && page > 1
     const hasMore = onLoadMore && cardinality?.value > page * DEFAULT_FACET_SIZE
-    const disableReset = disabled || (!selection?.include?.length && !selection?.exclude?.length && page === 1)
+    const disableReset = disabled || (!selected?.include?.length && !selected?.exclude?.length && page === 1)
 
     return (
         <List dense>

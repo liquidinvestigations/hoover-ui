@@ -7,9 +7,7 @@ import AggregationFilter from './AggregationFilter'
 function TermsAggregationFilter({ title, field, queryFilter, queryFacets, aggregations,
                                     emptyDisabled = false, ...rest }) {
 
-    const enabled = !emptyDisabled ||
-        !!aggregations?.values.buckets.length ||
-        !isNaN(parseInt(queryFacets?.[field]))
+    const enabled = !emptyDisabled || !!aggregations?.values.buckets.length || !isNaN(parseInt(queryFacets))
 
     const defaultOpen = !!queryFilter?.include?.length || !!queryFilter?.exclude?.length
 
