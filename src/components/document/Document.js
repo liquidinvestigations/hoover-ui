@@ -298,7 +298,7 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
     },{
         name: 'Tags',
         icon: <LocalOfferOutlined />,
-        visible: data.content.filetype !== 'folder',
+        visible: !printMode && data.content.filetype !== 'folder',
         content: <Tags
             loading={tagsLoading}
             digestUrl={digestUrl}
@@ -312,7 +312,7 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
     },{
         name: 'Meta',
         icon: <SettingsApplicationsOutlined />,
-        visible: true,
+        visible: !printMode,
         content: <Meta
             doc={data}
             collection={collection}
