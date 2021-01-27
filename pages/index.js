@@ -65,8 +65,12 @@ export default function Index({ collections, serverQuery }) {
     const isInputFocused = () => inputRef === document.activeElement
 
     const [text, setText] = useState(query.q)
+    const [order, setOrder] = useState(query.order)
+    const [page, setPage] = useState(query.page || defaultSearchParams.page)
+    const [size, setSize] = useState(query.size || defaultSearchParams.size)
+    const [selectedCollections, setSelectedCollections] = useState(query.collections || [])
 
-    const search = params => {
+    const search = useCallback(params => {
         const stateParams = { text, size, order, page, collections: selectedCollections }
         const newQuery = buildSearchQuerystring({ ...query, ...stateParams, ...params })
         router.push(
@@ -74,52 +78,50 @@ export default function Index({ collections, serverQuery }) {
             undefined,
             { shallow: true },
         )
-    }
+    }, [text, size, order, page, selectedCollections, query, pathname])
 
-    const [selectedCollections, setSelectedCollections] = useState(query.collections || [])
     const handleSelectedCollectionsChange = useCallback(collections => {
         setSelectedCollections(collections)
         setPage(1)
         search({ collections, page: 1 })
-    }, [collections])
+    }, [collections, search])
 
-    const [size, setSize] = useState(query.size || defaultSearchParams.size)
     const handleSizeChange = useCallback(size => {
         setSize(size)
         setPage(1)
         search({ size, page: 1 })
-    }, [])
+    }, [search])
 
-    const [order, setOrder] = useState(query.order)
     const handleOrderChange = useCallback(order => {
         setOrder(order)
         setPage(1)
         search({ order, page: 1 })
-    }, [])
+    }, [search])
 
-    const [page, setPage] = useState(query.page || defaultSearchParams.page)
     const handlePageChange = useCallback(page => {
         setPage(page)
         search({ page })
-    }, [])
+    }, [search])
 
     const handleFilterApply = useCallback(filter => {
         setPage(1)
         search({ ...filter, page: 1 })
-    }, [])
+    }, [search])
 
-    const handleInputChange = useCallback(event => setText(event.target.value), [])
+    const handleInputChange = useCallback(event => {
+        setText(event.target.value)
+    }, [])
 
     const handleSubmit = useCallback(event => {
         event.preventDefault()
         setPage(1)
         search({ text, page: 1 })
-    }, [])
+    }, [text, search])
 
     const handleSearch = useCallback(text => {
         setText(text)
         search({ text, page: 1 })
-    }, [])
+    }, [search])
 
     const handleInputKey = useCallback(event => {
         if (event.key === 'Enter' && !event.shiftKey) {
@@ -127,7 +129,7 @@ export default function Index({ collections, serverQuery }) {
             setPage(1)
             search({ text, page: 1 })
         }
-    }, [])
+    }, [text, search])
 
 
     const [previewOnLoad, setPreviewOnLoad] = useState()

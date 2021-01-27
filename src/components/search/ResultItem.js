@@ -13,20 +13,7 @@ import {
     Tooltip,
     Typography
 } from '@material-ui/core'
-
-import {
-    AttachFile,
-    CloudDownloadOutlined,
-    Delete,
-    Error,
-    Launch,
-    Lock,
-    Star,
-    TextFields,
-    Visibility
-} from '@material-ui/icons'
-
-import { brown, green, red } from '@material-ui/core/colors'
+import { AttachFile, CloudDownloadOutlined, Launch, Lock, TextFields } from '@material-ui/icons'
 import { UserContext } from '../../../pages/_app'
 import { getIconReactComponent, humanFileSize, makeUnsearchable, truncatePath } from '../../utils'
 import { createDownloadUrl } from '../../backend/api'
@@ -56,9 +43,18 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
     },
     title: {
+        marginRight: theme.spacing(2),
         display: 'block',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+    },
+    subtitle: {
+        display: 'block',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+    },
+    index: {
+        color: theme.palette.grey[500],
     },
     selected: {
         border: `2px solid ${theme.palette.secondary.main}`,
@@ -82,15 +78,24 @@ const useStyles = makeStyles(theme => ({
         fontSize: '.7rem',
         color: '#555',
     },
+    iconsBox: {
+        lineHeight: 0,
+    },
     actionIcon: {
-        fontSize: 18,
+        fontSize: 20,
         color: theme.palette.grey[600],
     },
     infoIcon: {
-        fontSize: 18,
-        verticalAlign: 'sub',
+        fontSize: 20,
         color: theme.palette.grey[600],
         marginRight: theme.spacing(0.3),
+        verticalAlign: 'middle',
+    },
+    textField: {
+        width: '100%',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        display: 'inline-block',
     },
     buttonLink: {
         lineHeight: 0,
@@ -146,12 +151,54 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
             <CardHeader
                 classes={cardHeaderClasses}
                 title={
-                    <span className={classes.title}>
-                        {index}. {fields.filename}
-                    </span>
+                    <Grid container component="span">
+                        <Grid item className={classes.title} component="span">
+                            <Box component="span" className={classes.index}>{index}.</Box> {fields.filename}
+                        </Grid>
+
+                        <Grid container className={classes.iconsBox} component="span">
+                            {fields.ocr && (
+                                <Grid item component="span">
+                                    <Tooltip placement="top" title="OCR">
+                                        <TextFields className={classes.infoIcon} />
+                                    </Tooltip>
+                                </Grid>
+                            )}
+
+
+                            {fields.pgp && (
+                                <Grid item component="span">
+                                    <Tooltip placement="top" title="encrypted">
+                                        <Lock className={classes.infoIcon} />
+                                    </Tooltip>
+                                </Grid>
+                            )}
+
+                            <Grid item component="span">
+                                <Tooltip placement="top" title={fields['content-type']}>
+                                    <Box component="span">
+                                        <SvgIcon
+                                            className={classes.infoIcon}
+                                            component={getIconReactComponent(fields.filetype)}
+                                        />
+                                    </Box>
+                                </Tooltip>
+                            </Grid>
+
+                            {!!fields.attachments && (
+                                <Grid item component="span">
+                                    <Tooltip placement="top" title="has attachment(s)">
+                                        <Box component="span">
+                                            <AttachFile className={classes.infoIcon} />
+                                        </Box>
+                                    </Tooltip>
+                                </Grid>
+                            )}
+                        </Grid>
+                    </Grid>
                 }
                 subheader={
-                    <span className={classes.title}>
+                    <span className={classes.subtitle}>
                         {truncatePath(fields.path)}
                     </span>
                 }
@@ -185,7 +232,7 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
                                         <Grid item key={k}>
                                             <Tooltip placement="top" title={s.tag}>
                                                 {cloneElement(s.present.icon, {
-                                                    className: classes.infoIcon,
+                                                    className: classes.actionIcon,
                                                     style: { color: s.present.color }
                                                 })}
                                             </Tooltip>
@@ -193,43 +240,6 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
                                     )
                                 }
                             })}
-
-                            {fields.ocr && (
-                                <Grid item>
-                                    <Tooltip placement="top" title="OCR">
-                                        <TextFields className={classes.infoIcon} color="action" />
-                                    </Tooltip>
-                                </Grid>
-                            )}
-
-                            {fields.pgp && (
-                                <Grid item>
-                                    <Tooltip placement="top" title="encrypted">
-                                        <Lock className={classes.infoIcon} color="action" />
-                                    </Tooltip>
-                                </Grid>
-                            )}
-
-                            <Grid item>
-                                <Tooltip placement="top" title={fields['content-type']}>
-                                    <Box>
-                                        <SvgIcon
-                                            className={classes.infoIcon}
-                                            component={getIconReactComponent(fields.filetype)}
-                                        />
-                                    </Box>
-                                </Tooltip>
-                            </Grid>
-
-                            {!!fields.attachments && (
-                                <Grid item>
-                                    <Tooltip placement="top" title="has attachment(s)">
-                                        <Box>
-                                            <AttachFile className={classes.actionIcon} />
-                                        </Box>
-                                    </Tooltip>
-                                </Grid>
-                            )}
                         </Grid>
                     </>
                 }
@@ -257,9 +267,27 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
                         {!!fields.date && (
                             <Box>
                                 <Typography variant="caption">
-                                    <strong>Modified:</strong>{' '}
+                                    <strong>{fields.filetype === 'email' ? 'Date' : 'Modified'}:</strong>{' '}
                                     {DateTime.fromISO(fields.date, { locale: 'en-US' })
                                         .toLocaleString(DateTime.DATE_FULL)}
+                                </Typography>
+                            </Box>
+                        )}
+
+                        {fields.filetype === 'email' && fields.from && (
+                            <Box>
+                                <Typography variant="caption" className={classes.textField}>
+                                    <strong>From:</strong>{' '}
+                                    {fields.from}
+                                </Typography>
+                            </Box>
+                        )}
+
+                        {fields.filetype === 'email' && fields.subject && (
+                            <Box>
+                                <Typography variant="caption">
+                                    <strong>Subject:</strong>{' '}
+                                    {fields.subject}
                                 </Typography>
                             </Box>
                         )}

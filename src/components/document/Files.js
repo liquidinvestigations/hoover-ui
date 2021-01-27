@@ -5,6 +5,7 @@ import { Box, Table, TableBody, TableCell, TableRow } from '@material-ui/core'
 import { CloudDownload as IconCloudDownload } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles'
 import Loading from '../Loading'
+import { humanFileSize } from '../../utils'
 import { createDownloadUrl, doc as docAPI } from '../../backend/api'
 
 const useStyles = makeStyles(theme => ({
@@ -68,7 +69,7 @@ function Files({ data, page, hasNextPage, baseUrl, docUrl, fullPage }) {
                 )}
             </TableCell>
             <TableCell className={classes.cell}>{content_type}</TableCell>
-            <TableCell className={classes.cell}>{size}</TableCell>
+            <TableCell className={classes.cell}>{humanFileSize(size, true)}</TableCell>
         </TableRow>
     ))
 
