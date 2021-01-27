@@ -4,7 +4,7 @@ import Pagination from './Pagination'
 import ResultItem from './ResultItem'
 import { documentViewUrl } from '../../utils'
 
-function Results({ loading, results, query, changePage, changeSize, selectedDocUrl, onPreview }) {
+function Results({ loading, results, maxCount, query, changePage, changeSize, selectedDocUrl, onPreview }) {
     const start = 1 + (query.page - 1) * query.size
 
     return (
@@ -13,6 +13,7 @@ function Results({ loading, results, query, changePage, changeSize, selectedDocU
                 total={parseInt(results?.hits.total || 0)}
                 size={parseInt(query.size || 10)}
                 page={parseInt(query.page || 0)}
+                maxCount={maxCount}
                 changePage={changePage}
                 changeSize={changeSize}
             />
@@ -41,6 +42,7 @@ function Results({ loading, results, query, changePage, changeSize, selectedDocU
                         total={parseInt(results.hits.total)}
                         size={parseInt(query.size || 10)}
                         page={parseInt(query.page)}
+                        maxCount={maxCount}
                         changePage={changePage}
                         changeSize={changeSize}
                     />
