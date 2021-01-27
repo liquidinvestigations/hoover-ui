@@ -1,5 +1,6 @@
 import React, { memo } from 'react'
 import cn from 'classnames'
+import isEqual from 'react-fast-compare'
 import { makeStyles } from '@material-ui/core/styles'
 import { Button, Checkbox, Grid, IconButton, List, ListItem, ListItemText, Typography } from '@material-ui/core'
 import { formatThousands } from '../../../utils'
@@ -25,16 +26,16 @@ const useStyles = makeStyles(theme => ({
 
 const excludedValue = value => `~${value}`
 
-function AggregationFilter({ field, query, queryField, aggregations, disabled,
-                                              onChange, onPagination, onLoadMore, triState,
-                                              bucketLabel, bucketSubLabel, bucketValue }) {
+function AggregationFilter({ field, queryField, querySubField, queryFacets, aggregations,
+                               disabled, onChange, onPagination, onLoadMore, triState,
+                               bucketLabel, bucketSubLabel, bucketValue }) {
     const classes = useStyles()
 
-    const aggregation = aggregations[field]?.values
-    const cardinality = aggregations[field]?.count
-    const selected = queryField ? query[field]?.[queryField] : query[field]
+    const aggregation = aggregations?.values
+    const cardinality = aggregations?.count
+    const selected = querySubField ? queryField?.[querySubField] : queryField
 
-    const pageParam = parseInt(query.facets?.[field])
+    const pageParam = parseInt(queryFacets?.[field])
     const page = isNaN(pageParam) ? 1 : pageParam
 
     const handleChange = value => () => {
@@ -162,4 +163,4 @@ function AggregationFilter({ field, query, queryField, aggregations, disabled,
     )
 }
 
-export default memo(AggregationFilter)
+export default memo(AggregationFilter, isEqual)

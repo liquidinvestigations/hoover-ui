@@ -1,14 +1,17 @@
 import React, { memo } from 'react'
+import isEqual from 'react-fast-compare'
 import { Divider } from '@material-ui/core'
 import Expandable from '../../Expandable'
 import AggregationFilter from './AggregationFilter'
 
-function TermsAggregationFilter({ title, field, query, aggregations, emptyDisabled = false, ...rest }) {
-    const enabled = !emptyDisabled ||
-        !!aggregations?.[field].values.buckets.length ||
-        !isNaN(parseInt(query?.facets?.[field]))
+function TermsAggregationFilter({ title, field, queryField, queryFacets, aggregations,
+                                    emptyDisabled = false, ...rest }) {
 
-    const defaultOpen = !!query?.[field]?.length
+    const enabled = !emptyDisabled ||
+        !!aggregations?.values.buckets.length ||
+        !isNaN(parseInt(queryFacets?.[field]))
+
+    const defaultOpen = !!queryField?.length
 
     return (
         <Expandable
@@ -18,7 +21,8 @@ function TermsAggregationFilter({ title, field, query, aggregations, emptyDisabl
         >
             <AggregationFilter
                 field={field}
-                query={query}
+                queryField={queryField}
+                queryFacets={queryFacets}
                 aggregations={aggregations}
                 triState
                 {...rest}
@@ -28,4 +32,4 @@ function TermsAggregationFilter({ title, field, query, aggregations, emptyDisabl
     )
 }
 
-export default memo(TermsAggregationFilter)
+export default memo(TermsAggregationFilter, isEqual)

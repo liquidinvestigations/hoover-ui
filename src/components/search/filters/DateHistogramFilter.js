@@ -22,32 +22,33 @@ export const formatsValue = {
     hour: "yyyy-MM-dd'T'HH",
 }
 
-function DateHistogramFilter({ title, field, query, aggregations, disabled, onChange, onPagination }) {
-    const value = query[field]
-    const interval = value?.interval || DEFAULT_INTERVAL
+function DateHistogramFilter({ title, field, queryField, queryFacets, aggregations,
+                                 disabled, onChange, onPagination }) {
+
+    const interval = queryField?.interval || DEFAULT_INTERVAL
 
     const onRangeChange = useCallback(range => {
-        const { from, to, interval, intervals, ...rest } = value || {}
+        const { from, to, interval, intervals, ...rest } = queryField || {}
         if (range?.from && range?.to) {
             onChange(field, {...range, ...rest}, true)
         } else {
             onChange(field, rest, true)
         }
-    }, [value, field, onChange])
+    }, [field, queryField, onChange])
 
     const onIntervalChange = useCallback(event => {
-        const { interval, intervals, ...rest } = value || {}
+        const { interval, intervals, ...rest } = queryField || {}
         onChange(field, {interval: event.target.value, ...rest}, true)
-    }, [value, field, onChange])
+    }, [field, queryField, onChange])
 
     const onSelectionChange = useCallback((field, newIntervals, resetPage) => {
-        const { intervals, ...rest } = value || {}
+        const { intervals, ...rest } = queryField || {}
         if (newIntervals.length) {
             onChange(field, { intervals: newIntervals, ...rest }, resetPage)
         } else {
             onChange(field, rest, resetPage)
         }
-    }, [value, field, onChange])
+    }, [field, queryField, onChange])
 
     const formatLabel = useCallback(
         bucket => DateTime.fromISO(bucket.key_as_string).toFormat(formatsLabel[interval]),
@@ -69,10 +70,10 @@ function DateHistogramFilter({ title, field, query, aggregations, disabled, onCh
     return (
         <Expandable
             title={title}
-            defaultOpen={!!(value?.from || value?.to || value?.intervals)}>
+            defaultOpen={!!(queryField?.from || queryField?.to || queryField?.intervals)}>
             <DateRangeFilter
-                defaultFrom={value?.from}
-                defaultTo={value?.to}
+                defaultFrom={queryField?.from}
+                defaultTo={queryField?.to}
                 onChange={onRangeChange}
                 disabled={disabled}
             />
@@ -95,8 +96,9 @@ function DateHistogramFilter({ title, field, query, aggregations, disabled, onCh
 
             <AggregationFilter
                 field={field}
-                query={query}
-                queryField="intervals"
+                queryField={queryField}
+                queryFacets={queryFacets}
+                querySubField="intervals"
                 aggregations={aggregations}
                 disabled={disabled}
                 onChange={onSelectionChange}

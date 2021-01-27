@@ -34,8 +34,6 @@ function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
     }, [query])
 
     const filterProps = {
-        query,
-        aggregations,
         disabled: loading,
         onChange: handleChange,
     }
@@ -49,6 +47,9 @@ function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
             <TermsAggregationFilter
                 title="Public tags"
                 field="tags"
+                queryField={query.tags}
+                queryFacets={query.facets?.tags}
+                aggregations={aggregations.tags}
                 onLoadMore={handleLoadMore}
                 {...filterProps}
             />
@@ -56,6 +57,9 @@ function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
             <TermsAggregationFilter
                 title="Private tags"
                 field={`priv-tags.${whoAmI.username}`}
+                queryField={query[`priv-tags.${whoAmI.username}`]}
+                queryFacets={query.facets?.[`priv-tags.${whoAmI.username}`]}
+                aggregations={aggregations[`priv-tags.${whoAmI.username}`]}
                 onLoadMore={handleLoadMore}
                 {...filterProps}
             />
@@ -63,6 +67,9 @@ function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
             <DateHistogramFilter
                 title="Date modified"
                 field="date"
+                queryField={query.date}
+                queryFacets={query.facets?.date}
+                aggregations={aggregations.date}
                 onPagination={handlePagination}
                 {...filterProps}
             />
@@ -70,6 +77,9 @@ function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
             <DateHistogramFilter
                 title="Date created"
                 field="date-created"
+                queryField={query['date-created']}
+                queryFacets={query.facets?.['date-created']}
+                aggregations={aggregations['date-created']}
                 onPagination={handlePagination}
                 {...filterProps}
             />
@@ -77,6 +87,9 @@ function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
             <TermsAggregationFilter
                 title="File type"
                 field="filetype"
+                queryField={query.filetype}
+                queryFacets={query.facets?.filetype}
+                aggregations={aggregations.filetype}
                 onLoadMore={handleLoadMore}
                 {...filterProps}
             />
@@ -84,6 +97,9 @@ function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
             <TermsAggregationFilter
                 title="Language"
                 field="lang"
+                queryField={query.lang}
+                queryFacets={query.facets?.lang}
+                aggregations={aggregations.lang}
                 onLoadMore={handleLoadMore}
                 bucketLabel={formatLang}
                 {...filterProps}
@@ -92,6 +108,9 @@ function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
             <TermsAggregationFilter
                 title="Email domain"
                 field="email-domains"
+                queryField={query['email-domains']}
+                queryFacets={query.facets?.['email-domains']}
+                aggregations={aggregations['email-domains']}
                 onLoadMore={handleLoadMore}
                 emptyDisabled
                 {...filterProps}
@@ -100,6 +119,9 @@ function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
             <TermsAggregationFilter
                 title="Email from"
                 field="from.keyword"
+                queryField={query['from.keyword']}
+                queryFacets={query.facets?.['from.keyword']}
+                aggregations={aggregations['from.keyword']}
                 onLoadMore={handleLoadMore}
                 emptyDisabled
                 {...filterProps}
@@ -108,6 +130,9 @@ function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
             <TermsAggregationFilter
                 title="Email to"
                 field="to.keyword"
+                queryField={query['to.keyword']}
+                queryFacets={query.facets?.['to.keyword']}
+                aggregations={aggregations['to.keyword']}
                 onLoadMore={handleLoadMore}
                 emptyDisabled
                 {...filterProps}
@@ -116,6 +141,9 @@ function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
             <TermsAggregationFilter
                 title="Path"
                 field="path-parts"
+                queryField={query['path-parts']}
+                queryFacets={query.facets?.['path-parts']}
+                aggregations={aggregations['path-parts']}
                 onLoadMore={handleLoadMore}
                 emptyDisabled
                 {...filterProps}
