@@ -23,7 +23,6 @@ function TermsAggregationFilter({ title, field, query, aggregations, emptyDisabl
                 triState
                 {...rest}
             />
-
             <Divider />
         </Expandable>
     )

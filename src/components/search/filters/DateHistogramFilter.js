@@ -13,6 +13,7 @@ const formatsLabel = {
     day: 'd MMMM y',
     hour: "d MMM y, h a",
 }
+
 export const formatsValue = {
     year: 'yyyy',
     month: 'yyyy-MM',
@@ -25,37 +26,38 @@ function DateHistogramFilter({ title, field, query, aggregations, disabled, onCh
     const value = query[field]
     const interval = value?.interval || DEFAULT_INTERVAL
 
-    const onRangeChange = range => {
+    const onRangeChange = useCallback(range => {
         const { from, to, interval, intervals, ...rest } = value || {}
         if (range?.from && range?.to) {
             onChange(field, {...range, ...rest}, true)
         } else {
             onChange(field, rest, true)
         }
-    }
+    }, [value, field, onChange])
 
-    const onIntervalChange = event => {
+    const onIntervalChange = useCallback(event => {
         const { interval, intervals, ...rest } = value || {}
         onChange(field, {interval: event.target.value, ...rest}, true)
-    }
+    }, [value, field, onChange])
 
-    const onSelectionChange = (field, newIntervals, resetPage) => {
+    const onSelectionChange = useCallback((field, newIntervals, resetPage) => {
         const { intervals, ...rest } = value || {}
         if (newIntervals.length) {
             onChange(field, { intervals: newIntervals, ...rest }, resetPage)
         } else {
             onChange(field, rest, resetPage)
         }
-    }
+    }, [value, field, onChange])
 
     const formatLabel = useCallback(
         bucket => DateTime.fromISO(bucket.key_as_string).toFormat(formatsLabel[interval]),
         [interval]
     )
 
-    const formatWeekStart = bucket => DateTime
+    const formatWeekStart = useCallback(bucket => DateTime
         .fromISO(bucket.key_as_string)
         .toFormat("('starting' d MMMM)")
+    , [])
 
     const formatValue = useCallback(
         bucket => DateTime

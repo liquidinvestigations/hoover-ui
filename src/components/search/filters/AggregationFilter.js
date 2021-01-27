@@ -25,8 +25,10 @@ const useStyles = makeStyles(theme => ({
 
 const excludedValue = value => `~${value}`
 
-function AggregationFilter({ field, query, queryField, aggregations, disabled, onChange, onPagination,
-                               onLoadMore, triState, bucketLabel, bucketSubLabel, bucketValue }) {
+function AggregationFilter({ field, query, queryField, aggregations, disabled,
+                                              onChange, onPagination, onLoadMore, triState,
+                                              bucketLabel, bucketSubLabel, bucketValue }) {
+    const classes = useStyles()
 
     const aggregation = aggregations[field]?.values
     const cardinality = aggregations[field]?.count
@@ -34,8 +36,6 @@ function AggregationFilter({ field, query, queryField, aggregations, disabled, o
 
     const pageParam = parseInt(query.facets?.[field])
     const page = isNaN(pageParam) ? 1 : pageParam
-
-    const classes = useStyles()
 
     const handleChange = value => () => {
         const selection = new Set(selected || [])

@@ -1,4 +1,4 @@
-import React, { memo, useContext } from 'react'
+import React, { memo, useCallback, useContext } from 'react'
 import { List } from '@material-ui/core'
 import DateHistogramFilter from './DateHistogramFilter'
 import TermsAggregationFilter from './TermsAggregationFilter'
@@ -10,28 +10,28 @@ const formatLang = bucket => getLanguageName(bucket.key)
 function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
     const whoAmI = useContext(UserContext)
 
-    const handleChange = (key, value, resetPage) => {
+    const handleChange = useCallback((key, value, resetPage) => {
         if (resetPage) {
             const { [key]: prevFacet, ...rest } = query.facets || {}
             applyFilter({ [key]: value, facets: { ...rest } })
         } else {
             applyFilter({ [key]: value })
         }
-    }
+    }, [query])
 
-    const handlePagination = (key, newPage) => {
+    const handlePagination = useCallback((key, newPage) => {
         const { [key]: prevFacet, ...rest } = query.facets || {}
         if (newPage > 1) {
             applyFilter({ facets: { [key]: newPage, ...rest } })
         } else {
             applyFilter({ facets: { ...rest } })
         }
-    }
+    }, [query])
 
-    const handleLoadMore = (key, page) => {
+    const handleLoadMore = useCallback((key, page) => {
         const facets = query.facets || {}
         applyFilter({ facets: { ...facets, [key]: page } })
-    }
+    }, [query])
 
     const filterProps = {
         query,

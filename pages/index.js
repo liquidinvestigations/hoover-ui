@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import Router, { useRouter } from 'next/router'
 import Link from 'next/link'
 import qs from 'qs'
@@ -39,6 +39,12 @@ const useStyles = makeStyles(theme => ({
     },
     info: {
         color: theme.palette.grey.A700,
+    },
+    collections: {
+        paddingBottom: 0,
+    },
+    filters: {
+        paddingTop: 0,
     }
 }))
 
@@ -47,14 +53,13 @@ export default function Index({ collections, serverQuery }) {
     const router = useRouter()
     const { pathname } = router
 
-    const getQueryString = () => {
-        if (typeof window === 'undefined') {
-            return serverQuery
-        }
-        return window.location.href.split('?')[1]
-    }
-    const query = unwindParams(qs.parse(getQueryString(), { arrayLimit: 100 }))
-    fixLegacyQuery(query)
+    const queryString = typeof window === 'undefined' ? serverQuery : window.location.href.split('?')[1]
+    const query = useMemo(() => {
+        const memoQuery = unwindParams(qs.parse(queryString, { arrayLimit: 100 }))
+        fixLegacyQuery(memoQuery)
+        return memoQuery
+    }, [queryString])
+
 
     let [inputRef, setInputRef] = useState()
     const isInputFocused = () => inputRef === document.activeElement
@@ -72,57 +77,57 @@ export default function Index({ collections, serverQuery }) {
     }
 
     const [selectedCollections, setSelectedCollections] = useState(query.collections || [])
-    const handleSelectedCollectionsChange = collections => {
+    const handleSelectedCollectionsChange = useCallback(collections => {
         setSelectedCollections(collections)
         setPage(1)
         search({ collections, page: 1 })
-    }
+    }, [collections])
 
     const [size, setSize] = useState(query.size || defaultSearchParams.size)
-    const handleSizeChange = size => {
+    const handleSizeChange = useCallback(size => {
         setSize(size)
         setPage(1)
         search({ size, page: 1 })
-    }
+    }, [])
 
     const [order, setOrder] = useState(query.order)
-    const handleOrderChange = order => {
+    const handleOrderChange = useCallback(order => {
         setOrder(order)
         setPage(1)
         search({ order, page: 1 })
-    }
+    }, [])
 
     const [page, setPage] = useState(query.page || defaultSearchParams.page)
-    const handlePageChange = page => {
+    const handlePageChange = useCallback(page => {
         setPage(page)
         search({ page })
-    }
+    }, [])
 
-    const handleFilterApply = filter => {
+    const handleFilterApply = useCallback(filter => {
         setPage(1)
         search({ ...filter, page: 1 })
-    }
+    }, [])
 
-    const handleInputChange = event => setText(event.target.value)
+    const handleInputChange = useCallback(event => setText(event.target.value), [])
 
-    const handleSubmit = event => {
+    const handleSubmit = useCallback(event => {
         event.preventDefault()
         setPage(1)
         search({ text, page: 1 })
-    }
+    }, [])
 
-    const handleSearch = text => {
+    const handleSearch = useCallback(text => {
         setText(text)
         search({ text, page: 1 })
-    }
+    }, [])
 
-    const handleInputKey = event => {
+    const handleInputKey = useCallback(event => {
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault()
             setPage(1)
             search({ text, page: 1 })
         }
-    }
+    }, [])
 
 
     const [previewOnLoad, setPreviewOnLoad] = useState()
@@ -217,14 +222,15 @@ export default function Index({ collections, serverQuery }) {
         return () => {
             Router.events.off('routeChangeStart', clearResults)
         }
-    })
+    }, [])
 
 
-    const currentDocIndex = () => results.hits.hits.findIndex(hit => documentViewUrl(hit) === selectedDocUrl)
+    const currentIndex = useMemo(() => results?.hits.hits.findIndex(
+        hit => documentViewUrl(hit) === selectedDocUrl
+    ), [results, selectedDocUrl])
 
     const previewNextDoc = useCallback(() => {
         if (!resultsLoading && results?.hits.hits) {
-            const currentIndex = currentDocIndex()
             if ((parseInt(page) - 1) * size + currentIndex < results.hits.total - 1) {
                 if (currentIndex === results.hits.hits.length - 1) {
                     setPage(parseInt(page) + 1)
@@ -239,7 +245,6 @@ export default function Index({ collections, serverQuery }) {
 
     const previewPreviousDoc = useCallback(() => {
         if (!resultsLoading && results?.hits.hits && selectedDocUrl) {
-            const currentIndex = currentDocIndex()
             if (page > 1 || currentIndex >= 1) {
                 if (currentIndex === 0 && page > 1) {
                     setPage(parseInt(page) - 1)
@@ -252,7 +257,7 @@ export default function Index({ collections, serverQuery }) {
         }
     }, [page, size, results, resultsLoading, selectedDocUrl])
 
-    const keys = {
+    const keys = useMemo(() => ({
         nextItem: {
             key: 'j',
             help: 'Preview next result',
@@ -305,7 +310,7 @@ export default function Index({ collections, serverQuery }) {
                 }
             },
         }
-    }
+    }), [previewNextDoc, previewPreviousDoc, selectedDocData, selectedDocUrl])
 
 
     const { setLoading } = useContext(ProgressIndicatorContext)
@@ -318,7 +323,7 @@ export default function Index({ collections, serverQuery }) {
             <SplitPaneLayout
                 left={
                     <>
-                        <List dense style={{ paddingBottom: 0 }}>
+                        <List dense className={classes.collections}>
                             <Expandable
                                 title={`Collections (${selectedCollections.length})`}
                                 defaultOpen
@@ -339,7 +344,7 @@ export default function Index({ collections, serverQuery }) {
                             query={query}
                             aggregations={aggregations}
                             applyFilter={handleFilterApply}
-                            style={{ paddingTop: 0 }}
+                            className={classes.filters}
                         />
                     </>
                 }
