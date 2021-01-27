@@ -8,6 +8,21 @@ const SORT_SIZE_ASCENDING = 'Size ascending'
 const SORT_WORD_COUNT_DESCENDING = 'Word count descending'
 const SORT_WORD_COUNT_ASCENDING = 'Word count ascending'
 
+const moveToFilters = (query, param, value) => {
+    if (!query.filters) {
+        query.filters = {}
+    }
+    const data = value || query[param]
+    if (Array.isArray(data)) {
+        query.filters[param] = {
+            include: data.filter(v => !v.startsWith('~')),
+            exclude: data.filter(v => v.startsWith('~')),
+        }
+    } else {
+        query.filters[param] = data
+    }
+}
+
 export default function fixLegacyQuery(query) {
     if (query.collections && typeof query.collections === 'string') {
         query.collections = query.collections.split('+')
@@ -34,4 +49,15 @@ export default function fixLegacyQuery(query) {
             query.order = ['word-count']
         }
     }
+
+    ['date', 'date-created', 'filetype', 'lang', 'email-domains',
+        'from.keyword', 'to.keyword', 'path-parts', 'tags'].forEach(field => {
+        if (query[field]) {
+            moveToFilters(query, field)
+        }
+    })
+    const privateTags = Object.keys(query).filter(tag => /^priv-tags\./.test(tag))
+    privateTags.forEach(tag => {
+        moveToFilters(query, 'priv-tags', query[tag])
+    })
 }

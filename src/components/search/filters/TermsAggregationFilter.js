@@ -4,14 +4,14 @@ import { Divider } from '@material-ui/core'
 import Expandable from '../../Expandable'
 import AggregationFilter from './AggregationFilter'
 
-function TermsAggregationFilter({ title, field, queryField, queryFacets, aggregations,
+function TermsAggregationFilter({ title, field, queryFilter, queryFacets, aggregations,
                                     emptyDisabled = false, ...rest }) {
 
     const enabled = !emptyDisabled ||
         !!aggregations?.values.buckets.length ||
         !isNaN(parseInt(queryFacets?.[field]))
 
-    const defaultOpen = !!queryField?.length
+    const defaultOpen = !!queryFilter?.include?.length || !!queryFilter?.exclude?.length
 
     return (
         <Expandable
@@ -21,7 +21,7 @@ function TermsAggregationFilter({ title, field, queryField, queryFacets, aggrega
         >
             <AggregationFilter
                 field={field}
-                queryField={queryField}
+                queryFilter={queryFilter}
                 queryFacets={queryFacets}
                 aggregations={aggregations}
                 triState

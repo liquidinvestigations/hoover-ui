@@ -14,7 +14,7 @@ import Filters from '../src/components/search/filters/Filters'
 import CollectionsFilter from '../src/components/search/filters/CollectionsFilter'
 import Document from '../src/components/document/Document'
 import { ProgressIndicatorContext } from '../src/components/ProgressIndicator'
-import { SEARCH_GUIDE } from '../src/constants'
+import { DEFAULT_MAX_RESULTS, SEARCH_GUIDE } from '../src/constants'
 import { copyMetadata, documentViewUrl } from '../src/utils'
 import { buildSearchQuerystring, defaultSearchParams, unwindParams } from '../src/queryUtils'
 import fixLegacyQuery from '../src/fixLegacyQuery'
@@ -64,14 +64,25 @@ export default function Index({ collections, serverQuery }) {
     let [inputRef, setInputRef] = useState()
     const isInputFocused = () => inputRef === document.activeElement
 
-    const [text, setText] = useState(query.q)
+    const maxResultsCount = useMemo(() => collections
+            .filter(collection => selectedCollections.includes(collection.name))
+            .reduce((accumulator, collection) => {
+                if (!isNaN(collection.max_result_window) && collection.max_result_window < accumulator) {
+                    return collection.max_result_window
+                }
+                return accumulator
+            }, DEFAULT_MAX_RESULTS),
+        [collections, selectedCollections]
+    )
+
+    const [q, setQ] = useState(query.q)
     const [order, setOrder] = useState(query.order)
     const [page, setPage] = useState(query.page || defaultSearchParams.page)
     const [size, setSize] = useState(query.size || defaultSearchParams.size)
     const [selectedCollections, setSelectedCollections] = useState(query.collections || [])
 
     const search = useCallback(params => {
-        const stateParams = { text, size, order, page, collections: selectedCollections }
+        const stateParams = { q, size, order, page, collections: selectedCollections }
         const newQuery = buildSearchQuerystring({ ...query, ...stateParams, ...params })
         router.push(
             { pathname, search: newQuery },
@@ -104,30 +115,32 @@ export default function Index({ collections, serverQuery }) {
     }, [search])
 
     const handleFilterApply = useCallback(filter => {
+        const newFilters = { ...filters, ...filter }
+        setFilters(newFilters)
         setPage(1)
-        search({ ...filter, page: 1 })
+        search({ filters: newFilters, page: 1 })
     }, [search])
 
     const handleInputChange = useCallback(event => {
-        setText(event.target.value)
+        setQ(event.target.value)
     }, [])
 
     const handleSubmit = useCallback(event => {
         event.preventDefault()
         setPage(1)
-        search({ text, page: 1 })
-    }, [text, search])
+        search({ q, page: 1 })
+    }, [q, search])
 
-    const handleSearch = useCallback(text => {
-        setText(text)
-        search({ text, page: 1 })
+    const handleSearch = useCallback(q => {
+        setQ(q)
+        search({ q, page: 1 })
     }, [search])
 
     const handleInputKey = useCallback(event => {
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault()
             setPage(1)
-            search({ text, page: 1 })
+            search({ q, page: 1 })
         }
     }, [text, search])
 
@@ -151,7 +164,7 @@ export default function Index({ collections, serverQuery }) {
     const [resultsLoading, setResultsLoading] = useState(!!query.q)
     useEffect(() => {
         if (query.q) {
-            setText(query.q)
+            setQ(query.q)
 
             setError(null)
             setResultsLoading(true)
@@ -176,16 +189,19 @@ export default function Index({ collections, serverQuery }) {
     }, [JSON.stringify({
         ...query,
         facets: null,
-        date: {
-            from: query.date?.from,
-            to: query.date?.to,
-            intervals: query.date?.intervals,
-        },
-        ['date-created']: {
-            from: query['date-created']?.from,
-            to: query['date-created']?.to,
-            intervals: query['date-created']?.intervals,
-        },
+        filters: {
+            ...query.filters || {},
+            date: {
+                from: query.filters?.date?.from,
+                to: query.filters?.date?.to,
+                intervals: query.filters?.date?.intervals,
+            },
+            ['date-created']: {
+                from: query.filters?.['date-created']?.from,
+                to: query.filters?.['date-created']?.to,
+                intervals: query.filters?.['date-created']?.intervals,
+            },
+        }
     })])
 
 
@@ -215,7 +231,7 @@ export default function Index({ collections, serverQuery }) {
     const clearResults = url => {
         if (url === '/') {
             setResults(null)
-            setText('')
+            setQ('')
         }
     }
 
@@ -237,7 +253,7 @@ export default function Index({ collections, serverQuery }) {
                 if (currentIndex === results.hits.hits.length - 1) {
                     setPage(parseInt(page) + 1)
                     setPreviewOnLoad('first')
-                    search({page: parseInt(page) + 1})
+                    search({ page: parseInt(page) + 1 })
                 } else {
                     handleDocPreview(documentViewUrl(results.hits.hits[currentIndex + 1]))
                 }
@@ -251,7 +267,7 @@ export default function Index({ collections, serverQuery }) {
                 if (currentIndex === 0 && page > 1) {
                     setPage(parseInt(page) - 1)
                     setPreviewOnLoad('last')
-                    search({page: parseInt(page) - 1})
+                    search({ page: parseInt(page) - 1 })
                 } else {
                     handleDocPreview(documentViewUrl(results.hits.hits[currentIndex - 1]))
                 }
@@ -369,7 +385,7 @@ export default function Index({ collections, serverQuery }) {
                                     label="Search"
                                     type="search"
                                     margin="normal"
-                                    value={text}
+                                    value={q}
                                     onChange={handleInputChange}
                                     onKeyDown={handleInputKey}
                                     autoFocus
@@ -416,6 +432,7 @@ export default function Index({ collections, serverQuery }) {
                         <Grid item sm={12}>
                             <SearchResults
                                 results={results}
+                                maxCount={maxResultsCount}
                                 loading={resultsLoading}
                                 query={query}
                                 changePage={handlePageChange}
