@@ -75,7 +75,7 @@ export default function Index({ collections, serverQuery }) {
     }, [q, query])
 
     const maxResultsCount = useMemo(() => collections
-            .filter(collection => query.collections.includes(collection.name))
+            .filter(collection => query.collections?.includes(collection.name))
             .reduce((accumulator, collection) => {
                 if (!isNaN(collection.max_result_window) && collection.max_result_window < accumulator) {
                     return collection.max_result_window
@@ -323,13 +323,13 @@ export default function Index({ collections, serverQuery }) {
                     <>
                         <List dense className={classes.collections}>
                             <Expandable
-                                title={`Collections (${query.collections.length})`}
+                                title={`Collections (${query.collections?.length || 0})`}
                                 defaultOpen
                                 highlight={false}
                             >
                                 <CollectionsFilter
                                     collections={collections}
-                                    selected={query.collections}
+                                    selected={query.collections || []}
                                     changeSelection={handleCollectionsChange}
                                     counts={results?.count_by_index}
                                 />
