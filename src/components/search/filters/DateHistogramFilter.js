@@ -43,7 +43,7 @@ function DateHistogramFilter({ title, field, queryFilter, queryFacets, aggregati
 
     const onSelectionChange = useCallback((field, newIntervals, resetPage) => {
         const { intervals, ...rest } = queryFilter || {}
-        if (newIntervals.length) {
+        if (newIntervals.include.length) {
             onChange(field, { intervals: newIntervals, ...rest }, resetPage)
         } else {
             onChange(field, rest, resetPage)
@@ -96,9 +96,8 @@ function DateHistogramFilter({ title, field, queryFilter, queryFacets, aggregati
 
             <AggregationFilter
                 field={field}
-                queryFilter={queryFilter}
+                queryFilter={queryFilter?.intervals}
                 queryFacets={queryFacets}
-                querySubField="intervals"
                 aggregations={aggregations}
                 disabled={disabled}
                 onChange={onSelectionChange}

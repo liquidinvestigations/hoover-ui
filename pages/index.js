@@ -61,65 +61,49 @@ export default function Index({ collections, serverQuery }) {
     }, [queryString])
 
 
+    const [q, setQ] = useState(query.q)
     let [inputRef, setInputRef] = useState()
     const isInputFocused = () => inputRef === document.activeElement
 
+    const search = useCallback(params => {
+        const newQuery = buildSearchQuerystring({ ...defaultSearchParams, ...query, q, ...params })
+        router.push(
+            { pathname, search: newQuery },
+            undefined,
+            { shallow: true },
+        )
+    }, [q, query])
+
     const maxResultsCount = useMemo(() => collections
-            .filter(collection => selectedCollections.includes(collection.name))
+            .filter(collection => query.collections.includes(collection.name))
             .reduce((accumulator, collection) => {
                 if (!isNaN(collection.max_result_window) && collection.max_result_window < accumulator) {
                     return collection.max_result_window
                 }
                 return accumulator
             }, DEFAULT_MAX_RESULTS),
-        [collections, selectedCollections]
+        [collections, query]
     )
 
-    const [q, setQ] = useState(query.q)
-    const [order, setOrder] = useState(query.order)
-    const [page, setPage] = useState(query.page || defaultSearchParams.page)
-    const [size, setSize] = useState(query.size || defaultSearchParams.size)
-    const [selectedCollections, setSelectedCollections] = useState(query.collections || [])
-
-    const search = useCallback(params => {
-        const stateParams = { q, size, order, page, collections: selectedCollections }
-        const newQuery = buildSearchQuerystring({ ...query, ...stateParams, ...params })
-        router.push(
-            { pathname, search: newQuery },
-            undefined,
-            { shallow: true },
-        )
-    }, [text, size, order, page, selectedCollections, query, pathname])
-
-    const handleSelectedCollectionsChange = useCallback(collections => {
-        setSelectedCollections(collections)
-        setPage(1)
+    const handleCollectionsChange = useCallback(collections => {
         search({ collections, page: 1 })
     }, [collections, search])
 
     const handleSizeChange = useCallback(size => {
-        setSize(size)
-        setPage(1)
         search({ size, page: 1 })
     }, [search])
 
     const handleOrderChange = useCallback(order => {
-        setOrder(order)
-        setPage(1)
         search({ order, page: 1 })
     }, [search])
 
     const handlePageChange = useCallback(page => {
-        setPage(page)
         search({ page })
     }, [search])
 
-    const handleFilterApply = useCallback(filter => {
-        const newFilters = { ...filters, ...filter }
-        setFilters(newFilters)
-        setPage(1)
-        search({ filters: newFilters, page: 1 })
-    }, [search])
+    const handleSearchTrigger = useCallback(params => {
+        search({ ...query, ...params, page: 1 })
+    }, [search, query])
 
     const handleInputChange = useCallback(event => {
         setQ(event.target.value)
@@ -127,7 +111,6 @@ export default function Index({ collections, serverQuery }) {
 
     const handleSubmit = useCallback(event => {
         event.preventDefault()
-        setPage(1)
         search({ q, page: 1 })
     }, [q, search])
 
@@ -139,10 +122,9 @@ export default function Index({ collections, serverQuery }) {
     const handleInputKey = useCallback(event => {
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault()
-            setPage(1)
             search({ q, page: 1 })
         }
-    }, [text, search])
+    }, [q, search])
 
 
     const [previewOnLoad, setPreviewOnLoad] = useState()
@@ -249,31 +231,29 @@ export default function Index({ collections, serverQuery }) {
 
     const previewNextDoc = useCallback(() => {
         if (!resultsLoading && results?.hits.hits) {
-            if ((parseInt(page) - 1) * size + currentIndex < results.hits.total - 1) {
+            if ((parseInt(query.page) - 1) * parseInt(query.size) + currentIndex < results.hits.total - 1) {
                 if (currentIndex === results.hits.hits.length - 1) {
-                    setPage(parseInt(page) + 1)
                     setPreviewOnLoad('first')
-                    search({ page: parseInt(page) + 1 })
+                    search({ page: parseInt(query.page) + 1 })
                 } else {
                     handleDocPreview(documentViewUrl(results.hits.hits[currentIndex + 1]))
                 }
             }
         }
-    }, [page, size, results, resultsLoading, selectedDocUrl])
+    }, [query, results, resultsLoading, selectedDocUrl])
 
     const previewPreviousDoc = useCallback(() => {
         if (!resultsLoading && results?.hits.hits && selectedDocUrl) {
-            if (page > 1 || currentIndex >= 1) {
-                if (currentIndex === 0 && page > 1) {
-                    setPage(parseInt(page) - 1)
+            if (parseInt(query.page) > 1 || currentIndex >= 1) {
+                if (currentIndex === 0 && parseInt(query.page) > 1) {
                     setPreviewOnLoad('last')
-                    search({ page: parseInt(page) - 1 })
+                    search({ page: parseInt(query.page) - 1 })
                 } else {
                     handleDocPreview(documentViewUrl(results.hits.hits[currentIndex - 1]))
                 }
             }
         }
-    }, [page, size, results, resultsLoading, selectedDocUrl])
+    }, [query, results, resultsLoading, selectedDocUrl])
 
     const keys = useMemo(() => ({
         nextItem: {
@@ -343,14 +323,14 @@ export default function Index({ collections, serverQuery }) {
                     <>
                         <List dense className={classes.collections}>
                             <Expandable
-                                title={`Collections (${selectedCollections.length})`}
+                                title={`Collections (${query.collections.length})`}
                                 defaultOpen
                                 highlight={false}
                             >
                                 <CollectionsFilter
                                     collections={collections}
-                                    selected={selectedCollections}
-                                    changeSelection={handleSelectedCollectionsChange}
+                                    selected={query.collections}
+                                    changeSelection={handleCollectionsChange}
                                     counts={results?.count_by_index}
                                 />
                                 <Divider />
@@ -361,7 +341,7 @@ export default function Index({ collections, serverQuery }) {
                             loading={aggregationsLoading || resultsLoading}
                             query={query}
                             aggregations={aggregations}
-                            applyFilter={handleFilterApply}
+                            triggerSearch={handleSearchTrigger}
                             className={classes.filters}
                         />
                     </>
@@ -416,7 +396,7 @@ export default function Index({ collections, serverQuery }) {
                             <SearchQueryChips query={query.q} onQueryChange={handleSearch} />
 
                             <Sorting
-                                order={order}
+                                order={query.order}
                                 changeOrder={handleOrderChange}
                             />
                         </Grid>

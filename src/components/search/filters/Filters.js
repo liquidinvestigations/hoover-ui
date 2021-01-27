@@ -6,28 +6,29 @@ import { getLanguageName } from '../../../utils'
 
 const formatLang = bucket => getLanguageName(bucket.key)
 
-function Filters({ loading, query, aggregations, applyFilter, ...rest }) {
+function Filters({ loading, query, aggregations, triggerSearch, ...rest }) {
     const handleChange = useCallback((key, value, resetPage) => {
+        const { [key]: prevFilter, ...restFilters } = query.filters || {}
         if (resetPage) {
-            const { [key]: prevFacet, ...rest } = query.facets || {}
-            applyFilter({ [key]: value, facets: { ...rest } })
+            const { [key]: prevFacet, ...restFacets } = query.facets || {}
+            triggerSearch({ filters: { [key]: value, ...restFilters }, facets: { ...restFacets } })
         } else {
-            applyFilter({ [key]: value })
+            triggerSearch({ filters: { [key]: value, ...restFilters } })
         }
     }, [query])
 
     const handlePagination = useCallback((key, newPage) => {
-        const { [key]: prevFacet, ...rest } = query.facets || {}
+        const { [key]: prevFacet, ...restFacets } = query.facets || {}
         if (newPage > 1) {
-            applyFilter({ facets: { [key]: newPage, ...rest } })
+            triggerSearch({ facets: { [key]: newPage, ...restFacets } })
         } else {
-            applyFilter({ facets: { ...rest } })
+            triggerSearch({ facets: { ...restFacets } })
         }
     }, [query])
 
     const handleLoadMore = useCallback((key, page) => {
         const facets = query.facets || {}
-        applyFilter({ facets: { ...facets, [key]: page } })
+        triggerSearch({ facets: { ...facets, [key]: page } })
     }, [query])
 
     const filterProps = {

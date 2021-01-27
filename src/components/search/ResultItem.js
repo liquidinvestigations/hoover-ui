@@ -78,9 +78,6 @@ const useStyles = makeStyles(theme => ({
         fontSize: '.7rem',
         color: '#555',
     },
-    iconsBox: {
-        lineHeight: 0,
-    },
     actionIcon: {
         fontSize: 20,
         color: theme.palette.grey[600],
@@ -156,7 +153,7 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
                             <Box component="span" className={classes.index}>{index}.</Box> {fields.filename}
                         </Grid>
 
-                        <Grid container className={classes.iconsBox} component="span">
+                        <Grid container component="span">
                             {fields.ocr && (
                                 <Grid item component="span">
                                     <Tooltip placement="top" title="OCR">
