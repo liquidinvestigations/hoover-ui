@@ -8,7 +8,7 @@ function TermsAggregationFilter({ title, field, query, aggregations, emptyDisabl
         !!aggregations?.[field].values.buckets.length ||
         !isNaN(parseInt(query?.facets?.[field]))
 
-    const defaultOpen = !!query?.[field]?.length
+    const defaultOpen = !!query?.filters?.[field]?.include?.length || !!query?.filters?.[field]?.exclude?.length
 
     return (
         <Expandable
