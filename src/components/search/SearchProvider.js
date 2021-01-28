@@ -69,7 +69,6 @@ export function SearchProvider({ children, serverQuery }) {
     }, [JSON.stringify({
         ...query,
         facets: null,
-        preview: null,
         filters: {
             ...query.filters || {},
             date: {
@@ -105,7 +104,6 @@ export function SearchProvider({ children, serverQuery }) {
         page: null,
         size: null,
         order: null,
-        preview: null,
     })])
 
     const clearResults = () => {
