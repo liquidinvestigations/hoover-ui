@@ -52,7 +52,9 @@ it('builds a query with a date histogram by years filter', () => {
     const query = buildSearchQuery({
         filters: {
             date: {
-                intervals: ['2009']
+                intervals: {
+                    include: ['2009']
+                }
             }
         }
     }, null, searchFields, 'testuser')

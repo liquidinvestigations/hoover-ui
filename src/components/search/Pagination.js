@@ -48,7 +48,9 @@ function Pagination({ total, size, page, maxCount, changePage, changeSize }) {
         middle: [],
         right: [],
     }
-    if (page - 1 <= MAX_PREV_PAGES) {
+    if (pageCount <= MAX_PREV_PAGES + MAX_NEXT_PAGES + 1) {
+        pages.middle.push(...createPageArray(1, Math.min(MAX_PREV_PAGES + MAX_NEXT_PAGES + 1, pageCount)))
+    } else if (page - 1 <= MAX_PREV_PAGES) {
         pages.left.push(...createPageArray(1, MAX_PREV_PAGES + MAX_NEXT_PAGES + 1))
         pages.right.push(pageCount)
     } else if (page + MAX_NEXT_PAGES + 1 <= pageCount) {

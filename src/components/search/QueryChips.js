@@ -4,6 +4,7 @@ import { Box, ButtonBase, Chip, FormControl, Menu, MenuItem, Tooltip } from '@ma
 import { makeStyles } from '@material-ui/core/styles'
 import { green, red } from '@material-ui/core/colors'
 import { DEFAULT_OPERATOR, SEARCH_QUERY_PREFIXES } from '../../constants'
+import { shortenName } from '../../utils'
 
 const useStyles = makeStyles(theme => ({
     box: {
@@ -87,11 +88,6 @@ const rebuildTree = (parent, node) => {
     }
     return root
 }
-
-const ELLIPSIS_TERM_LENGTH = 30
-
-const shortenName = name => name.length > ELLIPSIS_TERM_LENGTH ?
-    `${name.substr(0, 17)}...${name.substr(-10)}` : name
 
 function QueryChips({ query, onQueryChange }) {
     const classes = useStyles()
@@ -195,11 +191,10 @@ function QueryChips({ query, onQueryChange }) {
                 label = lucene.toString(q)
             }
 
-            if (q.similarity || q.proximity || q.boost || q.term?.length > ELLIPSIS_TERM_LENGTH) {
+            if (q.similarity || q.proximity || q.boost) {
                 return (
                     <Tooltip placement="top" title={(
                         <>
-                            {q.term?.length > ELLIPSIS_TERM_LENGTH && <Box>{q.term}</Box>}
                             {q.similarity && <Box><strong>Similarity:</strong>{' '}{q.similarity}</Box>}
                             {q.proximity && <Box><strong>Proximity:</strong>{' '}{q.proximity}</Box>}
                             {q.boost && <Box><strong>Boost:</strong>{' '}{q.boost}</Box>}

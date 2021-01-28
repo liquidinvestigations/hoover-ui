@@ -38,7 +38,7 @@ export const buildSearchQuerystring = ({ q, size, order, page, collections, face
     qs.stringify(rollupParams({
         ...defaultSearchParams,
         q, size, order, page, facets, filters,
-        collections: collections.join('+'),
+        collections: collections?.join('+'),
     }))
 )
 

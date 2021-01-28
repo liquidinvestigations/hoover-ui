@@ -1,5 +1,6 @@
 import React, { memo } from 'react'
 import cn from 'classnames'
+import isEqual from 'react-fast-compare'
 import { makeStyles } from '@material-ui/core/styles'
 import { Button, Checkbox, Grid, IconButton, List, ListItem, ListItemText, Typography } from '@material-ui/core'
 import { formatThousands } from '../../../utils'
@@ -23,21 +24,20 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function AggregationFilter({ field, query, queryField, aggregations, disabled, onChange, onPagination,
-                               onLoadMore, triState, bucketLabel, bucketSubLabel, bucketValue }) {
-
-    const aggregation = aggregations[field]?.values
-    const cardinality = aggregations[field]?.count
-    const selection = queryField ? query.filters?.[field]?.[queryField] : query.filters?.[field]
-
-    const pageParam = parseInt(query.facets?.[field])
-    const page = isNaN(pageParam) ? 1 : pageParam
+function AggregationFilter({ field, queryFilter, queryFacets, aggregations, disabled, onChange,
+                               onPagination, onLoadMore, triState, bucketLabel, bucketSubLabel, bucketValue }) {
 
     const classes = useStyles()
 
+    const aggregation = aggregations?.values
+    const cardinality = aggregations?.count
+
+    const pageParam = parseInt(queryFacets)
+    const page = isNaN(pageParam) ? 1 : pageParam
+
     const handleChange = value => () => {
-        const include = new Set(selection?.include || [])
-        const exclude = new Set(selection?.exclude || [])
+        const include = new Set(queryFilter?.include || [])
+        const exclude = new Set(queryFilter?.exclude || [])
 
         if (include.has(value)) {
             include.delete(value)
@@ -66,8 +66,8 @@ function AggregationFilter({ field, query, queryField, aggregations, disabled, o
         const label = bucketLabel ? bucketLabel(bucket) : bucket.key
         const subLabel = bucketSubLabel ? bucketSubLabel(bucket) : null
         const value = bucketValue ? bucketValue(bucket) : bucket.key
-        const checked = selection?.include?.includes(value) ||
-            selection?.exclude?.includes(value) || false
+        const checked = queryFilter?.include?.includes(value) ||
+            queryFilter?.exclude?.includes(value) || false
 
         return (
             <ListItem
@@ -83,7 +83,7 @@ function AggregationFilter({ field, query, queryField, aggregations, disabled, o
                     disableRipple
                     value={value}
                     checked={checked}
-                    indeterminate={triState && selection?.exclude?.includes(value)}
+                    indeterminate={triState && queryFilter?.exclude?.includes(value)}
                     classes={{ root: classes.checkbox }}
                     disabled={disabled || !bucket.doc_count}
                     onChange={handleChange(value)}
@@ -114,7 +114,7 @@ function AggregationFilter({ field, query, queryField, aggregations, disabled, o
     const hasNext = onPagination && aggregation?.buckets.length >= DEFAULT_FACET_SIZE
     const hasPrev = onPagination && page > 1
     const hasMore = onLoadMore && cardinality?.value > page * DEFAULT_FACET_SIZE
-    const disableReset = disabled || (!selection?.include?.length && !selection?.exclude?.length && page === 1)
+    const disableReset = disabled || (!queryFilter?.include?.length && !queryFilter?.exclude?.length && page === 1)
 
     return (
         <List dense>
@@ -166,4 +166,4 @@ function AggregationFilter({ field, query, queryField, aggregations, disabled, o
     )
 }
 
-export default memo(AggregationFilter)
+export default memo(AggregationFilter, isEqual)

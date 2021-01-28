@@ -6,7 +6,6 @@ import {
     AccountTreeOutlined,
     CloudDownload,
     CodeOutlined,
-    FolderOutlined,
     Launch,
     LocalOfferOutlined,
     NavigateBefore,
@@ -23,7 +22,6 @@ import TabPanel from './TabPanel'
 import Preview, { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './Preview'
 import HTML from './HTML'
 import Text from './Text'
-import Files from './Files'
 import Meta from './Meta'
 import Loading from '../Loading'
 import TagTooltip from './TagTooltip'
@@ -34,6 +32,11 @@ import { createDownloadUrl, createOcrUrl, createTag, deleteTag, tags as tagsAPI 
 import { publicTagsList, specialTags } from './specialTags'
 
 const useStyles = makeStyles(theme => ({
+    root: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
     toolbar: {
         backgroundColor: theme.palette.grey[100],
         borderBottomColor: theme.palette.grey[400],
@@ -77,13 +80,19 @@ const useStyles = makeStyles(theme => ({
     tabsIndicator: {
         top: 0,
     },
+    activeTab: {
+        height: '100%',
+        overflow: 'auto',
+    },
     printTitle: {
         margin: theme.spacing(2),
     },
     printBackLink: {
-        float: 'right',
-        margin: theme.spacing(1),
+        position: 'absolute',
+        top: theme.spacing(2),
+        right: theme.spacing(2),
         color: theme.palette.primary.contrastText,
+        zIndex: theme.zIndex.drawer + 2,
     }
 }))
 
@@ -101,9 +110,9 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
     const collection = parseCollection(docUrl)
     const collectionBaseUrl = docUrl && url.resolve(docUrl, './')
     const headerLinks = {
-        tags: [],
-        navigation: [],
         actions: [],
+        navigation: [],
+        tags: [],
     }
     const tagsLinks = []
 
@@ -156,6 +165,10 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
         return null
     }
 
+    const ocrData = Object.keys(data.content.ocrtext || {}).map((tag, index) => {
+        return {tag: tag, text: data.content.ocrtext[tag]}
+    })
+
     const handleSpecialTagClick = (tag, name) => event => {
         event.stopPropagation()
         setTagsLocked(true)
@@ -177,42 +190,6 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
     }
 
     if (data.content.filetype !== 'folder') {
-        specialTags.forEach(s => {
-            const present = tags.find(tag => tag.tag === s.tag && tag.user === whoAmI.username)
-            const count = tags.filter(tag => tag.tag === s.tag && tag.user !== whoAmI.username)?.length || null
-            const link = {
-                icon: present ? s.present.icon : s.absent.icon,
-                label: present ? s.present.label : s.absent.label,
-                style: { color: present ? s.present.color : s.absent.color },
-                tooltip: s.tooltip,
-                disabled: tagsLocked,
-                onClick: handleSpecialTagClick(present, s.tag),
-                count: present && count ? count + 1: count,
-            }
-            if (s.showInToolbar) {
-                headerLinks.tags.push(link)
-            }
-            if (s.showInTagsTab) {
-                tagsLinks.push(link)
-            }
-        })
-
-        if (onPrev) {
-            headerLinks.navigation.push({
-                icon: <NavigateBefore />,
-                tooltip: 'Previous result',
-                onClick: onPrev,
-            })
-        }
-
-        if (onNext) {
-            headerLinks.navigation.push({
-                icon: <NavigateNext />,
-                tooltip: 'Next result',
-                onClick: onNext,
-            })
-        }
-
         if (!fullPage) {
             headerLinks.actions.push({
                 href: docUrl,
@@ -235,22 +212,52 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
             icon: <CloudDownload />,
             target: fullPage ? null : '_blank',
         })
+
+        headerLinks.actions.push(
+            ...ocrData.map(({tag}) => ({
+                href: createOcrUrl(digestUrl, tag),
+                tooltip: `OCR ${tag}`,
+                icon: <TextFields />,
+                target: fullPage ? null : '_blank',
+            }))
+        )
+
+        if (onPrev) {
+            headerLinks.navigation.push({
+                icon: <NavigateBefore />,
+                tooltip: 'Previous result',
+                onClick: onPrev,
+            })
+        }
+
+        if (onNext) {
+            headerLinks.navigation.push({
+                icon: <NavigateNext />,
+                tooltip: 'Next result',
+                onClick: onNext,
+            })
+        }
+
+        specialTags.forEach(s => {
+            const present = tags.find(tag => tag.tag === s.tag && tag.user === whoAmI.username)
+            const count = tags.filter(tag => tag.tag === s.tag && tag.user !== whoAmI.username)?.length || null
+            const link = {
+                icon: present ? s.present.icon : s.absent.icon,
+                label: present ? s.present.label : s.absent.label,
+                style: { color: present ? s.present.color : s.absent.color },
+                tooltip: s.tooltip,
+                disabled: tagsLocked,
+                onClick: handleSpecialTagClick(present, s.tag),
+                count: present && count ? count + 1: count,
+            }
+            if (s.showInToolbar) {
+                headerLinks.tags.push(link)
+            }
+            if (s.showInTagsTab) {
+                tagsLinks.push(link)
+            }
+        })
     }
-
-    const ocrData = Object.keys(data.content.ocrtext || {}).map((tag, index) => {
-        return {tag: tag, text: data.content.ocrtext[tag]}
-    })
-
-    headerLinks.actions.push(
-        ...ocrData.map(({tag}) => ({
-            href: createOcrUrl(digestUrl, tag),
-            tooltip: `OCR ${tag}`,
-            icon: <TextFields />,
-            target: fullPage ? null : '_blank',
-        }))
-    )
-
-    let tabIndex = 0
 
     const tabsClasses = {
         root: classes.tabsRoot,
@@ -266,7 +273,7 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
     )
 
     const tabsData = [{
-        name: 'Text',
+        name: data.content.filetype,
         icon: <Toc />,
         visible: true,
         padding: 0,
@@ -275,6 +282,9 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
             ocrData={ocrData}
             collection={collection}
             printMode={printMode}
+            fullPage={fullPage}
+            docUrl={docUrl}
+            baseUrl={collectionBaseUrl}
         />,
     },{
         name: 'Preview',
@@ -288,7 +298,7 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
     },{
         name: 'Tags',
         icon: <LocalOfferOutlined />,
-        visible: data.content.filetype !== 'folder',
+        visible: !printMode && data.content.filetype !== 'folder',
         content: <Tags
             loading={tagsLoading}
             digestUrl={digestUrl}
@@ -302,7 +312,7 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
     },{
         name: 'Meta',
         icon: <SettingsApplicationsOutlined />,
-        visible: true,
+        visible: !printMode,
         content: <Meta
             doc={data}
             collection={collection}
@@ -319,23 +329,11 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
         icon: <AccountTreeOutlined />,
         visible: !!data.content.tree,
         content: <Text content={data.content.tree} />,
-    },{
-        name: 'Files',
-        icon: <FolderOutlined />,
-        visible: !!data.children?.length,
-        content: <Files
-            data={data.children}
-            page={data.children_page}
-            hasNextPage={data.children_has_next_page}
-            fullPage={fullPage}
-            docUrl={docUrl}
-            baseUrl={collectionBaseUrl}
-        />
     }]
 
     return (
-        <div>
-            {!printMode && (
+        <div className={classes.root}>
+            {!printMode && data.content.filetype !== 'folder' && (
                 <Toolbar variant="dense" classes={{root: classes.toolbar}}>
                     {Object.entries(headerLinks).map(([group, links]) => (
                         <Box key={group}>
@@ -344,7 +342,6 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
                                     <IconButton
                                         size="small"
                                         component="a"
-                                        color="default"
                                         className={classes.toolbarIcons}
                                         {...props}>
                                         <Badge badgeContent={count} color="secondary">
@@ -364,9 +361,11 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
                 </Link>
             )}
 
-            <Typography variant="h5" className={classes.filename}>
-                {data.content.filename}
-            </Typography>
+            <Box>
+                <Typography variant="h5" className={classes.filename}>
+                    {data.content.filename}
+                </Typography>
+            </Box>
 
             <Grid container className={classes.subtitle}>
                 <Grid item>
@@ -407,15 +406,35 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
                     scrollButtons="auto"
                 >
                     {tabsData.filter(tabData => tabData.visible).map((tabData, index) => (
-                        <StyledTab icon={tabData.icon} label={tabData.name} classes={tabClasses} key={index} />
+                        <StyledTab
+                            key={index}
+                            icon={tabData.icon}
+                            label={tabData.name}
+                            classes={tabClasses}
+                        />
                     ))}
                 </Tabs>
             )}
 
             {tabsData.filter(tabData => tabData.visible).map((tabData, index) => (
-                <Box key={index}>
-                    {printMode && <Typography variant="h3" className={classes.printTitle}>{tabData.name}</Typography>}
-                    <TabPanel value={tab} index={tabIndex++} padding={tabData.padding} alwaysVisible={printMode}>
+                <Box
+                    key={index}
+                    className={index === tab ? classes.activeTab : null}
+                >
+                    {printMode && (
+                        <Typography
+                            variant="h3"
+                            className={classes.printTitle}
+                        >
+                            {tabData.name}
+                        </Typography>
+                    )}
+                    <TabPanel
+                        value={tab}
+                        index={index}
+                        padding={tabData.padding}
+                        alwaysVisible={printMode}
+                    >
                         {tabData.content}
                     </TabPanel>
                 </Box>

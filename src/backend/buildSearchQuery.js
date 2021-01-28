@@ -126,9 +126,9 @@ const buildHistogramField = (field, username, { interval = DEFAULT_INTERVAL, int
             }
         }
     },
-    filterClause: intervals.length ? {
+    filterClause: intervals.include?.length ? {
         bool: {
-            should: intervals.map(selected => ({
+            should: intervals.include.map(selected => ({
                 range: {
                     [expandPrivate(field, username)]: intervalFormat(interval, selected),
                 },
