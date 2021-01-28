@@ -4,7 +4,7 @@ import qs from 'qs'
 import fixLegacyQuery from '../../fixLegacyQuery'
 import { doc as docAPI } from '../../backend/api'
 import { documentViewUrl } from '../../utils'
-import { buildSearchQuerystring, defaultSearchParams, unwindParams } from '../../queryUtils'
+import { buildSearchQuerystring, unwindParams } from '../../queryUtils'
 import { aggregations as aggregationsAPI, search as searchAPI } from '../../api'
 
 const SearchContext = createContext({})
@@ -21,7 +21,7 @@ function SearchProvider({ children, serverQuery }) {
     }, [queryString])
 
     const search = useCallback(params => {
-        const newQuery = buildSearchQuerystring({ ...defaultSearchParams, ...query, ...params })
+        const newQuery = buildSearchQuerystring({ ...query, ...params })
         router.push(
             { pathname, search: newQuery },
             undefined,

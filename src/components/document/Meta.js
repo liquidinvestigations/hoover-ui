@@ -171,10 +171,10 @@ const Meta = ({ doc, collection, baseUrl, printMode }) => {
                     .map(([key, value]) => (
                         <Typography component="pre" variant="caption" className={classes.raw}>
                             <strong>{key}:</strong>{' '}
-                            {   typeof value === 'object' ?
+                            {
+                                typeof value === 'object' ?
                                 shortenName(JSON.stringify(value), 200) :
-                                typeof value === 'boolean' ?
-                                'true' :
+                                typeof value === 'boolean' ? (value ? 'true' : 'false') :
                                 shortenName(value, 200)
                             }
                         </Typography>

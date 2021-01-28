@@ -1,5 +1,5 @@
 import qs from 'qs'
-import { PRIVATE_FIELDS, SEARCH_DATE, SEARCH_DATE_CREATED } from './constants'
+import { SEARCH_DATE, SEARCH_DATE_CREATED } from './constants'
 
 export const defaultSearchParams = {
     page: 1,
@@ -34,11 +34,10 @@ export const unwindParams = query => Object.fromEntries(Object.entries(query).ma
     LEGACY_PARAMS[field] ? [LEGACY_PARAMS[field], value] : [field, value])
 )
 
-export const buildSearchQuerystring = ({ q, size, order, page, collections, facets, filters }) => (
+export const buildSearchQuerystring = (params) => (
     qs.stringify(rollupParams({
-        ...defaultSearchParams,
-        q, size, order, page, facets, filters,
-        collections: collections?.join('+'),
+        ...defaultSearchParams, ...params,
+        collections: params?.collections?.join('+'),
     }))
 )
 
