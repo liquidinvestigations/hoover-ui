@@ -143,24 +143,10 @@ function SearchProvider({ children, serverQuery }) {
 
     return (
         <SearchContext.Provider value={{
-            query,
-            error,
-
-            search,
-            results,
-            aggregations,
-
-            previewLoading,
-            resultsLoading,
-            aggregationsLoading,
-
-            handleDocPreview,
-            selectedDocUrl,
-            selectedDocData,
-            previewNextDoc,
-            previewPreviousDoc,
-
-            clearResults,
+            query, error, search, results, aggregations,
+            previewLoading, resultsLoading, aggregationsLoading,
+            handleDocPreview, selectedDocUrl, selectedDocData,
+            previewNextDoc, previewPreviousDoc, clearResults,
         }}>
             {children}
         </SearchContext.Provider>

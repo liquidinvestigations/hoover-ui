@@ -14,6 +14,7 @@ import {
     Typography
 } from '@material-ui/core'
 import { AttachFile, CloudDownloadOutlined, Launch, Lock, TextFields } from '@material-ui/icons'
+import { useSearch } from './SearchProvider'
 import { UserContext } from '../../../pages/_app'
 import { getIconReactComponent, humanFileSize, makeUnsearchable, truncatePath } from '../../utils'
 import { createDownloadUrl } from '../../backend/api'
@@ -110,9 +111,13 @@ const useStyles = makeStyles(theme => ({
 
 const timeMs = () => new Date().getTime()
 
-function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
+function ResultItem({ hit, url, index }) {
     const classes = useStyles()
     const whoAmI = useContext(UserContext)
+    const { selectedDocUrl, handleDocPreview } = useSearch()
+
+    const isPreview = hit._url.endsWith(selectedDocUrl)
+    const unsearchable = !!selectedDocUrl
 
     const nodeRef = useRef()
     const handleMouseDown = () => {
@@ -124,7 +129,7 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
     const handleMouseUp = () => {
         if (nodeRef.current.willFocus) {
             nodeRef.current.tUp = timeMs()
-            onPreview(url)
+            handleDocPreview(url)
         }
     }
 

@@ -2,24 +2,19 @@ import React, { memo } from 'react'
 import ReactPlaceholder from 'react-placeholder'
 import Pagination from './Pagination'
 import ResultItem from './ResultItem'
+import { useSearch } from './SearchProvider'
 import { documentViewUrl } from '../../utils'
 
-function Results({ loading, results, maxCount, query, changePage, changeSize, selectedDocUrl, onPreview }) {
+function Results({ maxCount }) {
+    const { query, results, resultsLoading } = useSearch()
     const start = 1 + (query.page - 1) * query.size
 
     return (
         <>
-            <Pagination
-                total={parseInt(results?.hits.total || 0)}
-                size={parseInt(query.size || 10)}
-                page={parseInt(query.page || 0)}
-                maxCount={maxCount}
-                changePage={changePage}
-                changeSize={changeSize}
-            />
+            <Pagination maxCount={maxCount} />
             <ReactPlaceholder
                 showLoadingAnimation
-                ready={!loading}
+                ready={!resultsLoading}
                 type="text"
                 rows={10}
             >
@@ -32,20 +27,10 @@ function Results({ loading, results, maxCount, query, changePage, changeSize, se
                         hit={hit}
                         url={documentViewUrl(hit)}
                         index={start + i}
-                        onPreview={onPreview}
-                        isPreview={hit._url.endsWith(selectedDocUrl)}
-                        unsearchable={!!selectedDocUrl}
                     />
                 )}
                 {!!results?.hits.hits.length &&
-                    <Pagination
-                        total={parseInt(results.hits.total)}
-                        size={parseInt(query.size || 10)}
-                        page={parseInt(query.page)}
-                        maxCount={maxCount}
-                        changePage={changePage}
-                        changeSize={changeSize}
-                    />
+                    <Pagination maxCount={maxCount} />
                 }
             </ReactPlaceholder>
         </>

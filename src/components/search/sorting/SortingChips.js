@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { Chip } from '@material-ui/core'
 import { ArrowUpward } from '@material-ui/icons'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
+import { useSearch } from '../SearchProvider'
 import { SORTABLE_FIELDS } from '../../../constants'
 
 const useStyles = makeStyles(theme => ({
@@ -24,8 +25,14 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function SortingChips({ order, changeOrder }) {
+function SortingChips() {
     const classes = useStyles()
+    const { query, search } = useSearch()
+
+    const order = query.order
+    const changeOrder = newOrder => {
+        search({ order: newOrder, page: 1 })
+    }
 
     const handleClick = field => () => {
         const index = order.findIndex(([v]) => v === field)

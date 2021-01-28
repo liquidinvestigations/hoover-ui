@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react'
-import { copyMetadata } from '../../utils'
+import { useSearch } from './SearchProvider'
 import HotKeysWithHelp from '../HotKeysWithHelp'
+import { copyMetadata } from '../../utils'
 
-export default function HotKeys({ children, inputRef, selectedDocUrl, selectedDocData,
-                                    previewNextDoc, previewPreviousDoc }) {
-
+export default function HotKeys({ children, inputRef  }) {
+    const { selectedDocUrl, selectedDocData, previewNextDoc, previewPreviousDoc } = useSearch()
     const isInputFocused = () => inputRef.current === document.activeElement
 
     const keys = useMemo(() => ({

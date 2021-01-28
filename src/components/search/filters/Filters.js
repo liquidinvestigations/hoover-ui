@@ -2,11 +2,18 @@ import React, { memo, useCallback } from 'react'
 import { List } from '@material-ui/core'
 import DateHistogramFilter from './DateHistogramFilter'
 import TermsAggregationFilter from './TermsAggregationFilter'
+import { useSearch } from '../SearchProvider'
 import { getLanguageName } from '../../../utils'
 
 const formatLang = bucket => getLanguageName(bucket.key)
 
-function Filters({ loading, query, aggregations, triggerSearch, ...rest }) {
+function Filters({ ...props }) {
+    const { query, search, aggregations, resultsLoading, aggregationsLoading } = useSearch()
+
+    const triggerSearch = params => {
+        search({ ...params, page: 1 })
+    }
+
     const handleChange = useCallback((key, value, resetPage) => {
         const { [key]: prevFilter, ...restFilters } = query.filters || {}
         if (resetPage) {
@@ -32,7 +39,7 @@ function Filters({ loading, query, aggregations, triggerSearch, ...rest }) {
     }, [query])
 
     const filterProps = {
-        disabled: loading,
+        disabled: aggregationsLoading || resultsLoading,
         onChange: handleChange,
     }
 
@@ -41,7 +48,7 @@ function Filters({ loading, query, aggregations, triggerSearch, ...rest }) {
     }
 
     return (
-        <List {...rest}>
+        <List {...props}>
             <TermsAggregationFilter
                 title="Public tags"
                 field="tags"

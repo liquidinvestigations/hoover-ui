@@ -6,15 +6,17 @@ import { Divider, Grid, List, TextField, Typography } from '@material-ui/core'
 import Expandable from '../Expandable'
 import SplitPaneLayout from '../SplitPaneLayout'
 import { ProgressIndicatorContext } from '../ProgressIndicator'
-import Document from '../document/Document'
 import { useSearch } from './SearchProvider'
 import HotKeys from './HotKeys'
-import SearchQueryChips from './QueryChips'
+import FiltersChips from './FiltersChips'
+import QueryChips from './QueryChips'
 import SearchResults from './Results'
-import Sorting from './sorting/Sorting'
 import Filters from './filters/Filters'
 import CollectionsFilter from './filters/CollectionsFilter'
 import { DEFAULT_MAX_RESULTS, SEARCH_GUIDE } from '../../constants'
+import Preview from './Preview'
+import SortingChips from './sorting/SortingChips'
+import SortingMenu from './sorting/SortingMenu'
 
 const useStyles = makeStyles(theme => ({
     error: {
@@ -24,13 +26,6 @@ const useStyles = makeStyles(theme => ({
         paddingLeft: theme.spacing(3),
         paddingRight: theme.spacing(3),
     },
-    paper: {
-        position: 'absolute',
-        width: theme.spacing(50),
-        backgroundColor: theme.palette.background.paper,
-        boxShadow: theme.shadows[5],
-        padding: theme.spacing(4),
-    },
     info: {
         color: theme.palette.grey.A700,
     },
@@ -39,33 +34,18 @@ const useStyles = makeStyles(theme => ({
     },
     filters: {
         paddingTop: 0,
-    }
+    },
+    sorting: {
+        display: 'flex',
+        marginTop: theme.spacing(2),
+        justifyContent: 'flex-end',
+    },
 }))
 
 export default function Search({ collections }) {
     const classes = useStyles()
     const inputRef = useRef()
-
-    const {
-        query,
-        error,
-
-        search,
-        results,
-        aggregations,
-
-        previewLoading,
-        resultsLoading,
-        aggregationsLoading,
-
-        handleDocPreview,
-        selectedDocUrl,
-        selectedDocData,
-        previewNextDoc,
-        previewPreviousDoc,
-
-        clearResults,
-    } = useSearch()
+    const { query, error, search, results, resultsLoading, clearResults } = useSearch()
 
     useEffect(() => {
         if (query.q) {
@@ -89,8 +69,8 @@ export default function Search({ collections }) {
 
     const { setLoading } = useContext(ProgressIndicatorContext)
     useEffect(() => {
-        setLoading(resultsLoading || previewLoading)
-    }, [resultsLoading, previewLoading])
+        setLoading(resultsLoading)
+    }, [resultsLoading])
 
     const maxResultsCount = useMemo(() => collections
             .filter(collection => query.collections?.includes(collection.name))
@@ -103,50 +83,23 @@ export default function Search({ collections }) {
         [collections, query]
     )
 
-    const handleCollectionsChange = useCallback(collections => {
-        search({ q: inputRef.current.value, collections, page: 1 })
+    const handleCollectionsChange = useCallback(value => {
+        search({ collections: value, page: 1 })
     }, [collections, search])
-
-    const handleSizeChange = useCallback(size => {
-        search({ q: inputRef.current.value, size, page: 1 })
-    }, [search])
-
-    const handleOrderChange = useCallback(order => {
-        search({ q: inputRef.current.value, order, page: 1 })
-    }, [search])
-
-    const handlePageChange = useCallback(page => {
-        search({ q: inputRef.current.value, page })
-    }, [search])
-
-    const handleSearchTrigger = useCallback(params => {
-        search({ ...query, ...params, q: inputRef.current.value, page: 1 })
-    }, [search, query])
 
     const handleSubmit = useCallback(event => {
         event.preventDefault()
         search({ q: inputRef.current.value, page: 1 })
     }, [search])
 
-    const handleSearch = useCallback(q => {
-        search({ q: inputRef.current.value, page: 1 })
-    }, [search])
-
     const handleInputKey = useCallback(event => {
         if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault()
-            search({ q: inputRef.current.value, page: 1 })
+            handleSubmit(event)
         }
     }, [search])
 
     return (
-        <HotKeys
-            inputRef={inputRef}
-            selectedDocUrl={selectedDocUrl}
-            selectedDocData={selectedDocData}
-            previewNextDoc={previewNextDoc}
-            previewPreviousDoc={previewPreviousDoc}
-        >
+        <HotKeys inputRef={inputRef}>
             <SplitPaneLayout
                 left={
                     <>
@@ -166,24 +119,10 @@ export default function Search({ collections }) {
                             </Expandable>
                         </List>
 
-                        <Filters
-                            loading={aggregationsLoading || resultsLoading}
-                            query={query}
-                            aggregations={aggregations}
-                            triggerSearch={handleSearchTrigger}
-                            className={classes.filters}
-                        />
+                        <Filters className={classes.filters} />
                     </>
                 }
-                right={
-                    <Document
-                        docUrl={selectedDocUrl}
-                        data={selectedDocData}
-                        loading={previewLoading}
-                        onPrev={previewPreviousDoc}
-                        onNext={previewNextDoc}
-                    />
-                }
+                right={<Preview />}
             >
                 <div className={classes.main}>
                     <Grid container>
@@ -221,12 +160,14 @@ export default function Search({ collections }) {
                                 </Grid>
                             </Grid>
 
-                            <SearchQueryChips query={query.q} onQueryChange={handleSearch} />
+                            <FiltersChips />
 
-                            <Sorting
-                                order={query.order}
-                                changeOrder={handleOrderChange}
-                            />
+                            <QueryChips />
+
+                            <div className={classes.sorting}>
+                                <SortingChips />
+                                <SortingMenu />
+                            </div>
                         </Grid>
                     </Grid>
 
@@ -238,16 +179,7 @@ export default function Search({ collections }) {
 
                     <Grid container>
                         <Grid item sm={12}>
-                            <SearchResults
-                                results={results}
-                                maxCount={maxResultsCount}
-                                loading={resultsLoading}
-                                query={query}
-                                changePage={handlePageChange}
-                                changeSize={handleSizeChange}
-                                onPreview={handleDocPreview}
-                                selectedDocUrl={selectedDocUrl}
-                            />
+                            <SearchResults maxCount={maxResultsCount} />
                         </Grid>
                     </Grid>
                 </div>
