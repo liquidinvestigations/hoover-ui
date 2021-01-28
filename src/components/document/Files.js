@@ -69,7 +69,7 @@ function Files({ data, page, hasNextPage, baseUrl, docUrl, fullPage }) {
                 )}
             </TableCell>
             <TableCell className={classes.cell}>{content_type}</TableCell>
-            <TableCell className={classes.cell}>{humanFileSize(size, true)}</TableCell>
+            <TableCell className={classes.cell}>{!!size && humanFileSize(size, true)}</TableCell>
         </TableRow>
     ))
 

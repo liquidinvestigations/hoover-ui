@@ -53,9 +53,6 @@ const useStyles = makeStyles(theme => ({
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
-    collection: {
-        color: theme.palette.grey.A200,
-    },
     index: {
         color: theme.palette.grey[500],
     },
@@ -85,11 +82,20 @@ const useStyles = makeStyles(theme => ({
         fontSize: 20,
         color: theme.palette.grey[600],
     },
+    infoBox: {
+        display: 'inline-flex',
+        alignItems: 'center',
+    },
     infoIcon: {
         fontSize: 20,
         color: theme.palette.grey[600],
         marginRight: theme.spacing(0.3),
-        verticalAlign: 'middle',
+    },
+    collection: {
+        fontSize: 16,
+        color: theme.palette.grey.A200,
+        display: 'inline-flex',
+        alignItems: 'center',
     },
     textField: {
         width: '100%',
@@ -159,7 +165,7 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
 
                         <Grid container component="span">
                             {fields.ocr && (
-                                <Grid item component="span">
+                                <Grid item component="span" className={classes.infoBox}>
                                     <Tooltip placement="top" title="OCR">
                                         <TextFields className={classes.infoIcon} />
                                     </Tooltip>
@@ -168,16 +174,16 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
 
 
                             {fields.pgp && (
-                                <Grid item component="span">
+                                <Grid item component="span" className={classes.infoBox}>
                                     <Tooltip placement="top" title="encrypted">
                                         <Lock className={classes.infoIcon} />
                                     </Tooltip>
                                 </Grid>
                             )}
 
-                            <Grid item component="span">
+                            <Grid item component="span" className={classes.infoBox}>
                                 <Tooltip placement="top" title={fields['content-type']}>
-                                    <Box component="span">
+                                    <Box component="span" className={classes.infoBox}>
                                         <SvgIcon
                                             className={classes.infoIcon}
                                             component={getIconReactComponent(fields.filetype)}
@@ -187,20 +193,24 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
                             </Grid>
 
                             {!!fields.attachments && (
-                                <Grid item component="span">
+                                <Grid item component="span" className={classes.infoBox}>
                                     <Tooltip placement="top" title="has attachment(s)">
-                                        <Box component="span">
+                                        <Box component="span" className={classes.infoBox}>
                                             <AttachFile className={classes.infoIcon} />
                                         </Box>
                                     </Tooltip>
                                 </Grid>
                             )}
+
+                            <Grid item component="span" className={classes.collection}>
+                                {collection}
+                            </Grid>
                         </Grid>
                     </Grid>
                 }
                 subheader={
                     <span className={classes.subtitle}>
-                        <span className={classes.collection}>{collection}</span>{truncatePath(fields.path)}
+                        {truncatePath(fields.path)}
                     </span>
                 }
                 action={

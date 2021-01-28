@@ -3,7 +3,7 @@ import Link from 'next/link'
 import url from 'url'
 import { DateTime } from 'luxon'
 import { makeStyles } from '@material-ui/core/styles'
-import { Box, List, ListItem, ListItemText, Typography } from '@material-ui/core'
+import { Box, Divider, List, ListItem, ListItemText, Typography } from '@material-ui/core'
 import { getLanguageName, humanFileSize, shortenName } from '../../utils'
 import { searchPath } from '../../queryUtils'
 import {
@@ -161,15 +161,20 @@ const Meta = ({ doc, collection, baseUrl, printMode }) => {
                 </ListItem>
                 }
             </List>
-            <Typography variant="h6">RAW</Typography>
+            <Divider />
             <Box>
                 {Object.entries(doc.content)
-                    .filter(([key]) => !['text', 'ocrtext', 'path-text', 'path-parts'].includes(key))
+                    .filter(([key, value]) =>
+                        !['text', 'ocrtext', 'path-text', 'path-parts'].includes(key) &&
+                        ((!Array.isArray(value) && value) || (Array.isArray(value) && value.length))
+                    )
                     .map(([key, value]) => (
                         <Typography component="pre" variant="caption" className={classes.raw}>
                             <strong>{key}:</strong>{' '}
-                            {typeof value === 'object' ?
+                            {   typeof value === 'object' ?
                                 shortenName(JSON.stringify(value), 200) :
+                                typeof value === 'boolean' ?
+                                'true' :
                                 shortenName(value, 200)
                             }
                         </Typography>
