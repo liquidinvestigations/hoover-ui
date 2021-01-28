@@ -53,6 +53,9 @@ const useStyles = makeStyles(theme => ({
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
+    collection: {
+        color: theme.palette.grey.A200,
+    },
     index: {
         color: theme.palette.grey[500],
     },
@@ -127,6 +130,7 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
 
     const fields = hit._source || {}
     const highlights = hit.highlight || {}
+    const collection = hit._collection || ''
     const downloadUrl = createDownloadUrl(url, fields.filename)
 
     const cardHeaderClasses = {
@@ -196,7 +200,7 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
                 }
                 subheader={
                     <span className={classes.subtitle}>
-                        {truncatePath(fields.path)}
+                        <span className={classes.collection}>{collection}</span>{truncatePath(fields.path)}
                     </span>
                 }
                 action={
