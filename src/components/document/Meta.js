@@ -4,6 +4,7 @@ import url from 'url'
 import { DateTime } from 'luxon'
 import { makeStyles } from '@material-ui/core/styles'
 import { Box, Divider, List, ListItem, ListItemText, Typography } from '@material-ui/core'
+import { useDocument } from './DocumentProvider'
 import { getLanguageName, humanFileSize, shortenName } from '../../utils'
 import { searchPath } from '../../queryUtils'
 import {
@@ -22,8 +23,9 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const Meta = ({ doc, collection, baseUrl, printMode }) => {
+const Meta = () => {
     const classes = useStyles()
+    const { data, collection, collectionBaseUrl, printMode } = useDocument()
 
     return (
         <>
@@ -38,132 +40,132 @@ const Meta = ({ doc, collection, baseUrl, printMode }) => {
                 <ListItem disableGutters>
                     <ListItemText
                         primary={printMode ? 'Filename' :
-                            <Link href={searchPath(doc.content.filename, SEARCH_FILENAME, collection)} shallow>
+                            <Link href={searchPath(data.content.filename, SEARCH_FILENAME, collection)} shallow>
                                 <a title="search this filename">Filename</a>
                             </Link>
                         }
-                        secondary={doc.content.filename}
+                        secondary={data.content.filename}
                     />
                 </ListItem>
 
                 <ListItem disableGutters>
                     <ListItemText
                         primary={printMode ? 'Path' :
-                            <Link href={searchPath(doc.content.path, SEARCH_PATH_PARTS, collection)} shallow>
+                            <Link href={searchPath(data.content.path, SEARCH_PATH_PARTS, collection)} shallow>
                                 <a title="search this path">Path</a>
                             </Link>
                         }
-                        secondary={doc.content.path}
+                        secondary={data.content.path}
                     />
                 </ListItem>
 
-                {!!doc.digest &&
+                {!!data.digest &&
                 <ListItem disableGutters>
                     <ListItemText primary="ID" secondary={
-                        <Link href={url.resolve(baseUrl,doc.digest)} shallow>
-                            <a>{doc.digest}</a>
+                        <Link href={url.resolve(collectionBaseUrl, data.digest)} shallow>
+                            <a>{data.digest}</a>
                         </Link>
                     } />
                 </ListItem>
                 }
 
-                {!!doc.content.filetype &&
+                {!!data.content.filetype &&
                 <ListItem disableGutters>
                     <ListItemText
                         primary="Type"
-                        secondary={doc.content.filetype}
+                        secondary={data.content.filetype}
                     />
                 </ListItem>
                 }
 
-                {doc.content.filetype !== 'folder' && doc.content.md5 &&
+                {data.content.filetype !== 'folder' && data.content.md5 &&
                 <ListItem disableGutters>
                     <ListItemText
                         primary={printMode ? 'MD5' :
-                            <Link href={searchPath(doc.content.md5, SEARCH_MD5, collection)} shallow>
+                            <Link href={searchPath(data.content.md5, SEARCH_MD5, collection)} shallow>
                                 <a title="search this MD5 checksum">MD5</a>
                             </Link>
                         }
-                        secondary={doc.content.md5}
+                        secondary={data.content.md5}
                     />
                 </ListItem>
                 }
 
-                {doc.content.filetype !== 'folder' && doc.content.sha1 &&
+                {data.content.filetype !== 'folder' && data.content.sha1 &&
                 <ListItem disableGutters>
                     <ListItemText
                         primary={printMode ? 'SHA1' :
-                            <Link href={searchPath(doc.content.sha1, SEARCH_SHA1, collection)} shallow>
+                            <Link href={searchPath(data.content.sha1, SEARCH_SHA1, collection)} shallow>
                                 <a title="search this SHA1 checksum">SHA1</a>
                             </Link>
                         }
-                        secondary={doc.content.sha1}
+                        secondary={data.content.sha1}
                     />
                 </ListItem>
                 }
 
-                {!!doc.content.lang &&
+                {!!data.content.lang &&
                 <ListItem disableGutters>
                     <ListItemText
                         primary="Language"
-                        secondary={getLanguageName(doc.content.lang)}
+                        secondary={getLanguageName(data.content.lang)}
                     />
                 </ListItem>
                 }
-                {!!doc.content.date &&
+                {!!data.content.date &&
                 <ListItem disableGutters>
                     <ListItemText
                         primary={printMode ? 'Modified' :
-                            <Link href={searchPath(doc.content.date, SEARCH_DATE, collection)} shallow>
+                            <Link href={searchPath(data.content.date, SEARCH_DATE, collection)} shallow>
                                 <a title="search modified this date">Modified</a>
                             </Link>
                         }
-                        secondary={DateTime.fromISO(doc.content.date, { locale: 'en-US' })
+                        secondary={DateTime.fromISO(data.content.date, { locale: 'en-US' })
                             .toLocaleString(DateTime.DATETIME_FULL)}
                     />
                 </ListItem>
                 }
-                {!!doc.content['date-created'] &&
+                {!!data.content['date-created'] &&
                 <ListItem disableGutters>
                     <ListItemText
                         primary={printMode ? 'Created' :
-                            <Link href={searchPath(doc.content['date-created'], SEARCH_DATE_CREATED, collection)} shallow>
+                            <Link href={searchPath(data.content['date-created'], SEARCH_DATE_CREATED, collection)} shallow>
                                 <a title="search created this date">Created</a>
                             </Link>
                         }
-                        secondary={DateTime.fromISO(doc.content['date-created'], { locale: 'en-US' })
+                        secondary={DateTime.fromISO(data.content['date-created'], { locale: 'en-US' })
                             .toLocaleString(DateTime.DATETIME_FULL)}
                     />
                 </ListItem>
                 }
-                {!!doc.content.pgp &&
+                {!!data.content.pgp &&
                 <ListItem disableGutters>
                     <ListItemText
                         primary="PGP"
-                        secondary={doc.content.pgp}
+                        secondary={data.content.pgp}
                     />
                 </ListItem>
                 }
-                {!!doc.content['word-count'] &&
+                {!!data.content['word-count'] &&
                 <ListItem disableGutters>
                     <ListItemText
                         primary="Word count"
-                        secondary={doc.content['word-count']}
+                        secondary={data.content['word-count']}
                     />
                 </ListItem>
                 }
-                {!!doc.content.size &&
+                {!!data.content.size &&
                 <ListItem disableGutters>
                     <ListItemText
                         primary="Size"
-                        secondary={humanFileSize(doc.content.size, true)}
+                        secondary={humanFileSize(data.content.size, true)}
                     />
                 </ListItem>
                 }
             </List>
             <Divider />
             <Box>
-                {Object.entries(doc.content)
+                {Object.entries(data.content)
                     .filter(([key, value]) =>
                         !['text', 'ocrtext', 'path-text', 'path-parts'].includes(key) &&
                         ((!Array.isArray(value) && value) || (Array.isArray(value) && value.length))

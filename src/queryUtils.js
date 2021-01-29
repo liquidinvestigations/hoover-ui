@@ -14,6 +14,7 @@ const PARAMS_MAP = {
     o: 'order',
     t: 'facets',
     i: 'filters',
+    v: 'preview',
 }
 
 const LEGACY_PARAMS = {
@@ -41,14 +42,14 @@ export const buildSearchQuerystring = (params) => (
     }))
 )
 
-export const searchPath = (query, prefix, collections) => {
+export const searchPath = (query, prefix, collections, preview) => {
     let quotedQuery = query.replace(/#/g, ' ').replace(/"/g, '')
 
     if (/[\s\/]/g.test(quotedQuery)) {
         quotedQuery = `"${quotedQuery}"`
     }
 
-    const params = { collections: Array.isArray(collections) ? collections : [collections] }
+    const params = { preview, collections: Array.isArray(collections) ? collections : [collections] }
 
     if (prefix === SEARCH_DATE || prefix === SEARCH_DATE_CREATED) {
         params.q = '*'

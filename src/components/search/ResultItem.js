@@ -1,4 +1,4 @@
-import React, { cloneElement, memo, useContext, useEffect, useRef } from 'react'
+import React, { cloneElement, memo, useEffect, useRef } from 'react'
 import cn from 'classnames'
 import { DateTime } from 'luxon'
 import { makeStyles } from '@material-ui/core/styles'
@@ -15,7 +15,7 @@ import {
 } from '@material-ui/core'
 import { AttachFile, CloudDownloadOutlined, Launch, Lock, TextFields } from '@material-ui/icons'
 import { useSearch } from './SearchProvider'
-import { UserContext } from '../../../pages/_app'
+import { useUser } from '../UserProvider'
 import { getIconReactComponent, humanFileSize, makeUnsearchable, truncatePath } from '../../utils'
 import { createDownloadUrl } from '../../backend/api'
 import { specialTags, specialTagsList } from '../document/specialTags'
@@ -113,11 +113,11 @@ const timeMs = () => new Date().getTime()
 
 function ResultItem({ hit, url, index }) {
     const classes = useStyles()
-    const whoAmI = useContext(UserContext)
-    const { selectedDocUrl, handleDocPreview } = useSearch()
+    const whoAmI = useUser()
+    const { hash, getPreviewParams, setHash } = useSearch()
 
-    const isPreview = hit._url.endsWith(selectedDocUrl)
-    const unsearchable = !!selectedDocUrl
+    const isPreview = hit._collection === hash.preview?.c && hit._id === hash.preview?.i
+    const unsearchable = !!hash.preview
 
     const nodeRef = useRef()
     const handleMouseDown = () => {
@@ -129,7 +129,7 @@ function ResultItem({ hit, url, index }) {
     const handleMouseUp = () => {
         if (nodeRef.current.willFocus) {
             nodeRef.current.tUp = timeMs()
-            handleDocPreview(url)
+            setHash(getPreviewParams(hit))
         }
     }
 

@@ -3,6 +3,7 @@ import ReactFinder from './ReactFinder'
 import ErrorBoundary from './ErrorBoundary'
 import last from 'lodash/last'
 import { useRouter } from 'next/router'
+import { useDocument } from './document/DocumentProvider'
 import { getBasePath, getIconImageElement } from '../utils'
 import { doc as docAPI } from '../backend/api'
 
@@ -91,8 +92,9 @@ const handleCreateItemContent = (config, item) => {
     return fragment
 }
 
-function Finder({ loading, data, url }) {
+function Finder() {
     const router = useRouter()
+    const { data, pathname, loading } = useDocument()
 
     const handleColumnCreated = (...args) => console.log('column-created', ...args)
 
@@ -119,7 +121,7 @@ function Finder({ loading, data, url }) {
             )
         } else if (item.fileType === 'more') {
             const moreItems = await docAPI(
-                getBasePath(url) + item.loadId,
+                getBasePath(pathname) + item.loadId,
                 item.loadPage
             )
             let current = {...data}
@@ -138,7 +140,7 @@ function Finder({ loading, data, url }) {
                 setDefaultValue(moreItems.children[moreItems.children.length - 1])
             }
 
-            setTree(buildTree(current, getBasePath(url)))
+            setTree(buildTree(current, getBasePath(pathname)))
         }
     }
 
@@ -147,13 +149,13 @@ function Finder({ loading, data, url }) {
 
     const parentLevels = 3
     useEffect(async () => {
-        if (!loading && url && data) {
+        if (!loading && pathname && data) {
             let current = data;
             let level = 0;
 
             while (current.parent_id && level <= parentLevels) {
                 current.parent = await docAPI(
-                    getBasePath(url) + current.parent_id,
+                    getBasePath(pathname) + current.parent_id,
                     current.parent_children_page
                 )
 
@@ -161,10 +163,10 @@ function Finder({ loading, data, url }) {
                 level++
 
                 setDefaultValue(data)
-                setTree(buildTree(data, getBasePath(url)))
+                setTree(buildTree(data, getBasePath(pathname)))
             }
         }
-    }, [url, data, loading])
+    }, [data, pathname, loading])
 
     return (
         <div className="finder">

@@ -4,7 +4,7 @@ import HotKeysWithHelp from '../HotKeysWithHelp'
 import { copyMetadata } from '../../utils'
 
 export default function HotKeys({ children, inputRef  }) {
-    const { selectedDocUrl, selectedDocData, previewNextDoc, previewPreviousDoc } = useSearch()
+    const { query, selectedDocData, previewNextDoc, previewPreviousDoc } = useSearch()
     const isInputFocused = () => inputRef.current === document.activeElement
 
     const keys = useMemo(() => ({
@@ -47,7 +47,7 @@ export default function HotKeys({ children, inputRef  }) {
             key: 'o',
             help: 'Open the currently previewed result',
             handler: () => {
-                isInputFocused() || (!!selectedDocUrl && window.open(selectedDocUrl, '_blank'))
+                isInputFocused() || (!!query.preview && window.open(query.preview, '_blank'))
             },
         },
         focusInputField: {
@@ -60,7 +60,7 @@ export default function HotKeys({ children, inputRef  }) {
                 }
             },
         }
-    }), [previewNextDoc, previewPreviousDoc, selectedDocData, selectedDocUrl])
+    }), [query, previewNextDoc, previewPreviousDoc, selectedDocData])
 
     return (
         <HotKeysWithHelp keys={keys}>

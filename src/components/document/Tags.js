@@ -1,5 +1,4 @@
-import React, { memo, useContext, useMemo, useState } from 'react'
-import { DateTime } from 'luxon'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 import ChipInput from 'material-ui-chip-input'
 import { Box, Button, ButtonGroup, Chip, Grid, IconButton, Tooltip, Typography } from '@material-ui/core'
 import { Lock, LockOpen } from '@material-ui/icons'
@@ -7,11 +6,11 @@ import { makeStyles } from '@material-ui/core/styles'
 import { blue } from '@material-ui/core/colors'
 import Loading from '../Loading'
 import TagTooltip from './TagTooltip'
-import { UserContext } from '../../../pages/_app'
-import { createTag, deleteTag, updateTag } from '../../backend/api'
-import { publicTagsList, specialTags, specialTagsList } from './specialTags'
+import { useUser } from '../UserProvider'
+import { useDocument } from './DocumentProvider'
+import { specialTags, specialTagsList } from './specialTags'
 
-const onlyAlphanumericRegex = /[^a-z0-9_!@#$%^&*()-=+:,./?]/gi
+const forbiddenCharsRegex = /[^a-z0-9_!@#$%^&*()-=+:,./?]/gi
 
 const useStyles = makeStyles(theme => ({
     toolbarButtons: {
@@ -51,11 +50,20 @@ export const getChipColor = chip => {
     }
 }
 
-function Tags({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onLocked, printMode }) {
+function Tags({ toolbarButtons }) {
     const classes = useStyles()
-    const whoAmI = useContext(UserContext)
+    const whoAmI = useUser()
+
+    const {
+        digestUrl, printMode, tags, tagsLocked, tagsLoading,
+        handleTagAdd, handleTagDelete, handleTagLockClick,
+    } = useDocument()
 
     const [inputValue, setInputValue] = useState('')
+
+    useEffect(() => {
+        setInputValue('')
+    }, [tags])
 
     const otherUsersTags = useMemo(() => {
         const usersTags = {}
@@ -105,50 +113,7 @@ function Tags({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onL
     }
 
     const handleTagInputUpdate = event => {
-        setInputValue(event.target.value.replace(onlyAlphanumericRegex, ""))
-    }
-
-    const handleTagAdd = (tag, publicTag = true) => {
-        onLocked(true)
-        createTag(digestUrl, { tag, public: publicTagsList.includes(tag) || publicTag }).then(newTag => {
-            onChanged([...tags, newTag])
-            setInputValue('')
-            onLocked(false)
-        }).catch(() => {
-            onLocked(false)
-        })
-    }
-
-    const handleTagDelete = tag => {
-        tag.isMutating = true
-        onChanged([...tags])
-        onLocked(true)
-        deleteTag(digestUrl, tag.id).then(() => {
-            onChanged([...(tags.filter(t => t.id !== tag.id))])
-            onLocked(false)
-        }).catch(() => {
-            tag.isMutating = false
-            onChanged([...tags])
-            onLocked(false)
-        })
-    }
-
-    const handleLockClick = tag => () => {
-        tag.isMutating = true
-        onChanged([...tags])
-        onLocked(true)
-        updateTag(digestUrl, tag.id, {public: !tag.public}).then(changedTag => {
-            Object.assign(tag, {
-                ...changedTag,
-                isMutating: false,
-            })
-            onChanged([...tags])
-            onLocked(false)
-        }).catch(() => {
-            tag.isMutating = false
-            onChanged([...tags])
-            onLocked(false)
-        })
+        setInputValue(event.target.value.replace(forbiddenCharsRegex, ""))
     }
 
     const handleButtonClick = publicTag => () => {
@@ -160,21 +125,13 @@ function Tags({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onL
     const renderChip = ({ value, text, chip, isDisabled, isReadOnly, handleDelete, className }, key) => (
         <TagTooltip key={key} chip={chip}>
             <Chip
-                icon={chip.user === whoAmI.username && !specialTagsList.includes(chip.tag) ? chip.public ?
-                    <Tooltip title="make private">
+                icon={chip.user === whoAmI.username && !specialTagsList.includes(chip.tag) ?
+                    <Tooltip title={`make ${chip.public ? 'private' : 'public'}`}>
                         <IconButton
                             size="small"
-                            onClick={handleLockClick(chip)}
+                            onClick={handleTagLockClick(chip)}
                         >
-                            <LockOpen />
-                        </IconButton>
-                    </Tooltip> :
-                    <Tooltip title="make public">
-                        <IconButton
-                            size="small"
-                            onClick={handleLockClick(chip)}
-                        >
-                            <Lock />
+                            {chip.public ? <LockOpen /> : <Lock />}
                         </IconButton>
                     </Tooltip> : null
                 }
@@ -191,7 +148,7 @@ function Tags({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onL
     )
 
     return (
-        loading ? <Loading /> :
+        tagsLoading ? <Loading /> :
             <>
                 <ButtonGroup className={classes.toolbarButtons}>
                     {toolbarButtons && toolbarButtons.map(({tooltip, label, icon, ...props}, index) => (
@@ -213,7 +170,7 @@ function Tags({ loading, digestUrl, tags, onChanged, toolbarButtons, locked, onL
                     value={tags.filter(tag => tag.user === whoAmI.username)}
                     onAdd={handleTagAdd}
                     onDelete={handleTagDelete}
-                    disabled={locked}
+                    disabled={tagsLocked}
                     chipRenderer={renderChip}
                     newChipKeys={['Enter', ' ']}
                     newChipKeyCodes={[13, 32]}

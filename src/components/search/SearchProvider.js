@@ -2,23 +2,25 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import { useRouter } from 'next/router'
 import qs from 'qs'
 import fixLegacyQuery from '../../fixLegacyQuery'
-import { doc as docAPI } from '../../backend/api'
 import { documentViewUrl } from '../../utils'
-import { buildSearchQuerystring, unwindParams } from '../../queryUtils'
+import { buildSearchQuerystring, rollupParams, unwindParams } from '../../queryUtils'
 import { aggregations as aggregationsAPI, search as searchAPI } from '../../api'
 
 const SearchContext = createContext({})
 
-function SearchProvider({ children, serverQuery }) {
+export function SearchProvider({ children, serverQuery }) {
     const router = useRouter()
     const { pathname } = router
 
-    const queryString = typeof window === 'undefined' ? serverQuery : window.location.href.split('?')[1]
+    const queryString = typeof window === 'undefined' ? serverQuery : window.location.href.split('?')[1]?.split('#')[0]
     const query = useMemo(() => {
         const memoQuery = unwindParams(qs.parse(queryString, { arrayLimit: 100 }))
         fixLegacyQuery(memoQuery)
         return memoQuery
     }, [queryString])
+
+    const hashString = typeof window !== 'undefined' && window.location.hash.substring(1) || ''
+    const hash = useMemo(() => unwindParams(qs.parse(hashString)), [hashString])
 
     const search = useCallback(params => {
         const newQuery = buildSearchQuerystring({ ...query, ...params })
@@ -29,18 +31,24 @@ function SearchProvider({ children, serverQuery }) {
         )
     }, [query])
 
+    const setHash = useCallback(hashParams => {
+        const newQuery = buildSearchQuerystring(query)
+        const newHash = qs.stringify(rollupParams({...hash, ...hashParams}))
+        router.push(
+            { pathname, search: newQuery, hash: newHash },
+            undefined,
+            { shallow: true },
+        )
+    }, [query, hash])
+
     const [previewOnLoad, setPreviewOnLoad] = useState()
-    const [selectedDocUrl, setSelectedDocUrl] = useState()
     const [selectedDocData, setSelectedDocData] = useState()
-    const [previewLoading, setPreviewLoading] = useState(false)
-    const handleDocPreview = useCallback(url => {
-        setSelectedDocUrl(url)
-        setPreviewLoading(true)
-        docAPI(url).then(data => {
-            setSelectedDocData(data)
-            setPreviewLoading(false)
-        })
-    }, [])
+    const getPreviewParams = item => ({ preview: { c: item._collection, i: item._id } })
+    useEffect(() => {
+        if (hash.preview) {
+            setSelectedDocData(hash.preview)
+        }
+    }, [hash.preview])
 
     const [error, setError] = useState()
     const [results, setResults] = useState()
@@ -56,10 +64,10 @@ function SearchProvider({ children, serverQuery }) {
 
                 if (previewOnLoad === 'first') {
                     setPreviewOnLoad(null)
-                    handleDocPreview(documentViewUrl(results.hits.hits[0]))
+                    setHash(getPreviewParams(results.hits.hits[0]))
                 } else if (previewOnLoad === 'last') {
                     setPreviewOnLoad(null)
-                    handleDocPreview(documentViewUrl(results.hits.hits[results.hits.hits.length - 1]))
+                    setHash(getPreviewParams(results.hits.hits[results.hits.hits.length - 1]))
                 }
             }).catch(error => {
                 setResults(null)
@@ -70,6 +78,7 @@ function SearchProvider({ children, serverQuery }) {
     }, [JSON.stringify({
         ...query,
         facets: null,
+        preview: null,
         filters: {
             ...query.filters || {},
             date: {
@@ -105,6 +114,7 @@ function SearchProvider({ children, serverQuery }) {
         page: null,
         size: null,
         order: null,
+        preview: null,
     })])
 
     const clearResults = () => {
@@ -112,8 +122,8 @@ function SearchProvider({ children, serverQuery }) {
     }
 
     const currentIndex = useMemo(() => results?.hits.hits.findIndex(
-        hit => documentViewUrl(hit) === selectedDocUrl
-    ), [results, selectedDocUrl])
+        hit => documentViewUrl(hit) === query.preview
+    ), [query, results])
 
     const previewNextDoc = useCallback(() => {
         if (!resultsLoading && results?.hits.hits) {
@@ -122,43 +132,35 @@ function SearchProvider({ children, serverQuery }) {
                     setPreviewOnLoad('first')
                     search({ page: parseInt(query.page) + 1 })
                 } else {
-                    handleDocPreview(documentViewUrl(results.hits.hits[currentIndex + 1]))
+                    setHash(getPreviewParams(results.hits.hits[currentIndex + 1]))
                 }
             }
         }
-    }, [query, results, resultsLoading, selectedDocUrl])
+    }, [query, results, resultsLoading])
 
     const previewPreviousDoc = useCallback(() => {
-        if (!resultsLoading && results?.hits.hits && selectedDocUrl) {
+        if (!resultsLoading && results?.hits.hits && query.preview) {
             if (parseInt(query.page) > 1 || currentIndex >= 1) {
                 if (currentIndex === 0 && parseInt(query.page) > 1) {
                     setPreviewOnLoad('last')
                     search({ page: parseInt(query.page) - 1 })
                 } else {
-                    handleDocPreview(documentViewUrl(results.hits.hits[currentIndex - 1]))
+                    setHash(getPreviewParams(results.hits.hits[currentIndex - 1]))
                 }
             }
         }
-    }, [query, results, resultsLoading, selectedDocUrl])
+    }, [query, results, resultsLoading])
 
     return (
         <SearchContext.Provider value={{
             query, error, search, results, aggregations,
-            previewLoading, resultsLoading, aggregationsLoading,
-            handleDocPreview, selectedDocUrl, selectedDocData,
-            previewNextDoc, previewPreviousDoc, clearResults,
+            resultsLoading, aggregationsLoading,
+            previewNextDoc, previewPreviousDoc, selectedDocData,
+            clearResults, getPreviewParams, hash, setHash,
         }}>
             {children}
         </SearchContext.Provider>
     )
 }
 
-function useSearch() {
-    const context = useContext(SearchContext)
-    if (context === undefined) {
-        throw new Error('useSearch must be used within a SearchProvider')
-    }
-    return context
-}
-
-export { SearchProvider, useSearch }
+export const useSearch = () => useContext(SearchContext)

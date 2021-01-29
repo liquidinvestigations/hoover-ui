@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { DateTime } from 'luxon'
 import { Table, TableBody, TableCell, TableRow } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
+import { useDocument } from './DocumentProvider'
 import { searchPath } from '../../queryUtils'
 import {
     SEARCH_FROM,
@@ -19,17 +20,18 @@ const useStyles = makeStyles({
     },
 })
 
-function Email({ doc, collection, printMode }) {
+function Email() {
     const classes = useStyles()
-    const to = (doc.content.to || []).filter(Boolean).join(', ')
+    const { data, collection, printMode } = useDocument()
+    const to = (data.content.to || []).filter(Boolean).join(', ')
 
     return (
         <Table>
             <TableBody>
                 <TableRow>
                     <TableCell>
-                        {doc.content.from?.length && !printMode ?
-                            <Link href={searchPath(doc.content.from, SEARCH_FROM, collection)} shallow>
+                        {data.content.from?.length && !printMode ?
+                            <Link href={searchPath(data.content.from, SEARCH_FROM, collection)} shallow>
                                 <a title="search emails from">From</a>
                             </Link>
                             :
@@ -38,14 +40,14 @@ function Email({ doc, collection, printMode }) {
                     </TableCell>
                     <TableCell>
                             <pre className={classes.preWrap}>
-                                {doc.content.from}
+                                {data.content.from}
                             </pre>
                     </TableCell>
                 </TableRow>
 
                 <TableRow>
                     <TableCell>
-                        {doc.content.to?.length && !printMode ?
+                        {data.content.to?.length && !printMode ?
                             <Link href={searchPath(to, SEARCH_TO, collection)} shallow>
                                 <a title="search emails to">To</a>
                             </Link>
@@ -62,8 +64,8 @@ function Email({ doc, collection, printMode }) {
 
                 <TableRow>
                     <TableCell>
-                        {doc.content.date && !printMode ?
-                            <Link href={searchPath(doc.content.date, SEARCH_DATE, collection)} shallow>
+                        {data.content.date && !printMode ?
+                            <Link href={searchPath(data.content.date, SEARCH_DATE, collection)} shallow>
                                 <a title="search sent this date">Date</a>
                             </Link>
                             :
@@ -72,7 +74,7 @@ function Email({ doc, collection, printMode }) {
                     </TableCell>
                     <TableCell>
                         <pre className={classes.preWrap}>
-                            {DateTime.fromISO(doc.content.date, { locale: 'en-US' })
+                            {DateTime.fromISO(data.content.date, { locale: 'en-US' })
                                 .toLocaleString(DateTime.DATETIME_FULL)}
                         </pre>
                     </TableCell>
@@ -80,8 +82,8 @@ function Email({ doc, collection, printMode }) {
 
                 <TableRow>
                     <TableCell>
-                        {doc.content.subject?.length && !printMode ?
-                            <Link href={searchPath(doc.content.subject, SEARCH_SUBJECT, collection)} shallow>
+                        {data.content.subject?.length && !printMode ?
+                            <Link href={searchPath(data.content.subject, SEARCH_SUBJECT, collection)} shallow>
                                 <a title="search emails with subject">Subject</a>
                             </Link>
                             :
@@ -90,25 +92,25 @@ function Email({ doc, collection, printMode }) {
                     </TableCell>
                     <TableCell>
                         <pre className={classes.preWrap}>
-                            {doc.content.subject || '---'}
+                            {data.content.subject || '---'}
                         </pre>
                     </TableCell>
                 </TableRow>
 
-                {doc.content['message-id'] && !printMode && (
+                {data.content['message-id'] && !printMode && (
                     <TableRow>
                         <TableCell colSpan={2}>
-                            <Link href={searchPath(doc.content['message-id'], SEARCH_IN_REPLY_TO, collection)} shallow>
+                            <Link href={searchPath(data.content['message-id'], SEARCH_IN_REPLY_TO, collection)} shallow>
                                 <a>search e-mails replying to this one</a>
                             </Link>
                         </TableCell>
                     </TableRow>
                 )}
 
-                {doc.content['thread-index'] && !printMode && (
+                {data.content['thread-index'] && !printMode && (
                     <TableRow>
                         <TableCell colSpan={2}>
-                            <Link href={searchPath(doc.content['thread-index'], SEARCH_THREAD_INDEX, collection)} shallow>
+                            <Link href={searchPath(data.content['thread-index'], SEARCH_THREAD_INDEX, collection)} shallow>
                                 <a>search e-mails in this thread</a>
                             </Link>
                         </TableCell>

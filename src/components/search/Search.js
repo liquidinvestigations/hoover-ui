@@ -1,11 +1,11 @@
-import React, { useCallback, useContext, useEffect, useMemo, useRef } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import Router from 'next/router'
 import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
 import { Divider, Grid, List, TextField, Typography } from '@material-ui/core'
 import Expandable from '../Expandable'
 import SplitPaneLayout from '../SplitPaneLayout'
-import { ProgressIndicatorContext } from '../ProgressIndicator'
+import { useProgressIndicator } from '../ProgressIndicator'
 import { useSearch } from './SearchProvider'
 import HotKeys from './HotKeys'
 import FiltersChips from './FiltersChips'
@@ -67,7 +67,7 @@ export default function Search({ collections }) {
         }
     }, [])
 
-    const { setLoading } = useContext(ProgressIndicatorContext)
+    const { setLoading } = useProgressIndicator()
     useEffect(() => {
         setLoading(resultsLoading)
     }, [resultsLoading])

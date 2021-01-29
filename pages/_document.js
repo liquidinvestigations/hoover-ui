@@ -4,7 +4,6 @@ import { ServerStyleSheets } from '@material-ui/core/styles'
 import { resetServerContext } from 'react-beautiful-dnd'
 import { removeCommentsAndSpacing } from '../src/utils'
 import { JSS_CSS } from '../src/constants'
-import theme from '../src/theme'
 
 class HooverDocument extends Document {
     static async getInitialProps(ctx) {
