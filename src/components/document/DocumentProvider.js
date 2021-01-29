@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import url from 'url'
 import { useHashState } from '../HashStateProvider'
 import { collectionUrl, documentViewUrl } from '../../utils'
 import { createDownloadUrl, createTag, deleteTag, doc as docAPI, tags as tagsAPI, updateTag } from '../../backend/api'

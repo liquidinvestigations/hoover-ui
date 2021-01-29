@@ -1,17 +1,20 @@
 import React from 'react'
 import Document from '../document/Document'
 import { useSearch } from './SearchProvider'
+import { DocumentProvider } from '../document/DocumentProvider'
 
 export default function Preview() {
-    const { selectedDocUrl, selectedDocData, previewNextDoc, previewPreviousDoc, previewLoading } = useSearch()
+    const { selectedDocData, previewNextDoc, previewPreviousDoc } = useSearch()
 
     return (
-        <Document
-            docUrl={selectedDocUrl}
-            data={selectedDocData}
-            loading={previewLoading}
-            onPrev={previewPreviousDoc}
-            onNext={previewNextDoc}
-        />
+        <DocumentProvider
+            id={selectedDocData?.i}
+            collection={selectedDocData?.c}
+        >
+            <Document
+                onPrev={previewPreviousDoc}
+                onNext={previewNextDoc}
+            />
+        </DocumentProvider>
     )
 }
