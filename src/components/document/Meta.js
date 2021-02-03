@@ -1,6 +1,5 @@
 import React, { memo } from 'react'
 import Link from 'next/link'
-import url from 'url'
 import { DateTime } from 'luxon'
 import { makeStyles } from '@material-ui/core/styles'
 import { Box, Divider, List, ListItem, ListItemText, Typography } from '@material-ui/core'
