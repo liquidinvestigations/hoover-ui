@@ -44,8 +44,10 @@ export const buildSearchQuerystring = (params) => (
     }))
 )
 
+export const clearQuotedParam = param => param.replace(/#/g, ' ').replace(/"/g, '')
+
 export const createSearchUrl = (query, prefix, collections, hashParams) => {
-    let quotedQuery = query.replace(/#/g, ' ').replace(/"/g, '')
+    let quotedQuery = clearQuotedParam(query)
 
     if (/[\s\/]/g.test(quotedQuery)) {
         quotedQuery = `"${quotedQuery}"`

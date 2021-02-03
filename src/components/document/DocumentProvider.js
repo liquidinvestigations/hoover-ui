@@ -30,13 +30,17 @@ export function DocumentProvider({ children, collection, id, path, fullPage, pri
             const newPath = path || documentViewUrl({ _collection: collection, _id: id })
             setPathname(newPath)
             setLoading(true)
+            if (!newPath.includes('_file_') && !newPath.includes('_directory_')) {
+                setDigestUrl(newPath)
+                setUrlIsSha(true)
+            }
             docAPI(newPath).then(data => {
                 if (data.id.startsWith('_')) {
                     if (data.id.startsWith('_file_')) {
                         setDigest(data.digest)
-                        setDigestUrl([url.resolve(newPath, './'), data.digest].join('/'))
+                        setDigestUrl(`${collectionBaseUrl}/${data.digest}`)
                         setDocRawUrl(createDownloadUrl(
-                            `${collectionBaseUrl}${data.digest}`, data.content.filename
+                            `${collectionBaseUrl}/${data.digest}`, data.content.filename
                         ))
                         setUrlIsSha(false)
                     }
@@ -47,11 +51,9 @@ export function DocumentProvider({ children, collection, id, path, fullPage, pri
                     }
                 } else {
                     setDigest(data.id)
-                    setDigestUrl(newPath)
                     setDocRawUrl(createDownloadUrl(
-                        `${collectionBaseUrl}${data.id}`, data.content.filename
+                        `${collectionBaseUrl}/${data.id}`, data.content.filename
                     ))
-                    setUrlIsSha(true)
                 }
                 setData(data)
 
@@ -100,16 +102,16 @@ export function DocumentProvider({ children, collection, id, path, fullPage, pri
     const [tagsLoading, setTagsLoading] = useState(true)
 
     useEffect(() => {
-        if (pathname) {
+        if (digestUrl) {
             setTagsLoading(true)
             setTagsLocked(true)
-            tagsAPI(pathname).then(data => {
+            tagsAPI(digestUrl).then(data => {
                 setTags(data)
                 setTagsLoading(false)
                 setTagsLocked(false)
             })
         }
-    }, [pathname])
+    }, [digestUrl])
 
     const handleSpecialTagClick = (tag, name) => event => {
         event.stopPropagation()

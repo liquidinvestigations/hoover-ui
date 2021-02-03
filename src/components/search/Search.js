@@ -2,13 +2,14 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import Router from 'next/router'
 import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
-import { Divider, Grid, List, TextField, Typography } from '@material-ui/core'
+import { Divider, Grid, IconButton, InputAdornment, List, TextField, Typography } from '@material-ui/core'
+import { Cancel } from '@material-ui/icons'
 import Expandable from '../Expandable'
 import SplitPaneLayout from '../SplitPaneLayout'
 import { useProgressIndicator } from '../ProgressIndicator'
 import { useSearch } from './SearchProvider'
 import HotKeys from './HotKeys'
-import FiltersChips from './FiltersChips'
+import FiltersChips from './filters/FiltersChips'
 import QueryChips from './QueryChips'
 import SearchResults from './Results'
 import Filters from './filters/Filters'
@@ -25,6 +26,9 @@ const useStyles = makeStyles(theme => ({
     main: {
         paddingLeft: theme.spacing(3),
         paddingRight: theme.spacing(3),
+    },
+    clear: {
+        color: theme.palette.grey.A100,
     },
     info: {
         color: theme.palette.grey.A700,
@@ -53,11 +57,15 @@ export default function Search({ collections }) {
         }
     }, [query])
 
+    const clearInput = () => {
+        inputRef.current.value = null
+        inputRef.current.focus()
+    }
+
     const clearSearchResults = url => {
         if (url === '/') {
+            clearInput()
             clearResults()
-            inputRef.current.value = null
-            inputRef.current.focus()
         }
     }
     useEffect(() => {
@@ -131,13 +139,19 @@ export default function Search({ collections }) {
                                 <TextField
                                     inputRef={inputRef}
                                     label="Search"
-                                    type="search"
                                     margin="normal"
                                     defaultValue={query.q || ''}
                                     onKeyDown={handleInputKey}
                                     autoFocus
                                     fullWidth
                                     multiline
+                                    InputProps={{ endAdornment:
+                                        <InputAdornment position="end">
+                                            <IconButton onClick={clearInput} size="small">
+                                                <Cancel className={classes.clear} />
+                                            </IconButton>
+                                        </InputAdornment>,
+                                    }}
                                 />
                             </form>
 

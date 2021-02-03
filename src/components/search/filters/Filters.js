@@ -2,6 +2,7 @@ import React, { memo, useCallback } from 'react'
 import { List } from '@material-ui/core'
 import DateHistogramFilter from './DateHistogramFilter'
 import TermsAggregationFilter from './TermsAggregationFilter'
+import { aggregationFields } from './aggregationFields'
 import { useSearch } from '../SearchProvider'
 import { getLanguageName } from '../../../utils'
 
@@ -49,110 +50,41 @@ function Filters({ ...props }) {
 
     return (
         <List {...props}>
-            <TermsAggregationFilter
-                title="Public tags"
-                field="tags"
-                queryFilter={query.filters?.tags}
-                queryFacets={query.facets?.tags}
-                aggregations={aggregations.tags}
-                onLoadMore={handleLoadMore}
-                {...filterProps}
-            />
+            {Object.entries(aggregationFields).map(([field, params]) => {
+                let FilterComponent, filterTypeProps
+                if (params.type === 'date') {
+                    FilterComponent = DateHistogramFilter
+                    filterTypeProps = {
+                        onPagination: handlePagination
+                    }
+                } else {
+                    FilterComponent = TermsAggregationFilter
+                    filterTypeProps = {
+                        onLoadMore: handleLoadMore
+                    }
+                }
 
-            <TermsAggregationFilter
-                title="Private tags"
-                field="priv-tags"
-                queryFilter={query.filters?.['priv-tags']}
-                queryFacets={query.facets?.['priv-tags']}
-                aggregations={aggregations['priv-tags']}
-                onLoadMore={handleLoadMore}
-                {...filterProps}
-            />
+                if (params.hideEmpty) {
+                    filterTypeProps.emptyDisabled = true
+                }
 
-            <DateHistogramFilter
-                title="Date modified"
-                field="date"
-                queryFilter={query.filters?.date}
-                queryFacets={query.facets?.date}
-                aggregations={aggregations.date}
-                onPagination={handlePagination}
-                {...filterProps}
-            />
+                if (field === 'lang') {
+                    filterTypeProps.bucketLabel = formatLang
+                }
 
-            <DateHistogramFilter
-                title="Date created"
-                field="date-created"
-                queryFilter={query.filters?.['date-created']}
-                queryFacets={query.facets?.['date-created']}
-                aggregations={aggregations['date-created']}
-                onPagination={handlePagination}
-                {...filterProps}
-            />
-
-            <TermsAggregationFilter
-                title="File type"
-                field="filetype"
-                queryFilter={query.filters?.filetype}
-                queryFacets={query.facets?.filetype}
-                aggregations={aggregations.filetype}
-                onLoadMore={handleLoadMore}
-                {...filterProps}
-            />
-
-            <TermsAggregationFilter
-                title="Language"
-                field="lang"
-                queryFilter={query.filters?.lang}
-                queryFacets={query.facets?.lang}
-                aggregations={aggregations.lang}
-                onLoadMore={handleLoadMore}
-                bucketLabel={formatLang}
-                {...filterProps}
-            />
-
-            <TermsAggregationFilter
-                title="Email domain"
-                field="email-domains"
-                queryFilter={query.filters?.['email-domains']}
-                queryFacets={query.facets?.['email-domains']}
-                aggregations={aggregations['email-domains']}
-                onLoadMore={handleLoadMore}
-                emptyDisabled
-                {...filterProps}
-            />
-
-            <TermsAggregationFilter
-                title="Email from"
-                field="from.keyword"
-                queryFilter={query.filters?.['from.keyword']}
-                queryFacets={query.facets?.['from.keyword']}
-                aggregations={aggregations['from.keyword']}
-                onLoadMore={handleLoadMore}
-                emptyDisabled
-                {...filterProps}
-            />
-
-            <TermsAggregationFilter
-                title="Email to"
-                field="to.keyword"
-                queryFilter={query.filters?.['to.keyword']}
-                queryFacets={query.facets?.['to.keyword']}
-                aggregations={aggregations['to.keyword']}
-                onLoadMore={handleLoadMore}
-                emptyDisabled
-                {...filterProps}
-            />
-
-            <TermsAggregationFilter
-                title="Path"
-                field="path-parts"
-                queryFilter={query.filters?.['path-parts']}
-                queryFacets={query.facets?.['path-parts']}
-                aggregations={aggregations['path-parts']}
-                onLoadMore={handleLoadMore}
-                emptyDisabled
-                {...filterProps}
-            />
+                return (
+                    <FilterComponent
+                        key={field}
+                        title={params.filterLabel}
+                        field={field}
+                        queryFilter={query.filters?.[field]}
+                        queryFacets={query.facets?.[field]}
+                        aggregations={aggregations[field]}
+                        {...filterTypeProps}
+                        {...filterProps}
+                    />
+                )
+            })}
         </List>
     )
 }

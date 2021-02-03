@@ -66,7 +66,7 @@ const Meta = () => {
                 {!!data.digest && (
                     <ListItem disableGutters>
                         <ListItemText primary="ID" secondary={
-                            <Link href={url.resolve(collectionBaseUrl, data.digest)} shallow>
+                            <Link href={`${collectionBaseUrl}/${data.digest}`} shallow>
                                 <a>{data.digest}</a>
                             </Link>
                         } />
