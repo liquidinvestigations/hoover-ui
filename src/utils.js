@@ -110,6 +110,7 @@ export const copyMetadata = doc => {
 const documentUrlPrefix = '/doc'
 export const collectionUrl = collection => [documentUrlPrefix, collection].join('/')
 export const documentViewUrl = item => [documentUrlPrefix, item._collection, item._id].join('/')
+export const getPreviewParams = item => ({ preview: { c: item._collection, i: item._id } })
 
 export const removeCommentsAndSpacing = (str = '') =>
     str.replace(/\/\*.*\*\//g, ' ').replace(/\s+/g, ' ')

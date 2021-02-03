@@ -9,6 +9,7 @@ import Layout from '../src/components/Layout'
 import theme from '../src/theme'
 import { whoami } from '../src/backend/api'
 import UserProvider from '../src/components/UserProvider'
+import HashStateProvider from '../src/components/HashStateProvider'
 import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
 import '../styles/main.scss'
 
@@ -26,9 +27,11 @@ export default function HooverApp({ Component, pageProps, whoAmI }) {
             <MuiPickersUtilsProvider utils={LuxonUtils}>
                 <CssBaseline />
                 <UserProvider whoAmI={whoAmI}>
-                    <Layout>
-                        <Component {...pageProps} />
-                    </Layout>
+                    <HashStateProvider>
+                        <Layout>
+                            <Component {...pageProps} />
+                        </Layout>
+                    </HashStateProvider>
                 </UserProvider>
             </MuiPickersUtilsProvider>
         </ThemeProvider>

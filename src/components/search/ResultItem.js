@@ -14,9 +14,9 @@ import {
     Typography
 } from '@material-ui/core'
 import { AttachFile, CloudDownloadOutlined, Launch, Lock, TextFields } from '@material-ui/icons'
-import { useSearch } from './SearchProvider'
 import { useUser } from '../UserProvider'
-import { getIconReactComponent, humanFileSize, makeUnsearchable, truncatePath } from '../../utils'
+import { useHashState } from '../HashStateProvider'
+import { getIconReactComponent, getPreviewParams, humanFileSize, makeUnsearchable, truncatePath } from '../../utils'
 import { createDownloadUrl } from '../../backend/api'
 import { specialTags, specialTagsList } from '../document/specialTags'
 
@@ -114,10 +114,10 @@ const timeMs = () => new Date().getTime()
 function ResultItem({ hit, url, index }) {
     const classes = useStyles()
     const whoAmI = useUser()
-    const { hash, getPreviewParams, setHash } = useSearch()
+    const { hashState, setHashState } = useHashState()
 
-    const isPreview = hit._collection === hash.preview?.c && hit._id === hash.preview?.i
-    const unsearchable = !!hash.preview
+    const isPreview = hit._collection === hashState.preview?.c && hit._id === hashState.preview?.i
+    const unsearchable = !!hashState.preview
 
     const nodeRef = useRef()
     const handleMouseDown = () => {
@@ -129,7 +129,7 @@ function ResultItem({ hit, url, index }) {
     const handleMouseUp = () => {
         if (nodeRef.current.willFocus) {
             nodeRef.current.tUp = timeMs()
-            setHash(getPreviewParams(hit))
+            setHashState({ ...getPreviewParams(hit), tab: undefined, subTab: undefined })
         }
     }
 

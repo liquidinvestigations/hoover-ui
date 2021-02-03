@@ -2,8 +2,9 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import { useRouter } from 'next/router'
 import qs from 'qs'
 import fixLegacyQuery from '../../fixLegacyQuery'
-import { documentViewUrl } from '../../utils'
-import { buildSearchQuerystring, rollupParams, unwindParams } from '../../queryUtils'
+import { getPreviewParams } from '../../utils'
+import { useHashState } from '../HashStateProvider'
+import { buildSearchQuerystring, unwindParams } from '../../queryUtils'
 import { aggregations as aggregationsAPI, search as searchAPI } from '../../api'
 
 const SearchContext = createContext({})
@@ -12,15 +13,14 @@ export function SearchProvider({ children, serverQuery }) {
     const router = useRouter()
     const { pathname } = router
 
+    const { hashState, setHashState } = useHashState()
+
     const queryString = typeof window === 'undefined' ? serverQuery : window.location.href.split('?')[1]?.split('#')[0]
     const query = useMemo(() => {
         const memoQuery = unwindParams(qs.parse(queryString, { arrayLimit: 100 }))
         fixLegacyQuery(memoQuery)
         return memoQuery
     }, [queryString])
-
-    const hashString = typeof window !== 'undefined' && window.location.hash.substring(1) || ''
-    const hash = useMemo(() => unwindParams(qs.parse(hashString)), [hashString])
 
     const search = useCallback(params => {
         const newQuery = buildSearchQuerystring({ ...query, ...params })
@@ -31,24 +31,13 @@ export function SearchProvider({ children, serverQuery }) {
         )
     }, [query])
 
-    const setHash = useCallback(hashParams => {
-        const newQuery = buildSearchQuerystring(query)
-        const newHash = qs.stringify(rollupParams({...hash, ...hashParams}))
-        router.push(
-            { pathname, search: newQuery, hash: newHash },
-            undefined,
-            { shallow: true },
-        )
-    }, [query, hash])
-
     const [previewOnLoad, setPreviewOnLoad] = useState()
     const [selectedDocData, setSelectedDocData] = useState()
-    const getPreviewParams = item => ({ preview: { c: item._collection, i: item._id } })
     useEffect(() => {
-        if (hash.preview) {
-            setSelectedDocData(hash.preview)
+        if (hashState?.preview) {
+            setSelectedDocData(hashState.preview)
         }
-    }, [hash.preview])
+    }, [hashState])
 
     const [error, setError] = useState()
     const [results, setResults] = useState()
@@ -64,10 +53,12 @@ export function SearchProvider({ children, serverQuery }) {
 
                 if (previewOnLoad === 'first') {
                     setPreviewOnLoad(null)
-                    setHash(getPreviewParams(results.hits.hits[0]))
+                    setHashState({ ...getPreviewParams(results.hits.hits[0]),
+                        tab: undefined, subTab: undefined })
                 } else if (previewOnLoad === 'last') {
                     setPreviewOnLoad(null)
-                    setHash(getPreviewParams(results.hits.hits[results.hits.hits.length - 1]))
+                    setHashState({ ...getPreviewParams(results.hits.hits[results.hits.hits.length - 1]),
+                        tab: undefined, subTab: undefined })
                 }
             }).catch(error => {
                 setResults(null)
@@ -121,42 +112,41 @@ export function SearchProvider({ children, serverQuery }) {
         setResults(null)
     }
 
-    const currentIndex = useMemo(() => results?.hits.hits.findIndex(
-        hit => documentViewUrl(hit) === query.preview
-    ), [query, results])
+    const currentIndex = results?.hits.hits.findIndex(
+        hit => hit._collection === hashState.preview?.c && hit._id === hashState.preview?.i
+    )
 
     const previewNextDoc = useCallback(() => {
-        if (!resultsLoading && results?.hits.hits) {
-            if ((parseInt(query.page) - 1) * parseInt(query.size) + currentIndex < results.hits.total - 1) {
-                if (currentIndex === results.hits.hits.length - 1) {
-                    setPreviewOnLoad('first')
-                    search({ page: parseInt(query.page) + 1 })
-                } else {
-                    setHash(getPreviewParams(results.hits.hits[currentIndex + 1]))
-                }
+        if (!resultsLoading && results?.hits.hits
+            && (parseInt(query.page) - 1) * parseInt(query.size) + currentIndex < results.hits.total - 1) {
+            if (currentIndex === results.hits.hits.length - 1) {
+                setPreviewOnLoad('first')
+                search({ page: parseInt(query.page) + 1 })
+            } else {
+                setHashState({ ...getPreviewParams(results.hits.hits[currentIndex + 1]),
+                    tab: undefined, subTab: undefined })
             }
         }
-    }, [query, results, resultsLoading])
+    }, [query, hashState, results, resultsLoading])
 
     const previewPreviousDoc = useCallback(() => {
-        if (!resultsLoading && results?.hits.hits && query.preview) {
-            if (parseInt(query.page) > 1 || currentIndex >= 1) {
-                if (currentIndex === 0 && parseInt(query.page) > 1) {
-                    setPreviewOnLoad('last')
-                    search({ page: parseInt(query.page) - 1 })
-                } else {
-                    setHash(getPreviewParams(results.hits.hits[currentIndex - 1]))
-                }
+        if (!resultsLoading && results?.hits.hits && parseInt(query.page) > 1 || currentIndex >= 1) {
+            if (currentIndex === 0 && parseInt(query.page) > 1) {
+                setPreviewOnLoad('last')
+                search({ page: parseInt(query.page) - 1 })
+            } else {
+                setHashState({ ...getPreviewParams(results.hits.hits[currentIndex - 1]),
+                    tab: undefined, subTab: undefined })
             }
         }
-    }, [query, results, resultsLoading])
+    }, [query, hashState, results, resultsLoading])
 
     return (
         <SearchContext.Provider value={{
             query, error, search, results, aggregations,
             resultsLoading, aggregationsLoading,
             previewNextDoc, previewPreviousDoc, selectedDocData,
-            clearResults, getPreviewParams, hash, setHash,
+            clearResults, getPreviewParams
         }}>
             {children}
         </SearchContext.Provider>

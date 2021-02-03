@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import url from 'url'
+import { useHashState } from '../HashStateProvider'
 import { collectionUrl, documentViewUrl } from '../../utils'
 import { createDownloadUrl, createTag, deleteTag, doc as docAPI, tags as tagsAPI, updateTag } from '../../backend/api'
 import { publicTagsList } from './specialTags'
@@ -16,11 +17,16 @@ export function DocumentProvider({ children, collection, id, path, fullPage, pri
     const [docRawUrl, setDocRawUrl] = useState()
     const [urlIsSha, setUrlIsSha] = useState(true)
 
+    const [ocrData, setOcrData] = useState()
+    const [tab, setTab] = useState(0)
+    const [subTab, setSubTab] = useState(0)
+    const { hashState, setHashState } = useHashState()
+
     const collectionBaseUrl = collectionUrl(collection)
 
     useEffect(() => {
         if ((collection && id) || path) {
-            setTab(0)
+            setTab(parseInt(hashState?.tab) || 0)
             const newPath = path || documentViewUrl({ _collection: collection, _id: id })
             setPathname(newPath)
             setLoading(true)
@@ -48,6 +54,21 @@ export function DocumentProvider({ children, collection, id, path, fullPage, pri
                     setUrlIsSha(true)
                 }
                 setData(data)
+
+                const ocr = Object.keys(data.content.ocrtext || {}).map((tag, index) => {
+                    return {tag: tag, text: data.content.ocrtext[tag]}
+                })
+                setOcrData(ocr)
+
+                if (hashState?.subTab) {
+                    setSubTab(parseInt(hashState.subTab))
+                } else {
+                    if (ocr.length) {
+                        setSubTab(1)
+                    } else {
+                        setSubTab(0)
+                    }
+                }
             }).finally(() => {
                 setLoading(false)
             })
@@ -56,15 +77,23 @@ export function DocumentProvider({ children, collection, id, path, fullPage, pri
         }
     }, [collection, id, path])
 
-    const [tab, setTab] = useState(0)
-    const handleTabChange = (event, newValue) => setTab(newValue)
+    useEffect(() => {
+        if (typeof hashState?.tab !== 'undefined') {
+            setTab(parseInt(hashState.tab))
+        }
+        if (typeof hashState?.subTab !== 'undefined') {
+            setSubTab(parseInt(hashState.subTab))
+        }
+    }, [hashState])
 
-    const ocrData = Object.keys(data?.content.ocrtext || {}).map((tag, index) => {
-        return {tag: tag, text: data.content.ocrtext[tag]}
-    })
-
-    const [subTab, setSubTab] = useState(ocrData?.length ? 1 : 0)
-    const handleSubTabChange = (event, newValue) => setSubTab(newValue)
+    const handleTabChange = (event, newValue) => {
+        setTab(newValue)
+        setHashState({ tab: newValue }, false)
+    }
+    const handleSubTabChange = (event, newValue) => {
+        setSubTab(newValue)
+        setHashState({ subTab: newValue }, false)
+    }
 
     const [tags, setTags] = useState([])
     const [tagsLocked, setTagsLocked] = useState(false)
@@ -106,7 +135,6 @@ export function DocumentProvider({ children, collection, id, path, fullPage, pri
         setTagsLocked(true)
         createTag(digestUrl, { tag, public: publicTagsList.includes(tag) || publicTag }).then(newTag => {
             setTags([...tags, newTag])
-            setInputValue('')
             setTagsLocked(false)
         }).catch(() => {
             setTagsLocked(false)

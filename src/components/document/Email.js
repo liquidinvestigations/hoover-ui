@@ -4,7 +4,8 @@ import { DateTime } from 'luxon'
 import { Table, TableBody, TableCell, TableRow } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { useDocument } from './DocumentProvider'
-import { searchPath } from '../../queryUtils'
+import { useHashState } from '../HashStateProvider'
+import { createSearchUrl } from '../../queryUtils'
 import {
     SEARCH_FROM,
     SEARCH_IN_REPLY_TO,
@@ -22,8 +23,11 @@ const useStyles = makeStyles({
 
 function Email() {
     const classes = useStyles()
-    const { data, collection, printMode } = useDocument()
+    const { hashState } = useHashState()
+    const { data, collection, digest, printMode } = useDocument()
     const to = (data.content.to || []).filter(Boolean).join(', ')
+
+    const hash = { preview: { c: collection, i: digest }, tab: hashState.tab }
 
     return (
         <Table>
@@ -31,7 +35,7 @@ function Email() {
                 <TableRow>
                     <TableCell>
                         {data.content.from?.length && !printMode ?
-                            <Link href={searchPath(data.content.from, SEARCH_FROM, collection)} shallow>
+                            <Link href={createSearchUrl(data.content.from, SEARCH_FROM, collection, hash)} shallow>
                                 <a title="search emails from">From</a>
                             </Link>
                             :
@@ -48,7 +52,7 @@ function Email() {
                 <TableRow>
                     <TableCell>
                         {data.content.to?.length && !printMode ?
-                            <Link href={searchPath(to, SEARCH_TO, collection)} shallow>
+                            <Link href={createSearchUrl(to, SEARCH_TO, collection, hash)} shallow>
                                 <a title="search emails to">To</a>
                             </Link>
                             :
@@ -65,7 +69,7 @@ function Email() {
                 <TableRow>
                     <TableCell>
                         {data.content.date && !printMode ?
-                            <Link href={searchPath(data.content.date, SEARCH_DATE, collection)} shallow>
+                            <Link href={createSearchUrl(data.content.date, SEARCH_DATE, collection, hash)} shallow>
                                 <a title="search sent this date">Date</a>
                             </Link>
                             :
@@ -83,7 +87,7 @@ function Email() {
                 <TableRow>
                     <TableCell>
                         {data.content.subject?.length && !printMode ?
-                            <Link href={searchPath(data.content.subject, SEARCH_SUBJECT, collection)} shallow>
+                            <Link href={createSearchUrl(data.content.subject, SEARCH_SUBJECT, collection, hash)} shallow>
                                 <a title="search emails with subject">Subject</a>
                             </Link>
                             :
@@ -100,7 +104,7 @@ function Email() {
                 {data.content['message-id'] && !printMode && (
                     <TableRow>
                         <TableCell colSpan={2}>
-                            <Link href={searchPath(data.content['message-id'], SEARCH_IN_REPLY_TO, collection)} shallow>
+                            <Link href={createSearchUrl(data.content['message-id'], SEARCH_IN_REPLY_TO, collection, hash)} shallow>
                                 <a>search e-mails replying to this one</a>
                             </Link>
                         </TableCell>
@@ -110,7 +114,7 @@ function Email() {
                 {data.content['thread-index'] && !printMode && (
                     <TableRow>
                         <TableCell colSpan={2}>
-                            <Link href={searchPath(data.content['thread-index'], SEARCH_THREAD_INDEX, collection)} shallow>
+                            <Link href={createSearchUrl(data.content['thread-index'], SEARCH_THREAD_INDEX, collection, hash)} shallow>
                                 <a>search e-mails in this thread</a>
                             </Link>
                         </TableCell>
