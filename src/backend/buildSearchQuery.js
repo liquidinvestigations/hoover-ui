@@ -6,6 +6,7 @@ import {
     HIGHLIGHT_SETTINGS,
     PRIVATE_FIELDS,
 } from '../constants'
+import { aggregationFields } from '../components/search/filters/aggregationFields'
 
 const expandPrivate = (field, uuid) => {
     if (PRIVATE_FIELDS.includes(field)) {
@@ -60,9 +61,15 @@ const buildTermsField = (field, uuid, terms, page = 1, size = DEFAULT_FACET_SIZE
     aggregation: {
         terms: { field: expandPrivate(field, uuid), size: page * size },
     },
-    filterClause: terms?.include?.length ? {
-        terms: { [expandPrivate(field, uuid)]: terms?.include },
-    } : null,
+    filterClause: terms?.include?.length ?
+        aggregationFields[field].type === 'term-and' ?
+            terms?.include.map(term => ({
+                term: { [expandPrivate(field, uuid)]: term }
+            }))
+            : {
+                terms: { [expandPrivate(field, uuid)]: terms?.include },
+            }
+        : null,
     filterExclude: terms?.exclude?.length ? {
         terms: { [expandPrivate(field, uuid)]: terms?.exclude },
     } : null,
@@ -138,13 +145,13 @@ const buildHistogramField = (field, username, { interval = DEFAULT_INTERVAL, int
 })
 
 const buildFilter = fields => {
-    const must = fields.map(field => field.filterClause).filter(Boolean)
+    const filter = fields.map(field => field.filterClause).filter(Boolean)
     const must_not = fields.map(field => field.filterExclude).filter(Boolean)
 
-    if (must.length || must_not.length) {
+    if (filter.length || must_not.length) {
         return {
             bool: {
-                must,
+                filter,
                 must_not,
             },
         }

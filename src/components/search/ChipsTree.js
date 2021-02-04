@@ -29,6 +29,7 @@ const useStyles = makeStyles(theme => ({
         borderLeft: '1px solid black',
         borderRight: '1px solid black',
         borderBottom: 'solid 1px black',
+        transform: `translateY(-${theme.spacing(1)}px)`,
     },
     AND: {
         color: theme.palette.secondary.main,
