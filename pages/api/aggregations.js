@@ -11,7 +11,7 @@ export default async function handler(req, res) {
         const headers = getAuthorizationHeaders(req)
         const whoAmI = await whoami(headers)
         const fields = await searchFields(headers)
-        const response = await search(headers, req.body, 'aggregations', fields.fields, whoAmI.username)
+        const response = await search(headers, req.body, 'aggregations', fields.fields, whoAmI.uuid)
         res.json(response)
         res.end()
 

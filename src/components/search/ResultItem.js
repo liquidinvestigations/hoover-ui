@@ -237,7 +237,7 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
                             </Grid>
 
                             {specialTags.map((s, k) => {
-                                const tagsField = s.public ? fields.tags : fields[`priv-tags.${whoAmI.username}`]
+                                const tagsField = s.public ? fields.tags : fields[`priv-tags.${whoAmI.uuid}`]
                                 if (tagsField?.includes(s.tag)) {
                                     return (
                                         <Grid item key={k}>
@@ -322,12 +322,12 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
                             </Box>
                         )}
 
-                        {fields[`priv-tags.${whoAmI.username}`]?.filter(tag => !specialTagsList.includes(tag)).length > 0 && (
+                        {fields[`priv-tags.${whoAmI.uuid}`]?.filter(tag => !specialTagsList.includes(tag)).length > 0 && (
                             <Box>
                                 <Typography variant="caption">
                                     <strong>Private tags:</strong>{' '}
                                     {
-                                        fields[`priv-tags.${whoAmI.username}`]
+                                        fields[`priv-tags.${whoAmI.uuid}`]
                                         .filter(tag => !specialTagsList.includes(tag))
                                         .join(', ')
                                     }

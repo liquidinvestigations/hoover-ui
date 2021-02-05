@@ -7,9 +7,9 @@ import {
     PRIVATE_FIELDS,
 } from '../constants'
 
-const expandPrivate = (field, username) => {
+const expandPrivate = (field, uuid) => {
     if (PRIVATE_FIELDS.includes(field)) {
-        return `${field}.${username}`
+        return `${field}.${uuid}`
     }
     return field
 }
@@ -55,16 +55,16 @@ const buildSortQuery = order => order?.reverse().map(([field, direction = 'asc']
     {[field]: {order: direction, missing: '_last'}}
 ) || []
 
-const buildTermsField = (field, username, terms, page = 1, size = DEFAULT_FACET_SIZE) => ({
+const buildTermsField = (field, uuid, terms, page = 1, size = DEFAULT_FACET_SIZE) => ({
     field,
     aggregation: {
-        terms: { field: expandPrivate(field, username), size: page * size },
+        terms: { field: expandPrivate(field, uuid), size: page * size },
     },
     filterClause: terms?.include?.length ? {
-        terms: { [expandPrivate(field, username)]: terms?.include },
+        terms: { [expandPrivate(field, uuid)]: terms?.include },
     } : null,
     filterExclude: terms?.exclude?.length ? {
-        terms: { [expandPrivate(field, username)]: terms?.exclude },
+        terms: { [expandPrivate(field, uuid)]: terms?.exclude },
     } : null,
 })
 
@@ -167,7 +167,7 @@ const buildAggs = fields => fields.reduce((result, field) => ({
 }), {})
 
 const buildSearchQuery = ({ q = '*', page = 1, size = 0, order, collections = [], facets = {}, filters = {} } = {},
-                          type, searchFields, username) => {
+                          type, searchFields, uuid) => {
 
     const query = buildQuery(q, filters, searchFields)
     const sort = buildSortQuery(order)
@@ -178,7 +178,7 @@ const buildSearchQuery = ({ q = '*', page = 1, size = 0, order, collections = []
         ),
         ...['tags', 'priv-tags', 'filetype', 'lang',
             'email-domains', 'from.keyword', 'to.keyword', 'path-parts'].map(field =>
-            buildTermsField(field, username, filters[field], facets[field])
+            buildTermsField(field, uuid, filters[field], facets[field])
         ),
     ]
 
