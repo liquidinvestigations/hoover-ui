@@ -1,13 +1,12 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useState } from 'react'
 import Link from 'next/link'
-import url from 'url'
 import { Box, Table, TableBody, TableCell, TableRow } from '@material-ui/core'
 import { CloudDownload as IconCloudDownload } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles'
 import { useDocument } from './DocumentProvider'
 import Loading from '../Loading'
 import { humanFileSize } from '../../utils'
-import { createDownloadUrl, doc as docAPI } from '../../backend/api'
+import { doc as docAPI } from '../../backend/api'
 
 const useStyles = makeStyles(theme => ({
     box: {
@@ -28,7 +27,7 @@ const useStyles = makeStyles(theme => ({
 
 function Files() {
     const classes = useStyles()
-    const { data, pathname, collectionBaseUrl, fullPage } = useDocument()
+    const { data, collectionBaseUrl, docRawUrl, pathname, fullPage } = useDocument()
 
     const [files, setFiles] = useState(data.children)
     const [currentPage, setCurrentPage] = useState(data.children_page)
@@ -49,7 +48,7 @@ function Files() {
         <TableRow key={index}>
             <TableCell className={classes.cell}>
                 {id ? (
-                    <Link href={url.resolve(collectionBaseUrl, file || id)}>
+                    <Link href={`${collectionBaseUrl}/${file || id}`}>
                         <a>
                             {filename}
                         </a>
@@ -61,7 +60,7 @@ function Files() {
             <TableCell className={classes.cell}>
                 {digest && (
                     <a
-                        href={createDownloadUrl(url.resolve(collectionBaseUrl, digest), filename)}
+                        href={docRawUrl}
                         target={fullPage ? null : '_blank'}
                         title="Original file"
                         className={classes.link}
