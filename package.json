@@ -41,7 +41,7 @@
     "lucene": "^2.1.1",
     "luxon": "^1.25.0",
     "material-ui-chip-input": "^1.1.0",
-    "next": "10.0.5",
+    "next": "10.0.6",
     "node-fetch": "^2.6.1",
     "node-sass": "^4.14.1",
     "prop-types": "^15.7.2",
