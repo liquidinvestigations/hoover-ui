@@ -61,6 +61,7 @@ function TextSubTabs() {
 
             {!!data.children?.length && (
                 <Expandable
+                    defaultOpen
                     highlight={false}
                     title={
                         <>
