@@ -2,6 +2,7 @@ import React, { memo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Grid, MenuItem, Select, Typography } from '@material-ui/core'
 import { SIZE_OPTIONS } from '../../constants'
+import { useSearch } from './SearchProvider'
 
 const useStyles = makeStyles(theme => ({
     label: {
@@ -9,9 +10,10 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function Size ({ size, changeSize }) {
+function Size ({ size }) {
     const classes = useStyles()
-    const handleSizeChange = event => changeSize(event.target.value)
+    const { search } = useSearch()
+    const handleSizeChange = event => search({ size: event.target.value })
 
     return (
         <Grid container alignItems="center">

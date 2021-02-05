@@ -1,12 +1,12 @@
-import React, { memo, useContext } from 'react'
+import React, { memo } from 'react'
 import Link from 'next/link'
 import { Button } from '@material-ui/core'
 import { useRouter } from 'next/router'
-import { UserContext } from '../../pages/_app'
+import { useUser } from './UserProvider'
 
 function Menu() {
     const router = useRouter()
-    const whoAmI = useContext(UserContext)
+    const whoAmI = useUser()
 
     const { query } = router
     const printMode = query.print && query.print !== 'false'

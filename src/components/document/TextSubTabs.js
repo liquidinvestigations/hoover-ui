@@ -1,9 +1,11 @@
-import React, { memo, useState } from 'react'
+import React, { memo } from 'react'
 import Text from './Text'
 import { Box, Tab, Tabs, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { FolderOutlined, Subject, TextFields } from '@material-ui/icons'
 import Expandable from '../Expandable'
+import Preview, { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './Preview'
+import { useDocument } from './DocumentProvider'
 import TabPanel from './TabPanel'
 import Email from './Email'
 import Files from './Files'
@@ -18,15 +20,18 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-function TextSubTabs({ data, ocrData, collection, printMode, fullPage, docUrl, baseUrl }) {
+function TextSubTabs() {
     const classes = useStyles()
-
-    const [tab, setTab] = useState(ocrData?.length ? 1 : 0)
-    const handleTabChange = (event, newValue) => setTab(newValue)
+    const { data, docRawUrl, ocrData, printMode, collection, subTab, handleSubTabChange } = useDocument()
 
     if (!data || !collection || !ocrData) {
         return null
     }
+
+    const hasPreview = docRawUrl && data.content['content-type'] && (
+        data.content['content-type'] === 'application/pdf' ||
+        PREVIEWABLE_MIME_TYPE_SUFFEXES.some(x => data.content['content-type'].endsWith(x))
+    )
 
     const tabs = [{
         name: 'Extracted from file',
@@ -45,11 +50,13 @@ function TextSubTabs({ data, ocrData, collection, printMode, fullPage, docUrl, b
     return (
         <>
             {data.content.filetype === 'email' && (
-                <Email
-                    doc={data}
-                    collection={collection}
-                    printMode={printMode}
-                />
+                <Email />
+            )}
+
+            {hasPreview && (
+                <Box m={1}>
+                    <Preview />
+                </Box>
             )}
 
             {!!data.children?.length && (
@@ -63,21 +70,14 @@ function TextSubTabs({ data, ocrData, collection, printMode, fullPage, docUrl, b
                         </>
                     }
                 >
-                    <Files
-                        data={data.children}
-                        page={data.children_page}
-                        hasNextPage={data.children_has_next_page}
-                        fullPage={fullPage}
-                        docUrl={docUrl}
-                        baseUrl={baseUrl}
-                    />
+                    <Files />
                 </Expandable>
             )}
 
             {!printMode && tabs.length > 1 && (
                 <Tabs
-                    value={tab}
-                    onChange={handleTabChange}
+                    value={subTab}
+                    onChange={handleSubTabChange}
                     variant="scrollable"
                     scrollButtons="auto"
                 >
@@ -102,7 +102,7 @@ function TextSubTabs({ data, ocrData, collection, printMode, fullPage, docUrl, b
                         </Typography>
                     )}
                     <TabPanel
-                        value={tab}
+                        value={subTab}
                         index={index}
                         alwaysVisible={printMode}
                     >

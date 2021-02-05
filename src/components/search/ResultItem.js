@@ -1,4 +1,4 @@
-import React, { cloneElement, memo, useContext, useEffect, useRef } from 'react'
+import React, { cloneElement, memo, useEffect, useRef } from 'react'
 import cn from 'classnames'
 import { DateTime } from 'luxon'
 import { makeStyles } from '@material-ui/core/styles'
@@ -14,8 +14,9 @@ import {
     Typography
 } from '@material-ui/core'
 import { AttachFile, CloudDownloadOutlined, Launch, Lock, TextFields } from '@material-ui/icons'
-import { UserContext } from '../../../pages/_app'
-import { getIconReactComponent, humanFileSize, makeUnsearchable, truncatePath } from '../../utils'
+import { useUser } from '../UserProvider'
+import { useHashState } from '../HashStateProvider'
+import { getIconReactComponent, getPreviewParams, humanFileSize, makeUnsearchable, truncatePath } from '../../utils'
 import { createDownloadUrl } from '../../backend/api'
 import { specialTags, specialTagsList } from '../document/specialTags'
 
@@ -110,9 +111,13 @@ const useStyles = makeStyles(theme => ({
 
 const timeMs = () => new Date().getTime()
 
-function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
+function ResultItem({ hit, url, index }) {
     const classes = useStyles()
-    const whoAmI = useContext(UserContext)
+    const whoAmI = useUser()
+    const { hashState, setHashState } = useHashState()
+
+    const isPreview = hit._collection === hashState.preview?.c && hit._id === hashState.preview?.i
+    const unsearchable = !!hashState.preview
 
     const nodeRef = useRef()
     const handleMouseDown = () => {
@@ -124,7 +129,7 @@ function ResultItem({ hit, url, index, isPreview, onPreview, unsearchable }) {
     const handleMouseUp = () => {
         if (nodeRef.current.willFocus) {
             nodeRef.current.tUp = timeMs()
-            onPreview(url)
+            setHashState({ ...getPreviewParams(hit), tab: undefined, subTab: undefined })
         }
     }
 

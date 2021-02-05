@@ -107,10 +107,13 @@ export const copyMetadata = doc => {
         : `Could not copy meta metadata – unsupported browser?`
 };
 
-export const documentViewUrl = item => ['/doc', item._collection, item._id].join('/');
+const documentUrlPrefix = '/doc'
+export const collectionUrl = collection => [documentUrlPrefix, collection].join('/')
+export const documentViewUrl = item => [documentUrlPrefix, item._collection, item._id].join('/')
+export const getPreviewParams = item => ({ preview: { c: item._collection, i: item._id } })
 
 export const removeCommentsAndSpacing = (str = '') =>
-    str.replace(/\/\*.*\*\//g, ' ').replace(/\s+/g, ' ');
+    str.replace(/\/\*.*\*\//g, ' ').replace(/\s+/g, ' ')
 
 export const humanFileSize = (bytes, si=false, dp=1) => {
     const thresh = si ? 1000 : 1024

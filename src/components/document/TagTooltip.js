@@ -1,10 +1,10 @@
-import React, { memo, useContext } from 'react'
+import React, { memo } from 'react'
 import { DateTime } from 'luxon'
 import { Box, Tooltip } from '@material-ui/core'
-import { UserContext } from '../../../pages/_app'
+import { useUser } from '../UserProvider'
 
 function TagTooltip({ chip, count, children }) {
-    const whoAmI = useContext(UserContext)
+    const whoAmI = useUser()
 
     return (
         <Tooltip

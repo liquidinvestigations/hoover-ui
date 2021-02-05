@@ -1,16 +1,16 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import Head from 'next/head'
 import { Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import SplitPane from 'react-split-pane'
+import { useDocument } from './DocumentProvider'
 import Document  from './Document'
-import { useData } from './ContentProvider'
 import Locations from '../Locations'
 import Finder from '../Finder'
 import SplitPaneLayout from '../SplitPaneLayout'
 import HotKeysWithHelp from '../HotKeysWithHelp'
+import { useUser } from '../UserProvider'
 import { copyMetadata, shortenName } from '../../utils'
-import { UserContext } from '../../../pages/_app'
 
 const useStyles = makeStyles(theme => ({
     splitPane: {
@@ -44,92 +44,67 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function Content() {
+export default function DocPage() {
     const classes = useStyles()
-    const whoAmI = useContext(UserContext)
+    const whoAmI = useUser()
 
     const {
-        data,
-        pathname,
-        loading,
-        printMode,
-
-        digest,
-        digestUrl,
-        urlIsSha,
-    } = useData()
-
-    const doc = (
-        <Document
-            docUrl={pathname}
-            data={data}
-            loading={loading}
-            printMode={printMode}
-            fullPage
-        />
-    )
-
-    const finder = (
-        <Finder
-            loading={loading}
-            data={data}
-            url={pathname}
-        />
-    )
+        data, loading, printMode,
+        digest, digestUrl, urlIsSha,
+    } = useDocument()
 
     const infoPane = (
         <>
-            {!!digest ?
+            {!digest ? <Document /> :
                 <SplitPaneLayout
                     container={false}
                     left={loading ? null : <Locations data={data} url={digestUrl} />}
                     defaultSizeLeft="25%"
                     defaultSizeMiddle="70%"
                 >
-                    {doc}
+                    <Document />
                 </SplitPaneLayout>
-                :
-                doc
             }
         </>
     )
 
-    let content = null
+    let content
 
     if (printMode) {
-        content = doc
+        content = <Document />
     } else {
         content = urlIsSha ?
             <>
-                {data &&
-                <Typography variant="subtitle2" className={classes.title}>
-                    Document <b>{data?.id}</b>
-                    {' '}
-                    filename: <b>{shortenName(data?.content.filename, 50)}</b>
-                    {' '}
-                    - please pick a location to see the Finder
-                </Typography>
-                }
+                {data && (
+                    <Typography variant="subtitle2" className={classes.title}>
+                        Document <b>{data?.id}</b>
+                        {' '}
+                        filename: <b>{shortenName(data?.content.filename, 50)}</b>
+                        {' '}
+                        - please pick a location to see the Finder
+                    </Typography>
+                )}
                 <div className={classes.splitPane}>
                     {infoPane}
                 </div>
             </>
             :
             <>
-                {data &&
-                <Typography variant="subtitle2" className={classes.title}>
-                    {!!digest ? 'File' : 'Directory'}
-                    {' '}
-                    <b>{data.content.path}</b>
-                </Typography>
-                }
+                {data && (
+                    <Typography variant="subtitle2" className={classes.title}>
+                        {!!digest ? 'File' : 'Directory'}
+                        {' '}
+                        <b>{data.content.path}</b>
+                    </Typography>
+                )}
                 <div className={classes.splitPane}>
                     <SplitPane
                         split="horizontal"
                         defaultSize="30%"
                         pane1ClassName={classes.horizontalSplitPane}
-                        pane2ClassName={classes.horizontalSplitPane}>
-                        {finder}
+                        pane2ClassName={classes.horizontalSplitPane}
+                    >
+                        <Finder />
                         {infoPane}
                     </SplitPane>
                 </div>

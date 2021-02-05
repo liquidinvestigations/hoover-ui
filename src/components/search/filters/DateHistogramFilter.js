@@ -43,7 +43,7 @@ function DateHistogramFilter({ title, field, queryFilter, queryFacets, aggregati
 
     const onSelectionChange = useCallback((field, newIntervals, resetPage) => {
         const { intervals, ...rest } = queryFilter || {}
-        if (newIntervals.include.length) {
+        if (newIntervals.include?.length) {
             onChange(field, { intervals: newIntervals, ...rest }, resetPage)
         } else {
             onChange(field, rest, resetPage)

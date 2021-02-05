@@ -1,8 +1,8 @@
-import React, { memo, useContext } from 'react'
+import React, { memo } from 'react'
 import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
 import { AppBar, Toolbar, Typography } from '@material-ui/core'
-import { UserContext } from '../../pages/_app'
+import { useUser } from './UserProvider'
 import Menu from './Menu'
 
 const useStyles = makeStyles(theme => ({
@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
 
 function Header() {
     const classes = useStyles()
-    const whoAmI = useContext(UserContext)
+    const whoAmI = useUser()
 
     return (
         <div className={classes.root}>

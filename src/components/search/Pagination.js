@@ -5,6 +5,7 @@ import { NavigateBefore, NavigateNext } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles'
 import { formatThousands } from '../../utils';
 import SearchSize from './Size'
+import { useSearch } from './SearchProvider'
 
 const MAX_PREV_PAGES = 3
 const MAX_NEXT_PAGES = 3
@@ -28,12 +29,17 @@ const createPageArray = (start, count) => Array.from({
     length: count
 }, (_, i) => i + start)
 
-function Pagination({ total, size, page, maxCount, changePage, changeSize }) {
+function Pagination({ maxCount }) {
     const classes = useStyles()
+    const { query, search, results } = useSearch()
 
-    const handleNext = () => changePage(page + 1)
-    const handlePrev = () => changePage(page - 1)
-    const handleSet = page => () => changePage(page)
+    const total = parseInt(results?.hits.total || 0)
+    const size = parseInt(query.size || 10)
+    const page = parseInt(query.page || 0)
+
+    const handleNext = () => search({ page: page + 1 })
+    const handlePrev = () => search({ page: page - 1 })
+    const handleSet = page => () => search({ page })
 
     const pageCount = Math.ceil(Math.min(total, maxCount) / size)
 
@@ -79,10 +85,7 @@ function Pagination({ total, size, page, maxCount, changePage, changeSize }) {
                 </Grid>
 
                 <Grid item>
-                    <SearchSize
-                        size={size}
-                        changeSize={changeSize}
-                    />
+                    <SearchSize size={size} />
                 </Grid>
             </Grid>
             {total > 0 && (

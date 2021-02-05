@@ -16,7 +16,7 @@ export async function getServerSideProps({ req }) {
     const headers = getAuthorizationHeaders(req)
     const collections = await collectionsAPI(headers)
 
-    const serverQuery = req.url.split('?')[1] || ''
+    const serverQuery = req.url.split('?')[1]?.split('#')[0] || ''
 
     return { props: { collections, serverQuery }}
 }

@@ -22,7 +22,7 @@ it('builds a query with a filetype filter', () => {
 
     expect(query.post_filter).toMatchObject({
         bool: {
-            must: [{ terms: { filetype: ['email', 'pdf'] } }],
+            filter: [{ terms: { filetype: ['email', 'pdf'] } }],
         },
     })
 
@@ -34,7 +34,7 @@ it('builds a query with a filetype filter', () => {
         },
         filter: {
             bool: {
-                must: [{ terms: { filetype: ['email', 'pdf'] } }],
+                filter: [{ terms: { filetype: ['email', 'pdf'] } }],
             },
         },
     })
@@ -76,7 +76,7 @@ it('builds a query with a date histogram by years filter', () => {
 
     expect(query.post_filter).toMatchObject({
         bool: {
-            must: [yearFilter],
+            filter: [yearFilter],
         },
     })
 
@@ -88,7 +88,7 @@ it('builds a query with a date histogram by years filter', () => {
         },
         filter: {
             bool: {
-                must: [yearFilter],
+                filter: [yearFilter],
             },
         },
     })
@@ -119,7 +119,7 @@ it('builds a query with multiple fields filtered', () => {
 
     expect(query.post_filter).toMatchObject({
         bool: {
-            must: [
+            filter: [
                 { terms: { filetype: ['doc', 'email'] } },
                 { terms: { 'email-domains': ['gmail.com'] } },
             ],
@@ -134,7 +134,7 @@ it('builds a query with multiple fields filtered', () => {
         },
         filter: {
             bool: {
-                must: [{ terms: { 'email-domains': ['gmail.com'] } }],
+                filter: [{ terms: { 'email-domains': ['gmail.com'] } }],
             },
         },
     })
@@ -147,7 +147,7 @@ it('builds a query with multiple fields filtered', () => {
         },
         filter: {
             bool: {
-                must: [{ terms: { filetype: ['doc', 'email'] } }],
+                filter: [{ terms: { filetype: ['doc', 'email'] } }],
             },
         },
     })

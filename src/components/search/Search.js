@@ -1,20 +1,24 @@
-import React, { useCallback, useContext, useEffect, useMemo, useRef } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import Router from 'next/router'
 import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
-import { Divider, Grid, List, TextField, Typography } from '@material-ui/core'
+import { Divider, Grid, IconButton, InputAdornment, List, TextField, Typography } from '@material-ui/core'
+import { Cancel } from '@material-ui/icons'
 import Expandable from '../Expandable'
 import SplitPaneLayout from '../SplitPaneLayout'
-import { ProgressIndicatorContext } from '../ProgressIndicator'
-import Document from '../document/Document'
+import { useProgressIndicator } from '../ProgressIndicator'
 import { useSearch } from './SearchProvider'
 import HotKeys from './HotKeys'
-import SearchQueryChips from './QueryChips'
+import FiltersChips from './filters/FiltersChips'
+import QueryChips from './QueryChips'
 import SearchResults from './Results'
-import Sorting from './sorting/Sorting'
 import Filters from './filters/Filters'
 import CollectionsFilter from './filters/CollectionsFilter'
 import { DEFAULT_MAX_RESULTS, SEARCH_GUIDE } from '../../constants'
+import SortingChips from './sorting/SortingChips'
+import SortingMenu from './sorting/SortingMenu'
+import { DocumentProvider } from '../document/DocumentProvider'
+import Document from '../document/Document'
 
 const useStyles = makeStyles(theme => ({
     error: {
@@ -24,12 +28,8 @@ const useStyles = makeStyles(theme => ({
         paddingLeft: theme.spacing(3),
         paddingRight: theme.spacing(3),
     },
-    paper: {
-        position: 'absolute',
-        width: theme.spacing(50),
-        backgroundColor: theme.palette.background.paper,
-        boxShadow: theme.shadows[5],
-        padding: theme.spacing(4),
+    clear: {
+        color: theme.palette.grey.A100,
     },
     info: {
         color: theme.palette.grey.A700,
@@ -39,33 +39,19 @@ const useStyles = makeStyles(theme => ({
     },
     filters: {
         paddingTop: 0,
-    }
+    },
+    sorting: {
+        display: 'flex',
+        marginTop: theme.spacing(2),
+        justifyContent: 'flex-end',
+    },
 }))
 
 export default function Search({ collections }) {
     const classes = useStyles()
     const inputRef = useRef()
-
-    const {
-        query,
-        error,
-
-        search,
-        results,
-        aggregations,
-
-        previewLoading,
-        resultsLoading,
-        aggregationsLoading,
-
-        handleDocPreview,
-        selectedDocUrl,
-        selectedDocData,
-        previewNextDoc,
-        previewPreviousDoc,
-
-        clearResults,
-    } = useSearch()
+    const { query, error, search, results, resultsLoading, clearResults,
+        selectedDocData, previewNextDoc, previewPreviousDoc } = useSearch()
 
     useEffect(() => {
         if (query.q) {
@@ -73,11 +59,15 @@ export default function Search({ collections }) {
         }
     }, [query])
 
+    const clearInput = () => {
+        inputRef.current.value = null
+        inputRef.current.focus()
+    }
+
     const clearSearchResults = url => {
         if (url === '/') {
+            clearInput()
             clearResults()
-            inputRef.current.value = null
-            inputRef.current.focus()
         }
     }
     useEffect(() => {
@@ -87,10 +77,10 @@ export default function Search({ collections }) {
         }
     }, [])
 
-    const { setLoading } = useContext(ProgressIndicatorContext)
+    const { setLoading } = useProgressIndicator()
     useEffect(() => {
-        setLoading(resultsLoading || previewLoading)
-    }, [resultsLoading, previewLoading])
+        setLoading(resultsLoading)
+    }, [resultsLoading])
 
     const maxResultsCount = useMemo(() => collections
             .filter(collection => query.collections?.includes(collection.name))
@@ -103,155 +93,123 @@ export default function Search({ collections }) {
         [collections, query]
     )
 
-    const handleCollectionsChange = useCallback(collections => {
-        search({ q: inputRef.current.value, collections, page: 1 })
+    const handleCollectionsChange = useCallback(value => {
+        search({ collections: value, page: 1 })
     }, [collections, search])
-
-    const handleSizeChange = useCallback(size => {
-        search({ q: inputRef.current.value, size, page: 1 })
-    }, [search])
-
-    const handleOrderChange = useCallback(order => {
-        search({ q: inputRef.current.value, order, page: 1 })
-    }, [search])
-
-    const handlePageChange = useCallback(page => {
-        search({ q: inputRef.current.value, page })
-    }, [search])
-
-    const handleSearchTrigger = useCallback(params => {
-        search({ ...query, ...params, q: inputRef.current.value, page: 1 })
-    }, [search, query])
 
     const handleSubmit = useCallback(event => {
         event.preventDefault()
         search({ q: inputRef.current.value, page: 1 })
     }, [search])
 
-    const handleSearch = useCallback(q => {
-        search({ q: inputRef.current.value, page: 1 })
-    }, [search])
-
     const handleInputKey = useCallback(event => {
         if (event.key === 'Enter' && !event.shiftKey) {
-            event.preventDefault()
-            search({ q: inputRef.current.value, page: 1 })
+            handleSubmit(event)
         }
     }, [search])
 
     return (
-        <HotKeys
-            inputRef={inputRef}
-            selectedDocUrl={selectedDocUrl}
-            selectedDocData={selectedDocData}
-            previewNextDoc={previewNextDoc}
-            previewPreviousDoc={previewPreviousDoc}
+        <DocumentProvider
+            id={selectedDocData?.i}
+            collection={selectedDocData?.c}
         >
-            <SplitPaneLayout
-                left={
-                    <>
-                        <List dense className={classes.collections}>
-                            <Expandable
-                                title={`Collections (${query.collections?.length || 0})`}
-                                defaultOpen
-                                highlight={false}
-                            >
-                                <CollectionsFilter
-                                    collections={collections}
-                                    selected={query.collections || []}
-                                    changeSelection={handleCollectionsChange}
-                                    counts={results?.count_by_index}
-                                />
-                                <Divider />
-                            </Expandable>
-                        </List>
+            <HotKeys inputRef={inputRef}>
+                <SplitPaneLayout
+                    left={
+                        <>
+                            <List dense className={classes.collections}>
+                                <Expandable
+                                    title={`Collections (${query.collections?.length || 0})`}
+                                    defaultOpen
+                                    highlight={false}
+                                >
+                                    <CollectionsFilter
+                                        collections={collections}
+                                        selected={query.collections || []}
+                                        changeSelection={handleCollectionsChange}
+                                        counts={results?.count_by_index}
+                                    />
+                                    <Divider />
+                                </Expandable>
+                            </List>
 
-                        <Filters
-                            loading={aggregationsLoading || resultsLoading}
-                            query={query}
-                            aggregations={aggregations}
-                            triggerSearch={handleSearchTrigger}
-                            className={classes.filters}
+                            <Filters className={classes.filters} />
+                        </>
+                    }
+                    right={
+                        <Document
+                            onPrev={previewPreviousDoc}
+                            onNext={previewNextDoc}
                         />
-                    </>
-                }
-                right={
-                    <Document
-                        docUrl={selectedDocUrl}
-                        data={selectedDocData}
-                        loading={previewLoading}
-                        onPrev={previewPreviousDoc}
-                        onNext={previewNextDoc}
-                    />
-                }
-            >
-                <div className={classes.main}>
-                    <Grid container>
-                        <Grid item sm={12}>
-                            <form onSubmit={handleSubmit}>
-                                <TextField
-                                    inputRef={inputRef}
-                                    label="Search"
-                                    type="search"
-                                    margin="normal"
-                                    defaultValue={query.q || ''}
-                                    onKeyDown={handleInputKey}
-                                    autoFocus
-                                    fullWidth
-                                    multiline
-                                />
-                            </form>
+                    }
+                >
+                    <div className={classes.main}>
+                        <Grid container>
+                            <Grid item sm={12}>
+                                <form onSubmit={handleSubmit}>
+                                    <TextField
+                                        inputRef={inputRef}
+                                        label="Search"
+                                        margin="normal"
+                                        defaultValue={query.q || ''}
+                                        onKeyDown={handleInputKey}
+                                        autoFocus
+                                        fullWidth
+                                        multiline
+                                        InputProps={{ endAdornment:
+                                            <InputAdornment position="end">
+                                                <IconButton onClick={clearInput} size="small">
+                                                    <Cancel className={classes.clear} />
+                                                </IconButton>
+                                            </InputAdornment>,
+                                        }}
+                                    />
+                                </form>
 
-                            <Grid container justify="space-between">
-                                <Grid item style={{ flex: 1 }}>
-                                    <Typography variant="caption" className={classes.info}>
-                                        Enter to search, Shift+Enter for a new line.
-                                        All lines are combined into a single search.
-                                        Refine your search using {' '}
-                                        <a href={SEARCH_GUIDE}>this handy guide</a>.
-                                    </Typography>
+                                <Grid container justify="space-between">
+                                    <Grid item style={{ flex: 1 }}>
+                                        <Typography variant="caption" className={classes.info}>
+                                            Enter to search, Shift+Enter for a new line.
+                                            All lines are combined into a single search.
+                                            Refine your search using {' '}
+                                            <a href={SEARCH_GUIDE}>this handy guide</a>.
+                                        </Typography>
+                                    </Grid>
+
+                                    <Grid item style={{ marginLeft: 20 }}>
+                                        <Typography variant="caption">
+                                            <Link href="/batch-search">
+                                                <a>Batch search</a>
+                                            </Link>
+                                        </Typography>
+                                    </Grid>
                                 </Grid>
 
-                                <Grid item style={{ marginLeft: 20 }}>
-                                    <Typography variant="caption">
-                                        <Link href="/batch-search">
-                                            <a>Batch search</a>
-                                        </Link>
-                                    </Typography>
-                                </Grid>
+                                <FiltersChips />
+
+                                <QueryChips />
+
+                                <div className={classes.sorting}>
+                                    <SortingChips />
+                                    <SortingMenu />
+                                </div>
                             </Grid>
-
-                            <SearchQueryChips query={query.q} onQueryChange={handleSearch} />
-
-                            <Sorting
-                                order={query.order}
-                                changeOrder={handleOrderChange}
-                            />
                         </Grid>
-                    </Grid>
 
-                    {error && (
-                        <div className={classes.error}>
-                            <Typography color="error">{error}</Typography>
-                        </div>
-                    )}
+                        {error && (
+                            <div className={classes.error}>
+                                <Typography color="error">{error}</Typography>
+                            </div>
+                        )}
 
-                    <Grid container>
-                        <Grid item sm={12}>
-                            <SearchResults
-                                results={results}
-                                maxCount={maxResultsCount}
-                                loading={resultsLoading}
-                                query={query}
-                                changePage={handlePageChange}
-                                changeSize={handleSizeChange}
-                                onPreview={handleDocPreview}
-                                selectedDocUrl={selectedDocUrl}
-                            />
+                        <Grid container>
+                            <Grid item sm={12}>
+                                <SearchResults maxCount={maxResultsCount} />
+                            </Grid>
                         </Grid>
-                    </Grid>
-                </div>
-            </SplitPaneLayout>
-        </HotKeys>
+                    </div>
+                </SplitPaneLayout>
+            </HotKeys>
+        </DocumentProvider>
     )
 }

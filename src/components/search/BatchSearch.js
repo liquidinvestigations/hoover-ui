@@ -6,7 +6,7 @@ import Expandable from '../Expandable'
 import Loading from '../Loading'
 import BatchResults from './BatchResults'
 import CollectionsFilter from './filters/CollectionsFilter'
-import { searchPath } from '../../queryUtils'
+import { createSearchUrl } from '../../queryUtils'
 import { batch } from '../../backend/api'
 
 const useStyles = makeStyles(theme => ({
@@ -58,7 +58,7 @@ export default function BatchSearch({ collections, limits }) {
                 const responseResults = response.responses.map(item => {
                     const result = {
                         term: item._query_string,
-                        url: searchPath(item._query_string, undefined, collections)
+                        url: createSearchUrl(item._query_string, undefined, collections)
                     }
                     if (item.error) {
                         result.error = true

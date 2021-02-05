@@ -1,5 +1,6 @@
 import React, { memo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
+import { useDocument } from './DocumentProvider'
 
 // List copy/pasted from https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
 // and then ran through ` grep -o '[^ /]\+/[^ ]\+' | sort ` - only image, audio, video are here
@@ -41,11 +42,12 @@ const useStyles = makeStyles({
     },
 })
 
-function Preview({ type, url, docTitle }) {
+function Preview() {
     const classes = useStyles()
+    const { data, docRawUrl } = useDocument()
 
-    if (type === 'application/pdf') {
-        const pdfViewerUrl = `/viewer/web/viewer.html?file=${encodeURIComponent(url)}`
+    if (data.content['content-type'] === 'application/pdf') {
+        const pdfViewerUrl = `/viewer/web/viewer.html?file=${encodeURIComponent(docRawUrl)}`
         return (
             <>
                 <p> Annotate this document in the <a target="_blank" href={pdfViewerUrl}>PDF viewer</a>. </p>
@@ -65,11 +67,11 @@ function Preview({ type, url, docTitle }) {
         <div id="hoover-media-viewer-container" className={classes.preview}>
             <embed
                 style={{ objectFit: 'contain'}}
-                src={url}
-                type={type}
+                src={docRawUrl}
+                type={data.content['content-type']}
                 height="100%"
                 width="100%"
-                title={docTitle}
+                title={data.content.filename}
             />
         </div>
     )

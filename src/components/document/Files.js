@@ -1,9 +1,10 @@
-import React, { memo, useState } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import Link from 'next/link'
 import url from 'url'
 import { Box, Table, TableBody, TableCell, TableRow } from '@material-ui/core'
 import { CloudDownload as IconCloudDownload } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles'
+import { useDocument } from './DocumentProvider'
 import Loading from '../Loading'
 import { humanFileSize } from '../../utils'
 import { createDownloadUrl, doc as docAPI } from '../../backend/api'
@@ -25,18 +26,19 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function Files({ data, page, hasNextPage, baseUrl, docUrl, fullPage }) {
+function Files() {
     const classes = useStyles()
+    const { data, pathname, collectionBaseUrl, fullPage } = useDocument()
 
-    const [files, setFiles] = useState(data)
-    const [currentPage, setCurrentPage] = useState(page)
-    const [currentHasNextPage, setCurrentHasNextPage] = useState(hasNextPage)
+    const [files, setFiles] = useState(data.children)
+    const [currentPage, setCurrentPage] = useState(data.children_page)
+    const [currentHasNextPage, setCurrentHasNextPage] = useState(data.children_has_next_page)
     const [isFetchingChildrenPage, setFetchingChildrenPage] = useState(false)
 
     const loadMore = async event => {
         event.preventDefault()
         setFetchingChildrenPage(true)
-        const nextDoc = await docAPI(docUrl, currentPage + 1)
+        const nextDoc = await docAPI(pathname, currentPage + 1)
         setCurrentPage(nextDoc.children_page)
         setCurrentHasNextPage(nextDoc.children_has_next_page)
         setFiles([...files, ...nextDoc.children])
@@ -47,7 +49,7 @@ function Files({ data, page, hasNextPage, baseUrl, docUrl, fullPage }) {
         <TableRow key={index}>
             <TableCell className={classes.cell}>
                 {id ? (
-                    <Link href={url.resolve(baseUrl, file || id)}>
+                    <Link href={url.resolve(collectionBaseUrl, file || id)}>
                         <a>
                             {filename}
                         </a>
@@ -59,7 +61,7 @@ function Files({ data, page, hasNextPage, baseUrl, docUrl, fullPage }) {
             <TableCell className={classes.cell}>
                 {digest && (
                     <a
-                        href={createDownloadUrl(url.resolve(baseUrl, digest), filename)}
+                        href={createDownloadUrl(url.resolve(collectionBaseUrl, digest), filename)}
                         target={fullPage ? null : '_blank'}
                         title="Original file"
                         className={classes.link}

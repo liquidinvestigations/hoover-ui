@@ -1,12 +1,10 @@
-import React, { memo, useState } from 'react'
+import React from 'react'
 import Head from 'next/head'
-import ProgressIndicator, { ProgressIndicatorContext } from './ProgressIndicator'
+import ProgressIndicator, { ProgressIndicatorProvider } from './ProgressIndicator'
 import Header from './Header'
 import ErrorBoundary from './ErrorBoundary'
 
-function Layout({ children }) {
-    const [loading, setLoading] = useState(false)
-
+export default function Layout({ children }) {
     return (
         <>
             <Head>
@@ -21,17 +19,13 @@ function Layout({ children }) {
                 />
             </Head>
 
-            <ProgressIndicatorContext.Provider value={{ loading, setLoading }}>
+            <ProgressIndicatorProvider>
                 <ProgressIndicator type="linear" />
-                <>
-                    <Header />
-                    <ErrorBoundary>
-                        {children}
-                    </ErrorBoundary>
-                </>
-            </ProgressIndicatorContext.Provider>
+                <Header />
+                <ErrorBoundary>
+                    {children}
+                </ErrorBoundary>
+            </ProgressIndicatorProvider>
         </>
     )
 }
-
-export default memo(Layout)

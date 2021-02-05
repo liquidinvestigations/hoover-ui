@@ -1,49 +1,19 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useCallback, useEffect, useState } from 'react'
 import lucene from 'lucene'
-import { Box, ButtonBase, Chip, FormControl, Menu, MenuItem, Tooltip } from '@material-ui/core'
+import { Box, Chip, FormControl, Tooltip, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { green, red } from '@material-ui/core/colors'
-import { DEFAULT_OPERATOR, SEARCH_QUERY_PREFIXES } from '../../constants'
+import { blue, red } from '@material-ui/core/colors'
+import { useSearch } from './SearchProvider'
 import { shortenName } from '../../utils'
+import ChipsTree from './ChipsTree'
 
 const useStyles = makeStyles(theme => ({
-    box: {
-        float: 'left',
-        display: 'inline-block',
-        verticalAlign: 'top',
-        marginRight: theme.spacing(1),
-        marginBottom: theme.spacing(1),
+    treeTitle: {
+        marginTop: theme.spacing(1),
+    },
 
-        '&:nth-last-child(2)': {
-            marginRight: 0,
-            float: 'right',
-        },
-    },
-    operator: {
-        display: 'block',
-        textAlign: 'center',
-        lineHeight: '30px',
-        fontSize: '10px',
-        width: '100%',
-        height: theme.spacing(1),
-        marginTop: theme.spacing(0.5),
-        borderLeft: '1px solid black',
-        borderRight: '1px solid black',
-        borderBottom: 'solid 1px black',
-    },
-    AND: {
-        color: theme.palette.secondary.main,
-        borderColor: theme.palette.secondary.main,
-    },
-    OR: {
-        color: theme.palette.primary.main,
-        borderColor: theme.palette.primary.main,
-    },
-    NOT: {
-        color: red.A700,
-        borderColor: red.A700,
-    },
     chip: {
+        backgroundColor: blue.A100,
         marginRight: theme.spacing(1),
         marginBottom: theme.spacing(1),
 
@@ -53,11 +23,16 @@ const useStyles = makeStyles(theme => ({
     },
 
     tooltipChip: {
-        backgroundColor: green.A100,
+        backgroundColor: blue.A200,
     },
 
-    fieldChip: {
+    negationChip: {
+        cursor: 'pointer',
         backgroundColor: red.A100,
+
+        '&$negationChip': {
+            backgroundColor: red.A200,
+        }
     },
 }))
 
@@ -89,166 +64,89 @@ const rebuildTree = (parent, node) => {
     return root
 }
 
-function QueryChips({ query, onQueryChange }) {
+function QueryChips() {
     const classes = useStyles()
-    const [parsedQuery, setParsedQuery] = useState()
+    const { query, search } = useSearch()
+    const [ parsedQuery, setParsedQuery ] = useState()
 
     useEffect(() => {
         try {
-            setParsedQuery(lucene.parse(query))
+            setParsedQuery(lucene.parse(query.q))
         } catch {}
     }, [query])
 
-    const [selectedChip, setSelectedChip] = useState(null)
-    const [isExpression, setExpression] = useState(false)
-    const [anchorEl, setAnchorEl] = useState(null)
-    const handleChipClick = (chip, parentOperator) => event => {
-        setSelectedChip(chip)
-        setExpression(!!parentOperator)
-        setAnchorEl(event.currentTarget)
-    }
-    const handleChipMenuClose = () => {
-        setAnchorEl(null)
-    }
-    const handleDelete = () => {
-        onQueryChange(lucene.toString(rebuildTree(parsedQuery, selectedChip)))
-        handleChipMenuClose()
-    }
+    const handleDelete = useCallback(node => {
+        search({ q: lucene.toString(rebuildTree(parsedQuery, node)), page: 1 })
+    }, [parsedQuery, search])
 
-    const getChip = (queryNode, label, className) => {
+    const getChip = useCallback(q => {
+        let label, prefix = q.prefix, className = classes.chip
+        if (prefix === '-' || prefix === '!') {
+            prefix = null
+            className += ' ' + classes.negationChip
+        }
+        if (q.field === '<implicit>') {
+            label = (
+                <span>
+                    {prefix && <strong>{prefix}{' '}</strong>}
+                    {shortenName(q.term)}
+                </span>
+            )
+        } else if (q.term) {
+            label = (
+                <span>
+                    {prefix && <strong>{prefix}{' '}</strong>}
+                    <strong>{q.field}:</strong>{' '}
+                    {shortenName(q.term)}
+                </span>
+            )
+        } else {
+            label = lucene.toString(q)
+        }
+
+        if (q.similarity || q.proximity || q.boost) {
+            return (
+                <Tooltip placement="top" title={(
+                    <>
+                        {q.similarity && <Box><strong>Similarity:</strong>{' '}{q.similarity}</Box>}
+                        {q.proximity && <Box><strong>Proximity:</strong>{' '}{q.proximity}</Box>}
+                        {q.boost && <Box><strong>Boost:</strong>{' '}{q.boost}</Box>}
+                    </>
+                )}>
+                    <Chip
+                        label={label}
+                        className={className + ' ' + classes.tooltipChip}
+                    />
+                </Tooltip>
+            )
+        }
+
         return (
             <Chip
                 label={label}
                 className={className}
-                onClick={handleChipClick(queryNode)}
             />
         )
-    }
+    }, [])
 
-    const getNotBox = (negation, queryNode, chip) => {
-        if (negation) {
-            return (
-                <Box className={classes.box}>
-                    {chip}
-                    <ButtonBase
-                        className={classes.operator + ' ' + classes.NOT}
-                        onClick={handleChipClick(queryNode, 'NOT')}
-                    >
-                        NOT
-                    </ButtonBase>
-                </Box>
-            )
-        }
-        return chip
-    }
-
-    const build = (q, parentOperator) => {
-        let operator, leftNegation = q.start === 'NOT', rightNegation = false
-
-        switch (q.operator) {
-            case '<implicit>':
-                operator = DEFAULT_OPERATOR
-                break
-            case 'NOT':
-                operator = DEFAULT_OPERATOR
-                rightNegation = true
-                break
-            case 'AND NOT':
-                operator = 'AND'
-                rightNegation = true
-                break
-            case 'OR NOT':
-                operator = 'OR'
-                rightNegation = true
-                break
-            case 'AND':
-            case 'OR':
-                operator = q.operator
-                break;
-        }
-
-        if (q.field) {
-            let label, className = classes.chip
-            if (q.field === '<implicit>') {
-                label = (
-                    <span>
-                        {q.prefix && <strong>{q.prefix}{' '}</strong>}
-                        {shortenName(q.term)}
-                    </span>
-                )
-            } else if (q.term) {
-                label = (
-                    <span>
-                        {q.prefix && <strong>{q.prefix}{' '}</strong>}
-                        <strong>{q.field}:</strong>{' '}
-                        {shortenName(q.term)}
-                    </span>
-                )
-                if (SEARCH_QUERY_PREFIXES.includes(q.field)) {
-                    className += ' ' + classes.fieldChip
-                }
-            } else {
-                label = lucene.toString(q)
-            }
-
-            if (q.similarity || q.proximity || q.boost) {
-                return (
-                    <Tooltip placement="top" title={(
-                        <>
-                            {q.similarity && <Box><strong>Similarity:</strong>{' '}{q.similarity}</Box>}
-                            {q.proximity && <Box><strong>Proximity:</strong>{' '}{q.proximity}</Box>}
-                            {q.boost && <Box><strong>Boost:</strong>{' '}{q.boost}</Box>}
-                        </>
-                    )}>
-                        {getChip(q, label, className + ' ' + classes.tooltipChip)}
-                    </Tooltip>
-                )
-            }
-
-            return getChip(q, label, className)
-
-        } else if (parentOperator && parentOperator === operator) {
-
-            return (
-                q.left && q.right ?
-                    <>
-                        {build(q.left, operator)}
-                        {getNotBox(rightNegation, q.right, build(q.right, operator))}
-                    </> :
-                q.left ? build(q.left, operator) : null
-            )
-        } else {
-
-            return (
-                q.left && q.right ?
-                    <Box className={classes.box}>
-                        {getNotBox(leftNegation, q.left, build(q.left, operator))}
-                        {getNotBox(rightNegation, q.right, build(q.right, operator))}
-                        <ButtonBase
-                            className={classes.operator + ' ' + classes[operator]}
-                            onClick={handleChipClick(q, operator)}
-                        >
-                            {operator}
-                        </ButtonBase>
-                    </Box> :
-                q.left ? getNotBox(leftNegation, q.left, build(q.left, operator)) : null
-            )
-        }
-    }
+    const renderMenu = useCallback(isExpression =>
+        `delete selected ${isExpression ? 'expression' : 'term'}`, [])
 
     return query && parsedQuery ?
-        <FormControl margin="normal">
-            {build(parsedQuery)}
-            <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleChipMenuClose}
-            >
-                <MenuItem onClick={handleDelete}>
-                    delete selected {isExpression ? 'expression' : 'term'}
-                </MenuItem>
-            </Menu>
-        </FormControl> : null
+        <Box>
+            <Typography variant="h6" className={classes.treeTitle}>
+                Query
+            </Typography>
+            <FormControl margin="normal">
+                <ChipsTree
+                    tree={parsedQuery}
+                    renderChip={getChip}
+                    renderMenu={renderMenu}
+                    onChipDelete={handleDelete}
+                    onExpressionDelete={handleDelete}
+                />
+            </FormControl>
+        </Box> : null
 }
 
 export default memo(QueryChips)

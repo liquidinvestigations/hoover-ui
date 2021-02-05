@@ -1,10 +1,14 @@
 import React, { useMemo } from 'react'
-import { copyMetadata } from '../../utils'
+import { useSearch } from './SearchProvider'
+import { useHashState } from '../HashStateProvider'
+import { useDocument } from '../document/DocumentProvider'
 import HotKeysWithHelp from '../HotKeysWithHelp'
+import { copyMetadata, documentViewUrl } from '../../utils'
 
-export default function HotKeys({ children, inputRef, selectedDocUrl, selectedDocData,
-                                    previewNextDoc, previewPreviousDoc }) {
-
+export default function HotKeys({ children, inputRef  }) {
+    const { hashState } = useHashState()
+    const { data } = useDocument()
+    const { previewNextDoc, previewPreviousDoc } = useSearch()
     const isInputFocused = () => inputRef.current === document.activeElement
 
     const keys = useMemo(() => ({
@@ -36,8 +40,8 @@ export default function HotKeys({ children, inputRef, selectedDocUrl, selectedDo
                     return
                 }
                 event.preventDefault()
-                if (selectedDocData?.content) {
-                    showMessage(copyMetadata(selectedDocData))
+                if (data?.content) {
+                    showMessage(copyMetadata(data))
                 } else {
                     showMessage('Unable to copy metadata – no document selected?')
                 }
@@ -47,7 +51,10 @@ export default function HotKeys({ children, inputRef, selectedDocUrl, selectedDo
             key: 'o',
             help: 'Open the currently previewed result',
             handler: () => {
-                isInputFocused() || (!!selectedDocUrl && window.open(selectedDocUrl, '_blank'))
+                isInputFocused() || (!!hashState.preview && window.open(documentViewUrl({
+                        _collection: hashState.preview.c,
+                        _id: hashState.preview.i,
+                }), '_blank'))
             },
         },
         focusInputField: {
@@ -60,7 +67,7 @@ export default function HotKeys({ children, inputRef, selectedDocUrl, selectedDo
                 }
             },
         }
-    }), [previewNextDoc, previewPreviousDoc, selectedDocData, selectedDocUrl])
+    }), [hashState, data, previewNextDoc, previewPreviousDoc])
 
     return (
         <HotKeysWithHelp keys={keys}>

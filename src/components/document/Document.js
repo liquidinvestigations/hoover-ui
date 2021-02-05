@@ -1,6 +1,5 @@
-import React, { memo, useContext, useEffect, useState } from 'react'
+import React, { memo, useEffect } from 'react'
 import Link from 'next/link'
-import url from 'url'
 import { makeStyles } from '@material-ui/core/styles'
 import {
     AccountTreeOutlined,
@@ -10,7 +9,6 @@ import {
     LocalOfferOutlined,
     NavigateBefore,
     NavigateNext,
-    PageviewOutlined,
     Print,
     SettingsApplicationsOutlined,
     TextFields,
@@ -19,7 +17,6 @@ import {
 import { Badge, Box, Chip, Grid, IconButton, Tabs, Toolbar, Tooltip, Typography } from '@material-ui/core'
 import StyledTab from './StyledTab'
 import TabPanel from './TabPanel'
-import Preview, { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './Preview'
 import HTML from './HTML'
 import Text from './Text'
 import Meta from './Meta'
@@ -27,9 +24,10 @@ import Loading from '../Loading'
 import TagTooltip from './TagTooltip'
 import TextSubTabs from './TextSubTabs'
 import Tags, { getChipColor } from './Tags'
-import { UserContext } from '../../../pages/_app'
-import { createDownloadUrl, createOcrUrl, createTag, deleteTag, tags as tagsAPI } from '../../backend/api'
-import { publicTagsList, specialTags } from './specialTags'
+import { useUser } from '../UserProvider'
+import { createOcrUrl } from '../../backend/api'
+import { specialTags } from './specialTags'
+import { useDocument } from './DocumentProvider'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -96,60 +94,18 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-const parseCollection = url => {
-    const [, collection] = url?.match(/(?:^|\/)doc\/(.+?)\//) || [];
-    return collection;
-}
-
-function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }) {
+function Document({ onPrev, onNext }) {
     const classes = useStyles()
-    const whoAmI = useContext(UserContext)
+    const whoAmI = useUser()
 
-    let digestUrl = docUrl
-
-    const collection = parseCollection(docUrl)
-    const collectionBaseUrl = docUrl && url.resolve(docUrl, './')
-    const headerLinks = {
-        actions: [],
-        navigation: [],
-        tags: [],
-    }
-    const tagsLinks = []
-
-    let digest = data?.id
-    let docRawUrl = createDownloadUrl(`${collectionBaseUrl}${digest}`, data?.content.filename)
-
-    if (data?.id.startsWith('_file_')) {
-        digest = data.digest
-        digestUrl = [url.resolve(docUrl, './'), data.digest].join('/')
-        docRawUrl = createDownloadUrl(`${collectionBaseUrl}${digest}`, data.content.filename)
-    }
-
-    if (data?.id.startsWith('_directory_')) {
-        digest = null
-        digestUrl = null
-        docRawUrl = null
-    }
-
-    const [tab, setTab] = useState(0)
-    const handleTabChange = (event, newValue) => setTab(newValue)
-
-    const [tags, setTags] = useState([])
-    const [tagsLoading, setTagsLoading] = useState(true)
-    const [tagsLocked, setTagsLocked] = useState(false)
-
-    useEffect(() => {
-        if (digestUrl && !digestUrl.includes('_file_') && !digestUrl.includes('_directory_')) {
-            setTab(0)
-            setTagsLoading(true)
-            setTagsLocked(true)
-            tagsAPI(digestUrl).then(data => {
-                setTags(data)
-                setTagsLoading(false)
-                setTagsLocked(false)
-            })
-        }
-    }, [digestUrl])
+    const {
+        data, pathname, loading,
+        fullPage, printMode,
+        collection, collectionBaseUrl,
+        digestUrl, docRawUrl,
+        tab, handleTabChange,
+        tags, tagsLocked, tagsLoading, handleSpecialTagClick
+    } = useDocument()
 
     useEffect(() => {
         if (printMode && !loading && !tagsLoading) {
@@ -157,11 +113,19 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
         }
     }, [printMode, loading, tagsLoading])
 
+    const headerLinks = {
+        actions: [],
+        navigation: [],
+        tags: [],
+    }
+
+    const tagsLinks = []
+
     if (loading) {
         return <Loading />
     }
 
-    if (!docUrl || !data || !Object.keys(data).length) {
+    if (!pathname || !data || !Object.keys(data).length) {
         return null
     }
 
@@ -169,30 +133,10 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
         return {tag: tag, text: data.content.ocrtext[tag]}
     })
 
-    const handleSpecialTagClick = (tag, name) => event => {
-        event.stopPropagation()
-        setTagsLocked(true)
-        if (tag) {
-            deleteTag(digestUrl, tag.id).then(() => {
-                setTags([...(tags.filter(t => t.id !== tag.id))])
-                setTagsLocked(false)
-            }).catch(() => {
-                setTagsLocked(false)
-            })
-        } else {
-            createTag(digestUrl, { tag: name, public: publicTagsList.includes(name) }).then(newTag => {
-                setTags([...tags, newTag])
-                setTagsLocked(false)
-            }).catch(() => {
-                setTagsLocked(false)
-            })
-        }
-    }
-
     if (data.content.filetype !== 'folder') {
         if (!fullPage) {
             headerLinks.actions.push({
-                href: docUrl,
+                href: pathname,
                 tooltip: 'Open in new tab',
                 icon: <Launch />,
                 target: '_blank',
@@ -200,7 +144,7 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
         }
 
         headerLinks.actions.push({
-            href: `${docUrl}?print=true`,
+            href: `${pathname}?print=true`,
             tooltip: 'Print metadata and content',
             icon: <Print />,
             target: '_blank',
@@ -267,58 +211,22 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
         root: classes.tabRoot,
     }
 
-    const hasPreview = docRawUrl && data.content['content-type'] && (
-        data.content['content-type'] === 'application/pdf' ||
-        PREVIEWABLE_MIME_TYPE_SUFFEXES.some(x => data.content['content-type'].endsWith(x))
-    )
-
     const tabsData = [{
         name: data.content.filetype,
         icon: <Toc />,
         visible: true,
         padding: 0,
-        content: <TextSubTabs
-            data={data}
-            ocrData={ocrData}
-            collection={collection}
-            printMode={printMode}
-            fullPage={fullPage}
-            docUrl={docUrl}
-            baseUrl={collectionBaseUrl}
-        />,
-    },{
-        name: 'Preview',
-        icon: <PageviewOutlined />,
-        visible: hasPreview,
-        content: <Preview
-            docTitle={data.content.filename}
-            type={data.content['content-type']}
-            url={docRawUrl}
-        />,
+        content: <TextSubTabs />,
     },{
         name: 'Tags',
         icon: <LocalOfferOutlined />,
         visible: !printMode && data.content.filetype !== 'folder',
-        content: <Tags
-            loading={tagsLoading}
-            digestUrl={digestUrl}
-            tags={tags}
-            onChanged={setTags}
-            toolbarButtons={tagsLinks}
-            locked={tagsLocked}
-            onLocked={setTagsLocked}
-            printMode={printMode}
-        />,
+        content: <Tags toolbarButtons={tagsLinks} />,
     },{
         name: 'Meta',
         icon: <SettingsApplicationsOutlined />,
         visible: !printMode,
-        content: <Meta
-            doc={data}
-            collection={collection}
-            baseUrl={collectionBaseUrl}
-            printMode={printMode}
-        />,
+        content: <Meta />,
     },{
         name: 'HTML',
         icon: <CodeOutlined />,
@@ -356,7 +264,7 @@ function Document({ docUrl, data, loading, onPrev, onNext, printMode, fullPage }
             )}
 
             {printMode && (
-                <Link href={docUrl}>
+                <Link href={pathname}>
                     <a className={classes.printBackLink}>← Back to <b>normal view</b></a>
                 </Link>
             )}
