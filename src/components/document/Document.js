@@ -9,7 +9,6 @@ import {
     LocalOfferOutlined,
     NavigateBefore,
     NavigateNext,
-    PageviewOutlined,
     Print,
     SettingsApplicationsOutlined,
     TextFields,
@@ -18,7 +17,6 @@ import {
 import { Badge, Box, Chip, Grid, IconButton, Tabs, Toolbar, Tooltip, Typography } from '@material-ui/core'
 import StyledTab from './StyledTab'
 import TabPanel from './TabPanel'
-import Preview, { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './Preview'
 import HTML from './HTML'
 import Text from './Text'
 import Meta from './Meta'
@@ -213,22 +211,12 @@ function Document({ onPrev, onNext }) {
         root: classes.tabRoot,
     }
 
-    const hasPreview = docRawUrl && data.content['content-type'] && (
-        data.content['content-type'] === 'application/pdf' ||
-        PREVIEWABLE_MIME_TYPE_SUFFEXES.some(x => data.content['content-type'].endsWith(x))
-    )
-
     const tabsData = [{
         name: data.content.filetype,
         icon: <Toc />,
         visible: true,
         padding: 0,
         content: <TextSubTabs />,
-    },{
-        name: 'Preview',
-        icon: <PageviewOutlined />,
-        visible: hasPreview,
-        content: <Preview />,
     },{
         name: 'Tags',
         icon: <LocalOfferOutlined />,

@@ -4,6 +4,7 @@ import { Box, Tab, Tabs, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { FolderOutlined, Subject, TextFields } from '@material-ui/icons'
 import Expandable from '../Expandable'
+import Preview, { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './Preview'
 import { useDocument } from './DocumentProvider'
 import TabPanel from './TabPanel'
 import Email from './Email'
@@ -21,11 +22,16 @@ const useStyles = makeStyles(theme => ({
 
 function TextSubTabs() {
     const classes = useStyles()
-    const { data, ocrData, printMode, collection, subTab, handleSubTabChange } = useDocument()
+    const { data, docRawUrl, ocrData, printMode, collection, subTab, handleSubTabChange } = useDocument()
 
     if (!data || !collection || !ocrData) {
         return null
     }
+
+    const hasPreview = docRawUrl && data.content['content-type'] && (
+        data.content['content-type'] === 'application/pdf' ||
+        PREVIEWABLE_MIME_TYPE_SUFFEXES.some(x => data.content['content-type'].endsWith(x))
+    )
 
     const tabs = [{
         name: 'Extracted from file',
@@ -47,9 +53,14 @@ function TextSubTabs() {
                 <Email />
             )}
 
+            {hasPreview && (
+                <Box m={1}>
+                    <Preview />
+                </Box>
+            )}
+
             {!!data.children?.length && (
                 <Expandable
-                    defaultOpen
                     highlight={false}
                     title={
                         <>
