@@ -51,18 +51,18 @@ const useStyles = makeStyles(theme => ({
 function ChipsTree({ tree, renderChip, renderMenu, onChipDelete, onExpressionDelete }) {
     const classes = useStyles()
 
-    const [anchorEl, setAnchorEl] = useState(null)
+    const [anchorPosition, setAnchorPosition] = useState(null)
     const [isExpression, setExpression] = useState(false)
     const [selectedChip, setSelectedChip] = useState(null)
 
     const handleChipClick = (chip, parentOperator) => event => {
         setSelectedChip(chip)
         setExpression(!!parentOperator)
-        setAnchorEl(event.currentTarget)
+        setAnchorPosition({ left: event.clientX, top: event.clientY })
     }
 
     const handleChipMenuClose = () => {
-        setAnchorEl(null)
+        setAnchorPosition(null)
     }
 
     const handleDelete = () => {
@@ -157,9 +157,10 @@ function ChipsTree({ tree, renderChip, renderMenu, onChipDelete, onExpressionDel
         <>
             {build(tree)}
             <Menu
-                anchorEl={anchorEl}
-                open={!!anchorEl}
+                open={!!anchorPosition}
                 onClose={handleChipMenuClose}
+                anchorReference="anchorPosition"
+                anchorPosition={anchorPosition}
             >
                 <MenuItem onClick={handleDelete}>
                     {renderMenu(isExpression)}
