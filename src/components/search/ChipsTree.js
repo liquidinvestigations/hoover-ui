@@ -19,6 +19,7 @@ const useStyles = makeStyles(theme => ({
     chips: {
         display: 'flex',
         flexDirection: 'column',
+        alignItems: 'flex-start',
     },
     operator: {
         display: 'block',
