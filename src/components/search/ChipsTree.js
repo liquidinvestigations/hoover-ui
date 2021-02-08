@@ -7,29 +7,28 @@ import { red } from '@material-ui/core/colors'
 
 const useStyles = makeStyles(theme => ({
     box: {
-        float: 'left',
-        display: 'inline-block',
-        verticalAlign: 'top',
-        marginRight: theme.spacing(1),
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'stretch',
         marginBottom: theme.spacing(1),
 
-        '&:nth-last-child(2)': {
-            marginRight: 0,
-            float: 'right',
+        '&:last-child': {
+            marginBottom: 0,
         },
+    },
+    chips: {
+        display: 'flex',
+        flexDirection: 'column',
     },
     operator: {
         display: 'block',
-        textAlign: 'center',
-        lineHeight: '30px',
         fontSize: '10px',
-        width: '100%',
-        height: theme.spacing(1),
-        marginTop: theme.spacing(0.5),
-        borderLeft: '1px solid black',
-        borderRight: '1px solid black',
-        borderBottom: 'solid 1px black',
-        transform: `translateY(-${theme.spacing(1)}px)`,
+        width: theme.spacing(1),
+        textIndent: theme.spacing(1.5),
+        marginLeft: theme.spacing(0.5),
+        marginRight: theme.spacing(3.5),
+        border: '1px solid black',
+        borderLeft: 'none',
     },
     AND: {
         color: theme.palette.secondary.main,
@@ -139,8 +138,10 @@ function ChipsTree({ tree, renderChip, renderMenu, onChipDelete, onExpressionDel
             return (
                 q.left && q.right ?
                     <Box className={classes.box}>
-                        {getNotBox(leftNegation, q.left, build(q.left, operator))}
-                        {getNotBox(rightNegation, q.right, build(q.right, operator))}
+                        <Box className={classes.chips}>
+                            {getNotBox(leftNegation, q.left, build(q.left, operator))}
+                            {getNotBox(rightNegation, q.right, build(q.right, operator))}
+                        </Box>
                         <ButtonBase
                             className={classes.operator + ' ' + classes[operator]}
                             onClick={handleChipClick(q, operator)}
