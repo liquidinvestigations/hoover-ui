@@ -4,7 +4,7 @@ import qs from 'qs'
 import fixLegacyQuery from '../../fixLegacyQuery'
 import { getPreviewParams } from '../../utils'
 import { useHashState } from '../HashStateProvider'
-import { buildSearchQuerystring, unwindParams } from '../../queryUtils'
+import { buildSearchQuerystring, rollupParams, unwindParams } from '../../queryUtils'
 import { aggregations as aggregationsAPI, search as searchAPI } from '../../api'
 
 const SearchContext = createContext({})
@@ -25,11 +25,11 @@ export function SearchProvider({ children, serverQuery }) {
     const search = useCallback(params => {
         const newQuery = buildSearchQuerystring({ ...query, ...params })
         router.push(
-            { pathname, search: newQuery },
+            { pathname, search: newQuery, hash: hashState ? qs.stringify(rollupParams(hashState)) : undefined },
             undefined,
             { shallow: true },
         )
-    }, [query])
+    }, [query, hashState])
 
     const [previewOnLoad, setPreviewOnLoad] = useState()
     const [selectedDocData, setSelectedDocData] = useState()
