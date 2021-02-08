@@ -10,10 +10,17 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function Size ({ size }) {
+function SearchSize ({ page, size }) {
     const classes = useStyles()
     const { search } = useSearch()
-    const handleSizeChange = event => search({ size: event.target.value })
+    const handleSizeChange = event => {
+        const newSize = event.target.value
+        if (newSize > size) {
+            search({size: newSize, page: Math.floor(page * size / newSize) + 1})
+        } else {
+            search({size: newSize, page: Math.floor((page - 1) * size / newSize) + 1})
+        }
+    }
 
     return (
         <Grid container alignItems="center">
@@ -31,4 +38,4 @@ function Size ({ size }) {
     )
 }
 
-export default memo(Size)
+export default memo(SearchSize)
