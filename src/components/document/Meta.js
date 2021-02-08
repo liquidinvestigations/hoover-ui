@@ -1,32 +1,105 @@
-import React, { memo } from 'react'
+import React, { Fragment, memo, useCallback } from 'react'
 import Link from 'next/link'
-import { DateTime } from 'luxon'
 import { makeStyles } from '@material-ui/core/styles'
-import { Box, Divider, List, ListItem, ListItemText, Typography } from '@material-ui/core'
+import {
+    Box,
+    Divider,
+    IconButton,
+    List,
+    ListItem,
+    ListItemSecondaryAction,
+    ListItemText,
+    Typography
+} from '@material-ui/core'
+import { CallMade } from '@material-ui/icons'
 import { useDocument } from './DocumentProvider'
 import { useHashState } from '../HashStateProvider'
-import { getLanguageName, humanFileSize, shortenName } from '../../utils'
+import { useSearch } from '../search/SearchProvider'
+import { formatDateTime, getLanguageName, humanFileSize, shortenName } from '../../utils'
 import { createSearchUrl } from '../../queryUtils'
-import {
-    SEARCH_DATE_CREATED,
-    SEARCH_FILENAME,
-    SEARCH_MD5,
-    SEARCH_DATE,
-    SEARCH_PATH_PARTS,
-    SEARCH_SHA1
-} from '../../constants'
 
 const useStyles = makeStyles(theme => ({
+    icon: {
+        transform: 'rotate(-90deg)',
+    },
     raw: {
         fontFamily: 'monospace',
         fontSize: '12px',
     },
+    rawIcon: {
+        fontSize: '1rem',
+        transform: 'rotate(-90deg)',
+    }
 }))
+
+const tableFields = {
+    filename: {
+        label: 'Filename',
+    },
+    path: {
+        label: 'Path',
+        searchKey: 'path-parts',
+    },
+    filetype: {
+        label: 'Type',
+        visible: content => !!content.filetype,
+    },
+    md5: {
+        label: 'MD5',
+        tooltip: 'search this MD5 checksum',
+        visible: content => content.filetype !== 'folder' && content.md5,
+    },
+    sha1: {
+        label: 'SHA1',
+        tooltip: 'search this SHA1 checksum',
+        visible: content => content.filetype !== 'folder' && content.sha1,
+    },
+    lang: {
+        label: 'Language',
+        format: getLanguageName,
+        visible: content => !!content.lang,
+    },
+    date: {
+        label: 'Modified',
+        format: formatDateTime,
+        tooltip: 'search modified this date',
+        visible: content => !!content.date,
+    },
+    'date-created': {
+        label: 'Created',
+        format: formatDateTime,
+        tooltip: 'search created this date',
+        visible: content => !!content['date-created'],
+    },
+    pgp: {
+        label: 'PGP',
+        format: () => 'true',
+        searchTerm: () => 'true',
+        tooltip: 'search encrypted',
+        visible: content => !!content.pgp,
+    },
+    'word-count': {
+        label: 'Word count',
+        searchTerm: term => term.toString(),
+        visible: content => !!content['word-count'],
+    },
+    size: {
+        label: 'Size',
+        format: humanFileSize,
+        searchTerm: term => term.toString(),
+        visible: content => !!content.size,
+    }
+}
 
 const Meta = () => {
     const classes = useStyles()
     const { hashState } = useHashState()
+    const { query, search } = useSearch()
     const { data, collection, digest, collectionBaseUrl, printMode } = useDocument()
+
+    const handleAddSearch = (key, term) => useCallback(() => {
+        search({ q: `${query.q}\n${key}:"${term}"` })
+    }, [search, query])
 
     const hash = { preview: { c: collection, i: digest }, tab: hashState.tab }
 
@@ -36,140 +109,59 @@ const Meta = () => {
                 <ListItem disableGutters>
                     <ListItemText
                         primary="Collection"
-                        secondary={collection}
-                    />
-                </ListItem>
-
-                <ListItem disableGutters>
-                    <ListItemText
-                        primary={printMode ? 'Filename' :
-                            <Link href={createSearchUrl(data.content.filename, SEARCH_FILENAME, collection, hash)} shallow>
-                                <a title="search this filename">Filename</a>
+                        secondary={printMode ? collection :
+                            <Link href={createSearchUrl('*', null, collection, hash)} shallow>
+                                <a title="search this collection">{collection}</a>
                             </Link>
                         }
-                        secondary={data.content.filename}
-                    />
-                </ListItem>
-
-                <ListItem disableGutters>
-                    <ListItemText
-                        primary={printMode ? 'Path' :
-                            <Link href={createSearchUrl(data.content.path, SEARCH_PATH_PARTS, collection, hash)} shallow>
-                                <a title="search this path">Path</a>
-                            </Link>
-                        }
-                        secondary={data.content.path}
                     />
                 </ListItem>
 
                 {!!data.digest && (
                     <ListItem disableGutters>
-                        <ListItemText primary="ID" secondary={
-                            <Link href={`${collectionBaseUrl}/${data.digest}`} shallow>
-                                <a>{data.digest}</a>
-                            </Link>
-                        } />
-                    </ListItem>
-                )}
-
-                {!!data.content.filetype && (
-                    <ListItem disableGutters>
                         <ListItemText
-                            primary="Type"
-                            secondary={data.content.filetype}
-                        />
-                    </ListItem>
-                )}
-
-                {data.content.filetype !== 'folder' && data.content.md5 && (
-                    <ListItem disableGutters>
-                        <ListItemText
-                            primary={printMode ? 'MD5' :
-                                <Link href={createSearchUrl(data.content.md5, SEARCH_MD5, collection, hash)} shallow>
-                                    <a title="search this MD5 checksum">MD5</a>
+                            primary="ID"
+                            secondary={
+                                <Link href={`${collectionBaseUrl}/${data.digest}`} shallow>
+                                    <a title="open digest URL">{data.digest}</a>
                                 </Link>
                             }
-                            secondary={data.content.md5}
                         />
                     </ListItem>
                 )}
 
-                {data.content.filetype !== 'folder' && data.content.sha1 && (
-                    <ListItem disableGutters>
-                        <ListItemText
-                            primary={printMode ? 'SHA1' :
-                                <Link href={createSearchUrl(data.content.sha1, SEARCH_SHA1, collection, hash)} shallow>
-                                    <a title="search this SHA1 checksum">SHA1</a>
-                                </Link>
-                            }
-                            secondary={data.content.sha1}
-                        />
-                    </ListItem>
-                )}
+                {Object.entries(tableFields)
+                    .filter(([,field]) => !field.visible || field.visible(data.content) !== false)
+                    .map(([key, field]) => {
 
-                {!!data.content.lang && (
-                    <ListItem disableGutters>
-                        <ListItemText
-                            primary="Language"
-                            secondary={getLanguageName(data.content.lang)}
-                        />
-                    </ListItem>
-                )}
+                    const display = field.format ? field.format(data.content[key]) : data.content[key]
+                    const searchKey = field.searchKey || key
+                    const searchTerm = field.searchTerm ? field.searchTerm(data.content[key]) : data.content[key]
+                    const tooltip = field.tooltip || `search this ${field.label.toLowerCase()}`
 
-                {!!data.content.date && (
-                    <ListItem disableGutters>
-                        <ListItemText
-                            primary={printMode ? 'Modified' :
-                                <Link href={createSearchUrl(data.content.date, SEARCH_DATE, collection, hash)} shallow>
-                                    <a title="search modified this date">Modified</a>
-                                </Link>
-                            }
-                            secondary={DateTime.fromISO(data.content.date, { locale: 'en-US' })
-                                .toLocaleString(DateTime.DATETIME_FULL)}
-                        />
-                    </ListItem>
-                )}
-
-                {!!data.content['date-created'] && (
-                    <ListItem disableGutters>
-                        <ListItemText
-                            primary={printMode ? 'Created' :
-                                <Link href={createSearchUrl(data.content['date-created'], SEARCH_DATE_CREATED, collection, hash)} shallow>
-                                    <a title="search created this date">Created</a>
-                                </Link>
-                            }
-                            secondary={DateTime.fromISO(data.content['date-created'], { locale: 'en-US' })
-                                .toLocaleString(DateTime.DATETIME_FULL)}
-                        />
-                    </ListItem>
-                )}
-
-                {!!data.content.pgp && (
-                    <ListItem disableGutters>
-                        <ListItemText
-                            primary="PGP"
-                            secondary="true"
-                        />
-                    </ListItem>
-                )}
-
-                {!!data.content['word-count'] && (
-                    <ListItem disableGutters>
-                        <ListItemText
-                            primary="Word count"
-                            secondary={data.content['word-count']}
-                        />
-                    </ListItem>
-                )}
-
-                {!!data.content.size && (
-                    <ListItem disableGutters>
-                        <ListItemText
-                            primary="Size"
-                            secondary={humanFileSize(data.content.size, true)}
-                        />
-                    </ListItem>
-                )}
+                    return (
+                        <ListItem key={key} disableGutters>
+                            <ListItemText
+                                primary={field.label}
+                                secondary={printMode ? display :
+                                    <Link href={createSearchUrl(searchTerm, searchKey, collection, hash)} shallow>
+                                        <a title={tooltip}>{display}</a>
+                                    </Link>
+                                }
+                            />
+                            {search && (
+                                <ListItemSecondaryAction>
+                                    <IconButton
+                                        edge="end"
+                                        onClick={handleAddSearch(searchKey, searchTerm)}
+                                    >
+                                        <CallMade className={classes.icon} />
+                                    </IconButton>
+                                </ListItemSecondaryAction>
+                            )}
+                        </ListItem>
+                    )
+                })}
             </List>
             <Divider />
             <Box>
@@ -178,17 +170,52 @@ const Meta = () => {
                         !['text', 'ocrtext', 'path-text', 'path-parts'].includes(key) &&
                         ((!Array.isArray(value) && value) || (Array.isArray(value) && value.length))
                     )
-                    .map(([key, value]) => (
-                        <Typography key={key} component="pre" variant="caption" className={classes.raw}>
-                            <strong>{key}:</strong>{' '}
-                            {
-                                typeof value === 'object' ?
-                                shortenName(JSON.stringify(value), 200) :
-                                typeof value === 'boolean' ? (value ? 'true' : 'false') :
-                                shortenName(value, 200)
-                            }
-                        </Typography>
-                    ))
+                    .map(([key, value]) => {
+                        let description
+                        if (typeof value === 'object') {
+                            description = shortenName(JSON.stringify(value), 200)
+                        } else if (typeof value === 'boolean') {
+                            description = value ? 'true' : 'false'
+                        } else {
+                            description = shortenName(value, 200)
+                        }
+
+                        return (
+                            <Typography key={key} component="pre" variant="caption" className={classes.raw}>
+                                <strong>{key}:</strong>{' '}
+                                {printMode ? description :
+                                    Array.isArray(value) && value.length ?
+                                        <>
+                                            {'['}
+                                                {value.map((element, index) =>
+                                                    <Fragment key={index}>
+                                                        <Link href={createSearchUrl(element.toString(), key, collection, hash)} shallow>
+                                                            <a title="search this value">{element.toString()}</a>
+                                                        </Link>
+                                                        {search && (
+                                                            <IconButton size="small" onClick={handleAddSearch(key, element.toString())}>
+                                                                <CallMade className={classes.rawIcon} />
+                                                            </IconButton>
+                                                        )}
+                                                        {index < value.length - 1 && ','}
+                                                    </Fragment>
+                                                )}
+                                            {']'}
+                                        </> :
+                                        <>
+                                            <Link href={createSearchUrl(value.toString(), key, collection, hash)} shallow>
+                                                <a title="search this value">{description}</a>
+                                            </Link>
+                                            {search && (
+                                                <IconButton size="small" onClick={handleAddSearch(key, value.toString())}>
+                                                    <CallMade className={classes.rawIcon} />
+                                                </IconButton>
+                                            )}
+                                        </>
+                                }
+                            </Typography>
+                        )
+                    })
                 }
             </Box>
         </>

@@ -1,110 +1,101 @@
-import React, { memo } from 'react'
+import React, { memo, useCallback } from 'react'
 import Link from 'next/link'
-import { DateTime } from 'luxon'
-import { Table, TableBody, TableCell, TableRow } from '@material-ui/core'
+import { IconButton, Table, TableBody, TableCell, TableRow } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
+import { CallMade } from '@material-ui/icons'
 import { useDocument } from './DocumentProvider'
 import { useHashState } from '../HashStateProvider'
 import { createSearchUrl } from '../../queryUtils'
-import {
-    SEARCH_FROM,
-    SEARCH_IN_REPLY_TO,
-    SEARCH_DATE,
-    SEARCH_SUBJECT,
-    SEARCH_THREAD_INDEX,
-    SEARCH_TO
-} from '../../constants'
+import { formatDateTime } from '../../utils'
+import { useSearch } from '../search/SearchProvider'
 
 const useStyles = makeStyles({
     preWrap: {
         whiteSpace: 'pre-wrap'
     },
+    icon: {
+        transform: 'rotate(-90deg)',
+    },
 })
+
+const tableFields = {
+    from: {
+        label: 'From',
+        tooltip: 'search emails from',
+        linkVisible: term => !!term?.length,
+    },
+    to: {
+        label: 'To',
+        searchTerm: term => (term || []).filter(Boolean).join(', '),
+        tooltip: 'search emails to',
+        linkVisible: term => !!term?.length,
+    },
+    date: {
+        label: 'Date',
+        tooltip: 'search sent this date',
+        format: formatDateTime,
+        linkVisible: term => !!term,
+    },
+    subject: {
+        label: 'Subject',
+        tooltip: 'search emails with subject',
+        format: term => term || '---',
+        linkVisible: term => !!term?.length,
+    }
+}
 
 function Email() {
     const classes = useStyles()
     const { hashState } = useHashState()
+    const { query, search } = useSearch()
     const { data, collection, digest, printMode } = useDocument()
-    const to = (data.content.to || []).filter(Boolean).join(', ')
+
+    const handleAddSearch = (key, term) => useCallback(() => {
+        search({ q: `${query.q}\n${key}:"${term}"` })
+    }, [search, query])
 
     const hash = { preview: { c: collection, i: digest }, tab: hashState.tab }
 
     return (
         <Table>
             <TableBody>
-                <TableRow>
-                    <TableCell>
-                        {data.content.from?.length && !printMode ?
-                            <Link href={createSearchUrl(data.content.from, SEARCH_FROM, collection, hash)} shallow>
-                                <a title="search emails from">From</a>
-                            </Link>
-                            :
-                            'From'
-                        }
-                    </TableCell>
-                    <TableCell>
-                            <pre className={classes.preWrap}>
-                                {data.content.from}
-                            </pre>
-                    </TableCell>
-                </TableRow>
+                {Object.entries(tableFields).map(([key, field]) => {
+                    const term = data.content[key]
+                    const display = field.format ? field.format(term) : term
+                    const searchTerm = field.searchTerm ? field.searchTerm(term) : term
 
-                <TableRow>
-                    <TableCell>
-                        {data.content.to?.length && !printMode ?
-                            <Link href={createSearchUrl(to, SEARCH_TO, collection, hash)} shallow>
-                                <a title="search emails to">To</a>
-                            </Link>
-                            :
-                            'To'
-                        }
-                    </TableCell>
-                    <TableCell>
-                        <pre className={classes.preWrap}>
-                            {to}
-                        </pre>
-                    </TableCell>
-                </TableRow>
-
-                <TableRow>
-                    <TableCell>
-                        {data.content.date && !printMode ?
-                            <Link href={createSearchUrl(data.content.date, SEARCH_DATE, collection, hash)} shallow>
-                                <a title="search sent this date">Date</a>
-                            </Link>
-                            :
-                            'Date'
-                        }
-                    </TableCell>
-                    <TableCell>
-                        <pre className={classes.preWrap}>
-                            {DateTime.fromISO(data.content.date, { locale: 'en-US' })
-                                .toLocaleString(DateTime.DATETIME_FULL)}
-                        </pre>
-                    </TableCell>
-                </TableRow>
-
-                <TableRow>
-                    <TableCell>
-                        {data.content.subject?.length && !printMode ?
-                            <Link href={createSearchUrl(data.content.subject, SEARCH_SUBJECT, collection, hash)} shallow>
-                                <a title="search emails with subject">Subject</a>
-                            </Link>
-                            :
-                            'Subject'
-                        }
-                    </TableCell>
-                    <TableCell>
-                        <pre className={classes.preWrap}>
-                            {data.content.subject || '---'}
-                        </pre>
-                    </TableCell>
-                </TableRow>
+                    return (
+                        <TableRow>
+                            <TableCell>{field.label}</TableCell>
+                            <TableCell>
+                                <pre className={classes.preWrap}>
+                                    {printMode || !field.linkVisible(term) ? display :
+                                        <Link href={createSearchUrl(searchTerm, key, collection, hash)} shallow>
+                                            <a title={field.tooltip}>{display}</a>
+                                        </Link>
+                                    }
+                                </pre>
+                            </TableCell>
+                            {search && (
+                                <TableCell>
+                                    {field.linkVisible(term) && (
+                                        <IconButton
+                                            edge="end"
+                                            onClick={handleAddSearch(key, searchTerm)}
+                                        >
+                                            <CallMade className={classes.icon} />
+                                        </IconButton>
+                                    )}
+                                </TableCell>
+                            )}
+                        </TableRow>
+                    )
+                })}
 
                 {data.content['message-id'] && !printMode && (
                     <TableRow>
                         <TableCell colSpan={2}>
-                            <Link href={createSearchUrl(data.content['message-id'], SEARCH_IN_REPLY_TO, collection, hash)} shallow>
+                            <Link href={createSearchUrl(data.content['message-id'], 'in-reply-to', collection, hash)} shallow>
                                 <a>search e-mails replying to this one</a>
                             </Link>
                         </TableCell>
@@ -114,7 +105,7 @@ function Email() {
                 {data.content['thread-index'] && !printMode && (
                     <TableRow>
                         <TableCell colSpan={2}>
-                            <Link href={createSearchUrl(data.content['thread-index'], SEARCH_THREAD_INDEX, collection, hash)} shallow>
+                            <Link href={createSearchUrl(data.content['thread-index'], 'thread-index', collection, hash)} shallow>
                                 <a>search e-mails in this thread</a>
                             </Link>
                         </TableCell>

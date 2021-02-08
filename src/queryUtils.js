@@ -47,17 +47,13 @@ export const buildSearchQuerystring = (params) => (
 export const clearQuotedParam = param => param.replace(/#/g, ' ').replace(/"/g, '')
 
 export const createSearchUrl = (query, prefix, collections, hashParams) => {
-    let quotedQuery = clearQuotedParam(query)
-
-    if (/[\s\/]/g.test(quotedQuery)) {
-        quotedQuery = `"${quotedQuery}"`
-    }
+    let quotedQuery = query === '*' ? query : `"${clearQuotedParam(query)}"`
 
     const params = { collections: Array.isArray(collections) ? collections : [collections] }
 
     if (prefix === SEARCH_DATE || prefix === SEARCH_DATE_CREATED) {
         params.q = '*'
-        quotedQuery = quotedQuery.substring(0, 10)
+        quotedQuery = quotedQuery.substring(1, 11)
         if (!params.filters) {
             params.filters = {}
         }

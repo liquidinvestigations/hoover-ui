@@ -275,7 +275,7 @@ function ResultItem({ hit, url, index }) {
                             <Box>
                                 <Typography variant="caption">
                                     <strong>Size:</strong>{' '}
-                                    {humanFileSize(fields.size, true)}
+                                    {humanFileSize(fields.size)}
                                 </Typography>
                             </Box>
                         )}

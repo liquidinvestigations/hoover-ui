@@ -2,6 +2,7 @@ import React, { memo } from 'react'
 import { DateTime } from 'luxon'
 import { Box, Tooltip } from '@material-ui/core'
 import { useUser } from '../UserProvider'
+import { formatDateTime } from '../../utils'
 
 function TagTooltip({ chip, count, children }) {
     const whoAmI = useUser()
@@ -13,8 +14,7 @@ function TagTooltip({ chip, count, children }) {
                 <>
                     <Box>
                         <strong>Created on:</strong>{' '}
-                        {DateTime.fromISO(chip.date_created, { locale: 'en-US' })
-                            .toLocaleString(DateTime.DATETIME_FULL)}
+                        {formatDateTime(chip.date_created)}
                     </Box>
                     <Box>
                         {chip.date_indexed ?
