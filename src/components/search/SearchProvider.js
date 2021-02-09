@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import qs from 'qs'
+import { merge } from 'lodash'
 import fixLegacyQuery from '../../fixLegacyQuery'
 import { getPreviewParams } from '../../utils'
 import { useHashState } from '../HashStateProvider'
@@ -30,6 +31,14 @@ export function SearchProvider({ children, serverQuery }) {
             { shallow: true },
         )
     }, [query, hashState])
+
+    const mergedSearch = useCallback(params => {
+        if (params.filters) {
+            search({ filters: merge({}, query.filters, params.filters) })
+        } else {
+            search({ q: `${query.q}\n${params.q}` })
+        }
+    }, [search, query])
 
     const [previewOnLoad, setPreviewOnLoad] = useState()
     const [selectedDocData, setSelectedDocData] = useState()
@@ -144,7 +153,7 @@ export function SearchProvider({ children, serverQuery }) {
             query, error, search, results, aggregations,
             resultsLoading, aggregationsLoading,
             previewNextDoc, previewPreviousDoc, selectedDocData,
-            clearResults, getPreviewParams
+            clearResults, getPreviewParams, mergedSearch
         }}>
             {children}
         </SearchContext.Provider>

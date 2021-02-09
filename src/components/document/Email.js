@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { CallMade } from '@material-ui/icons'
 import { useDocument } from './DocumentProvider'
 import { useHashState } from '../HashStateProvider'
-import { createSearchUrl } from '../../queryUtils'
+import { createSearchParams, createSearchUrl } from '../../queryUtils'
 import { formatDateTime } from '../../utils'
 import { useSearch } from '../search/SearchProvider'
 
@@ -21,11 +21,13 @@ const useStyles = makeStyles({
 const tableFields = {
     from: {
         label: 'From',
+        searchKey: 'from.keyword',
         tooltip: 'search emails from',
         linkVisible: term => !!term?.length,
     },
     to: {
         label: 'To',
+        searchKey: 'to.keyword',
         searchTerm: term => (term || []).filter(Boolean).join(', '),
         tooltip: 'search emails to',
         linkVisible: term => !!term?.length,
@@ -47,41 +49,42 @@ const tableFields = {
 function Email() {
     const classes = useStyles()
     const { hashState } = useHashState()
-    const { query, search } = useSearch()
+    const { mergedSearch } = useSearch()
     const { data, collection, digest, printMode } = useDocument()
 
-    const handleAddSearch = (key, term) => useCallback(() => {
-        search({ q: `${query.q}\n${key}:"${term}"` })
-    }, [search, query])
+    const handleAddSearch = (field, term) => useCallback(() => {
+        mergedSearch(createSearchParams(field, term))
+    }, [mergedSearch])
 
     const hash = { preview: { c: collection, i: digest }, tab: hashState.tab }
 
     return (
         <Table>
             <TableBody>
-                {Object.entries(tableFields).map(([key, field]) => {
-                    const term = data.content[key]
-                    const display = field.format ? field.format(term) : term
-                    const searchTerm = field.searchTerm ? field.searchTerm(term) : term
+                {Object.entries(tableFields).map(([field, config]) => {
+                    const term = data.content[field]
+                    const display = config.format ? config.format(term) : term
+                    const searchKey = config.searchKey || field
+                    const searchTerm = config.searchTerm ? config.searchTerm(term) : term
 
                     return (
-                        <TableRow>
-                            <TableCell>{field.label}</TableCell>
+                        <TableRow key={field}>
+                            <TableCell>{config.label}</TableCell>
                             <TableCell>
                                 <pre className={classes.preWrap}>
-                                    {printMode || !field.linkVisible(term) ? display :
-                                        <Link href={createSearchUrl(searchTerm, key, collection, hash)} shallow>
-                                            <a title={field.tooltip}>{display}</a>
+                                    {printMode || !config.linkVisible(term) ? display :
+                                        <Link href={createSearchUrl(searchTerm, searchKey, collection, hash)} shallow>
+                                            <a title={config.tooltip}>{display}</a>
                                         </Link>
                                     }
                                 </pre>
                             </TableCell>
-                            {search && (
+                            {mergedSearch && (
                                 <TableCell>
-                                    {field.linkVisible(term) && (
+                                    {config.linkVisible(term) && (
                                         <IconButton
                                             edge="end"
-                                            onClick={handleAddSearch(key, searchTerm)}
+                                            onClick={handleAddSearch(searchKey, searchTerm)}
                                         >
                                             <CallMade className={classes.icon} />
                                         </IconButton>

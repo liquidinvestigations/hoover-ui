@@ -1,5 +1,5 @@
 import qs from 'qs'
-import { SEARCH_DATE, SEARCH_DATE_CREATED } from './constants'
+import { aggregationFields } from './components/search/filters/aggregationFields'
 
 export const defaultSearchParams = {
     page: 1,
@@ -46,25 +46,34 @@ export const buildSearchQuerystring = (params) => (
 
 export const clearQuotedParam = param => param.replace(/#/g, ' ').replace(/"/g, '')
 
-export const createSearchUrl = (query, prefix, collections, hashParams) => {
-    let quotedQuery = query === '*' ? query : `"${clearQuotedParam(query)}"`
+export const createSearchParams = (field, term) => {
+    const params = {}
 
-    const params = { collections: Array.isArray(collections) ? collections : [collections] }
-
-    if (prefix === SEARCH_DATE || prefix === SEARCH_DATE_CREATED) {
+    if (aggregationFields[field]) {
         params.q = '*'
-        quotedQuery = quotedQuery.substring(1, 11)
-        if (!params.filters) {
-            params.filters = {}
+        params.filters = {}
+
+        if (aggregationFields[field].type === 'date') {
+            const dateOnly = term.substring(0, 10)
+            params.filters[field] = { from: dateOnly, to: dateOnly }
+        } else {
+            params.filters[field] = { include: [term] }
         }
-        params.filters[prefix] = { from: quotedQuery, to: quotedQuery }
-    } else if (prefix) {
-        params.q = `${prefix}:${quotedQuery}`
+
+    } else if (field) {
+        params.q = `${field}:"${clearQuotedParam(term)}"`
     } else {
-        params.q = quotedQuery
+        params.q = term
     }
 
-    const hash = hashParams ? '#' + qs.stringify(rollupParams(hashParams)) : ''
+    return params
+}
 
-    return `/?${buildSearchQuerystring(params)}${hash}`
+export const createSearchUrl = (term, field, collections, hash) => {
+    const params = createSearchParams(field, term)
+    const hashParams = hash ? '#' + qs.stringify(rollupParams(hash)) : ''
+
+    params.collections = Array.isArray(collections) ? collections : [collections]
+
+    return `/?${buildSearchQuerystring(params)}${hashParams}`
 }
