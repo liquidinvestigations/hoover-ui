@@ -22,7 +22,7 @@ function TagTooltip({ chip, count, children }) {
                                 Indexed in
                                 <strong>
                                     {DateTime.fromISO(chip.date_indexed)
-                                        .diff(DateTime.fromISO(chip.date_created))
+                                        .diff(DateTime.fromISO(chip.date_modified))
                                         .toFormat(' s.SSS ')}
                                 </strong>
                                 seconds
