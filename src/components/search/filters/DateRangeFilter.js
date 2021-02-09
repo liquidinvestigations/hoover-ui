@@ -2,7 +2,7 @@ import React, { memo, useEffect, useState } from 'react'
 import { ArrowLeft, ArrowRight, Event } from '@material-ui/icons'
 import { Button, Grid, List, ListItem } from '@material-ui/core'
 import { KeyboardDatePicker } from '@material-ui/pickers'
-import { DATE_FORMAT } from '../../../constants'
+import { DATE_FORMAT } from '../../../constants/general'
 
 const icons = {
     leftArrowIcon: <ArrowLeft />,

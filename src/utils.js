@@ -3,7 +3,7 @@ import url from 'url'
 import copy from 'copy-text-to-clipboard'
 import langs from 'langs'
 import { Tooltip } from '@material-ui/core'
-import { ELLIPSIS_TERM_LENGTH } from './constants'
+import { ELLIPSIS_TERM_LENGTH } from './constants/general'
 import file, { ReactComponent as FileIcon } from '../icons/file-line.svg'
 import folder, { ReactComponent as FolderIcon } from '../icons/folder-line.svg'
 import archive, { ReactComponent as ArchiveIcon } from '../icons/file-zip-line.svg'
@@ -51,6 +51,11 @@ export const getLanguageName = key => {
 export const formatDateTime = dateTime => DateTime
     .fromISO(dateTime, { locale: 'en-US' })
     .toLocaleString(DateTime.DATETIME_FULL)
+
+export const daysInMonth = date => {
+    const [, year, month] = /(\d{4})-(\d{2})/.exec(date)
+    return new Date(year, month, 0).getDate()
+}
 
 export const getBasePath = docUrl => url.parse(url.resolve(docUrl, './')).pathname
 

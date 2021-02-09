@@ -8,7 +8,7 @@ import Loading from '../Loading'
 import TagTooltip from './TagTooltip'
 import { useUser } from '../UserProvider'
 import { useDocument } from './DocumentProvider'
-import { specialTags, specialTagsList } from './specialTags'
+import { specialTags, specialTagsList } from '../../constants/specialTags'
 
 const forbiddenCharsRegex = /[^a-z0-9_!@#$%^&*()-=+:,./?]/gi
 

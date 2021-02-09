@@ -12,9 +12,11 @@ import {
     Typography
 } from '@material-ui/core'
 import { CallMade } from '@material-ui/icons'
+import DateLinks from './DateLinks'
 import { useDocument } from './DocumentProvider'
 import { useHashState } from '../HashStateProvider'
 import { useSearch } from '../search/SearchProvider'
+import { aggregationFields } from '../../constants/aggregationFields'
 import { formatDateTime, getLanguageName, humanFileSize, shortenName } from '../../utils'
 import { createSearchParams, createSearchUrl } from '../../queryUtils'
 
@@ -62,13 +64,13 @@ const tableFields = {
     date: {
         label: 'Modified',
         format: formatDateTime,
-        tooltip: 'search modified this date',
+        tooltip: 'search this date',
         visible: content => !!content.date,
     },
     'date-created': {
         label: 'Created',
         format: formatDateTime,
-        tooltip: 'search created this date',
+        tooltip: 'search this date',
         visible: content => !!content['date-created'],
     },
     pgp: {
@@ -94,11 +96,11 @@ const tableFields = {
 const Meta = () => {
     const classes = useStyles()
     const { hashState } = useHashState()
-    const { mergedSearch } = useSearch()
+    const { query, mergedSearch } = useSearch()
     const { data, collection, digest, collectionBaseUrl, printMode } = useDocument()
 
     const handleAddSearch = (field, term) => useCallback(() => {
-        mergedSearch(createSearchParams(field, term))
+        mergedSearch(createSearchParams(field, term, query?.filters?.[field]?.interval))
     }, [mergedSearch])
 
     const hash = { preview: { c: collection, i: digest }, tab: hashState.tab }
@@ -144,9 +146,21 @@ const Meta = () => {
                             <ListItemText
                                 primary={config.label}
                                 secondary={printMode ? display :
-                                    <Link href={createSearchUrl(searchTerm, searchKey, collection, hash)} shallow>
-                                        <a title={tooltip}>{display}</a>
-                                    </Link>
+                                    <>
+                                        <Link
+                                            href={createSearchUrl(searchTerm, searchKey, collection, hash,
+                                                query?.filters?.[searchKey]?.interval)}
+                                            shallow
+                                        >
+                                            <a title={tooltip}>{display}</a>
+                                        </Link>
+                                        {aggregationFields[searchKey]?.type === 'date' && (
+                                            <>
+                                                <br />
+                                                <DateLinks field={searchKey} term={searchTerm} />
+                                            </>
+                                        )}
+                                    </>
                                 }
                             />
                             {mergedSearch && (

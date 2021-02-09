@@ -4,7 +4,7 @@ import isEqual from 'react-fast-compare'
 import { makeStyles } from '@material-ui/core/styles'
 import { Button, Checkbox, Grid, IconButton, List, ListItem, ListItemText, Typography } from '@material-ui/core'
 import { formatThousands } from '../../../utils'
-import { DEFAULT_FACET_SIZE } from '../../../constants'
+import { DEFAULT_FACET_SIZE } from '../../../constants/general'
 import { NavigateBefore, NavigateNext } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({

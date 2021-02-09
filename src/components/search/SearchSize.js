@@ -1,7 +1,7 @@
 import React, { memo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { Grid, MenuItem, Select, Typography } from '@material-ui/core'
-import { SIZE_OPTIONS } from '../../constants'
+import { SIZE_OPTIONS } from '../../constants/general'
 import { useSearch } from './SearchProvider'
 
 const useStyles = makeStyles(theme => ({

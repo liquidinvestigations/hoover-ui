@@ -2,7 +2,7 @@ import React, { memo, useCallback } from 'react'
 import { List } from '@material-ui/core'
 import DateHistogramFilter from './DateHistogramFilter'
 import TermsAggregationFilter from './TermsAggregationFilter'
-import { aggregationFields } from './aggregationFields'
+import { aggregationFields } from '../../../constants/aggregationFields'
 import { useSearch } from '../SearchProvider'
 import { getLanguageName } from '../../../utils'
 

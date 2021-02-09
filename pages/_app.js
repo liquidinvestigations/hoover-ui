@@ -4,7 +4,7 @@ import LuxonUtils from '@date-io/luxon'
 import { ThemeProvider } from '@material-ui/core/styles'
 import { CssBaseline } from '@material-ui/core'
 import { MuiPickersUtilsProvider } from '@material-ui/pickers'
-import { JSS_CSS } from "../src/constants"
+import { JSS_CSS } from "../src/constants/general"
 import Layout from '../src/components/Layout'
 import theme from '../src/theme'
 import { whoami } from '../src/backend/api'

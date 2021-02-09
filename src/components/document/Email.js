@@ -3,11 +3,13 @@ import Link from 'next/link'
 import { IconButton, Table, TableBody, TableCell, TableRow } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { CallMade } from '@material-ui/icons'
+import DateLinks from './DateLinks'
 import { useDocument } from './DocumentProvider'
 import { useHashState } from '../HashStateProvider'
 import { createSearchParams, createSearchUrl } from '../../queryUtils'
 import { formatDateTime } from '../../utils'
 import { useSearch } from '../search/SearchProvider'
+import { aggregationFields } from '../../constants/aggregationFields'
 
 const useStyles = makeStyles({
     preWrap: {
@@ -34,7 +36,7 @@ const tableFields = {
     },
     date: {
         label: 'Date',
-        tooltip: 'search sent this date',
+        tooltip: 'search this date',
         format: formatDateTime,
         linkVisible: term => !!term,
     },
@@ -49,11 +51,11 @@ const tableFields = {
 function Email() {
     const classes = useStyles()
     const { hashState } = useHashState()
-    const { mergedSearch } = useSearch()
+    const { query, mergedSearch } = useSearch()
     const { data, collection, digest, printMode } = useDocument()
 
     const handleAddSearch = (field, term) => useCallback(() => {
-        mergedSearch(createSearchParams(field, term))
+        mergedSearch(createSearchParams(field, term, query?.filters?.[field]?.interval))
     }, [mergedSearch])
 
     const hash = { preview: { c: collection, i: digest }, tab: hashState.tab }
@@ -73,9 +75,21 @@ function Email() {
                             <TableCell>
                                 <pre className={classes.preWrap}>
                                     {printMode || !config.linkVisible(term) ? display :
-                                        <Link href={createSearchUrl(searchTerm, searchKey, collection, hash)} shallow>
-                                            <a title={config.tooltip}>{display}</a>
-                                        </Link>
+                                        <>
+                                            <Link
+                                                href={createSearchUrl(searchTerm, searchKey,
+                                                    collection, hash, query?.filters?.[searchKey]?.interval)}
+                                                shallow
+                                            >
+                                                <a title={config.tooltip}>{display}</a>
+                                            </Link>
+                                            {aggregationFields[searchKey]?.type === 'date' && (
+                                                <>
+                                                    <br />
+                                                    <DateLinks field={searchKey} term={searchTerm} />
+                                                </>
+                                            )}
+                                        </>
                                     }
                                 </pre>
                             </TableCell>

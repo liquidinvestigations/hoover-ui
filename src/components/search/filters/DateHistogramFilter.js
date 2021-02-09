@@ -4,7 +4,7 @@ import { Divider, FormControl, FormHelperText, ListItem, MenuItem, Select } from
 import Expandable from '../../Expandable'
 import DateRangeFilter from './DateRangeFilter'
 import AggregationFilter from './AggregationFilter'
-import { DEFAULT_INTERVAL } from '../../../constants'
+import { DEFAULT_INTERVAL } from '../../../constants/general'
 
 const formatsLabel = {
     year: 'y',

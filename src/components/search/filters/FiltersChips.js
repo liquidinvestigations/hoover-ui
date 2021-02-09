@@ -5,7 +5,7 @@ import { Box, Chip, FormControl, Typography } from '@material-ui/core'
 import { blue, green, red } from '@material-ui/core/colors'
 import ChipsTree from '../ChipsTree'
 import { useSearch } from '../SearchProvider'
-import { aggregationFields } from './aggregationFields'
+import { aggregationFields } from '../../../constants/aggregationFields'
 import { clearQuotedParam } from '../../../queryUtils'
 import { shortenName } from '../../../utils'
 

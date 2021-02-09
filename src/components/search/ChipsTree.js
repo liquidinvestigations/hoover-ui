@@ -1,7 +1,7 @@
 import React, { cloneElement, memo, useState } from 'react'
 import cn from 'classnames'
 import { Box, ButtonBase, Menu, MenuItem } from '@material-ui/core'
-import { DEFAULT_OPERATOR } from '../../constants'
+import { DEFAULT_OPERATOR } from '../../constants/general'
 import { makeStyles } from '@material-ui/core/styles'
 import { red } from '@material-ui/core/colors'
 
