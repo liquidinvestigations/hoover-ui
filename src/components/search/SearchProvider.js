@@ -94,9 +94,9 @@ export function SearchProvider({ children, serverQuery }) {
     })])
 
     const [aggregations, setAggregations] = useState()
-    const [aggregationsLoading, setAggregationsLoading] = useState(!!query.q)
+    const [aggregationsLoading, setAggregationsLoading] = useState(!!query.collections?.length)
     useEffect(() => {
-        if (query.q) {
+        if (query.collections?.length) {
             setAggregationsLoading(true)
 
             aggregationsAPI(query).then(results => {
@@ -107,6 +107,8 @@ export function SearchProvider({ children, serverQuery }) {
                 //setError(error.reason ? error.reason : error.message)
                 setAggregationsLoading(false)
             })
+        } else {
+            setAggregations(null)
         }
     }, [JSON.stringify({
         ...query,

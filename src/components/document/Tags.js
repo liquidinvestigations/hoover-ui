@@ -1,6 +1,18 @@
-import React, { memo, useEffect, useMemo, useState } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import ChipInput from 'material-ui-chip-input'
-import { Box, Button, ButtonGroup, Chip, Grid, IconButton, Tooltip, Typography } from '@material-ui/core'
+import {
+    Box,
+    Button,
+    ButtonGroup,
+    Chip,
+    FormControl,
+    Grid,
+    IconButton,
+    MenuItem,
+    Select,
+    Tooltip,
+    Typography
+} from '@material-ui/core'
 import { Lock, LockOpen } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles'
 import { blue } from '@material-ui/core/colors'
@@ -60,6 +72,11 @@ function Tags({ toolbarButtons }) {
     } = useDocument()
 
     const [inputValue, setInputValue] = useState('')
+    const [newTagVisibility, setNewTagVisibility] = useState('public')
+
+    const handleNewTagVisibilityChange = event => {
+        setNewTagVisibility(event.target.value)
+    }
 
     useEffect(() => {
         setInputValue('')
@@ -113,13 +130,11 @@ function Tags({ toolbarButtons }) {
     }
 
     const handleTagInputUpdate = event => {
-        setInputValue(event.target.value.replace(forbiddenCharsRegex, ""))
+        setInputValue(event.target.value.replace(' ', '-').replace(forbiddenCharsRegex, ""))
     }
 
-    const handleButtonClick = publicTag => () => {
-        if (inputValue.length) {
-            handleTagAdd(inputValue, publicTag)
-        }
+    const handleAdd = tag => {
+        handleTagAdd(tag, newTagVisibility === 'public')
     }
 
     const renderChip = ({ value, text, chip, isDisabled, isReadOnly, handleDelete, className }, key) => (
@@ -168,12 +183,12 @@ function Tags({ toolbarButtons }) {
 
                 <ChipInput
                     value={tags.filter(tag => tag.user === whoAmI.username)}
-                    onAdd={handleTagAdd}
+                    onAdd={handleAdd}
                     onDelete={handleTagDelete}
                     disabled={tagsLocked}
                     chipRenderer={renderChip}
-                    newChipKeys={['Enter', ' ']}
-                    newChipKeyCodes={[13, 32]}
+                    newChipKeys={['Enter']}
+                    newChipKeyCodes={[13]}
                     inputValue={inputValue}
                     onUpdateInput={handleTagInputUpdate}
                     placeholder="no tags, start typing to add"
@@ -182,10 +197,15 @@ function Tags({ toolbarButtons }) {
 
                 <Grid container className={classes.buttons} justify="flex-end">
                     <Grid item>
-                        <ButtonGroup size="small" color="primary">
-                            <Button onClick={handleButtonClick(false)}>Private</Button>
-                            <Button onClick={handleButtonClick(true)}>Public</Button>
-                        </ButtonGroup>
+                        <FormControl size="small" color="primary" variant="outlined">
+                            <Select
+                                value={newTagVisibility}
+                                onChange={handleNewTagVisibilityChange}
+                            >
+                                <MenuItem value="public">Public</MenuItem>
+                                <MenuItem value="private">Private</MenuItem>
+                            </Select>
+                        </FormControl>
                     </Grid>
                 </Grid>
 

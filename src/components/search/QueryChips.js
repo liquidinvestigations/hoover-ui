@@ -14,11 +14,10 @@ const useStyles = makeStyles(theme => ({
 
     chip: {
         backgroundColor: blue.A100,
-        marginRight: theme.spacing(1),
         marginBottom: theme.spacing(1),
 
-        '&:nth-last-child(2)': {
-            marginRight: 0,
+        '&:last-child': {
+            marginBottom: 0,
         }
     },
 
@@ -27,12 +26,9 @@ const useStyles = makeStyles(theme => ({
     },
 
     negationChip: {
+        marginBottom: 0,
         cursor: 'pointer',
-        backgroundColor: red.A100,
-
-        '&$negationChip': {
-            backgroundColor: red.A200,
-        }
+        backgroundColor: red.A200,
     },
 }))
 

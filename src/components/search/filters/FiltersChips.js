@@ -16,15 +16,15 @@ const useStyles = makeStyles(theme => ({
 
     chip: {
         backgroundColor: green.A100,
-        marginRight: theme.spacing(1),
         marginBottom: theme.spacing(1),
 
-        '&:nth-last-child(2)': {
-            marginRight: 0,
+        '&:last-child': {
+            marginBottom: 0,
         }
     },
 
     negationChip: {
+        marginBottom: 0,
         cursor: 'pointer',
         backgroundColor: red.A100,
     },
@@ -37,6 +37,45 @@ const useStyles = makeStyles(theme => ({
         backgroundColor: blue[100],
     }
 }))
+
+const deleteFilterNode = (filters, node) => {
+    if (node.field === '<implicit>') {
+        const filterName = node.boost === 1 ? 'date-created' : 'date'
+        const list = filters[filterName].intervals.include
+        const index = list.indexOf(node.term)
+
+        if (index > -1) {
+            list.splice(index, 1)
+        }
+
+    } else if (node.term_min && node.term_max) {
+        filters[node.field].from = filters[node.field].to = undefined
+
+    } else if (node.term) {
+        let index
+        const filter = filters[node.field]
+
+        if ((index = filter.include?.indexOf(node.term)) > -1) {
+            filter.include.splice(index, 1)
+        } else if ((index = filter.exclude?.indexOf(node.term)) > -1) {
+            filter.exclude.splice(index, 1)
+        }
+    }
+    return filters
+}
+
+const deleteFilterOperands = (filters, node) => {
+    if (node.field) {
+        deleteFilterNode(filters, node)
+    }
+    if (node.left) {
+        deleteFilterOperands(filters, node.left)
+    }
+    if (node.right) {
+        deleteFilterOperands(filters, node.right)
+    }
+    return filters
+}
 
 export default function FiltersChips() {
     const classes = useStyles()
@@ -55,10 +94,18 @@ export default function FiltersChips() {
                     }
                     const intervalsArray = []
                     values.intervals?.include?.forEach(value => {
-                        intervalsArray.push(value)
+                        if (key === 'date-created') {
+                            intervalsArray.push(`${value}^1`)
+                        } else {
+                            intervalsArray.push(value)
+                        }
                     })
                     if (filter) {
-                        filtersArray.push(`(${[filter, `(${intervalsArray.join(' OR ')})`].join(' AND ')})`)
+                        if (intervalsArray.length) {
+                            filtersArray.push(`(${[filter, `(${intervalsArray.join(' OR ')})`].join(' AND ')})`)
+                        } else {
+                            filtersArray.push(`(${filter})`)
+                        }
                     } else if (intervalsArray.length) {
                         filtersArray.push(`(${intervalsArray.join(' OR ')})`)
                     }
@@ -97,7 +144,9 @@ export default function FiltersChips() {
         } catch {}
     }, [query])
 
-    const handleDelete = useCallback(() => {}, [])
+    const handleDelete = useCallback(node => {
+        search({ filters: deleteFilterOperands({ ...query.filters }, node) })
+    }, [search])
 
     const getChip = useCallback(q => {
         let className = classes.chip

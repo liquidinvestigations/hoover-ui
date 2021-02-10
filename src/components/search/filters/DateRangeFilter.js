@@ -32,7 +32,7 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange, disabled }) {
         if (!field) {
             return ''
         }
-        return date.isValid ? date.toFormat(DATE_FORMAT) : invalidLabel
+        return date?.isValid ? date.toFormat(DATE_FORMAT) : invalidLabel
     }
 
     useEffect(() => {
@@ -51,6 +51,7 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange, disabled }) {
                     onChange={handleFromChange}
                     maxDate={to}
                     openTo="year"
+                    variant="inline"
                     disabled={disabled}
                     autoOk
                     fullWidth
@@ -67,6 +68,7 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange, disabled }) {
                     minDate={from}
                     onChange={handleToChange}
                     openTo="year"
+                    variant="inline"
                     disabled={disabled}
                     autoOk
                     fullWidth
