@@ -18,7 +18,7 @@ import { useUser } from '../UserProvider'
 import { useHashState } from '../HashStateProvider'
 import { getIconReactComponent, getPreviewParams, humanFileSize, makeUnsearchable, truncatePath } from '../../utils'
 import { createDownloadUrl } from '../../backend/api'
-import { specialTags, specialTagsList } from '../document/specialTags'
+import { specialTags, specialTagsList } from '../../constants/specialTags'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -275,7 +275,7 @@ function ResultItem({ hit, url, index }) {
                             <Box>
                                 <Typography variant="caption">
                                     <strong>Size:</strong>{' '}
-                                    {humanFileSize(fields.size, true)}
+                                    {humanFileSize(fields.size)}
                                 </Typography>
                             </Box>
                         )}

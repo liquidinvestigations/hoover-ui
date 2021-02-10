@@ -26,7 +26,7 @@ import TextSubTabs from './TextSubTabs'
 import Tags, { getChipColor } from './Tags'
 import { useUser } from '../UserProvider'
 import { createOcrUrl } from '../../backend/api'
-import { specialTags } from './specialTags'
+import { specialTags } from '../../constants/specialTags'
 import { useDocument } from './DocumentProvider'
 
 const useStyles = makeStyles(theme => ({

@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useHashState } from '../HashStateProvider'
 import { collectionUrl, documentViewUrl } from '../../utils'
 import { createDownloadUrl, createTag, deleteTag, doc as docAPI, tags as tagsAPI, updateTag } from '../../backend/api'
-import { publicTagsList } from './specialTags'
+import { publicTagsList } from '../../constants/specialTags'
 
 const DocumentContext = createContext({})
 

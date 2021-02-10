@@ -1,5 +1,9 @@
 import qs from 'qs'
-import { SEARCH_DATE, SEARCH_DATE_CREATED } from './constants'
+import { DateTime } from 'luxon'
+import { aggregationFields } from './constants/aggregationFields'
+import { formatsValue } from './components/search/filters/DateHistogramFilter'
+import { DEFAULT_INTERVAL } from './constants/general'
+import { daysInMonth } from './utils'
 
 export const defaultSearchParams = {
     page: 1,
@@ -46,29 +50,87 @@ export const buildSearchQuerystring = (params) => (
 
 export const clearQuotedParam = param => param.replace(/#/g, ' ').replace(/"/g, '')
 
-export const createSearchUrl = (query, prefix, collections, hashParams) => {
-    let quotedQuery = clearQuotedParam(query)
+export const createSearchParams = (field, term, interval = DEFAULT_INTERVAL) => {
+    const params = {}
 
-    if (/[\s\/]/g.test(quotedQuery)) {
-        quotedQuery = `"${quotedQuery}"`
-    }
-
-    const params = { collections: Array.isArray(collections) ? collections : [collections] }
-
-    if (prefix === SEARCH_DATE || prefix === SEARCH_DATE_CREATED) {
+    if (aggregationFields[field]) {
         params.q = '*'
-        quotedQuery = quotedQuery.substring(0, 10)
-        if (!params.filters) {
-            params.filters = {}
+        params.filters = {}
+
+        if (aggregationFields[field].type === 'date') {
+            if (typeof term === 'string') {
+                const bucket = DateTime
+                    .fromISO(term, { setZone: true })
+                    .toFormat(formatsValue[interval])
+
+                params.filters[field] = { intervals: { include: [bucket] } }
+
+                if (interval !== DEFAULT_INTERVAL) {
+                    params.filters[field].interval = interval
+                }
+
+            } else if (term.format) {
+                switch (term.format) {
+                    case 'year':
+                        const year = term.term.substring(0, 4)
+                        params.filters[field] = {
+                            from: `${year}-01-01`,
+                            to: `${year}-12-31`,
+                        }
+                        break
+
+                    case 'month':
+                        const month = term.term.substring(0, 7)
+                        params.filters[field] = {
+                            from: `${month}-01`,
+                            to: `${month}-${daysInMonth(month)}`,
+                        }
+                        break
+
+                    case 'week':
+                        const week = term.term.substring(0, 10)
+                        const dateTime = DateTime.fromISO(week)
+                        params.filters[field] = {
+                            from: DateTime.fromObject({
+                                    weekYear: dateTime.weekYear,
+                                    weekNumber: dateTime.weekNumber,
+                                    weekday: 1
+                                }).toISODate(),
+                            to: DateTime.fromObject({
+                                    weekYear: dateTime.weekYear,
+                                    weekNumber: dateTime.weekNumber,
+                                    weekday: 7
+                                }).toISODate(),
+                        }
+                        break
+
+                    case 'day':
+                        const day = term.term.substring(0, 10)
+                        params.filters[field] = {
+                            from: day,
+                            to: day,
+                        }
+                }
+            }
+
+        } else {
+            params.filters[field] = { include: [term] }
         }
-        params.filters[prefix] = { from: quotedQuery, to: quotedQuery }
-    } else if (prefix) {
-        params.q = `${prefix}:${quotedQuery}`
+
+    } else if (field) {
+        params.q = `${field}:"${clearQuotedParam(term)}"`
     } else {
-        params.q = quotedQuery
+        params.q = term
     }
 
-    const hash = hashParams ? '#' + qs.stringify(rollupParams(hashParams)) : ''
+    return params
+}
 
-    return `/?${buildSearchQuerystring(params)}${hash}`
+export const createSearchUrl = (term, field, collections, hash, interval) => {
+    const params = createSearchParams(field, term, interval)
+    const hashParams = hash ? '#' + qs.stringify(rollupParams(hash)) : ''
+
+    params.collections = Array.isArray(collections) ? collections : [collections]
+
+    return `/?${buildSearchQuerystring(params)}${hashParams}`
 }

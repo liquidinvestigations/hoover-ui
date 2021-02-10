@@ -3,7 +3,7 @@ import url from 'url'
 import copy from 'copy-text-to-clipboard'
 import langs from 'langs'
 import { Tooltip } from '@material-ui/core'
-import { ELLIPSIS_TERM_LENGTH } from './constants'
+import { ELLIPSIS_TERM_LENGTH } from './constants/general'
 import file, { ReactComponent as FileIcon } from '../icons/file-line.svg'
 import folder, { ReactComponent as FolderIcon } from '../icons/folder-line.svg'
 import archive, { ReactComponent as ArchiveIcon } from '../icons/file-zip-line.svg'
@@ -11,6 +11,7 @@ import email, { ReactComponent as EmailIcon } from '../icons/mail-line.svg'
 import pdf, { ReactComponent as PdfIcon } from '../icons/file-pdf-line.svg'
 import doc, { ReactComponent as DocIcon } from '../icons/file-word-line.svg'
 import xls, { ReactComponent as XlsIcon } from '../icons/file-excel-line.svg'
+import { DateTime } from 'luxon'
 
 export const getIconImageElement = fileType => {
     const srcMap = {
@@ -45,6 +46,15 @@ export const getIconReactComponent = fileType => {
 export const getLanguageName = key => {
     const found = langs.where('1', key);
     return found ? found.name : key
+}
+
+export const formatDateTime = dateTime => DateTime
+    .fromISO(dateTime, { locale: 'en-US' })
+    .toLocaleString(DateTime.DATETIME_FULL)
+
+export const daysInMonth = date => {
+    const [, year, month] = /(\d{4})-(\d{2})/.exec(date)
+    return new Date(year, month, 0).getDate()
 }
 
 export const getBasePath = docUrl => url.parse(url.resolve(docUrl, './')).pathname
@@ -115,7 +125,7 @@ export const getPreviewParams = item => ({ preview: { c: item._collection, i: it
 export const removeCommentsAndSpacing = (str = '') =>
     str.replace(/\/\*.*\*\//g, ' ').replace(/\s+/g, ' ')
 
-export const humanFileSize = (bytes, si=false, dp=1) => {
+export const humanFileSize = (bytes, si= true, dp= 1) => {
     const thresh = si ? 1000 : 1024
 
     if (Math.abs(bytes) < thresh) {

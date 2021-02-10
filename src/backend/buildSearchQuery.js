@@ -5,8 +5,9 @@ import {
     DEFAULT_OPERATOR,
     HIGHLIGHT_SETTINGS,
     PRIVATE_FIELDS,
-} from '../constants'
-import { aggregationFields } from '../components/search/filters/aggregationFields'
+} from '../constants/general'
+import { daysInMonth } from '../utils'
+import { aggregationFields } from '../constants/aggregationFields'
 
 const expandPrivate = (field, uuid) => {
     if (PRIVATE_FIELDS.includes(field)) {
@@ -74,11 +75,6 @@ const buildTermsField = (field, uuid, terms, page = 1, size = DEFAULT_FACET_SIZE
         terms: { [expandPrivate(field, uuid)]: terms?.exclude },
     } : null,
 })
-
-const daysInMonth = param => {
-    const [, year, month] = /(\d{4})-(\d{2})/.exec(param)
-    return new Date(year, month, 0).getDate()
-}
 
 const intervalFormat = (interval, param) => {
     switch (interval) {

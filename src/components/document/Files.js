@@ -70,7 +70,7 @@ function Files() {
                 )}
             </TableCell>
             <TableCell className={classes.cell}>{content_type}</TableCell>
-            <TableCell className={classes.cell}>{!!size && humanFileSize(size, true)}</TableCell>
+            <TableCell className={classes.cell}>{!!size && humanFileSize(size)}</TableCell>
         </TableRow>
     ))
 

@@ -3,7 +3,7 @@ import Document, { Head, Html, Main, NextScript } from 'next/document'
 import { ServerStyleSheets } from '@material-ui/core/styles'
 import { resetServerContext } from 'react-beautiful-dnd'
 import { removeCommentsAndSpacing } from '../src/utils'
-import { JSS_CSS } from '../src/constants'
+import { JSS_CSS } from '../src/constants/general'
 
 class HooverDocument extends Document {
     static async getInitialProps(ctx) {
