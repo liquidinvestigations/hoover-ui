@@ -1,4 +1,4 @@
-import React, { Fragment, memo, useCallback } from 'react'
+import React, { memo, useCallback } from 'react'
 import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
 import {
@@ -97,7 +97,7 @@ const Meta = () => {
     const classes = useStyles()
     const { hashState } = useHashState()
     const { query, mergedSearch } = useSearch()
-    const { data, collection, digest, collectionBaseUrl, printMode } = useDocument()
+    const { data, collection, digest, collectionBaseUrl } = useDocument()
 
     const handleAddSearch = (field, term) => useCallback(() => {
         mergedSearch(createSearchParams(field, term, query?.filters?.[field]?.interval))
@@ -111,7 +111,7 @@ const Meta = () => {
                 <ListItem disableGutters>
                     <ListItemText
                         primary="Collection"
-                        secondary={printMode ? collection :
+                        secondary={
                             <Link href={createSearchUrl('*', null, collection, hash)} shallow>
                                 <a title="search this collection">{collection}</a>
                             </Link>
@@ -145,7 +145,7 @@ const Meta = () => {
                         <ListItem key={field} disableGutters>
                             <ListItemText
                                 primary={config.label}
-                                secondary={printMode ? display :
+                                secondary={
                                     <>
                                         <Link
                                             href={createSearchUrl(searchTerm, searchKey, collection, hash,
@@ -195,39 +195,31 @@ const Meta = () => {
                         }
 
                         return (
-                            <Typography key={key} component="pre" variant="caption" className={classes.raw}>
-                                <strong>{key}:</strong>{' '}
-                                {printMode ? description :
-                                    Array.isArray(value) && value.length ?
-                                        <>
-                                            {'['}
-                                                {value.map((element, index) =>
-                                                    <Fragment key={index}>
-                                                        <Link href={createSearchUrl(element.toString(), key, collection, hash)} shallow>
-                                                            <a title="search this value">{element.toString()}</a>
-                                                        </Link>
-                                                        {mergedSearch && (
-                                                            <IconButton size="small" onClick={handleAddSearch(key, element.toString())}>
-                                                                <CallMade className={classes.rawIcon} />
-                                                            </IconButton>
-                                                        )}
-                                                        {index < value.length - 1 && ','}
-                                                    </Fragment>
-                                                )}
-                                            {']'}
-                                        </> :
-                                        <>
-                                            <Link href={createSearchUrl(value.toString(), key, collection, hash)} shallow>
-                                                <a title="search this value">{description}</a>
-                                            </Link>
-                                            {mergedSearch && (
-                                                <IconButton size="small" onClick={handleAddSearch(key, value.toString())}>
-                                                    <CallMade className={classes.rawIcon} />
-                                                </IconButton>
-                                            )}
-                                        </>
-                                }
-                            </Typography>
+                            Array.isArray(value) && value.length ?
+                                value.map((element, index) =>
+                                    <Typography key={index} component="pre" variant="caption" className={classes.raw}>
+                                        <strong>{key}:</strong>{' '}
+                                        <Link href={createSearchUrl(element.toString(), key, collection, hash)} shallow>
+                                            <a title="search this value">{element.toString()}</a>
+                                        </Link>
+                                        {mergedSearch && (
+                                            <IconButton size="small" onClick={handleAddSearch(key, element.toString())}>
+                                                <CallMade className={classes.rawIcon} />
+                                            </IconButton>
+                                        )}
+                                    </Typography>
+                                ) :
+                                <Typography key={key} component="pre" variant="caption" className={classes.raw}>
+                                    <strong>{key}:</strong>{' '}
+                                    <Link href={createSearchUrl(value.toString(), key, collection, hash)} shallow>
+                                        <a title="search this value">{description}</a>
+                                    </Link>
+                                    {mergedSearch && (
+                                        <IconButton size="small" onClick={handleAddSearch(key, value.toString())}>
+                                            <CallMade className={classes.rawIcon} />
+                                        </IconButton>
+                                    )}
+                                </Typography>
                         )
                     })
                 }
