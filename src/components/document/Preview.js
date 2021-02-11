@@ -1,5 +1,6 @@
 import React, { memo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
+import PDFViewer from './PDFViewer'
 import { useDocument } from './DocumentProvider'
 
 // List copy/pasted from https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
@@ -47,20 +48,7 @@ function Preview() {
     const { data, docRawUrl } = useDocument()
 
     if (data.content['content-type'] === 'application/pdf') {
-        const pdfViewerUrl = `/viewer/web/viewer.html?file=${encodeURIComponent(docRawUrl)}`
-        return (
-            <>
-                <p> Annotate this document in the <a target="_blank" href={pdfViewerUrl}>PDF viewer</a>. </p>
-                <div id="hoover-pdf-viewer-container" className={classes.preview}>
-                    <iframe
-                        src={pdfViewerUrl}
-                        height="100%"
-                        width="100%"
-                        allowFullScreen={true}
-                    />
-                </div>
-            </>
-        )
+        return <PDFViewer url={docRawUrl} />
     }
 
     return (
