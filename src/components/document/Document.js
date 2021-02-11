@@ -21,6 +21,7 @@ import HTML from './HTML'
 import Text from './Text'
 import Meta from './Meta'
 import Loading from '../Loading'
+import PDFViewer from './PDFViewer'
 import TagTooltip from './TagTooltip'
 import TextSubTabs from './TextSubTabs'
 import Tags, { getChipColor } from './Tags'
@@ -238,6 +239,22 @@ function Document({ onPrev, onNext }) {
         visible: !!data.content.tree,
         content: <Text content={data.content.tree} />,
     }]
+
+    tabsData.splice(1, 0, ...ocrData.map(({tag}) => ({
+        name: (
+            <Tooltip title={tag}>
+                <span>OCR</span>
+            </Tooltip>
+        ),
+        icon: <TextFields />,
+        visible: data.content['content-type'] === 'application/pdf',
+        padding: 0,
+        content: (
+            <Box m={1}>
+                <PDFViewer url={createOcrUrl(digestUrl, tag)} />
+            </Box>
+        ),
+    })))
 
     return (
         <div className={classes.root}>
