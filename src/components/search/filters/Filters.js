@@ -65,7 +65,7 @@ function Filters({ ...props }) {
                 }
 
                 if (params.hideEmpty) {
-                    filterTypeProps.emptyDisabled = true
+                    //filterTypeProps.emptyDisabled = true
                 }
 
                 if (field === 'lang') {

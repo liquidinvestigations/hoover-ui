@@ -1,6 +1,6 @@
 import React, { memo, useCallback } from 'react'
 import { DateTime } from 'luxon'
-import { Divider, FormControl, FormHelperText, ListItem, MenuItem, Select } from '@material-ui/core'
+import { FormControl, FormHelperText, ListItem, MenuItem, Select } from '@material-ui/core'
 import Expandable from '../../Expandable'
 import DateRangeFilter from './DateRangeFilter'
 import AggregationFilter from './AggregationFilter'
@@ -106,8 +106,6 @@ function DateHistogramFilter({ title, field, queryFilter, queryFacets, aggregati
                 bucketSubLabel={interval === 'week' ? formatWeekStart : null}
                 bucketValue={formatValue}
             />
-
-            <Divider />
         </Expandable>
     )
 }

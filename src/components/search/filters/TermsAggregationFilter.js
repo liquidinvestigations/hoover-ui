@@ -1,6 +1,5 @@
 import React, { memo } from 'react'
 import isEqual from 'react-fast-compare'
-import { Divider } from '@material-ui/core'
 import Expandable from '../../Expandable'
 import AggregationFilter from './AggregationFilter'
 
@@ -25,7 +24,6 @@ function TermsAggregationFilter({ title, field, queryFilter, queryFacets, aggreg
                 triState
                 {...rest}
             />
-            <Divider />
         </Expandable>
     )
 }

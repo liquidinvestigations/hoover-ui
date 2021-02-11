@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react'
-import cn from 'classnames';
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import cn from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
-import { Collapse, Grid, IconButton, ListItem, Typography } from '@material-ui/core'
+import { Collapse, Divider, Grid, IconButton, ListItem, Typography } from '@material-ui/core'
 import { ExpandMore } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
@@ -9,7 +9,7 @@ const useStyles = makeStyles(theme => ({
         textTransform: 'uppercase',
     },
     expand: {
-        transform: 'rotate(0deg)',
+        transform: 'rotate(90deg)',
         transition: theme.transitions.create('transform', {
             duration: theme.transitions.duration.shortest,
         }),
@@ -19,22 +19,52 @@ const useStyles = makeStyles(theme => ({
         },
     },
     expandOpen: {
-        transform: 'rotate(180deg)',
+        transform: 'rotate(0deg)',
+    },
+    header: {
+        backgroundColor: theme.palette.grey[100]
+    },
+    content: {
+        maxHeight: 435,
+        overflow: 'auto',
     },
 }))
 
+let startY, startHeight
+
 function Expandable({ title, children, defaultOpen, enabled = true, highlight = true }) {
-
-    if (!enabled) {
-        return null
-    }
-
     const classes = useStyles()
     const [open, setOpen] = useState(defaultOpen || false)
     const toggle = () => setOpen(!open)
 
+    const contentRef = useRef()
+
+    useEffect(() => {
+        if (contentRef.current) {
+            contentRef.current.style.height = contentRef.current.offsetHeight + 'px'
+        }
+    }, [contentRef])
+
+    const handleMouseUp = event => {
+        event.preventDefault()
+        window.removeEventListener('mouseup', handleMouseUp)
+        window.removeEventListener('mousemove', handleMouseMove)
+    }
+    const handleMouseMove = event => {
+        event.preventDefault()
+        contentRef.current.style.height = startHeight + event.clientY - startY + 'px'
+        contentRef.current.style.maxHeight = 'none'
+    }
+    const handleMouseDown = event => {
+        event.preventDefault()
+        startY = event.clientY
+        startHeight = contentRef.current.offsetHeight
+        window.addEventListener('mouseup', handleMouseUp, {once: true})
+        window.addEventListener('mousemove', handleMouseMove)
+    }
+
     const headerBar = useMemo(() => (
-        <ListItem onClick={toggle} button dense>
+        <ListItem onClick={toggle} button dense className={classes.header}>
             <Grid container alignItems="baseline" justify="space-between">
                 <Grid item>
                     <Typography
@@ -72,12 +102,27 @@ function Expandable({ title, children, defaultOpen, enabled = true, highlight = 
         </ListItem>
     ), [title, defaultOpen, highlight, open])
 
+    if (!enabled) {
+        return null
+    }
+
     return (
         <>
             {headerBar}
 
             <Collapse in={open}>
-                {children}
+                <div
+                    ref={contentRef}
+                    className={classes.content}
+                >
+                    {children}
+                </div>
+
+                <div
+                    role="presentation"
+                    className={cn('Resizer horizontal')}
+                    onMouseDown={handleMouseDown}
+                />
             </Collapse>
         </>
     )
