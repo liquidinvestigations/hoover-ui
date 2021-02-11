@@ -1,8 +1,18 @@
-import React, { memo } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import cn from 'classnames'
 import isEqual from 'react-fast-compare'
 import { makeStyles } from '@material-ui/core/styles'
-import { Button, Checkbox, Grid, IconButton, List, ListItem, ListItemText, Typography } from '@material-ui/core'
+import {
+    Button,
+    Checkbox,
+    CircularProgress,
+    Grid,
+    IconButton,
+    List,
+    ListItem,
+    ListItemText,
+    Typography
+} from '@material-ui/core'
 import { formatThousands } from '../../../utils'
 import { DEFAULT_FACET_SIZE } from '../../../constants/general'
 import { NavigateBefore, NavigateNext } from '@material-ui/icons'
@@ -22,9 +32,13 @@ const useStyles = makeStyles(theme => ({
     subLabel: {
         fontSize: '8.5pt',
     },
+    loading: {
+        verticalAlign: 'middle',
+        marginLeft: theme.spacing(1),
+    },
 }))
 
-function AggregationFilter({ field, queryFilter, queryFacets, aggregations, disabled, onChange,
+function AggregationFilter({ field, queryFilter, queryFacets, aggregations, loading, onChange,
                                onPagination, onLoadMore, triState, bucketLabel, bucketSubLabel, bucketValue }) {
 
     const classes = useStyles()
@@ -34,6 +48,12 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, disa
 
     const pageParam = parseInt(queryFacets)
     const page = isNaN(pageParam) ? 1 : pageParam
+
+    const [buttonClicked, setButtonClicked] = useState(false)
+
+    useEffect(() => {
+        setButtonClicked(false)
+    }, [aggregation])
 
     const handleChange = value => () => {
         const include = new Set(queryFilter?.include || [])
@@ -56,11 +76,23 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, disa
         })
     }
 
-    const handleReset = () => onChange(field, [], true)
+    const handleReset = () => {
+        setButtonClicked(true)
+        onChange(field, [], true)
+    }
 
-    const handlePrev = () => onPagination(field, page - 1)
-    const handleNext = () => onPagination(field, page + 1)
-    const handleLoadMore = () => onLoadMore(field, page + 1)
+    const handlePrev = () => {
+        setButtonClicked(true)
+        onPagination(field, page - 1)
+    }
+    const handleNext = () => {
+        setButtonClicked(true)
+        onPagination(field, page + 1)
+    }
+    const handleLoadMore = () => {
+        setButtonClicked(true)
+        onLoadMore(field, page + 1)
+    }
 
     const renderBucket = bucket => {
         const label = bucketLabel ? bucketLabel(bucket) : bucket.key
@@ -85,7 +117,7 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, disa
                     checked={checked}
                     indeterminate={triState && queryFilter?.exclude?.includes(value)}
                     classes={{ root: classes.checkbox }}
-                    disabled={disabled || !bucket.doc_count}
+                    disabled={loading || !bucket.doc_count}
                     onChange={handleChange(value)}
                 />
 
@@ -114,7 +146,7 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, disa
     const hasNext = onPagination && aggregation?.buckets.length >= DEFAULT_FACET_SIZE
     const hasPrev = onPagination && page > 1
     const hasMore = onLoadMore && cardinality?.value > page * DEFAULT_FACET_SIZE
-    const disableReset = disabled || (!queryFilter?.include?.length && !queryFilter?.exclude?.length && page === 1)
+    const disableReset = loading || (!queryFilter?.include?.length && !queryFilter?.exclude?.length && page === 1)
 
     return (
         <List dense>
@@ -123,33 +155,51 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, disa
             <ListItem dense>
                 <Grid container alignItems="center" justify="space-between">
                     <Grid item>
-                        {(hasPrev || hasNext) &&
-                            <Grid container justify="flex-end">
+                        {(hasPrev || hasNext) && (
+                            <>
                                 <IconButton
                                     size="small"
                                     tabIndex="-1"
                                     onClick={handlePrev}
-                                    disabled={disabled || !hasPrev}>
+                                    disabled={loading || !hasPrev}>
                                     <NavigateBefore/>
                                 </IconButton>
 
                                 <IconButton
                                     size="small"
                                     onClick={handleNext}
-                                    disabled={disabled || !hasNext}>
+                                    disabled={loading || !hasNext}>
                                     <NavigateNext/>
                                 </IconButton>
-                            </Grid>
-                        }
-                        {hasMore &&
-                            <Button
-                                size="small"
-                                disabled={disabled}
-                                variant="text"
-                                onClick={handleLoadMore}>
-                                More ({cardinality.value - page * DEFAULT_FACET_SIZE})
-                            </Button>
-                        }
+
+                                {buttonClicked && loading && (
+                                    <CircularProgress
+                                        size={18}
+                                        thickness={5}
+                                        className={classes.loading}
+                                    />
+                                )}
+                            </>
+                        )}
+                        {hasMore && (
+                            <>
+                                <Button
+                                    size="small"
+                                    disabled={loading}
+                                    variant="text"
+                                    onClick={handleLoadMore}>
+                                    More ({cardinality.value - page * DEFAULT_FACET_SIZE})
+                                </Button>
+
+                                {buttonClicked && loading && (
+                                    <CircularProgress
+                                        size={18}
+                                        thickness={5}
+                                        className={classes.loading}
+                                    />
+                                )}
+                            </>
+                        )}
                     </Grid>
                     <Grid item>
                         <Button

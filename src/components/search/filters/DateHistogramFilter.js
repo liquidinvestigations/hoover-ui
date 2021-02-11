@@ -23,7 +23,7 @@ export const formatsValue = {
 }
 
 function DateHistogramFilter({ title, field, queryFilter, queryFacets, aggregations,
-                                 disabled, onChange, onPagination }) {
+                                 loading, onChange, onPagination }) {
 
     const interval = queryFilter?.interval || DEFAULT_INTERVAL
 
@@ -75,7 +75,7 @@ function DateHistogramFilter({ title, field, queryFilter, queryFacets, aggregati
                 defaultFrom={queryFilter?.from}
                 defaultTo={queryFilter?.to}
                 onChange={onRangeChange}
-                disabled={disabled}
+                loading={loading}
             />
 
             <ListItem>
@@ -99,7 +99,7 @@ function DateHistogramFilter({ title, field, queryFilter, queryFacets, aggregati
                 queryFilter={queryFilter?.intervals}
                 queryFacets={queryFacets}
                 aggregations={aggregations}
-                disabled={disabled}
+                loading={loading}
                 onChange={onSelectionChange}
                 onPagination={onPagination}
                 bucketLabel={formatLabel}
