@@ -12,7 +12,7 @@ const icons = {
 
 const emptyLabel = 'YYYY-MM-DD'
 
-function DateRangeFilter({ defaultFrom, defaultTo, onChange, disabled }) {
+function DateRangeFilter({ defaultFrom, defaultTo, onChange, loading }) {
     const [from, setFrom] = useState(defaultFrom)
     const [to, setTo] = useState(defaultTo)
 
@@ -52,7 +52,7 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange, disabled }) {
                     maxDate={to}
                     openTo="year"
                     variant="inline"
-                    disabled={disabled}
+                    disabled={loading}
                     autoOk
                     fullWidth
                     {...icons}
@@ -69,7 +69,7 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange, disabled }) {
                     onChange={handleToChange}
                     openTo="year"
                     variant="inline"
-                    disabled={disabled}
+                    disabled={loading}
                     autoOk
                     fullWidth
                     {...icons}
@@ -82,7 +82,7 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange, disabled }) {
                         <Button
                             size="small"
                             onClick={handleReset}
-                            disabled={disabled || (!from && !to)}>
+                            disabled={loading || (!from && !to)}>
                             Reset
                         </Button>
                     </Grid>
@@ -90,7 +90,7 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange, disabled }) {
                         <Button
                             size="small"
                             onClick={handleApply}
-                            disabled={disabled || !from || !to || unedited}>
+                            disabled={loading || !from || !to || unedited}>
                             Apply
                         </Button>
                     </Grid>

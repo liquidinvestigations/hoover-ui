@@ -1,10 +1,11 @@
 import React, { memo, useCallback } from 'react'
 import { List } from '@material-ui/core'
+import Loading from '../../Loading'
 import DateHistogramFilter from './DateHistogramFilter'
 import TermsAggregationFilter from './TermsAggregationFilter'
-import { aggregationFields } from '../../../constants/aggregationFields'
 import { useSearch } from '../SearchProvider'
 import { getLanguageName } from '../../../utils'
+import { aggregationFields } from '../../../constants/aggregationFields'
 
 const formatLang = bucket => getLanguageName(bucket.key)
 
@@ -40,8 +41,12 @@ function Filters({ ...props }) {
     }, [query])
 
     const filterProps = {
-        disabled: aggregationsLoading || resultsLoading,
+        loading: aggregationsLoading || resultsLoading,
         onChange: handleChange,
+    }
+
+    if (!aggregations && aggregationsLoading) {
+        return <Loading />
     }
 
     if (!aggregations) {
