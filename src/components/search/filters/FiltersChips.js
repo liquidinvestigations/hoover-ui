@@ -83,65 +83,62 @@ export default function FiltersChips() {
     const [ parsedFilters, setParsedFilters ] = useState()
 
     useEffect(() => {
-        try {
-            if (query.filters) {
-                const filtersArray = []
+        if (query.filters) {
+            const filtersArray = []
 
-                Object.entries(query.filters).forEach(([key, values]) => {
-                    let filter = ''
-                    if (values.from && values.to) {
-                        filter = `${key}:[${values.from} TO ${values.to}]`
-                    }
-                    const intervalsArray = []
-                    values.intervals?.include?.forEach(value => {
-                        if (key === 'date-created') {
-                            intervalsArray.push(`${value}^1`)
-                        } else {
-                            intervalsArray.push(value)
-                        }
-                    })
-                    if (filter) {
-                        if (intervalsArray.length) {
-                            filtersArray.push(`(${[filter, `(${intervalsArray.join(' OR ')})`].join(' AND ')})`)
-                        } else {
-                            filtersArray.push(`(${filter})`)
-                        }
-                    } else if (intervalsArray.length) {
-                        filtersArray.push(`(${intervalsArray.join(' OR ')})`)
-                    }
-
-                    const includeArray = []
-                    const includeOperator = aggregationFields[key].type === 'term-and' ? ' AND ' : ' OR '
-                    values.include?.forEach(value => {
-                        includeArray.push(`${key}:"${clearQuotedParam(value)}"`)
-                    })
-                    if (includeArray.length) {
-                        if (includeArray.length > 1) {
-                            filtersArray.push(`(${includeArray.join(includeOperator)})`)
-                        } else {
-                            filtersArray.push(`${includeArray[0]}`)
-                        }
-                    }
-
-                    const excludeArray = []
-                    values.exclude?.forEach(value => {
-                        excludeArray.push(`(${key}:-"${clearQuotedParam(value)}")`)
-                    })
-                    if (excludeArray.length) {
-                        if (excludeArray.length > 1) {
-                            filtersArray.push(`(${excludeArray.join(' AND ')})`)
-                        } else {
-                            filtersArray.push(`${excludeArray[0]}`)
-                        }
+            Object.entries(query.filters).forEach(([key, values]) => {
+                let filter = ''
+                if (values.from && values.to) {
+                    filter = `${key}:[${values.from} TO ${values.to}]`
+                }
+                const intervalsArray = []
+                values.intervals?.include?.forEach(value => {
+                    if (key === 'date-created') {
+                        intervalsArray.push(`${value}^1`)
+                    } else {
+                        intervalsArray.push(value)
                     }
                 })
+                if (filter) {
+                    if (intervalsArray.length) {
+                        filtersArray.push(`(${[filter, `(${intervalsArray.join(' OR ')})`].join(' AND ')})`)
+                    } else {
+                        filtersArray.push(`(${filter})`)
+                    }
+                } else if (intervalsArray.length) {
+                    filtersArray.push(`(${intervalsArray.join(' OR ')})`)
+                }
 
-                setParsedFilters(lucene.parse(filtersArray.join(' AND ')))
-            } else {
-                setParsedFilters(null)
-            }
+                const includeArray = []
+                const includeOperator = aggregationFields[key]?.type === 'term-and' ? ' AND ' : ' OR '
+                values.include?.forEach(value => {
+                    includeArray.push(`${key}:"${clearQuotedParam(value)}"`)
+                })
+                if (includeArray.length) {
+                    if (includeArray.length > 1) {
+                        filtersArray.push(`(${includeArray.join(includeOperator)})`)
+                    } else {
+                        filtersArray.push(`${includeArray[0]}`)
+                    }
+                }
 
-        } catch {}
+                const excludeArray = []
+                values.exclude?.forEach(value => {
+                    excludeArray.push(`(${key}:-"${clearQuotedParam(value)}")`)
+                })
+                if (excludeArray.length) {
+                    if (excludeArray.length > 1) {
+                        filtersArray.push(`(${excludeArray.join(' AND ')})`)
+                    } else {
+                        filtersArray.push(`${excludeArray[0]}`)
+                    }
+                }
+            })
+
+            setParsedFilters(lucene.parse(filtersArray.join(' AND ')))
+        } else {
+            setParsedFilters(null)
+        }
     }, [query])
 
     const handleDelete = useCallback(node => {

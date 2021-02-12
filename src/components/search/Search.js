@@ -11,6 +11,7 @@ import { useSearch } from './SearchProvider'
 import HotKeys from './HotKeys'
 import FiltersChips from './filters/FiltersChips'
 import QueryChips from './QueryChips'
+import Histogram from './Histogram'
 import SearchResults from './Results'
 import Filters from './filters/Filters'
 import CollectionsFilter from './filters/CollectionsFilter'
@@ -187,6 +188,10 @@ export default function Search({ collections }) {
                                 <FiltersChips />
 
                                 <QueryChips />
+
+                                <Histogram title="Date modified" field="date" />
+
+                                <Histogram title="Date created" field="date-created" />
 
                                 <div className={classes.sorting}>
                                     <SortingChips />

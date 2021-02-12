@@ -6,7 +6,7 @@ import DateRangeFilter from './DateRangeFilter'
 import AggregationFilter from './AggregationFilter'
 import { DEFAULT_INTERVAL } from '../../../constants/general'
 
-const formatsLabel = {
+export const formatsLabel = {
     year: 'y',
     month: 'MMMM y',
     week: "y, 'Week' W",
