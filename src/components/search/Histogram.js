@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useState } from 'react'
+import React, { forwardRef, memo, useCallback, useMemo, useState } from 'react'
 import { DateTime, Duration } from 'luxon'
 import { Box, ButtonBase, FormControl, Grid, Menu, MenuItem, Tooltip, Typography } from '@material-ui/core'
 import { makeStyles, useTheme } from '@material-ui/core/styles'
@@ -13,19 +13,30 @@ import IntervalSelect from './IntervalSelect'
 const useStyles = makeStyles(theme => ({
     histogramTitle: {
         marginTop: theme.spacing(1),
-    },
-    bar: {
-        flex: 1,
-        margin: 1,
-        backgroundColor: blue[300]
     }
 }))
 
 const height = 100
 
+const Chart = ({ children, height, width }) => (
+    <svg viewBox={`0 0 ${width} ${height}`} height={height} width="100%" preserveAspectRatio="none">
+        <style>{`
+            rect {
+                fill: ${blue[300]};
+                cursor: pointer;
+            }
+            rect.selected {
+                fill: rgb(245, 0, 87);
+            }
+        `}</style>
+        {children}
+    </svg>
+)
+
+const Bar = forwardRef((props, ref) => <rect ref={ref} {...props} />)
+
 function Histogram({ title, field }) {
     const classes = useStyles()
-    const theme = useTheme()
     const { aggregations, query, search, aggregationsLoading } = useSearch()
 
     const [filterChanging, setFilterChanging] = useState(false)
@@ -59,7 +70,7 @@ function Histogram({ title, field }) {
             return bucketsWithMissing
         }
 
-        const buckets = Object.fromEntries(aggregations[field].values.buckets.map(({doc_count, key_as_string}) => ([
+        return Object.fromEntries(aggregations[field].values.buckets.map(({doc_count, key_as_string}) => ([
             key_as_string,
             {
                 doc_count,
@@ -67,26 +78,9 @@ function Histogram({ title, field }) {
                 value: formatValue(key_as_string),
             }
         ])))
-
-        const sortedBuckets = Object.entries(buckets).map(([key]) => key).sort()
-        let currentBucket = sortedBuckets[0]
-        while (currentBucket <= sortedBuckets[sortedBuckets.length - 1]) {
-            bucketsWithMissing.push(buckets[currentBucket] || {
-                doc_count: 0,
-                label: formatLabel(currentBucket),
-                value: formatValue(currentBucket),
-            })
-
-            currentBucket = DateTime.fromISO(currentBucket, { setZone: true }).plus(
-                Duration.fromObject({ [`${interval}s`]: 1 })
-            ).toISO()
-        }
-        return bucketsWithMissing
     }, [aggregations, interval])
 
-    const maxCount = useMemo(() => data && Math.max(...data.map(({doc_count}) => doc_count)), [data])
-
-    const handleFilter = () => {
+    const handleFilter = useCallback(() => {
         handleBarMenuClose()
         setFilterChanging(true)
         const { [field]: prevFilter, ...restFilters } = query.filters || {}
@@ -110,39 +104,66 @@ function Histogram({ title, field }) {
         } else {
             search({ filters: { [field]: rest, ...restFilters }, page: 1 })
         }
-    }
+    }, [query, search, selectedBar])
+
+    const barWidth = 10
+    const barMargin = 1
+    const [width, setWidth] = useState(0)
+
+    const maxCount = useMemo(() => {
+        return data && Math.max(...Object.entries(data).map(([,{doc_count}]) => doc_count))
+    }, [data])
+
+    const bars = useMemo(() => {
+        const items = []
+        const sortedBuckets = Object.entries(data).map(([key]) => key).sort()
+        let currentBucket = sortedBuckets[0], index = 0
+
+        while (currentBucket <= sortedBuckets[sortedBuckets.length - 1]) {
+            if (data[currentBucket]) {
+                const item = data[currentBucket]
+                const barHeight = height * Math.log(item.doc_count + 1) / Math.log(maxCount + 1)
+                items.push(
+                    <Tooltip
+                        key={index}
+                        title={<>{item.label}: <strong>{formatThousands(item.doc_count)}</strong></>}
+                        placement="top"
+                    >
+                        <Bar
+                            key={item.label}
+                            x={index * (barWidth + barMargin)}
+                            y={height - barHeight}
+                            width={barWidth}
+                            height={barHeight}
+                            className={query.filters?.[field]?.intervals?.include?.includes(item.value) ?
+                                'selected' : undefined}
+                            onClick={aggregationsLoading ? null : handleBarClick(item.value)}
+                        />
+                    </Tooltip>
+                )
+            }
+            currentBucket = DateTime.fromISO(currentBucket, { setZone: true }).plus(
+                Duration.fromObject({ [`${interval}s`]: 1 })
+            ).toISO()
+
+            index++
+        }
+        setWidth(index === 0 ? 0 : index * (barWidth + barMargin) - barMargin)
+
+        return items
+
+    }, [data, aggregationsLoading])
 
     return !data ? null : (
         <Box>
             <Typography variant="h6" className={classes.histogramTitle}>
                 {title}
             </Typography>
-            <FormControl margin="normal" style={{ width: '100%', height }}>
-                {aggregationsLoading && !filterChanging ? <Loading/> :
-                    <Grid container alignItems="flex-end" wrap="nowrap">
-                        {data.map((item, index) =>
-                            <Tooltip
-                                key={index}
-                                title={<>{item.label}: <strong>{formatThousands(item.doc_count)}</strong></>}
-                                placement="top"
-                            >
-                                <Grid
-                                    item
-                                    key={item.value}
-                                    className={classes.bar}
-                                    style={{
-                                        height: height * Math.log(item.doc_count + 1) / Math.log(maxCount + 1),
-                                        backgroundColor: query.filters?.[field]?.intervals?.include?.includes(item.value) ?
-                                            theme.palette.secondary.main : undefined
-                                    }}
-                                    component={ButtonBase}
-                                    onClick={aggregationsLoading ? null : handleBarClick(item.value)}
-                                />
-                            </Tooltip>
-                        )}
-                    </Grid>
-                }
-            </FormControl>
+            {aggregationsLoading && !filterChanging ? <Loading/> :
+                <Chart height={height} width={width} style={{ width: '100%' }}>
+                    {bars}
+                </Chart>
+            }
             <IntervalSelect field={field} />
             <Menu
                 open={!!anchorPosition}

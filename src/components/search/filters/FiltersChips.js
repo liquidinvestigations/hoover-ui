@@ -8,9 +8,6 @@ import { useSearch } from '../SearchProvider'
 import { aggregationFields } from '../../../constants/aggregationFields'
 import { clearQuotedParam } from '../../../queryUtils'
 import { shortenName } from '../../../utils'
-import { DEFAULT_INTERVAL } from '../../../constants/general'
-import { DateTime } from 'luxon'
-import { formatsLabel } from './DateHistogramFilter'
 
 const useStyles = makeStyles(theme => ({
     treeTitle: {
@@ -90,19 +87,13 @@ export default function FiltersChips() {
             const filtersArray = []
 
             Object.entries(query.filters).forEach(([key, values]) => {
-                const interval = query.filters?.[key]?.interval || DEFAULT_INTERVAL
-
-                const formatLabel = value => DateTime
-                    .fromISO(value, { setZone: true })
-                    .toFormat(formatsLabel[interval])
-
                 let filter = ''
                 if (values.from && values.to) {
                     filter = `${key}:[${values.from} TO ${values.to}]`
                 }
                 const intervalsArray = []
                 values.intervals?.include?.forEach(value => {
-                    intervalsArray.push(`${key}:"${formatLabel(value)}"`)
+                    intervalsArray.push(`${key}:${value}`)
                 })
                 if (filter) {
                     if (intervalsArray.length) {
