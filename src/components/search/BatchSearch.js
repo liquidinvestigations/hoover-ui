@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
-import { Button, Divider, Grid, List, TextField, Typography } from '@material-ui/core'
+import { Button, Grid, List, TextField, Typography } from '@material-ui/core'
 import Expandable from '../Expandable'
 import Loading from '../Loading'
 import BatchResults from './BatchResults'
@@ -118,7 +118,6 @@ export default function BatchSearch({ collections, limits }) {
                             changeSelection={handleSelectedCollectionsChange}
                             counts={results?.count_by_index}
                         />
-                        <Divider />
                     </Expandable>
                 </List>
             </Grid>

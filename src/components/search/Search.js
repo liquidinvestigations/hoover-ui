@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import Router from 'next/router'
 import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
-import { Divider, Grid, IconButton, InputAdornment, List, TextField, Typography } from '@material-ui/core'
+import { Grid, IconButton, InputAdornment, List, TextField, Typography } from '@material-ui/core'
 import { Cancel } from '@material-ui/icons'
 import Expandable from '../Expandable'
 import SplitPaneLayout from '../SplitPaneLayout'
@@ -129,7 +129,6 @@ export default function Search({ collections }) {
                                         changeSelection={handleCollectionsChange}
                                         counts={results?.count_by_index}
                                     />
-                                    <Divider />
                                 </Expandable>
                             </List>
 
