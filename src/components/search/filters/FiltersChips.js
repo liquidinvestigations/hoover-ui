@@ -8,6 +8,9 @@ import { useSearch } from '../SearchProvider'
 import { aggregationFields } from '../../../constants/aggregationFields'
 import { clearQuotedParam } from '../../../queryUtils'
 import { shortenName } from '../../../utils'
+import { DEFAULT_INTERVAL } from '../../../constants/general'
+import { DateTime } from 'luxon'
+import { formatsLabel } from './DateHistogramFilter'
 
 const useStyles = makeStyles(theme => ({
     treeTitle: {
@@ -39,17 +42,17 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const deleteFilterNode = (filters, node) => {
-    if (node.field === '<implicit>') {
-        const filterName = node.boost === 1 ? 'date-created' : 'date'
-        const list = filters[filterName].intervals.include
+    if (aggregationFields[node.field].type === 'date') {
+        const list = filters[node.field].intervals.include
         const index = list.indexOf(node.term)
 
         if (index > -1) {
             list.splice(index, 1)
         }
 
-    } else if (node.term_min && node.term_max) {
-        filters[node.field].from = filters[node.field].to = undefined
+        if (node.term_min && node.term_max) {
+            filters[node.field].from = filters[node.field].to = undefined
+        }
 
     } else if (node.term) {
         let index
@@ -87,17 +90,19 @@ export default function FiltersChips() {
             const filtersArray = []
 
             Object.entries(query.filters).forEach(([key, values]) => {
+                const interval = query.filters?.[key]?.interval || DEFAULT_INTERVAL
+
+                const formatLabel = value => DateTime
+                    .fromISO(value, { setZone: true })
+                    .toFormat(formatsLabel[interval])
+
                 let filter = ''
                 if (values.from && values.to) {
                     filter = `${key}:[${values.from} TO ${values.to}]`
                 }
                 const intervalsArray = []
                 values.intervals?.include?.forEach(value => {
-                    if (key === 'date-created') {
-                        intervalsArray.push(`${value}^1`)
-                    } else {
-                        intervalsArray.push(value)
-                    }
+                    intervalsArray.push(`${key}:"${formatLabel(value)}"`)
                 })
                 if (filter) {
                     if (intervalsArray.length) {
@@ -152,27 +157,22 @@ export default function FiltersChips() {
         }
 
         let label
-        if (q.field !== '<implicit>') {
-            const name = aggregationFields[q.field]?.chipLabel
-            if (q.term_min && q.term_max) {
-                className += ' ' + classes.dateChip
-                label = (
-                    <span>
-                        <strong>{name}:</strong>{' '}
-                        {q.term_min} to {q.term_max}
-                    </span>
-                )
-            } else {
-                label = (
-                    <span>
-                        <strong>{name}:</strong>{' '}
-                        {shortenName(q.term)}
-                    </span>
-                )
-            }
+        const name = aggregationFields[q.field]?.chipLabel
+        if (q.term_min && q.term_max) {
+            className += ' ' + classes.dateChip
+            label = (
+                <span>
+                    <strong>{name}:</strong>{' '}
+                    {q.term_min} to {q.term_max}
+                </span>
+            )
         } else {
-            className += ' ' + classes.dateBucketChip
-            label = <span>{q.term}</span>
+            label = (
+                <span>
+                    <strong>{name}:</strong>{' '}
+                    {shortenName(q.term)}
+                </span>
+            )
         }
 
         return (

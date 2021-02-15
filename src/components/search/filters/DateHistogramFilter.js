@@ -1,7 +1,8 @@
 import React, { memo, useCallback } from 'react'
 import { DateTime } from 'luxon'
-import { FormControl, FormHelperText, ListItem, MenuItem, Select } from '@material-ui/core'
+import { ListItem } from '@material-ui/core'
 import Expandable from '../../Expandable'
+import IntervalSelect from '../IntervalSelect'
 import DateRangeFilter from './DateRangeFilter'
 import AggregationFilter from './AggregationFilter'
 import { DEFAULT_INTERVAL } from '../../../constants/general'
@@ -34,11 +35,6 @@ function DateHistogramFilter({ title, field, queryFilter, queryFacets, aggregati
         } else {
             onChange(field, rest, true)
         }
-    }, [field, queryFilter, onChange])
-
-    const onIntervalChange = useCallback(event => {
-        const { interval, intervals, ...rest } = queryFilter || {}
-        onChange(field, {interval: event.target.value, ...rest}, true)
     }, [field, queryFilter, onChange])
 
     const onSelectionChange = useCallback((field, newIntervals, resetPage) => {
@@ -79,19 +75,7 @@ function DateHistogramFilter({ title, field, queryFilter, queryFacets, aggregati
             />
 
             <ListItem>
-                <FormControl size="small" fullWidth>
-                    <Select
-                        value={interval}
-                        onChange={onIntervalChange}
-                    >
-                        <MenuItem value="year">Year</MenuItem>
-                        <MenuItem value="month">Month</MenuItem>
-                        <MenuItem value="week">Week</MenuItem>
-                        <MenuItem value="day">Day</MenuItem>
-                        <MenuItem value="hour">Hour</MenuItem>
-                    </Select>
-                    <FormHelperText>Aggregation</FormHelperText>
-                </FormControl>
+                <IntervalSelect field={field} />
             </ListItem>
 
             <AggregationFilter
