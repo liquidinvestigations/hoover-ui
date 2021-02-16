@@ -26,20 +26,6 @@ function Filters({ ...props }) {
         }
     }, [query])
 
-    const handlePagination = useCallback((key, newPage) => {
-        const { [key]: prevFacet, ...restFacets } = query.facets || {}
-        if (newPage > 1) {
-            triggerSearch({ facets: { [key]: newPage, ...restFacets } })
-        } else {
-            triggerSearch({ facets: { ...restFacets } })
-        }
-    }, [query])
-
-    const handleLoadMore = useCallback((key, page) => {
-        const facets = query.facets || {}
-        triggerSearch({ facets: { ...facets, [key]: page } })
-    }, [query])
-
     const filterProps = {
         loading: aggregationsLoading || resultsLoading,
         onChange: handleChange,
@@ -56,17 +42,11 @@ function Filters({ ...props }) {
     return (
         <List {...props}>
             {Object.entries(aggregationFields).map(([field, params]) => {
-                let FilterComponent, filterTypeProps
+                let FilterComponent, filterTypeProps = {}
                 if (params.type === 'date') {
                     FilterComponent = DateHistogramFilter
-                    filterTypeProps = {
-                        onPagination: handlePagination
-                    }
                 } else {
                     FilterComponent = TermsAggregationFilter
-                    filterTypeProps = {
-                        onLoadMore: handleLoadMore
-                    }
                 }
 
                 if (params.hideEmpty) {
@@ -83,7 +63,6 @@ function Filters({ ...props }) {
                         title={params.filterLabel}
                         field={field}
                         queryFilter={query.filters?.[field]}
-                        queryFacets={query.facets?.[field]}
                         aggregations={aggregations[field]}
                         {...filterTypeProps}
                         {...filterProps}

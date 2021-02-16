@@ -1,22 +1,29 @@
 import React, { forwardRef, memo, useCallback, useMemo, useState } from 'react'
-import { DateTime, Duration } from 'luxon'
-import { Box, ButtonBase, FormControl, Grid, Menu, MenuItem, Tooltip, Typography } from '@material-ui/core'
-import { makeStyles, useTheme } from '@material-ui/core/styles'
+import { DateTime } from 'luxon'
+import { Box, Grid, Menu, MenuItem, Tooltip, Typography } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
 import { blue } from '@material-ui/core/colors'
+import Loading from '../Loading'
 import { useSearch } from './SearchProvider'
+import IntervalSelect from './IntervalSelect'
+import Pagination from './filters/Pagination'
 import { formatsLabel, formatsValue } from './filters/DateHistogramFilter'
 import { DEFAULT_INTERVAL } from '../../constants/general'
 import { formatThousands } from '../../utils'
-import Loading from '../Loading'
-import IntervalSelect from './IntervalSelect'
+
+const height = 100
+const barWidth = 10
+const barMargin = 1
 
 const useStyles = makeStyles(theme => ({
     histogramTitle: {
         marginTop: theme.spacing(1),
+    },
+    chartBox: {
+        height,
+        marginBottom: theme.spacing(1)
     }
 }))
-
-const height = 100
 
 const Chart = ({ children, height, width }) => (
     <svg viewBox={`0 0 ${width} ${height}`} height={height} width="100%" preserveAspectRatio="none">
@@ -37,9 +44,9 @@ const Bar = forwardRef((props, ref) => <rect ref={ref} {...props} />)
 
 function Histogram({ title, field }) {
     const classes = useStyles()
-    const { aggregations, query, search, aggregationsLoading } = useSearch()
+    const { aggregations, query, search, aggregationsLoading, resultsLoading } = useSearch()
 
-    const [filterChanging, setFilterChanging] = useState(false)
+    const [width, setWidth] = useState(0)
 
     const [anchorPosition, setAnchorPosition] = useState(null)
     const [selectedBar, setSelectedBar] = useState(null)
@@ -63,26 +70,9 @@ function Histogram({ title, field }) {
         .fromISO(value, { setZone: true })
         .toFormat(formatsValue[interval])
 
-    const data = useMemo(() => {
-        setFilterChanging(false)
-        const bucketsWithMissing = []
-        if (!aggregations) {
-            return bucketsWithMissing
-        }
-
-        return Object.fromEntries(aggregations[field].values.buckets.map(({doc_count, key_as_string}) => ([
-            key_as_string,
-            {
-                doc_count,
-                label: formatLabel(key_as_string),
-                value: formatValue(key_as_string),
-            }
-        ])))
-    }, [aggregations, interval])
-
     const handleFilter = useCallback(() => {
         handleBarMenuClose()
-        setFilterChanging(true)
+
         const { [field]: prevFilter, ...restFilters } = query.filters || {}
         const { intervals, ...rest } = prevFilter || {}
         let newIntervals = null
@@ -106,65 +96,72 @@ function Histogram({ title, field }) {
         }
     }, [query, search, selectedBar])
 
-    const barWidth = 10
-    const barMargin = 1
-    const [width, setWidth] = useState(0)
+    const selected = query.filters?.[field]?.intervals?.include
 
-    const maxCount = useMemo(() => {
-        return data && Math.max(...Object.entries(data).map(([,{doc_count}]) => doc_count))
-    }, [data])
+    const loading = aggregationsLoading || resultsLoading
 
     const bars = useMemo(() => {
-        const items = []
-        const sortedBuckets = Object.entries(data).map(([key]) => key).sort()
-        let currentBucket = sortedBuckets[0], index = 0
+        const data = aggregations?.[field]?.values.buckets
 
-        while (currentBucket <= sortedBuckets[sortedBuckets.length - 1]) {
-            if (data[currentBucket]) {
-                const item = data[currentBucket]
-                const barHeight = height * Math.log(item.doc_count + 1) / Math.log(maxCount + 1)
-                items.push(
+        if (data) {
+            const maxCount = Math.max(...data.map(({doc_count}) => doc_count))
+
+            let missingBarsCount = 0
+            const elements = data.map(({key_as_string, doc_count}, index) => {
+                if (index) {
+                    const unit = `${interval}s`
+                    const prevDate = DateTime.fromISO(data[index - 1].key_as_string)
+                    const currDate = DateTime.fromISO(key_as_string)
+                    missingBarsCount += prevDate.diff(currDate, unit)[unit] - 1
+                }
+
+                const barHeight = height * Math.log(doc_count + 1) / Math.log(maxCount + 1)
+
+                return (
                     <Tooltip
                         key={index}
-                        title={<>{item.label}: <strong>{formatThousands(item.doc_count)}</strong></>}
                         placement="top"
+                        title={<>{formatLabel(key_as_string)}: <strong>{formatThousands(doc_count)}</strong></>}
                     >
                         <Bar
-                            key={item.label}
-                            x={index * (barWidth + barMargin)}
+                            x={(index + missingBarsCount) * (barWidth + barMargin)}
                             y={height - barHeight}
                             width={barWidth}
                             height={barHeight}
-                            className={query.filters?.[field]?.intervals?.include?.includes(item.value) ?
-                                'selected' : undefined}
-                            onClick={aggregationsLoading ? null : handleBarClick(item.value)}
+                            className={selected?.includes(formatValue(key_as_string)) ? 'selected' : undefined}
+                            onClick={loading ? null : handleBarClick(formatValue(key_as_string))}
                         />
                     </Tooltip>
                 )
-            }
-            currentBucket = DateTime.fromISO(currentBucket, { setZone: true }).plus(
-                Duration.fromObject({ [`${interval}s`]: 1 })
-            ).toISO()
+            })
 
-            index++
+            setWidth(elements.length === 0 ? 0 :
+                (elements.length + missingBarsCount) * (barWidth + barMargin) - barMargin)
+
+            return elements
         }
-        setWidth(index === 0 ? 0 : index * (barWidth + barMargin) - barMargin)
+    }, [aggregations, loading, selected])
 
-        return items
-
-    }, [data, aggregationsLoading])
-
-    return !data ? null : (
+    return (
         <Box>
             <Typography variant="h6" className={classes.histogramTitle}>
                 {title}
             </Typography>
-            {aggregationsLoading && !filterChanging ? <Loading/> :
-                <Chart height={height} width={width} style={{ width: '100%' }}>
-                    {bars}
-                </Chart>
-            }
-            <IntervalSelect field={field} />
+            <div className={classes.chartBox}>
+                {loading ? <Loading /> : width > 0 && (
+                    <Chart height={height} width={width} style={{ width: '100%' }}>
+                        {bars}
+                    </Chart>
+                )}
+            </div>
+            <Grid container justify="space-between">
+                <Grid item>
+                    <Pagination field={field} />
+                </Grid>
+                <Grid item>
+                    <IntervalSelect field={field} />
+                </Grid>
+            </Grid>
             <Menu
                 open={!!anchorPosition}
                 onClose={handleBarMenuClose}
@@ -172,7 +169,7 @@ function Histogram({ title, field }) {
                 anchorPosition={anchorPosition}
             >
                 <MenuItem onClick={handleFilter}>
-                    {query.filters?.[field]?.intervals?.include?.includes(selectedBar) ? 'Remove filter' : 'Filter'}
+                    {selected?.includes(selectedBar) ? 'Remove filter' : 'Filter'}
                 </MenuItem>
             </Menu>
         </Box>
