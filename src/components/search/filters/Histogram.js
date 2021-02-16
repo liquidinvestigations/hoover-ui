@@ -1,21 +1,34 @@
-import React, { forwardRef, memo, useCallback, useMemo, useState } from 'react'
+import React, { forwardRef, memo, useCallback, useEffect, useMemo, useState } from 'react'
+import cn from 'classnames'
 import { DateTime } from 'luxon'
-import { Box, Grid, Menu, MenuItem, Tooltip, Typography } from '@material-ui/core'
+import { Box, Collapse, Grid, IconButton, Menu, MenuItem, Tooltip, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
+import { ExpandMore } from '@material-ui/icons'
 import { blue } from '@material-ui/core/colors'
-import Loading from '../Loading'
-import { useSearch } from './SearchProvider'
+import Loading from '../../Loading'
 import IntervalSelect from './IntervalSelect'
-import Pagination from './filters/Pagination'
-import { formatsLabel, formatsValue } from './filters/DateHistogramFilter'
-import { DEFAULT_INTERVAL } from '../../constants/general'
-import { formatThousands } from '../../utils'
+import Pagination from './Pagination'
+import { useSearch } from '../SearchProvider'
+import { useHashState } from '../../HashStateProvider'
+import { formatsLabel, formatsValue } from './DateHistogramFilter'
+import { DEFAULT_INTERVAL } from '../../../constants/general'
+import { formatThousands } from '../../../utils'
 
 const height = 100
 const barWidth = 10
 const barMargin = 1
 
 const useStyles = makeStyles(theme => ({
+    expand: {
+        marginLeft: theme.spacing(2),
+        transform: 'rotate(90deg)',
+        transition: theme.transitions.create('transform', {
+            duration: theme.transitions.duration.shortest,
+        }),
+    },
+    expandOpen: {
+        transform: 'rotate(0deg)',
+    },
     histogramTitle: {
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
@@ -58,6 +71,25 @@ function Histogram({ title, field }) {
 
     const [anchorPosition, setAnchorPosition] = useState(null)
     const [selectedBar, setSelectedBar] = useState(null)
+
+    const { hashState, setHashState } = useHashState()
+    const [open, setOpen] = useState(false)
+    useEffect(() => {
+        if (hashState?.histogram?.[field]) {
+            setOpen(true)
+        }
+    }, [hashState])
+
+    const toggle = () => {
+        setOpen(!open)
+
+        const { [field]: prevState, ...restState } = hashState?.histogram || {}
+        if (!open) {
+            setHashState({ histogram: { [field]: true, ...restState } }, false)
+        } else {
+            setHashState({ histogram: { ...restState } }, false)
+        }
+    }
 
     const handleBarClick = bar => event => {
         setSelectedBar(bar)
@@ -178,23 +210,39 @@ function Histogram({ title, field }) {
                             missing: ({formatThousands(missing.doc_count)})
                         </Typography>
                     )}
+
+                    <IconButton
+                        size="small"
+                        className={cn(classes.expand, {
+                            [classes.expandOpen]: open,
+                        })}
+                        onClick={toggle}
+                        aria-expanded={open}
+                        aria-label="Show histogram"
+                    >
+                        <ExpandMore color="action" />
+                    </IconButton>
                 </Grid>
             </Grid>
-            <div className={classes.chartBox}>
-                {loading ? <Loading /> : width > 0 && (
-                    <Chart height={height} width={width} style={{ width: '100%' }}>
-                        {bars}
-                    </Chart>
-                )}
-            </div>
-            <Grid container justify="space-between">
-                <Grid item>
-                    <Pagination field={field} />
+
+            <Collapse in={open}>
+                <div className={classes.chartBox}>
+                    {loading ? <Loading /> : width > 0 && (
+                        <Chart height={height} width={width} style={{ width: '100%' }}>
+                            {bars}
+                        </Chart>
+                    )}
+                </div>
+                <Grid container justify="space-between">
+                    <Grid item>
+                        <Pagination field={field} />
+                    </Grid>
+                    <Grid item>
+                        <IntervalSelect field={field} />
+                    </Grid>
                 </Grid>
-                <Grid item>
-                    <IntervalSelect field={field} />
-                </Grid>
-            </Grid>
+            </Collapse>
+
             <Menu
                 open={!!anchorPosition}
                 onClose={handleBarMenuClose}

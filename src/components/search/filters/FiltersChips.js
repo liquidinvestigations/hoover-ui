@@ -131,7 +131,11 @@ export default function FiltersChips() {
                 }
             })
 
-            setParsedFilters(lucene.parse(filtersArray.join(' AND ')))
+            if (filtersArray.length) {
+                setParsedFilters(lucene.parse(filtersArray.join(' AND ')))
+            } else {
+                setParsedFilters(null)
+            }
         } else {
             setParsedFilters(null)
         }

@@ -19,6 +19,7 @@ const PARAMS_MAP = {
     v: 'preview',
     b: 'tab',
     a: 'subTab',
+    h: 'histogram',
 }
 
 const LEGACY_PARAMS = {

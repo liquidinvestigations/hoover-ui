@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import cn from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
-import { Collapse, Divider, Grid, IconButton, ListItem, Typography } from '@material-ui/core'
+import { Collapse, Grid, IconButton, ListItem, Typography } from '@material-ui/core'
 import { ExpandMore } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
