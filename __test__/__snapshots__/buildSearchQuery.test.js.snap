@@ -64,6 +64,40 @@ Object {
         "bool": Object {},
       },
     },
+    "date-created-missing": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "date-created-missing",
+          },
+        },
+        "values": Object {
+          "missing": Object {
+            "field": "date-created",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "date-missing": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "date-missing",
+          },
+        },
+        "values": Object {
+          "missing": Object {
+            "field": "date",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
     "email-domains": Object {
       "aggs": Object {
         "count": Object {

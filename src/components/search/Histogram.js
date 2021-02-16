@@ -18,6 +18,14 @@ const barMargin = 1
 const useStyles = makeStyles(theme => ({
     histogramTitle: {
         marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+    },
+    foundCount: {
+        color: theme.palette.grey[600],
+    },
+    missingCount: {
+        color: theme.palette.grey[500],
+        marginLeft: theme.spacing(2),
     },
     chartBox: {
         height,
@@ -142,11 +150,36 @@ function Histogram({ title, field }) {
         }
     }, [aggregations, loading, selected])
 
+    const found = aggregations?.[field]?.count
+    const missing = aggregations?.[`${field}-missing`]?.values
+
     return (
         <Box>
-            <Typography variant="h6" className={classes.histogramTitle}>
-                {title}
-            </Typography>
+            <Grid container
+                  className={classes.histogramTitle}
+                  justify="space-between"
+                  alignItems="center"
+                  wrap="nowrap"
+            >
+                <Grid item>
+                    <Typography variant="h6">
+                        {title}
+                    </Typography>
+                </Grid>
+                <Grid item>
+                    {found && (
+                        <Typography variant="subtitle2" component="span" className={classes.foundCount}>
+                            found: ({formatThousands(found.value)})
+                        </Typography>
+                    )}
+
+                    {missing && (
+                        <Typography variant="subtitle2" component="span" className={classes.missingCount}>
+                            missing: ({formatThousands(missing.doc_count)})
+                        </Typography>
+                    )}
+                </Grid>
+            </Grid>
             <div className={classes.chartBox}>
                 {loading ? <Loading /> : width > 0 && (
                     <Chart height={height} width={width} style={{ width: '100%' }}>
