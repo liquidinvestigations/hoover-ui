@@ -1,4 +1,4 @@
-import React, { forwardRef, memo, useCallback, useEffect, useMemo, useState } from 'react'
+import React, { forwardRef, Fragment, memo, useCallback, useEffect, useMemo, useState } from 'react'
 import cn from 'classnames'
 import { DateTime } from 'luxon'
 import { Box, Collapse, Grid, IconButton, Menu, MenuItem, Tooltip, Typography } from '@material-ui/core'
@@ -14,6 +14,7 @@ import { formatsLabel, formatsValue } from './DateHistogramFilter'
 import { DEFAULT_INTERVAL } from '../../../constants/general'
 import { formatThousands } from '../../../utils'
 
+const width = 300
 const height = 100
 const barWidth = 10
 const barMargin = 1
@@ -41,14 +42,16 @@ const useStyles = makeStyles(theme => ({
         marginLeft: theme.spacing(2),
     },
     chartBox: {
-        height,
         marginBottom: theme.spacing(1)
     }
 }))
 
-const Chart = ({ children, height, width }) => (
-    <svg viewBox={`0 0 ${width} ${height}`} height={height} width="100%" preserveAspectRatio="none">
+const Chart = ({ children }) => (
+    <svg viewBox={`0 0 ${width} ${height}`} width="100%">
         <style>{`
+            svg {
+                overflow: visible;
+            }
             rect {
                 fill: ${blue[300]};
                 cursor: pointer;
@@ -56,18 +59,19 @@ const Chart = ({ children, height, width }) => (
             rect.selected {
                 fill: rgb(245, 0, 87);
             }
+            text {
+                font: 5.5px sans-serif;
+                text-anchor: middle;
+                dominant-baseline: central;
+            }
         `}</style>
         {children}
     </svg>
 )
 
-const Bar = forwardRef((props, ref) => <rect ref={ref} {...props} />)
-
 function Histogram({ title, field }) {
     const classes = useStyles()
     const { aggregations, query, search, aggregationsLoading, resultsLoading } = useSearch()
-
-    const [width, setWidth] = useState(0)
 
     const [anchorPosition, setAnchorPosition] = useState(null)
     const [selectedBar, setSelectedBar] = useState(null)
@@ -101,6 +105,8 @@ function Histogram({ title, field }) {
     }
 
     const interval = query.filters?.[field]?.interval || DEFAULT_INTERVAL
+
+    const axisHeight = interval === 'year' ? 20 : 40
 
     const formatLabel = value => DateTime
         .fromISO(value, { setZone: true })
@@ -144,8 +150,6 @@ function Histogram({ title, field }) {
         const data = aggregations?.[field]?.values.buckets
 
         if (data) {
-            const maxCount = Math.max(...data.map(({doc_count}) => doc_count))
-
             let missingBarsCount = 0
             const elements = data.map(({key_as_string, doc_count}, index) => {
                 if (index) {
@@ -154,31 +158,47 @@ function Histogram({ title, field }) {
                     const currDate = DateTime.fromISO(key_as_string)
                     missingBarsCount += prevDate.diff(currDate, unit)[unit] - 1
                 }
-
-                const barHeight = height * Math.log(doc_count + 1) / Math.log(maxCount + 1)
-
-                return (
-                    <Tooltip
-                        key={index}
-                        placement="top"
-                        title={<>{formatLabel(key_as_string)}: <strong>{formatThousands(doc_count)}</strong></>}
-                    >
-                        <Bar
-                            x={(index + missingBarsCount) * (barWidth + barMargin)}
-                            y={height - barHeight}
-                            width={barWidth}
-                            height={barHeight}
-                            className={selected?.includes(formatValue(key_as_string)) ? 'selected' : undefined}
-                            onClick={loading ? null : handleBarClick(formatValue(key_as_string))}
-                        />
-                    </Tooltip>
-                )
+                return {
+                    label: formatLabel(key_as_string),
+                    value: formatValue(key_as_string),
+                    count: doc_count,
+                    missingBarsCount
+                }
             })
 
-            setWidth(elements.length === 0 ? 0 :
-                (elements.length + missingBarsCount) * (barWidth + barMargin) - barMargin)
+            const xScale = width / ((elements.length + missingBarsCount) * (barWidth + barMargin) - barMargin)
+            const maxCount = Math.max(...data.map(({doc_count}) => doc_count))
 
-            return elements
+            return elements.map(({label, value, count, missingBarsCount}, index) => {
+                const barHeight = (height - axisHeight) * Math.log(count + 1) / Math.log(maxCount + 1)
+                const barPosition = (index + missingBarsCount) * (barWidth + barMargin) * xScale
+                const labelPosition = ((index + missingBarsCount) * (barWidth + barMargin) + barWidth / 2) * xScale
+
+                return (
+                    <Fragment key={index}>
+                        <text
+                            x={labelPosition}
+                            y={height - axisHeight / 2}
+                            transform={`rotate(-45, ${labelPosition}, ${height - axisHeight / 2})`}
+                        >
+                            {label}
+                        </text>
+                        <Tooltip
+                            placement="top"
+                            title={<>{label}: <strong>{formatThousands(count)}</strong></>}
+                        >
+                            <rect
+                                x={barPosition}
+                                y={height - axisHeight - barHeight}
+                                width={barWidth * xScale}
+                                height={barHeight}
+                                className={selected?.includes(value) ? 'selected' : undefined}
+                                onClick={loading ? null : handleBarClick(value)}
+                            />
+                        </Tooltip>
+                    </Fragment>
+                )
+            })
         }
     }, [aggregations, loading, selected])
 
