@@ -1,21 +1,17 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo } from 'react'
 import cn from 'classnames'
 import isEqual from 'react-fast-compare'
 import { makeStyles } from '@material-ui/core/styles'
 import {
     Button,
     Checkbox,
-    CircularProgress,
     Grid,
-    IconButton,
     List,
     ListItem,
     ListItemText,
     Typography
 } from '@material-ui/core'
 import { formatThousands } from '../../../utils'
-import { DEFAULT_FACET_SIZE } from '../../../constants/general'
-import { NavigateBefore, NavigateNext } from '@material-ui/icons'
 import Pagination from './Pagination'
 import MoreButton from './MoreButton'
 
