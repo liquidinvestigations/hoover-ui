@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import cn from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
 import { Collapse, Grid, IconButton, ListItem, Typography } from '@material-ui/core'
@@ -45,23 +45,25 @@ function Expandable({ title, children, defaultOpen, enabled = true, highlight = 
         }
     }, [contentRef])
 
-    const handleMouseUp = event => {
+    const handleMouseUp = useCallback(event => {
         event.preventDefault()
         window.removeEventListener('mouseup', handleMouseUp)
         window.removeEventListener('mousemove', handleMouseMove)
-    }
-    const handleMouseMove = event => {
+    }, [])
+
+    const handleMouseMove = useCallback(event => {
         event.preventDefault()
         contentRef.current.style.height = startHeight + event.clientY - startY + 'px'
         contentRef.current.style.maxHeight = 'none'
-    }
-    const handleMouseDown = event => {
+    }, [])
+
+    const handleMouseDown = useCallback(event => {
         event.preventDefault()
         startY = event.clientY
         startHeight = contentRef.current.offsetHeight
         window.addEventListener('mouseup', handleMouseUp, {once: true})
         window.addEventListener('mousemove', handleMouseMove)
-    }
+    }, [])
 
     const headerBar = useMemo(() => (
         <ListItem onClick={toggle} button dense className={classes.header}>

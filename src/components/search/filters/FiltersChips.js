@@ -40,10 +40,10 @@ const useStyles = makeStyles(theme => ({
 
 const deleteFilterNode = (filters, node) => {
     if (aggregationFields[node.field].type === 'date') {
-        const list = filters[node.field].intervals.include
-        const index = list.indexOf(node.term)
+        let index
+        const list = filters[node.field].intervals?.include
 
-        if (index > -1) {
+        if ((index = list?.indexOf(node.term)) > -1) {
             list.splice(index, 1)
         }
 
