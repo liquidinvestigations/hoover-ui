@@ -1,7 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import qs from 'qs'
-import { mergeWith } from 'lodash'
 import fixLegacyQuery from '../../fixLegacyQuery'
 import { getPreviewParams } from '../../utils'
 import { useHashState } from '../HashStateProvider'
@@ -9,12 +8,6 @@ import { buildSearchQuerystring, rollupParams, unwindParams } from '../../queryU
 import { aggregations as aggregationsAPI, search as searchAPI } from '../../api'
 
 const SearchContext = createContext({})
-
-function customizer(objValue, srcValue) {
-    if (Array.isArray(objValue)) {
-        return objValue.concat(srcValue);
-    }
-}
 
 export function SearchProvider({ children, serverQuery }) {
     const router = useRouter()
@@ -37,14 +30,6 @@ export function SearchProvider({ children, serverQuery }) {
             { shallow: true },
         )
     }, [query, hashState])
-
-    const mergedSearch = useCallback(params => {
-        if (params.filters) {
-            search({ filters: mergeWith({}, query.filters, params.filters, customizer) })
-        } else {
-            search({ q: `${query.q}\n${params.q}` })
-        }
-    }, [search, query])
 
     const [previewOnLoad, setPreviewOnLoad] = useState()
     const [selectedDocData, setSelectedDocData] = useState()
@@ -161,7 +146,7 @@ export function SearchProvider({ children, serverQuery }) {
             query, error, search, results, aggregations,
             resultsLoading, aggregationsLoading,
             previewNextDoc, previewPreviousDoc, selectedDocData,
-            clearResults, getPreviewParams, mergedSearch
+            clearResults
         }}>
             {children}
         </SearchContext.Provider>

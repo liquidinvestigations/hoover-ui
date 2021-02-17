@@ -1,24 +1,17 @@
-import React, { memo, useCallback } from 'react'
+import React, { memo, useState } from 'react'
 import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
 import {
     Box,
     Divider,
-    IconButton,
     List,
     ListItem,
-    ListItemSecondaryAction,
     ListItemText,
     Typography
 } from '@material-ui/core'
-import { CallMade } from '@material-ui/icons'
-import DateLinks from './DateLinks'
+import LinkMenu from './LinkMenu'
 import { useDocument } from './DocumentProvider'
-import { useHashState } from '../HashStateProvider'
-import { useSearch } from '../search/SearchProvider'
-import { aggregationFields } from '../../constants/aggregationFields'
 import { formatDateTime, getLanguageName, humanFileSize, shortenName } from '../../utils'
-import { createSearchParams, createSearchUrl } from '../../queryUtils'
 
 const useStyles = makeStyles(theme => ({
     icon: {
@@ -31,6 +24,10 @@ const useStyles = makeStyles(theme => ({
     rawIcon: {
         fontSize: '1rem',
         transform: 'rotate(-90deg)',
+    },
+    searchField: {
+        cursor: 'pointer',
+        borderBottom: '1px dotted ' + theme.palette.grey[400],
     }
 }))
 
@@ -48,12 +45,10 @@ const tableFields = {
     },
     md5: {
         label: 'MD5',
-        tooltip: 'search this MD5 checksum',
         visible: content => content.filetype !== 'folder' && content.md5,
     },
     sha1: {
         label: 'SHA1',
-        tooltip: 'search this SHA1 checksum',
         visible: content => content.filetype !== 'folder' && content.sha1,
     },
     lang: {
@@ -64,20 +59,17 @@ const tableFields = {
     date: {
         label: 'Modified',
         format: formatDateTime,
-        tooltip: 'search this date',
         visible: content => !!content.date,
     },
     'date-created': {
         label: 'Created',
         format: formatDateTime,
-        tooltip: 'search this date',
         visible: content => !!content['date-created'],
     },
     pgp: {
         label: 'PGP',
         format: () => 'true',
         searchTerm: () => 'true',
-        tooltip: 'search encrypted',
         visible: content => !!content.pgp,
     },
     'word-count': {
@@ -90,20 +82,24 @@ const tableFields = {
         format: humanFileSize,
         searchTerm: term => term.toString(),
         visible: content => !!content.size,
-    }
+    },
 }
 
 const Meta = () => {
     const classes = useStyles()
-    const { hashState } = useHashState()
-    const { query, mergedSearch } = useSearch()
-    const { data, collection, digest, collectionBaseUrl } = useDocument()
+    const { data, collection, collectionBaseUrl } = useDocument()
 
-    const handleAddSearch = (field, term) => useCallback(() => {
-        mergedSearch(createSearchParams(field, term, query?.filters?.[field]?.interval))
-    }, [mergedSearch])
+    const [menuPosition, setMenuPosition] = useState(null)
+    const [currentLink, setCurrentLink] = useState(null)
 
-    const hash = { preview: { c: collection, i: digest }, tab: hashState.tab }
+    const handleLinkClick = (field, term) => event => {
+        setCurrentLink({ field, term })
+        setMenuPosition({ left: event.clientX, top: event.clientY })
+    }
+
+    const handleLinkMenuClose = () => {
+        setMenuPosition(null)
+    }
 
     return (
         <>
@@ -111,11 +107,7 @@ const Meta = () => {
                 <ListItem disableGutters>
                     <ListItemText
                         primary="Collection"
-                        secondary={
-                            <Link href={createSearchUrl('*', null, collection, hash)} shallow>
-                                <a title="search this collection">{collection}</a>
-                            </Link>
-                        }
+                        secondary={collection}
                     />
                 </ListItem>
 
@@ -139,7 +131,6 @@ const Meta = () => {
                     const display = config.format ? config.format(data.content[field]) : data.content[field]
                     const searchKey = config.searchKey || field
                     const searchTerm = config.searchTerm ? config.searchTerm(data.content[field]) : data.content[field]
-                    const tooltip = config.tooltip || `search this ${config.label.toLowerCase()}`
 
                     return (
                         <ListItem key={field} disableGutters>
@@ -147,32 +138,15 @@ const Meta = () => {
                                 primary={config.label}
                                 secondary={
                                     <>
-                                        <Link
-                                            href={createSearchUrl(searchTerm, searchKey, collection, hash,
-                                                query?.filters?.[searchKey]?.interval)}
-                                            shallow
+                                        <span
+                                            className={classes.searchField}
+                                            onClick={handleLinkClick(searchKey, searchTerm)}
                                         >
-                                            <a title={tooltip}>{display}</a>
-                                        </Link>
-                                        {aggregationFields[searchKey]?.type === 'date' && (
-                                            <>
-                                                <br />
-                                                <DateLinks field={searchKey} term={searchTerm} />
-                                            </>
-                                        )}
+                                            {display}
+                                        </span>
                                     </>
                                 }
                             />
-                            {mergedSearch && (
-                                <ListItemSecondaryAction>
-                                    <IconButton
-                                        edge="end"
-                                        onClick={handleAddSearch(searchKey, searchTerm)}
-                                    >
-                                        <CallMade className={classes.icon} />
-                                    </IconButton>
-                                </ListItemSecondaryAction>
-                            )}
                         </ListItem>
                     )
                 })}
@@ -199,31 +173,32 @@ const Meta = () => {
                                 value.map((element, index) =>
                                     <Typography key={index} component="pre" variant="caption" className={classes.raw}>
                                         <strong>{key}:</strong>{' '}
-                                        <Link href={createSearchUrl(element.toString(), key, collection, hash)} shallow>
-                                            <a title="search this value">{element.toString()}</a>
-                                        </Link>
-                                        {mergedSearch && (
-                                            <IconButton size="small" onClick={handleAddSearch(key, element.toString())}>
-                                                <CallMade className={classes.rawIcon} />
-                                            </IconButton>
-                                        )}
+                                        <span
+                                            className={classes.searchField}
+                                            onClick={handleLinkClick(key, element.toString())}
+                                        >
+                                            {element.toString()}
+                                        </span>
                                     </Typography>
                                 ) :
                                 <Typography key={key} component="pre" variant="caption" className={classes.raw}>
                                     <strong>{key}:</strong>{' '}
-                                    <Link href={createSearchUrl(value.toString(), key, collection, hash)} shallow>
-                                        <a title="search this value">{description}</a>
-                                    </Link>
-                                    {mergedSearch && (
-                                        <IconButton size="small" onClick={handleAddSearch(key, value.toString())}>
-                                            <CallMade className={classes.rawIcon} />
-                                        </IconButton>
-                                    )}
+                                    <span
+                                        className={classes.searchField}
+                                        onClick={handleLinkClick(key, value.toString())}
+                                    >
+                                        {description}
+                                    </span>
                                 </Typography>
                         )
                     })
                 }
             </Box>
+            <LinkMenu
+                link={currentLink}
+                anchorPosition={menuPosition}
+                onClose={handleLinkMenuClose}
+            />
         </>
     )
 }

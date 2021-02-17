@@ -1,9 +1,7 @@
 import qs from 'qs'
 import { DateTime } from 'luxon'
-import { aggregationFields } from './constants/aggregationFields'
-import { formatsValue } from './components/search/filters/DateHistogramFilter'
-import { DEFAULT_INTERVAL } from './constants/general'
 import { daysInMonth } from './utils'
+import { aggregationFields } from './constants/aggregationFields'
 
 export const defaultSearchParams = {
     page: 1,
@@ -50,7 +48,7 @@ export const buildSearchQuerystring = (params) => (
 
 export const clearQuotedParam = param => param.replace(/#/g, ' ').replace(/"/g, '')
 
-export const createSearchParams = (field, term, interval = DEFAULT_INTERVAL) => {
+export const createSearchParams = (field, term) => {
     const params = {}
 
     if (aggregationFields[field]) {
@@ -58,59 +56,46 @@ export const createSearchParams = (field, term, interval = DEFAULT_INTERVAL) => 
         params.filters = {}
 
         if (aggregationFields[field].type === 'date') {
-            if (typeof term === 'string') {
-                const bucket = DateTime
-                    .fromISO(term, { setZone: true })
-                    .toFormat(formatsValue[interval])
+            switch (term.format) {
+                case 'year':
+                    const year = term.term.substring(0, 4)
+                    params.filters[field] = {
+                        from: `${year}-01-01`,
+                        to: `${year}-12-31`,
+                    }
+                    break
 
-                params.filters[field] = { intervals: { include: [bucket] } }
+                case 'month':
+                    const month = term.term.substring(0, 7)
+                    params.filters[field] = {
+                        from: `${month}-01`,
+                        to: `${month}-${daysInMonth(month)}`,
+                    }
+                    break
 
-                if (interval !== DEFAULT_INTERVAL) {
-                    params.filters[field].interval = interval
-                }
+                case 'week':
+                    const week = term.term.substring(0, 10)
+                    const dateTime = DateTime.fromISO(week)
+                    params.filters[field] = {
+                        from: DateTime.fromObject({
+                                weekYear: dateTime.weekYear,
+                                weekNumber: dateTime.weekNumber,
+                                weekday: 1
+                            }).toISODate(),
+                        to: DateTime.fromObject({
+                                weekYear: dateTime.weekYear,
+                                weekNumber: dateTime.weekNumber,
+                                weekday: 7
+                            }).toISODate(),
+                    }
+                    break
 
-            } else if (term.format) {
-                switch (term.format) {
-                    case 'year':
-                        const year = term.term.substring(0, 4)
-                        params.filters[field] = {
-                            from: `${year}-01-01`,
-                            to: `${year}-12-31`,
-                        }
-                        break
-
-                    case 'month':
-                        const month = term.term.substring(0, 7)
-                        params.filters[field] = {
-                            from: `${month}-01`,
-                            to: `${month}-${daysInMonth(month)}`,
-                        }
-                        break
-
-                    case 'week':
-                        const week = term.term.substring(0, 10)
-                        const dateTime = DateTime.fromISO(week)
-                        params.filters[field] = {
-                            from: DateTime.fromObject({
-                                    weekYear: dateTime.weekYear,
-                                    weekNumber: dateTime.weekNumber,
-                                    weekday: 1
-                                }).toISODate(),
-                            to: DateTime.fromObject({
-                                    weekYear: dateTime.weekYear,
-                                    weekNumber: dateTime.weekNumber,
-                                    weekday: 7
-                                }).toISODate(),
-                        }
-                        break
-
-                    case 'day':
-                        const day = term.term.substring(0, 10)
-                        params.filters[field] = {
-                            from: day,
-                            to: day,
-                        }
-                }
+                case 'day':
+                    const day = term.term.substring(0, 10)
+                    params.filters[field] = {
+                        from: day,
+                        to: day,
+                    }
             }
 
         } else {
@@ -126,8 +111,8 @@ export const createSearchParams = (field, term, interval = DEFAULT_INTERVAL) => 
     return params
 }
 
-export const createSearchUrl = (term, field, collections, hash, interval) => {
-    const params = createSearchParams(field, term, interval)
+export const createSearchUrl = (term, field, collections, hash) => {
+    const params = createSearchParams(field, term)
     const hashParams = hash ? '#' + qs.stringify(rollupParams(hash)) : ''
 
     params.collections = Array.isArray(collections) ? collections : [collections]
