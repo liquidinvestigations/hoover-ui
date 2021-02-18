@@ -140,6 +140,13 @@ const buildHistogramField = (field, username, { interval = DEFAULT_INTERVAL, int
     } : null,
 })
 
+const buildMissingField = field => ({
+    field: `${field}-missing`,
+    aggregation: {
+        missing: { field },
+    }
+})
+
 const buildFilter = fields => {
     const filter = fields.map(field => field.filterClause).filter(Boolean)
     const must_not = fields.map(field => field.filterExclude).filter(Boolean)
@@ -179,6 +186,7 @@ const buildSearchQuery = ({ q = '*', page = 1, size = 0, order, collections = []
         ...['date', 'date-created'].map(field =>
             buildHistogramField(field, uuid, filters[field], facets[field]),
         ),
+        ...['date', 'date-created'].map(buildMissingField),
         ...['tags', 'priv-tags', 'filetype', 'lang',
             'email-domains', 'from.keyword', 'to.keyword', 'path-parts'].map(field =>
             buildTermsField(field, uuid, filters[field], facets[field])

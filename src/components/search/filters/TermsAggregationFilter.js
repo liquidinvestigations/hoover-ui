@@ -3,10 +3,10 @@ import isEqual from 'react-fast-compare'
 import Expandable from '../../Expandable'
 import AggregationFilter from './AggregationFilter'
 
-function TermsAggregationFilter({ title, field, queryFilter, queryFacets, aggregations,
+function TermsAggregationFilter({ title, field, queryFilter, aggregations,
                                     emptyDisabled = false, ...rest }) {
 
-    const enabled = !emptyDisabled || !!aggregations?.values.buckets.length || !isNaN(parseInt(queryFacets))
+    const enabled = !emptyDisabled || !!aggregations?.values.buckets.length
 
     const defaultOpen = !!queryFilter?.include?.length || !!queryFilter?.exclude?.length
 
@@ -19,7 +19,6 @@ function TermsAggregationFilter({ title, field, queryFilter, queryFacets, aggreg
             <AggregationFilter
                 field={field}
                 queryFilter={queryFilter}
-                queryFacets={queryFacets}
                 aggregations={aggregations}
                 triState
                 {...rest}

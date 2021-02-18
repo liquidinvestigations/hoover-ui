@@ -39,17 +39,17 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const deleteFilterNode = (filters, node) => {
-    if (node.field === '<implicit>') {
-        const filterName = node.boost === 1 ? 'date-created' : 'date'
-        const list = filters[filterName].intervals.include
-        const index = list.indexOf(node.term)
+    if (aggregationFields[node.field].type === 'date') {
+        let index
+        const list = filters[node.field].intervals?.include
 
-        if (index > -1) {
+        if ((index = list?.indexOf(node.term)) > -1) {
             list.splice(index, 1)
         }
 
-    } else if (node.term_min && node.term_max) {
-        filters[node.field].from = filters[node.field].to = undefined
+        if (node.term_min && node.term_max) {
+            filters[node.field].from = filters[node.field].to = undefined
+        }
 
     } else if (node.term) {
         let index
@@ -83,65 +83,62 @@ export default function FiltersChips() {
     const [ parsedFilters, setParsedFilters ] = useState()
 
     useEffect(() => {
-        try {
-            if (query.filters) {
-                const filtersArray = []
+        if (query.filters) {
+            const filtersArray = []
 
-                Object.entries(query.filters).forEach(([key, values]) => {
-                    let filter = ''
-                    if (values.from && values.to) {
-                        filter = `${key}:[${values.from} TO ${values.to}]`
-                    }
-                    const intervalsArray = []
-                    values.intervals?.include?.forEach(value => {
-                        if (key === 'date-created') {
-                            intervalsArray.push(`${value}^1`)
-                        } else {
-                            intervalsArray.push(value)
-                        }
-                    })
-                    if (filter) {
-                        if (intervalsArray.length) {
-                            filtersArray.push(`(${[filter, `(${intervalsArray.join(' OR ')})`].join(' AND ')})`)
-                        } else {
-                            filtersArray.push(`(${filter})`)
-                        }
-                    } else if (intervalsArray.length) {
-                        filtersArray.push(`(${intervalsArray.join(' OR ')})`)
-                    }
-
-                    const includeArray = []
-                    const includeOperator = aggregationFields[key].type === 'term-and' ? ' AND ' : ' OR '
-                    values.include?.forEach(value => {
-                        includeArray.push(`${key}:"${clearQuotedParam(value)}"`)
-                    })
-                    if (includeArray.length) {
-                        if (includeArray.length > 1) {
-                            filtersArray.push(`(${includeArray.join(includeOperator)})`)
-                        } else {
-                            filtersArray.push(`${includeArray[0]}`)
-                        }
-                    }
-
-                    const excludeArray = []
-                    values.exclude?.forEach(value => {
-                        excludeArray.push(`(${key}:-"${clearQuotedParam(value)}")`)
-                    })
-                    if (excludeArray.length) {
-                        if (excludeArray.length > 1) {
-                            filtersArray.push(`(${excludeArray.join(' AND ')})`)
-                        } else {
-                            filtersArray.push(`${excludeArray[0]}`)
-                        }
-                    }
+            Object.entries(query.filters).forEach(([key, values]) => {
+                let filter = ''
+                if (values.from && values.to) {
+                    filter = `${key}:[${values.from} TO ${values.to}]`
+                }
+                const intervalsArray = []
+                values.intervals?.include?.forEach(value => {
+                    intervalsArray.push(`${key}:${value}`)
                 })
+                if (filter) {
+                    if (intervalsArray.length) {
+                        filtersArray.push(`(${[filter, `(${intervalsArray.join(' OR ')})`].join(' AND ')})`)
+                    } else {
+                        filtersArray.push(`(${filter})`)
+                    }
+                } else if (intervalsArray.length) {
+                    filtersArray.push(`(${intervalsArray.join(' OR ')})`)
+                }
 
+                const includeArray = []
+                const includeOperator = aggregationFields[key]?.type === 'term-and' ? ' AND ' : ' OR '
+                values.include?.forEach(value => {
+                    includeArray.push(`${key}:"${clearQuotedParam(value)}"`)
+                })
+                if (includeArray.length) {
+                    if (includeArray.length > 1) {
+                        filtersArray.push(`(${includeArray.join(includeOperator)})`)
+                    } else {
+                        filtersArray.push(`${includeArray[0]}`)
+                    }
+                }
+
+                const excludeArray = []
+                values.exclude?.forEach(value => {
+                    excludeArray.push(`(${key}:-"${clearQuotedParam(value)}")`)
+                })
+                if (excludeArray.length) {
+                    if (excludeArray.length > 1) {
+                        filtersArray.push(`(${excludeArray.join(' AND ')})`)
+                    } else {
+                        filtersArray.push(`${excludeArray[0]}`)
+                    }
+                }
+            })
+
+            if (filtersArray.length) {
                 setParsedFilters(lucene.parse(filtersArray.join(' AND ')))
             } else {
                 setParsedFilters(null)
             }
-
-        } catch {}
+        } else {
+            setParsedFilters(null)
+        }
     }, [query])
 
     const handleDelete = useCallback(node => {
@@ -155,27 +152,22 @@ export default function FiltersChips() {
         }
 
         let label
-        if (q.field !== '<implicit>') {
-            const name = aggregationFields[q.field]?.chipLabel
-            if (q.term_min && q.term_max) {
-                className += ' ' + classes.dateChip
-                label = (
-                    <span>
-                        <strong>{name}:</strong>{' '}
-                        {q.term_min} to {q.term_max}
-                    </span>
-                )
-            } else {
-                label = (
-                    <span>
-                        <strong>{name}:</strong>{' '}
-                        {shortenName(q.term)}
-                    </span>
-                )
-            }
+        const name = aggregationFields[q.field]?.chipLabel
+        if (q.term_min && q.term_max) {
+            className += ' ' + classes.dateChip
+            label = (
+                <span>
+                    <strong>{name}:</strong>{' '}
+                    {q.term_min} to {q.term_max}
+                </span>
+            )
         } else {
-            className += ' ' + classes.dateBucketChip
-            label = <span>{q.term}</span>
+            label = (
+                <span>
+                    <strong>{name}:</strong>{' '}
+                    {shortenName(q.term)}
+                </span>
+            )
         }
 
         return (

@@ -68,7 +68,9 @@ function QueryChips() {
     useEffect(() => {
         try {
             setParsedQuery(lucene.parse(query.q))
-        } catch {}
+        } catch {
+            setParsedQuery(null)
+        }
     }, [query])
 
     const handleDelete = useCallback(node => {
@@ -128,7 +130,7 @@ function QueryChips() {
     const renderMenu = useCallback(isExpression =>
         `delete selected ${isExpression ? 'expression' : 'term'}`, [])
 
-    return query && parsedQuery ?
+    return query.q && parsedQuery ?
         <Box>
             <Typography variant="h6" className={classes.treeTitle}>
                 Query

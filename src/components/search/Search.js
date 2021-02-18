@@ -11,6 +11,7 @@ import { useSearch } from './SearchProvider'
 import HotKeys from './HotKeys'
 import FiltersChips from './filters/FiltersChips'
 import QueryChips from './QueryChips'
+import Histogram from './filters/Histogram'
 import SearchResults from './Results'
 import Filters from './filters/Filters'
 import CollectionsFilter from './filters/CollectionsFilter'
@@ -50,7 +51,7 @@ const useStyles = makeStyles(theme => ({
 export default function Search({ collections }) {
     const classes = useStyles()
     const inputRef = useRef()
-    const { query, error, search, results, resultsLoading, clearResults,
+    const { query, error, search, resultsLoading, clearResults, collectionsCount,
         selectedDocData, previewNextDoc, previewPreviousDoc } = useSearch()
 
     useEffect(() => {
@@ -127,7 +128,7 @@ export default function Search({ collections }) {
                                         collections={collections}
                                         selected={query.collections || []}
                                         changeSelection={handleCollectionsChange}
-                                        counts={results?.count_by_index}
+                                        counts={collectionsCount}
                                     />
                                 </Expandable>
                             </List>
@@ -187,6 +188,10 @@ export default function Search({ collections }) {
                                 <FiltersChips />
 
                                 <QueryChips />
+
+                                <Histogram title="Date modified" field="date" />
+
+                                <Histogram title="Date created" field="date-created" />
 
                                 <div className={classes.sorting}>
                                     <SortingChips />

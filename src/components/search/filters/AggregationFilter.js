@@ -1,21 +1,20 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo } from 'react'
 import cn from 'classnames'
 import isEqual from 'react-fast-compare'
 import { makeStyles } from '@material-ui/core/styles'
 import {
     Button,
     Checkbox,
-    CircularProgress,
     Grid,
-    IconButton,
     List,
     ListItem,
     ListItemText,
     Typography
 } from '@material-ui/core'
+import Pagination from './Pagination'
+import MoreButton from './MoreButton'
 import { formatThousands } from '../../../utils'
-import { DEFAULT_FACET_SIZE } from '../../../constants/general'
-import { NavigateBefore, NavigateNext } from '@material-ui/icons'
+import { aggregationFields } from '../../../constants/aggregationFields'
 
 const useStyles = makeStyles(theme => ({
     checkbox: {
@@ -38,22 +37,11 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function AggregationFilter({ field, queryFilter, queryFacets, aggregations, loading, onChange,
-                               onPagination, onLoadMore, triState, bucketLabel, bucketSubLabel, bucketValue }) {
+function AggregationFilter({ field, queryFilter, aggregations, loading, onChange,
+                               triState, bucketLabel, bucketSubLabel, bucketValue }) {
 
     const classes = useStyles()
-
     const aggregation = aggregations?.values
-    const cardinality = aggregations?.count
-
-    const pageParam = parseInt(queryFacets)
-    const page = isNaN(pageParam) ? 1 : pageParam
-
-    const [buttonClicked, setButtonClicked] = useState(false)
-
-    useEffect(() => {
-        setButtonClicked(false)
-    }, [aggregation])
 
     const handleChange = value => () => {
         const include = new Set(queryFilter?.include || [])
@@ -76,23 +64,7 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
         })
     }
 
-    const handleReset = () => {
-        setButtonClicked(true)
-        onChange(field, [], true)
-    }
-
-    const handlePrev = () => {
-        setButtonClicked(true)
-        onPagination(field, page - 1)
-    }
-    const handleNext = () => {
-        setButtonClicked(true)
-        onPagination(field, page + 1)
-    }
-    const handleLoadMore = () => {
-        setButtonClicked(true)
-        onLoadMore(field, page + 1)
-    }
+    const handleReset = () => onChange(field, [], true)
 
     const renderBucket = bucket => {
         const label = bucketLabel ? bucketLabel(bucket) : bucket.key
@@ -143,10 +115,7 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
         )
     }
 
-    const hasNext = onPagination && aggregation?.buckets.length >= DEFAULT_FACET_SIZE
-    const hasPrev = onPagination && page > 1
-    const hasMore = onLoadMore && cardinality?.value > page * DEFAULT_FACET_SIZE
-    const disableReset = loading || (!queryFilter?.include?.length && !queryFilter?.exclude?.length && page === 1)
+    const disableReset = loading || (!queryFilter?.include?.length && !queryFilter?.exclude?.length)
 
     return (
         <List dense>
@@ -155,51 +124,10 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
             <ListItem dense>
                 <Grid container alignItems="center" justify="space-between">
                     <Grid item>
-                        {(hasPrev || hasNext) && (
-                            <>
-                                <IconButton
-                                    size="small"
-                                    tabIndex="-1"
-                                    onClick={handlePrev}
-                                    disabled={loading || !hasPrev}>
-                                    <NavigateBefore/>
-                                </IconButton>
-
-                                <IconButton
-                                    size="small"
-                                    onClick={handleNext}
-                                    disabled={loading || !hasNext}>
-                                    <NavigateNext/>
-                                </IconButton>
-
-                                {buttonClicked && loading && (
-                                    <CircularProgress
-                                        size={18}
-                                        thickness={5}
-                                        className={classes.loading}
-                                    />
-                                )}
-                            </>
-                        )}
-                        {hasMore && (
-                            <>
-                                <Button
-                                    size="small"
-                                    disabled={loading}
-                                    variant="text"
-                                    onClick={handleLoadMore}>
-                                    More ({cardinality.value - page * DEFAULT_FACET_SIZE})
-                                </Button>
-
-                                {buttonClicked && loading && (
-                                    <CircularProgress
-                                        size={18}
-                                        thickness={5}
-                                        className={classes.loading}
-                                    />
-                                )}
-                            </>
-                        )}
+                        {aggregationFields[field].type === 'date' ?
+                            <Pagination field={field} /> :
+                            <MoreButton field={field} />
+                        }
                     </Grid>
                     <Grid item>
                         <Button
