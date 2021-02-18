@@ -85,24 +85,24 @@ function Histogram({ title, field }) {
         handleBarMenuClose()
 
         const { [field]: prevFilter, ...restFilters } = query.filters || {}
-        const { intervals, ...rest } = prevFilter || {}
+        const { intervals, ...restParams } = prevFilter || {}
 
         if (include.length) {
-            search({ filters: { [field]: { intervals: { include: include }, ...rest }, ...restFilters }, page: 1 })
+            search({ filters: { [field]: { intervals: { include }, ...restParams }, ...restFilters }, page: 1 })
         } else {
-            search({ filters: { [field]: rest, ...restFilters }, page: 1 })
+            search({ filters: { [field]: restParams, ...restFilters }, page: 1 })
         }
     }
 
     const handleIntervalsAdd = useCallback(() => {
-        const { [field]: prevFilter } = query.filters
+        const { [field]: prevFilter } = query.filters || {}
         const { intervals } = prevFilter || {}
 
         handleIntervalsChange(Array.from(new Set([...(intervals?.include || []), ...selectedBars])))
     }, [query, search, selectedBars])
 
     const handleIntervalsRemove = useCallback(() => {
-        const { [field]: prevFilter } = query.filters
+        const { [field]: prevFilter } = query.filters || {}
         const { intervals } = prevFilter || {}
 
         handleIntervalsChange((intervals?.include || []).filter(v => {
