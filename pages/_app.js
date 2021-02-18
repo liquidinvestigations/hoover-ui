@@ -11,7 +11,11 @@ import { whoami } from '../src/backend/api'
 import UserProvider from '../src/components/UserProvider'
 import HashStateProvider from '../src/components/HashStateProvider'
 import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
-import '../styles/main.scss'
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css'
+import 'finderjs/example/finderjs.css'
+import '../styles/finder.css'
+import '../styles/resizer.css'
+import '../styles/main.css'
 
 export default function HooverApp({ Component, pageProps, whoAmI }) {
     useEffect(() => {

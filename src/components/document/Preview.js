@@ -1,6 +1,6 @@
 import React, { memo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import PDFViewer from './PDFViewer'
+import PDFViewer from './PDFViewerDynamic'
 import { useDocument } from './DocumentProvider'
 
 // List copy/pasted from https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types

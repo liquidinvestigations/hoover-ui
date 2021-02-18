@@ -1,12 +1,23 @@
-const withSass = require('@zeit/next-sass')
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 const { API_URL, REWRITE_API } = process.env
 
-module.exports = withSass({
+module.exports = {
     cssModules: false,
     webpack(config, options) {
-        config.plugins.push(new LodashModuleReplacementPlugin());
+        config.plugins.push(
+            new LodashModuleReplacementPlugin(),
+            new CopyWebpackPlugin({
+                patterns: [
+                    {
+                        from: './node_modules/pdfjs-dist/cmaps',
+                        to: './public/cmaps',
+                    },
+                ],
+            }),
+        );
+
         config.module.rules.push({
             test: /\.(png|jpg|gif)$/i,
             use: [
@@ -59,4 +70,4 @@ module.exports = withSass({
         source: '/api/v0/doc/:collection/:hash/ocr/:tag',
         destination: API_URL + '/api/v0/doc/:collection/:hash/ocr/:tag',
     }] : [],
-})
+}

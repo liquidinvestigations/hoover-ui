@@ -9,7 +9,7 @@ import { useDocument } from './DocumentProvider'
 import TabPanel from './TabPanel'
 import Email from './Email'
 import Files from './Files'
-import PDFViewer from './PDFViewer'
+import PDFViewer from './PDFViewerDynamic'
 import { createOcrUrl } from '../../backend/api'
 
 const useStyles = makeStyles(theme => ({
@@ -59,20 +59,22 @@ function SubTabs() {
     return (
         <>
             {!printMode && tabs.length > 1 && (
-                <Tabs
-                    value={subTab}
-                    onChange={handleSubTabChange}
-                    variant="scrollable"
-                    scrollButtons="auto"
-                >
-                    {tabs.map(({ icon, name }, index) => (
-                        <Tab
-                            key={index}
-                            icon={icon}
-                            label={name}
-                        />
-                    ))}
-                </Tabs>
+                <Box>
+                    <Tabs
+                        value={subTab}
+                        onChange={handleSubTabChange}
+                        variant="scrollable"
+                        scrollButtons="auto"
+                    >
+                        {tabs.map(({ icon, name }, index) => (
+                            <Tab
+                                key={index}
+                                icon={icon}
+                                label={name}
+                            />
+                        ))}
+                    </Tabs>
+                </Box>
             )}
 
             <Box className={classes.subTab}>
@@ -94,13 +96,12 @@ function SubTabs() {
 
                     return !preview ? null : (
                         <TabPanel
+                            key={index}
                             value={subTab}
                             index={index}
                             alwaysVisible={printMode}
                         >
-                            <Box m={1}>
-                                {preview}
-                            </Box>
+                            {preview}
                         </TabPanel>
                     )
                 })}
