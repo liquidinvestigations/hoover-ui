@@ -39,6 +39,8 @@ export function SearchProvider({ children, serverQuery }) {
         }
     }, [hashState])
 
+    const [collectionsCount, setCollectionsCount] = useState([])
+
     const [error, setError] = useState()
     const [results, setResults] = useState()
     const [resultsLoading, setResultsLoading] = useState(!!query.q)
@@ -50,6 +52,7 @@ export function SearchProvider({ children, serverQuery }) {
             searchAPI(query).then(results => {
                 setResults(results)
                 setResultsLoading(false)
+                setCollectionsCount(results.count_by_index)
 
                 if (previewOnLoad === 'first') {
                     setPreviewOnLoad(null)
@@ -93,6 +96,7 @@ export function SearchProvider({ children, serverQuery }) {
             aggregationsAPI(query).then(results => {
                 setAggregations(results.aggregations)
                 setAggregationsLoading(false)
+                setCollectionsCount(results.count_by_index)
             }).catch(error => {
                 setAggregations(null)
                 //setError(error.reason ? error.reason : error.message)
@@ -110,6 +114,9 @@ export function SearchProvider({ children, serverQuery }) {
 
     const clearResults = () => {
         setResults(null)
+        setAggregations(null)
+        setCollectionsCount(null)
+        setSelectedDocData(null)
     }
 
     const currentIndex = results?.hits.hits.findIndex(
@@ -143,7 +150,7 @@ export function SearchProvider({ children, serverQuery }) {
 
     return (
         <SearchContext.Provider value={{
-            query, error, search, results, aggregations,
+            query, error, search, results, aggregations, collectionsCount,
             resultsLoading, aggregationsLoading,
             previewNextDoc, previewPreviousDoc, selectedDocData,
             clearResults

@@ -74,6 +74,7 @@ export function DocumentProvider({ children, collection, id, path, fullPage, pri
                 setLoading(false)
             })
         } else {
+            setData(null)
             setLoading(false)
         }
     }, [collection, id, path])

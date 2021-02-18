@@ -55,6 +55,8 @@ function Histogram({ title, field }) {
     useEffect(() => {
         if (hashState?.histogram?.[field]) {
             setOpen(true)
+        } else {
+            setOpen(false)
         }
     }, [hashState])
 
