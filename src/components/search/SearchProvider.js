@@ -68,6 +68,8 @@ export function SearchProvider({ children, serverQuery }) {
                 setError(error.reason ? error.reason : error.message)
                 setResultsLoading(false)
             })
+        } else {
+            setResults(null)
         }
     }, [JSON.stringify({
         ...query,
