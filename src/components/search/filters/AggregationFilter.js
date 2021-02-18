@@ -11,9 +11,10 @@ import {
     ListItemText,
     Typography
 } from '@material-ui/core'
-import { formatThousands } from '../../../utils'
 import Pagination from './Pagination'
 import MoreButton from './MoreButton'
+import { formatThousands } from '../../../utils'
+import { aggregationFields } from '../../../constants/aggregationFields'
 
 const useStyles = makeStyles(theme => ({
     checkbox: {
@@ -123,8 +124,10 @@ function AggregationFilter({ field, queryFilter, aggregations, loading, onChange
             <ListItem dense>
                 <Grid container alignItems="center" justify="space-between">
                     <Grid item>
-                        <Pagination field={field} />
-                        <MoreButton field={field} />
+                        {aggregationFields[field].type === 'date' ?
+                            <Pagination field={field} /> :
+                            <MoreButton field={field} />
+                        }
                     </Grid>
                     <Grid item>
                         <Button

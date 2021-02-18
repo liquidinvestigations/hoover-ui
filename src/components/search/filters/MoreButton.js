@@ -15,15 +15,15 @@ export default function MoreButton ({ field }) {
     const classes = useStyles()
     const { aggregations, aggregationsLoading, resultsLoading, query, search } = useSearch()
 
-    const handleLoadMore = page => {
-        const facets = query.facets || {}
-        search({ facets: { ...facets, [key]: page }, page: 1 })
-    }
-
     const pageParam = parseInt(query.facets?.[field])
     const page = isNaN(pageParam) ? 1 : pageParam
 
-    const cardinality = aggregations?.[field]?.values.count
+    const handleLoadMore = () => {
+        const facets = query.facets || {}
+        search({ facets: { ...facets, [field]: page + 1 }, page: 1 })
+    }
+
+    const cardinality = aggregations?.[field]?.count
     const hasMore = cardinality?.value > page * DEFAULT_FACET_SIZE
 
     const loading = aggregationsLoading || resultsLoading
