@@ -29,11 +29,21 @@ All servers listen on port 8000.
 
 ## Development
 
-Run Liquid Investigations with `mount_local_repos` = True.
+You can work on this repository by either using some already existing backend service (that you have a login for) or you can run the whole stack locally.
+
+
+### Only run the UI code, use existing backend
 
 To run UI on localhost set environment variable `API_URL=https://your.server.url` and `REWRITE_API=true`
 
 In order to get authorized just copy OAuth2 proxy cookie.
+
+
+### Run the whole stack locally
+
+You will need to meet the [hardware requirements](https://github.com/liquidinvestigations/docs/wiki/Hardware-requirements#storage) - have at least 16GB RAM free if you only want to run Hoover.
+Run Liquid Investigations with [`mount_local_repos` = True](https://github.com/liquidinvestigations/node/blob/master/docs/Development.md). You can change the code in your local repository there.
+
 
 ## Node upgrade
 
