@@ -9,7 +9,7 @@ import { useDocument } from './DocumentProvider'
 import TabPanel from './TabPanel'
 import Email from './Email'
 import Files from './Files'
-import PDFViewer from './PDFViewerDynamic'
+import PDFViewer from './pdf-viewer/Dynamic'
 import { createOcrUrl } from '../../backend/api'
 
 const useStyles = makeStyles(theme => ({
