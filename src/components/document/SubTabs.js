@@ -97,6 +97,7 @@ function SubTabs() {
                     return !preview ? null : (
                         <TabPanel
                             key={index}
+                            padding={0}
                             value={subTab}
                             index={index}
                             alwaysVisible={printMode}

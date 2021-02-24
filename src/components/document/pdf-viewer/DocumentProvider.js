@@ -6,16 +6,21 @@ if (typeof window !== 'undefined' && 'Worker' in window) {
     GlobalWorkerOptions.workerSrc = '/_next/static/pdf.worker.js'
 }
 
-const STATUS_LOADING = 'loading'
-const STATUS_COMPLETE = 'complete'
-const STATUS_ERROR = 'error'
-const STATUS_NEED_PASSWORD = 'need-password'
-const STATUS_INCORRECT_PASSWORD = 'incorrect-password'
+export const STATUS_LOADING = 'loading'
+export const STATUS_COMPLETE = 'complete'
+export const STATUS_ERROR = 'error'
+export const STATUS_NEED_PASSWORD = 'need-password'
+export const STATUS_INCORRECT_PASSWORD = 'incorrect-password'
 
 const DocumentContext = createContext(null)
 
 export default function DocumentProvider({ url, cMaps, cMapsPacked, withCredentials, children }) {
     const [doc, setDoc] = useState(null)
+    const [firstPageData, setFirstPageData] = useState({
+        width: 0,
+        height: 0,
+        scale: 1
+    })
     const [error, setError] = useState(null)
     const [percent, setPercent] = useState(0)
     const [status, setStatus] = useState(STATUS_LOADING)
@@ -50,7 +55,14 @@ export default function DocumentProvider({ url, cMaps, cMapsPacked, withCredenti
         loadingTask.promise.then(
             doc => {
                 setDoc(doc)
-                setStatus(STATUS_COMPLETE)
+                doc.getPage(1).then(page => {
+                    const { width, height, scale } = page.getViewport({ scale: 1 })
+
+                    setFirstPageData({
+                        width, height, scale
+                    })
+                    setStatus(STATUS_COMPLETE)
+                })
             },
             err => {
                 setError(err)
@@ -65,7 +77,7 @@ export default function DocumentProvider({ url, cMaps, cMapsPacked, withCredenti
     }, [url])
 
     return (
-        <DocumentContext.Provider value={{ doc, error, status, percent }}>
+        <DocumentContext.Provider value={{ doc, firstPageData, error, status, percent }}>
             {children}
         </DocumentContext.Provider>
     )

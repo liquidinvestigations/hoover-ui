@@ -1,4 +1,4 @@
-import React, { cloneElement, memo, useState } from 'react'
+import React, { cloneElement, useState } from 'react'
 import cn from 'classnames'
 import { Box, ButtonBase, Menu, MenuItem } from '@material-ui/core'
 import { DEFAULT_OPERATOR } from '../../constants/general'

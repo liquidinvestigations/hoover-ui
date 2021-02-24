@@ -1,3 +1,8 @@
+@import '~pdfjs-dist/web/pdf_viewer.css';
+@import '~finderjs/example/finderjs.css';
+@import "finder.css";
+@import "resizer.css";
+
 main {
     font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }

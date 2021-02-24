@@ -17,17 +17,15 @@ module.exports = withPlugins([ withTM ],
                             from: './node_modules/pdfjs-dist/cmaps',
                             to: './static/cmaps',
                         },
+                        {
+                            from: './node_modules/pdfjs-dist/web/images/annotation-*',
+                            to: './static/media/annotation/[name].[ext]',
+                        },
                     ],
                 }),
             );
 
             config.module.rules.push({
-                test: /\.(png|jpg|gif)$/i,
-                loader: 'url-loader',
-                options: {
-                    limit: 8192,
-                },
-            },{
                 test: /\.svg$/,
                 use: ['@svgr/webpack', 'url-loader'],
             },{
