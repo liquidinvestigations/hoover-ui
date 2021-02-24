@@ -1,0 +1,11 @@
+rules-config:
+  no-recent-package-release:
+    warn-at-months: 6
+    fail-at-months: 27
+  no-recent-commit:
+    warn-at-months: 6
+    fail-at-months: 27
+  few-yearly-commits:
+    warn-at-count: 5
+    # few-yearly-commits only warns by default, unless fail-at-count is set
+    # fail-at-count: 6
