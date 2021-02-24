@@ -13,5 +13,5 @@ ignore-failures:
   - langs
   - cross-env
   - classnames
-  - @zeit/next-sass
-  - @zeit/next-css
+  - "@zeit/next-sass"
+  - "@zeit/next-css"
