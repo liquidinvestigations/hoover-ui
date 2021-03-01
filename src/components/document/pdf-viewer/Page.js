@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { forwardRef, useEffect, useState } from 'react'
 import Loading from '../../Loading'
 import CanvasLayer from './layers/CanvasLayer'
 import SVGLayer from './layers/SVGLayer'
 import TextLayer from './layers/TextLayer'
 import AnnotationLayer from './layers/AnnotationLayer'
 
-export default function Page({ doc, pageIndex, width, height, rotation, scale }) {
+export default forwardRef(({ doc, renderer, pageIndex, width, height, rotation, scale, onVisibilityChanged }, pageRef) => {
     const [pageData, setPageData] = useState({
         page: null,
         width, height, rotation
@@ -21,16 +21,18 @@ export default function Page({ doc, pageIndex, width, height, rotation, scale })
         })
     }
 
-    const pageRef = useRef()
-
     useEffect(() => {
         const observer = new IntersectionObserver(
             entries => {
                 entries.forEach(entry => {
-                    if (entry.isIntersecting) {
+                    if (entry.isIntersecting && pageData.page === null) {
                         getPageData()
                     }
+                    onVisibilityChanged(pageIndex, entry.intersectionRatio)
                 })
+            },
+            {
+                threshold: [0, 0.5]
             }
         )
         if (pageRef.current) {
@@ -66,20 +68,24 @@ export default function Page({ doc, pageIndex, width, height, rotation, scale })
         >
             {!page ? <Loading /> :
                 <>
-                    <CanvasLayer
-                        page={page}
-                        width={elementWidth}
-                        height={elementHeight}
-                        rotation={normalizedRotation}
-                        scale={scale}
-                    />
-                    <SVGLayer
-                        page={page}
-                        width={elementWidth}
-                        height={elementHeight}
-                        rotation={normalizedRotation}
-                        scale={scale}
-                    />
+                    {renderer === 'canvas' && (
+                        <CanvasLayer
+                            page={page}
+                            width={elementWidth}
+                            height={elementHeight}
+                            rotation={normalizedRotation}
+                            scale={scale}
+                        />
+                    )}
+                    {renderer === 'svg' && (
+                        <SVGLayer
+                            page={page}
+                            width={elementWidth}
+                            height={elementHeight}
+                            rotation={normalizedRotation}
+                            scale={scale}
+                        />
+                    )}
                     <TextLayer
                         page={page}
                         rotation={normalizedRotation}
@@ -94,4 +100,4 @@ export default function Page({ doc, pageIndex, width, height, rotation, scale })
             }
         </div>
     )
-}
+})

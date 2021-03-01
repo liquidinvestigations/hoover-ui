@@ -8,7 +8,7 @@ export default function Viewer({
     cMapUrl = '/build/static/cmaps',
     cMapPacked = true,
     withCredentials = true,
-    onPageChange = () => {},
+    onPageIndexChange = () => {},
 }) {
     return (
         <DocumentProvider
@@ -19,7 +19,7 @@ export default function Viewer({
         >
             <Document
                 initialPage={initialPage}
-                onPageChange={onPageChange}
+                onPageIndexChange={onPageIndexChange}
             />
         </DocumentProvider>
     )

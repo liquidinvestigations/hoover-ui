@@ -42,7 +42,7 @@ const useStyles = makeStyles(theme => ({
         borderBottomStyle: 'solid',
         justifyContent: 'space-between',
     },
-    toolbarIcons: {
+    toolbarIcon: {
         marginRight: theme.spacing(1),
         '&:last-child': {
             marginRight: 0,
@@ -250,7 +250,7 @@ function Document({ onPrev, onNext }) {
                                     <IconButton
                                         size="small"
                                         component="a"
-                                        className={classes.toolbarIcons}
+                                        className={classes.toolbarIcon}
                                         {...props}>
                                         <Badge badgeContent={count} color="secondary">
                                             {icon}
