@@ -1,5 +1,4 @@
 import React, { memo } from 'react'
-import Text from './Text'
 import { Box, Tab, Tabs, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { FolderOutlined, Subject, TextFields } from '@material-ui/icons'
@@ -9,6 +8,7 @@ import { useDocument } from './DocumentProvider'
 import TabPanel from './TabPanel'
 import Email from './Email'
 import Files from './Files'
+import Text from './Text'
 import PDFViewer from './pdf-viewer/Dynamic'
 import { createOcrUrl } from '../../backend/api'
 
