@@ -67,7 +67,7 @@ export default function HotKeys({ children, inputRef  }) {
                 }
             },
         }
-    }), [hashState, data, previewNextDoc, previewPreviousDoc])
+    }), [JSON.stringify(hashState?.preview), data, previewNextDoc, previewPreviousDoc])
 
     return (
         <HotKeysWithHelp keys={keys}>

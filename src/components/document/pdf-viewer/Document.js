@@ -87,16 +87,18 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function Document({ initialPage, onPageIndexChange, renderer = 'canvas' }) {
+const pageMargin = 20
+
+export default function Document({ initialPageIndex, onPageIndexChange, renderer = 'canvas' }) {
     const classes = useStyles()
     const { doc, firstPageData, status, percent } = useDocument()
     const [rotation, setRotation] = useState(0)
     const [scale, setScale] = useState(1)
     const [pagesRefs, setPagesRefs] = useState([])
-    const [currentPageIndex, setCurrentPageIndex] = useState(initialPage || 1)
 
     const viewerRef = useRef()
     const containerRef = useRef()
+    const pageInputRef = useRef()
 
     useEffect(() => {
         if (doc?.numPages) {
@@ -108,16 +110,29 @@ export default function Document({ initialPage, onPageIndexChange, renderer = 'c
 
     useEffect(() => {
         if (firstPageData?.width && containerRef.current) {
-            if (firstPageData.width > containerRef.current.clientWidth - 50) {
-                setScale(zoomOut((containerRef.current.clientWidth - 50) / firstPageData.width))
+            const containerWidth = containerRef.current.clientWidth - pageMargin - 20
+            if (firstPageData.width > containerWidth) {
+                setScale(containerWidth / firstPageData.width)
             }
         }
     }, [firstPageData])
 
-    const onPageVisibilityChange = (pageIndex, ratio) => {
-        if (ratio >= 0.5) {
-            setCurrentPageIndex(pageIndex)
-            onPageIndexChange(pageIndex)
+    useEffect(() => {
+        if (status === STATUS_COMPLETE && initialPageIndex > 0 && pagesRefs[initialPageIndex]) {
+            scrollToPage(initialPageIndex)
+        }
+    }, [status])
+
+    const pageVisibility = Array(doc?.numPages || 0).fill().map(() => 0)
+
+    const onPageVisibilityChange = (changedPageIndex, ratio) => {
+        if (status === STATUS_COMPLETE) {
+            pageVisibility[changedPageIndex] = ratio
+            const maxRatioPage = pageVisibility.reduce(
+                (maxIndex, item, index, array) =>
+                    item > array[maxIndex] ? index : maxIndex, 0
+            )
+            onPageIndexChange(maxRatioPage)
         }
     }
 
@@ -126,55 +141,82 @@ export default function Document({ initialPage, onPageIndexChange, renderer = 'c
     const handleScaleMenuClose = () => setAnchorEl(null)
     const handleScaleSet = scale => () => {
         handleScaleMenuClose()
+        const containerWidth = containerRef.current.clientWidth - pageMargin
+        const containerHeight = containerRef.current.clientHeight - pageMargin
         if (scale === 'page') {
-
+            setScale(Math.min(containerWidth / firstPageData.width, containerHeight / firstPageData.height))
         } else if (scale === 'width') {
-
+            setScale(containerWidth / firstPageData.width)
         } else {
             setScale(scale)
         }
     }
 
-    const onPrevPage = () => containerRef.current.scrollTop = pagesRefs[currentPageIndex - 1].current.offsetTop
-    const onNextPage = () => containerRef.current.scrollTop = pagesRefs[currentPageIndex + 1].current.offsetTop
+    const scrollToPage = index => containerRef.current.scrollTop = pagesRefs[index].current.offsetTop
+
+    const onPrevPage = () => scrollToPage(initialPageIndex - 1)
+    const onNextPage = () => scrollToPage(initialPageIndex + 1)
+    const onPageFocus = () => pageInputRef.current.select()
+    const onPageChange = event => {
+        const page = parseInt(event.target.value)
+        if (!isNaN(page) && page > 0 && page <= doc?.numPages) {
+            scrollToPage(page - 1)
+        }
+    }
+
     const onZoomOut = () => setScale(zoomOut(scale))
     const onZoomIn = () => setScale(zoomIn(scale))
+
     const onFullScreen = () => viewerRef.current.requestFullscreen()
     const onFullScreenExit = () => document.exitFullscreen()
+
+    const popperProps = {
+        container: viewerRef.current
+    }
 
     return (
         <div ref={viewerRef} className={classes.viewer}>
             <Toolbar variant="dense" classes={{root: classes.toolbar}}>
                 <Grid container justify="space-between">
                     <Grid item>
-                        <Tooltip title="Previous page">
-                            <IconButton
-                                size="small"
-                                onClick={onPrevPage}
-                                disabled={currentPageIndex === 0}
-                                className={classes.toolbarIcon}
-                            >
-                                <ArrowUpward />
-                            </IconButton>
+                        <Tooltip title="Previous page" PopperProps={popperProps}>
+                            <span>
+                                <IconButton
+                                    size="small"
+                                    onClick={onPrevPage}
+                                    disabled={status === STATUS_LOADING || initialPageIndex === 0}
+                                    className={classes.toolbarIcon}
+                                >
+                                    <ArrowUpward />
+                                </IconButton>
+                            </span>
                         </Tooltip>
-                        <Tooltip title="Next page">
-                            <IconButton
-                                size="small"
-                                onClick={onNextPage}
-                                disabled={currentPageIndex === doc?.numPages - 1}
-                                className={classes.toolbarIcon}
-                            >
-                                <ArrowDownward />
-                            </IconButton>
+                        <Tooltip title="Next page" PopperProps={popperProps}>
+                            <span>
+                                <IconButton
+                                    size="small"
+                                    onClick={onNextPage}
+                                    disabled={status === STATUS_LOADING || initialPageIndex === doc?.numPages - 1}
+                                    className={classes.toolbarIcon}
+                                >
+                                    <ArrowDownward />
+                                </IconButton>
+                            </span>
                         </Tooltip>
                         <div className={classes.pageInfo}>
-                            <Tooltip title="Page">
-                                <TextField
-                                    size="small"
-                                    variant="outlined"
-                                    value={currentPageIndex + 1}
-                                    className={classes.pageNumber}
-                                />
+                            <Tooltip title="Page" PopperProps={popperProps}>
+                                <span>
+                                    <TextField
+                                        size="small"
+                                        variant="outlined"
+                                        inputRef={pageInputRef}
+                                        value={initialPageIndex + 1}
+                                        className={classes.pageNumber}
+                                        onFocus={onPageFocus}
+                                        onChange={onPageChange}
+                                        disabled={status === STATUS_LOADING}
+                                    />
+                                </span>
                             </Tooltip>
                             <span>
                                 of
@@ -185,32 +227,41 @@ export default function Document({ initialPage, onPageIndexChange, renderer = 'c
                         </div>
                     </Grid>
                     <Grid item>
-                        <Tooltip title="Zoom out">
-                            <IconButton
-                                size="small"
-                                onClick={onZoomOut}
-                                className={classes.toolbarIcon}
-                            >
-                                <ZoomOut />
-                            </IconButton>
+                        <Tooltip title="Zoom out" PopperProps={popperProps}>
+                            <span>
+                                <IconButton
+                                    size="small"
+                                    onClick={onZoomOut}
+                                    className={classes.toolbarIcon}
+                                    disabled={status === STATUS_LOADING}
+                                >
+                                    <ZoomOut />
+                                </IconButton>
+                            </span>
                         </Tooltip>
-                        <Tooltip title="Zoom in">
-                            <IconButton
-                                size="small"
-                                onClick={onZoomIn}
-                                className={classes.toolbarIcon}
-                            >
-                                <ZoomIn />
-                            </IconButton>
+                        <Tooltip title="Zoom in" PopperProps={popperProps}>
+                            <span>
+                                <IconButton
+                                    size="small"
+                                    onClick={onZoomIn}
+                                    className={classes.toolbarIcon}
+                                    disabled={status === STATUS_LOADING}
+                                >
+                                    <ZoomIn />
+                                </IconButton>
+                            </span>
                         </Tooltip>
-                        <Tooltip title="Scale">
+                        <Tooltip title="Scale" PopperProps={popperProps}>
                             <div className={cn(
                                     'MuiInputBase-root',
                                     'MuiOutlinedInput-root',
                                     'MuiInputBase-formControl',
-                                    classes.scaleSelect
+                                    classes.scaleSelect,
+                                    {
+                                        'Mui-disabled': status === STATUS_LOADING
+                                    }
                                 )}
-                                onClick={handleScaleMenuClick}
+                                onClick={status === STATUS_COMPLETE ? handleScaleMenuClick : null}
                             >
                                 <span className={cn(
                                     'MuiInputBase-input',
@@ -226,7 +277,7 @@ export default function Document({ initialPage, onPageIndexChange, renderer = 'c
                         </Tooltip>
                     </Grid>
                     <Grid item>
-                        <Tooltip title="Full screen">
+                        <Tooltip title="Full screen" PopperProps={popperProps}>
                             <IconButton
                                 size="small"
                                 onClick={onFullScreen}
@@ -235,7 +286,7 @@ export default function Document({ initialPage, onPageIndexChange, renderer = 'c
                                 <Fullscreen />
                             </IconButton>
                         </Tooltip>
-                        <Tooltip title="Exit full screen">
+                        <Tooltip title="Exit full screen" PopperProps={popperProps}>
                             <IconButton
                                 size="small"
                                 onClick={onFullScreenExit}
@@ -279,6 +330,8 @@ export default function Document({ initialPage, onPageIndexChange, renderer = 'c
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={handleScaleMenuClose}
+                disableScrollLock={true}
+                {...popperProps}
             >
                 <MenuItem onClick={handleScaleSet(1)}>Original</MenuItem>
                 <MenuItem onClick={handleScaleSet('page')}>Page fit</MenuItem>

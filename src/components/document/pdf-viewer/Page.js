@@ -25,24 +25,23 @@ export default forwardRef(({ doc, renderer, pageIndex, width, height, rotation, 
         const observer = new IntersectionObserver(
             entries => {
                 entries.forEach(entry => {
-                    if (entry.isIntersecting && pageData.page === null) {
-                        getPageData()
+                    if (entry.isIntersecting) {
+                        if (pageData.page === null) {
+                            getPageData()
+                        }
                     }
-                    onVisibilityChanged(pageIndex, entry.intersectionRatio)
+                    onVisibilityChanged(pageIndex, entry.isIntersecting ? entry.intersectionRatio : -1)
                 })
             },
             {
-                threshold: [0, 0.5]
+                threshold: Array(10).fill().map((_, i) => i / 10)
             }
         )
-        if (pageRef.current) {
-            observer.observe(pageRef.current)
-        }
+        const ref = pageRef.current
+        observer.observe(ref)
 
         return () => {
-            if (pageRef.current) {
-                observer.unobserve(pageRef.current)
-            }
+            observer.unobserve(ref)
         }
     }, [])
 
