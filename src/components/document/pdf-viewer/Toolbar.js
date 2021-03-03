@@ -66,17 +66,20 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
     const [anchorEl, setAnchorEl] = useState(null)
     const handleScaleMenuClick = event => setAnchorEl(event.currentTarget)
     const handleScaleMenuClose = () => setAnchorEl(null)
-    const handleScaleSet = scale => () => {
+    const handleScaleSet = newScale => () => {
         handleScaleMenuClose()
         const containerWidth = containerRef.current.clientWidth - pageMargin
         const containerHeight = containerRef.current.clientHeight - pageMargin
-        if (scale === 'page') {
+        if (newScale === 'page') {
             setScale(Math.min(containerWidth / firstPageData.width, containerHeight / firstPageData.height))
-        } else if (scale === 'width') {
+        } else if (newScale === 'width') {
             setScale(containerWidth / firstPageData.width)
         } else {
-            setScale(scale)
+            setScale(newScale)
         }
+        const pageSpaces = initialPageIndex * 27
+        const scrollTopPages = (containerRef.current.scrollTop - pageSpaces) * newScale / scale
+        containerRef.current.scrollTop = scrollTopPages + pageSpaces
     }
 
     const scrollToPage = index => containerRef.current.scrollTop = pagesRefs[index].current.offsetTop
@@ -106,8 +109,8 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
         pageInputRef.current.value = initialPageIndex + 1
     }, [initialPageIndex])
 
-    const onZoomOut = () => setScale(zoomOut(scale))
-    const onZoomIn = () => setScale(zoomIn(scale))
+    const onZoomOut = () => handleScaleSet(zoomOut(scale))()
+    const onZoomIn = () => handleScaleSet(zoomIn(scale))()
 
     const onFullScreen = () => viewerRef.current.requestFullscreen()
     const onFullScreenExit = () => document.exitFullscreen()

@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 export default function CanvasLayer({ page, width, height, rotation, scale }) {
     const canvasRef = useRef()
     const renderTask = useRef()
+    const [prevScale, setPrevScale] = useState(scale)
 
     const devicePixelRatio = window.devicePixelRatio || 1
 
@@ -14,6 +15,7 @@ export default function CanvasLayer({ page, width, height, rotation, scale }) {
 
     useEffect(() => {
         cancelTask()
+        setPrevScale(scale)
 
         const canvasEl = canvasRef.current
         canvasEl.height = height * devicePixelRatio
@@ -27,6 +29,7 @@ export default function CanvasLayer({ page, width, height, rotation, scale }) {
         renderTask.current.promise.then(
             () => {
                 canvasEl.style.removeProperty('opacity')
+                canvasEl.style.transform = `scale(${1 / devicePixelRatio})`
             },
             () => {}
         )
@@ -42,7 +45,7 @@ export default function CanvasLayer({ page, width, height, rotation, scale }) {
             <canvas
                 ref={canvasRef}
                 style={{
-                    transform: `scale(${1 / devicePixelRatio})`,
+                    transform: `scale(${scale / prevScale})`,
                     transformOrigin: 'top left',
                 }}
             />
