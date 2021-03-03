@@ -1,14 +1,17 @@
 import React, { createRef, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
-import { Grid, IconButton, Menu, MenuItem, TextField, Toolbar, Tooltip } from '@material-ui/core'
+import { Grid, IconButton, Menu, MenuItem, TextField, Toolbar, Tooltip, Typography } from '@material-ui/core'
 import { ArrowDownward, ArrowDropDown, ArrowUpward, Fullscreen, FullscreenExit, ZoomIn, ZoomOut } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles'
-import { STATUS_COMPLETE, STATUS_LOADING, useDocument } from './DocumentProvider'
+import { STATUS_COMPLETE, STATUS_ERROR, STATUS_LOADING, useDocument } from './DocumentProvider'
 import Page from './Page'
 import { zoomIn, zoomOut } from './zooming'
 import Loading from '../../Loading'
 
 const useStyles = makeStyles(theme => ({
+    error: {
+        padding: theme.spacing(3),
+    },
     viewer: {
         '&:fullscreen': {
             '& $container': {
@@ -91,7 +94,7 @@ const pageMargin = 20
 
 export default function Document({ initialPageIndex, onPageIndexChange, renderer = 'canvas' }) {
     const classes = useStyles()
-    const { doc, firstPageData, status, percent } = useDocument()
+    const { doc, firstPageData, status, error, percent } = useDocument()
     const [rotation, setRotation] = useState(0)
     const [scale, setScale] = useState(1)
     const [pagesRefs, setPagesRefs] = useState([])
@@ -300,12 +303,17 @@ export default function Document({ initialPageIndex, onPageIndexChange, renderer
             </Toolbar>
 
             <div className={cn(classes.container, 'pdfViewer')} ref={containerRef}>
-                {status === STATUS_LOADING &&
+                {status === STATUS_LOADING && (
                     <Loading
                         variant={percent > 0 ? 'determinate' : 'indeterminate'}
                         value={percent}
                     />
-                }
+                )}
+                {status === STATUS_ERROR && (
+                    <div className={classes.error}>
+                        <Typography color="error">{error.message}</Typography>
+                    </div>
+                )}
                 {status === STATUS_COMPLETE &&
                     Array(doc.numPages).fill().map((_, index) => {
                        return  (
