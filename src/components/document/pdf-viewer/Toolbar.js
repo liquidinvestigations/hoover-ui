@@ -1,4 +1,4 @@
-import React, { memo, useRef, useState } from 'react'
+import React, { memo, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
 import { Grid, IconButton, Menu, MenuItem, TextField, Toolbar as MuiToolbar, Tooltip } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
@@ -84,12 +84,27 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
     const onPrevPage = () => scrollToPage(initialPageIndex - 1)
     const onNextPage = () => scrollToPage(initialPageIndex + 1)
     const onPageFocus = () => pageInputRef.current.select()
-    const onPageChange = event => {
-        const page = parseInt(event.target.value)
-        if (!isNaN(page) && page > 0 && page <= numPages) {
-            scrollToPage(page - 1)
+    const onPageBlur = () => onPageChange()
+    const onPageKey = event => {
+        if (event.keyCode === 13) {
+            onPageChange()
+            pageInputRef.current.blur()
+        }
+        if (!Array(10).fill().map((_, i) => ''+i).includes(event.key)) {
+            event.preventDefault()
         }
     }
+    const onPageChange = () => {
+        const page = parseInt(pageInputRef.current.value)
+        if (!isNaN(page) && page > 0 && page <= numPages) {
+            scrollToPage(page - 1)
+        } else {
+            pageInputRef.current.value = initialPageIndex + 1
+        }
+    }
+    useEffect(() => {
+        pageInputRef.current.value = initialPageIndex + 1
+    }, [initialPageIndex])
 
     const onZoomOut = () => setScale(zoomOut(scale))
     const onZoomIn = () => setScale(zoomIn(scale))
@@ -137,10 +152,11 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
                                         size="small"
                                         variant="outlined"
                                         inputRef={pageInputRef}
-                                        value={initialPageIndex + 1}
+                                        defaultValue={initialPageIndex + 1}
                                         className={classes.pageNumber}
                                         onFocus={onPageFocus}
-                                        onChange={onPageChange}
+                                        onBlur={onPageBlur}
+                                        onKeyDown={onPageKey}
                                         disabled={!firstPageData}
                                     />
                                 </span>
