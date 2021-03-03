@@ -27,7 +27,7 @@ export default function AnnotationLayer({ page, rotation, scale }) {
                 linkService: {
                     externalLinkTarget: 2,
                     externalLinkRel: 'nofollow',
-                    externalLinkEnabled: true,
+                    externalLinkEnabled: false,
                 },
                 page,
                 renderInteractiveForms: false,
