@@ -32,7 +32,7 @@ export default function Viewer({
     const onPageIndexChange = debounce(index => {
         if (index > 0) {
             setHashState({ previewPage: index + 1 }, false)
-        } else if(hashState?.previewPage) {
+        } else {
             setHashState({ previewPage: undefined }, false)
         }
     }, 300)

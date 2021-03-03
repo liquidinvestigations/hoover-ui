@@ -1,5 +1,4 @@
 import React, { forwardRef, useEffect, useState } from 'react'
-import Loading from '../../Loading'
 import CanvasLayer from './layers/CanvasLayer'
 import SVGLayer from './layers/SVGLayer'
 import TextLayer from './layers/TextLayer'
@@ -10,6 +9,8 @@ export default forwardRef(({ doc, renderer, pageIndex, width, height, rotation, 
         page: null,
         width, height, rotation
     })
+
+    const [visible, setVisible] = useState(false)
 
     const getPageData = () => {
         doc.getPage(pageIndex + 1).then(page => {
@@ -30,6 +31,7 @@ export default forwardRef(({ doc, renderer, pageIndex, width, height, rotation, 
                             getPageData()
                         }
                     }
+                    setVisible(entry.isIntersecting)
                     onVisibilityChanged(pageIndex, entry.isIntersecting ? entry.intersectionRatio : -1)
                 })
             },
@@ -65,7 +67,7 @@ export default forwardRef(({ doc, renderer, pageIndex, width, height, rotation, 
                 height: elementHeight,
             }}
         >
-            {!page ? <Loading /> :
+            {!page || !visible ? <span className="loadingIcon" /> :
                 <>
                     {renderer === 'canvas' && (
                         <CanvasLayer

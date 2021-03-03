@@ -1,5 +1,6 @@
-@import '~pdfjs-dist/web/pdf_viewer.css';
-@import '~finderjs/example/finderjs.css';
+@import "~react-placeholder/lib/reactPlaceholder.css";
+@import "~pdfjs-dist/web/pdf_viewer.css";
+@import "~finderjs/example/finderjs.css";
 @import "finder.css";
 @import "resizer.css";
 

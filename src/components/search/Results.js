@@ -4,7 +4,6 @@ import Pagination from './Pagination'
 import ResultItem from './ResultItem'
 import { useSearch } from './SearchProvider'
 import { documentViewUrl } from '../../utils'
-import 'react-placeholder/lib/reactPlaceholder.css'
 
 function Results({ maxCount }) {
     const { query, results, resultsLoading } = useSearch()
