@@ -1,26 +1,11 @@
 import finderjs from 'finderjs';
 import { PureComponent, createRef } from 'react';
-import PropTypes from 'prop-types';
 
 const generateKey = () => Math.random().toString(16);
 
 // Replaces the existing finderjs React wrapper, which seems dead  https://github.com/AndcultureCode/react-finderjs/pull/2
 export default class ReactFinder extends PureComponent {
     state = { key: generateKey() };
-
-    static propTypes = {
-        data: PropTypes.array.isRequired,
-        value: PropTypes.object,
-        autoScroll: PropTypes.bool,
-        createItemContent: PropTypes.func,
-        onLeafSelected: PropTypes.func,
-        onItemSelected: PropTypes.func,
-        onColumnCreated: PropTypes.func,
-        onInteriorSelected: PropTypes.func,
-        defaultValue: PropTypes.shape({
-            id: PropTypes.any.isRequired,
-        }),
-    };
 
     container = createRef();
 
