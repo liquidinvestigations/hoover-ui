@@ -58,7 +58,7 @@ function Histogram({ title, field }) {
         } else {
             setOpen(false)
         }
-    }, [hashState])
+    }, [hashState?.histogram])
 
     const toggle = () => {
         setOpen(!open)

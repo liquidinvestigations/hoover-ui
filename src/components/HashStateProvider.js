@@ -23,8 +23,10 @@ export default function HashStateProvider({ children }) {
         }
     }, [hashState])
 
+    const initialHashState = hashString ? unwindParams(qs.parse(hashString)) : null
+
     return (
-        <HashStateContext.Provider value={{ hashState, setHashState }}>
+        <HashStateContext.Provider value={{ hashState: hashState || initialHashState, setHashState }}>
             {children}
         </HashStateContext.Provider>
     )

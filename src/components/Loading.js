@@ -9,12 +9,12 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-function Loading() {
+function Loading(props) {
     const classes = useStyles()
 
     return (
         <div className={classes.progress}>
-            <CircularProgress />
+            <CircularProgress {...props} />
         </div>
     )
 }

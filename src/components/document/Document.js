@@ -21,9 +21,8 @@ import HTML from './HTML'
 import Text from './Text'
 import Meta from './Meta'
 import Loading from '../Loading'
-import PDFViewer from './PDFViewer'
 import TagTooltip from './TagTooltip'
-import TextSubTabs from './TextSubTabs'
+import SubTabs from './SubTabs'
 import Tags, { getChipColor } from './Tags'
 import { useUser } from '../UserProvider'
 import { createOcrUrl } from '../../backend/api'
@@ -43,7 +42,7 @@ const useStyles = makeStyles(theme => ({
         borderBottomStyle: 'solid',
         justifyContent: 'space-between',
     },
-    toolbarIcons: {
+    toolbarIcon: {
         marginRight: theme.spacing(1),
         '&:last-child': {
             marginRight: 0,
@@ -102,7 +101,7 @@ function Document({ onPrev, onNext }) {
     const {
         data, pathname, loading,
         fullPage, printMode,
-        collection, collectionBaseUrl,
+        collection,
         digestUrl, docRawUrl,
         tab, handleTabChange,
         tags, tagsLocked, tagsLoading, handleSpecialTagClick
@@ -217,7 +216,7 @@ function Document({ onPrev, onNext }) {
         icon: <Toc />,
         visible: true,
         padding: 0,
-        content: <TextSubTabs />,
+        content: <SubTabs />,
     },{
         name: 'Tags',
         icon: <LocalOfferOutlined />,
@@ -240,22 +239,6 @@ function Document({ onPrev, onNext }) {
         content: <Text content={data.content.tree} />,
     }]
 
-    tabsData.splice(1, 0, ...ocrData.map(({tag}) => ({
-        name: (
-            <Tooltip title={tag}>
-                <span>OCR</span>
-            </Tooltip>
-        ),
-        icon: <TextFields />,
-        visible: data.content['content-type'] === 'application/pdf',
-        padding: 0,
-        content: (
-            <Box m={1}>
-                <PDFViewer url={createOcrUrl(digestUrl, tag)} />
-            </Box>
-        ),
-    })))
-
     return (
         <div className={classes.root}>
             {!printMode && data.content.filetype !== 'folder' && (
@@ -267,7 +250,7 @@ function Document({ onPrev, onNext }) {
                                     <IconButton
                                         size="small"
                                         component="a"
-                                        className={classes.toolbarIcons}
+                                        className={classes.toolbarIcon}
                                         {...props}>
                                         <Badge badgeContent={count} color="secondary">
                                             {icon}

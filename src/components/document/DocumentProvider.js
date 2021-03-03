@@ -61,8 +61,9 @@ export function DocumentProvider({ children, collection, id, path, fullPage, pri
                 })
                 setOcrData(ocr)
 
-                if (hashState?.subTab) {
-                    setSubTab(parseInt(hashState.subTab))
+                const subTabState = parseInt(hashState?.subTab)
+                if (!isNaN(subTabState)) {
+                    setSubTab(subTabState)
                 } else {
                     if (ocr.length) {
                         setSubTab(1)
@@ -86,7 +87,7 @@ export function DocumentProvider({ children, collection, id, path, fullPage, pri
         if (typeof hashState?.subTab !== 'undefined') {
             setSubTab(parseInt(hashState.subTab))
         }
-    }, [hashState])
+    }, [hashState?.tab, hashState?.subTab])
 
     const handleTabChange = (event, newValue) => {
         setTab(newValue)

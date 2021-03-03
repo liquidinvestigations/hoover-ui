@@ -37,7 +37,7 @@ export function SearchProvider({ children, serverQuery }) {
         if (hashState?.preview) {
             setSelectedDocData(hashState.preview)
         }
-    }, [hashState])
+    }, [JSON.stringify(hashState?.preview)])
 
     const [collectionsCount, setCollectionsCount] = useState([])
 
@@ -57,11 +57,11 @@ export function SearchProvider({ children, serverQuery }) {
                 if (previewOnLoad === 'first') {
                     setPreviewOnLoad(null)
                     setHashState({ ...getPreviewParams(results.hits.hits[0]),
-                        tab: undefined, subTab: undefined })
+                        tab: undefined, subTab: undefined, previewPage: undefined })
                 } else if (previewOnLoad === 'last') {
                     setPreviewOnLoad(null)
                     setHashState({ ...getPreviewParams(results.hits.hits[results.hits.hits.length - 1]),
-                        tab: undefined, subTab: undefined })
+                        tab: undefined, subTab: undefined, previewPage: undefined })
                 }
             }).catch(error => {
                 setResults(null)
@@ -133,7 +133,7 @@ export function SearchProvider({ children, serverQuery }) {
                 search({ page: parseInt(query.page) + 1 })
             } else {
                 setHashState({ ...getPreviewParams(results.hits.hits[currentIndex + 1]),
-                    tab: undefined, subTab: undefined })
+                    tab: undefined, subTab: undefined, previewPage: undefined })
             }
         }
     }, [query, hashState, results, resultsLoading])
@@ -145,7 +145,7 @@ export function SearchProvider({ children, serverQuery }) {
                 search({ page: parseInt(query.page) - 1 })
             } else {
                 setHashState({ ...getPreviewParams(results.hits.hits[currentIndex - 1]),
-                    tab: undefined, subTab: undefined })
+                    tab: undefined, subTab: undefined, previewPage: undefined })
             }
         }
     }, [query, hashState, results, resultsLoading])

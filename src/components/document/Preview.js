@@ -1,6 +1,6 @@
 import React, { memo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import PDFViewer from './PDFViewer'
+import PDFViewer from './pdf-viewer/Dynamic'
 import { useDocument } from './DocumentProvider'
 
 // List copy/pasted from https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
@@ -36,12 +36,14 @@ export const PREVIEWABLE_MIME_TYPE_SUFFEXES = [
     '/x-troff-msvideo',
 ]
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     preview: {
-        overflow: 'hidden',
         height: '50vh',
+        overflow: 'hidden',
+        padding: theme.spacing(2),
+        backgroundColor: theme.palette.grey[200],
     },
-})
+}))
 
 function Preview() {
     const classes = useStyles()
@@ -52,7 +54,7 @@ function Preview() {
     }
 
     return (
-        <div id="hoover-media-viewer-container" className={classes.preview}>
+        <div className={classes.preview}>
             <embed
                 style={{ objectFit: 'contain'}}
                 src={docRawUrl}

@@ -17,9 +17,10 @@ const PARAMS_MAP = {
     t: 'facets',
     i: 'filters',
     v: 'preview',
+    h: 'histogram',
     b: 'tab',
     a: 'subTab',
-    h: 'histogram',
+    g: 'previewPage',
 }
 
 const LEGACY_PARAMS = {

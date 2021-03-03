@@ -1,0 +1,27 @@
+@import "~react-placeholder/lib/reactPlaceholder.css";
+@import "~pdfjs-dist/web/pdf_viewer.css";
+@import "~finderjs/example/finderjs.css";
+@import "finder.css";
+@import "resizer.css";
+
+main {
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.no-find {
+    font-size: 0;
+}
+
+.mono {
+    font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+mark {
+    background-color: rgba(250, 221, 0, 0.5);
+    color: #000;
+    font-style: normal;
+}
+
+div[tabindex="-1"]:focus {
+    outline: 0;
+}

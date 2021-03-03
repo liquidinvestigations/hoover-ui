@@ -129,7 +129,7 @@ function ResultItem({ hit, url, index }) {
     const handleMouseUp = () => {
         if (nodeRef.current.willFocus) {
             nodeRef.current.tUp = timeMs()
-            setHashState({ ...getPreviewParams(hit), tab: undefined, subTab: undefined })
+            setHashState({ ...getPreviewParams(hit), tab: undefined, subTab: undefined, previewPage: undefined })
         }
     }
 
