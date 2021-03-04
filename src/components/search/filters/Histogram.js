@@ -12,7 +12,7 @@ import { useSearch } from '../SearchProvider'
 import { useHashState } from '../../HashStateProvider'
 import { formatsLabel, formatsValue } from './DateHistogramFilter'
 import { DATE_FORMAT, DEFAULT_INTERVAL } from '../../../constants/general'
-import { daysInMonth, formatThousands } from '../../../utils'
+import { daysInMonth, formatThousands, getClosestInterval } from '../../../utils'
 
 const chartWidth = 300
 const chartHeight = 100
@@ -139,9 +139,15 @@ function Histogram({ title, field }) {
 
     const handleFilterRange = useCallback(() => {
         handleBarMenuClose()
+        const range = getDatesRange()
         const { [field]: prevFilter, ...restFilters } = query.filters || {}
+        const { [field]: prevFacet, ...restFacets } = query.facets || {}
 
-        search({ filters: { [field]: getDatesRange(), ...restFilters }, page: 1 })
+        search({
+            filters: { [field]: {...range, interval: getClosestInterval(range) }, ...restFilters },
+            facets: { ...restFacets },
+            page: 1
+        })
 
     }, [query, search, selectedBars])
 
@@ -267,12 +273,12 @@ function Histogram({ title, field }) {
             >
                 {selectedBars?.some(v => !selected?.includes(v)) && (
                     <MenuItem onClick={handleIntervalsAdd}>
-                        select this interval{selectedBars.length > 1 && 's'}
+                        select this interval
                     </MenuItem>
                 )}
                 {selectedBars?.some(v => selected?.includes(v)) && (
                     <MenuItem onClick={handleIntervalsRemove}>
-                        remove this interval{selectedBars.length > 1 && 's'}
+                        remove this interval
                     </MenuItem>
                 )}
                 <MenuItem onClick={handleFilterRange}>

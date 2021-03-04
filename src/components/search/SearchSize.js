@@ -16,7 +16,7 @@ function SearchSize ({ page, size }) {
     const handleSizeChange = event => {
         const newSize = event.target.value
         if (newSize > size) {
-            search({size: newSize, page: Math.floor(page * size / newSize) + 1})
+            search({size: newSize, page: Math.ceil(page * size / newSize)})
         } else {
             search({size: newSize, page: Math.floor((page - 1) * size / newSize) + 1})
         }

@@ -57,6 +57,28 @@ export const daysInMonth = date => {
     return new Date(year, month, 0).getDate()
 }
 
+const intervalsList = ['year', 'month', 'week', 'day', 'hour']
+export const getClosestInterval = range => {
+    const from = range.from + 'T00:00:00'
+    const to = range.to + 'T23:59:59'
+
+    let selectedInterval = range.interval
+
+    intervalsList.some(interval => {
+        const intervalPlural = `${interval}s`
+        const duration = DateTime.fromISO(to).diff(DateTime.fromISO(from), intervalPlural)
+
+        if (duration[intervalPlural] > 1) {
+            if (intervalsList.indexOf(interval) > intervalsList.indexOf(selectedInterval)) {
+                selectedInterval = interval
+            }
+            return true
+        }
+    })
+
+    return selectedInterval
+}
+
 export const getBasePath = docUrl => url.parse(url.resolve(docUrl, './')).pathname
 
 export const makeUnsearchable = text => {
