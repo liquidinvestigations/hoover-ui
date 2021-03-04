@@ -44,7 +44,7 @@
     "next-compose-plugins": "^2.2.1",
     "next-transpile-modules": "^6.3.0",
     "node-fetch": "^2.6.1",
-    "node-sass": "^4.14.1",
+    "node-sass": "^5.0.0",
     "pdfjs-dist": "^2.7.570",
     "qs": "^6.9.6",
     "react": "^17.0.1",
