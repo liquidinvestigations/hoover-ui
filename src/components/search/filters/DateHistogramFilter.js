@@ -6,6 +6,7 @@ import IntervalSelect from './IntervalSelect'
 import DateRangeFilter from './DateRangeFilter'
 import AggregationFilter from './AggregationFilter'
 import { DEFAULT_INTERVAL } from '../../../constants/general'
+import { getClosestInterval } from '../../../utils'
 
 export const formatsLabel = {
     year: 'y',
@@ -29,7 +30,7 @@ function DateHistogramFilter({ title, field, queryFilter, aggregations, loading,
     const onRangeChange = useCallback(range => {
         const { from, to, interval, intervals, ...rest } = queryFilter || {}
         if (range?.from && range?.to) {
-            onChange(field, {...range, ...rest}, true)
+            onChange(field, {...range, interval: getClosestInterval({...range, interval}), ...rest}, true)
         } else {
             onChange(field, rest, true)
         }

@@ -24,6 +24,8 @@ export default function LinkMenu({ link, anchorPosition, onClose }) {
 
     const hash = { preview: { c: collection, i: digest }, tab: hashState.tab }
 
+    const getCollections = () => Array.from(new Set([...(query?.collections || []), collection]))
+
     const handleAddSearch = (newTab = false, term) => () => {
         onClose()
 
@@ -43,7 +45,7 @@ export default function LinkMenu({ link, anchorPosition, onClose }) {
 
         if (newTab) {
             const hashParams = hash ? '#' + qs.stringify(rollupParams(hash)) : ''
-            mergedParams.collections = [collection]
+            mergedParams.collections = getCollections()
             window.open(`/?${buildSearchQuerystring(mergedParams)}${hashParams}`)
         } else {
             search(mergedParams)
@@ -53,7 +55,7 @@ export default function LinkMenu({ link, anchorPosition, onClose }) {
     const handleNewSearch = term => () => {
         onClose()
         const newTerm = term || link.term
-        window.open(createSearchUrl(newTerm, link.field, collection, hash))
+        window.open(createSearchUrl(newTerm, link.field, getCollections(), hash))
     }
 
     return (
