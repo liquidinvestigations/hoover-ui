@@ -39,38 +39,34 @@ function Filters({ ...props }) {
         return null
     }
 
-    return (
-        <List {...props}>
-            {Object.entries(aggregationFields).map(([field, params]) => {
-                let FilterComponent, filterTypeProps = {}
-                if (params.type === 'date') {
-                    FilterComponent = DateHistogramFilter
-                } else {
-                    FilterComponent = TermsAggregationFilter
-                }
+    return Object.entries(aggregationFields).map(([field, params]) => {
+        let FilterComponent, filterTypeProps = {}
+        if (params.type === 'date') {
+            FilterComponent = DateHistogramFilter
+        } else {
+            FilterComponent = TermsAggregationFilter
+        }
 
-                if (params.hideEmpty) {
-                    //filterTypeProps.emptyDisabled = true
-                }
+        if (params.hideEmpty) {
+            //filterTypeProps.emptyDisabled = true
+        }
 
-                if (field === 'lang') {
-                    filterTypeProps.bucketLabel = formatLang
-                }
+        if (field === 'lang') {
+            filterTypeProps.bucketLabel = formatLang
+        }
 
-                return (
-                    <FilterComponent
-                        key={field}
-                        title={params.filterLabel}
-                        field={field}
-                        queryFilter={query.filters?.[field]}
-                        aggregations={aggregations[field]}
-                        {...filterTypeProps}
-                        {...filterProps}
-                    />
-                )
-            })}
-        </List>
-    )
+        return (
+            <FilterComponent
+                key={field}
+                title={params.filterLabel}
+                field={field}
+                queryFilter={query.filters?.[field]}
+                aggregations={aggregations[field]}
+                {...filterTypeProps}
+                {...filterProps}
+            />
+        )
+    })
 }
 
 export default memo(Filters)

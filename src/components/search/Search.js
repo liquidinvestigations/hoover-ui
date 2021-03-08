@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import Router from 'next/router'
 import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
-import { Grid, IconButton, InputAdornment, List, TextField, Typography } from '@material-ui/core'
+import { Grid, IconButton, InputAdornment, TextField, Typography } from '@material-ui/core'
 import { Cancel } from '@material-ui/icons'
 import Expandable from '../Expandable'
 import SplitPaneLayout from '../SplitPaneLayout'
@@ -13,6 +13,7 @@ import FiltersChips from './filters/FiltersChips'
 import QueryChips from './QueryChips'
 import Histogram from './filters/Histogram'
 import SearchResults from './Results'
+import Toolbar from './filters/Toolbar'
 import Filters from './filters/Filters'
 import CollectionsFilter from './filters/CollectionsFilter'
 import { DEFAULT_MAX_RESULTS, SEARCH_GUIDE } from '../../constants/general'
@@ -35,17 +36,15 @@ const useStyles = makeStyles(theme => ({
     info: {
         color: theme.palette.grey.A700,
     },
-    collections: {
-        paddingBottom: 0,
-    },
-    filters: {
-        paddingTop: 0,
-    },
     sorting: {
         display: 'flex',
         marginTop: theme.spacing(2),
         justifyContent: 'flex-end',
     },
+    filters: {
+        height: 'calc(100% - 48px)',
+        overflowY: 'auto',
+    }
 }))
 
 export default function Search({ collections }) {
@@ -118,7 +117,9 @@ export default function Search({ collections }) {
                 <SplitPaneLayout
                     left={
                         <>
-                            <List dense className={classes.collections}>
+                            <Toolbar />
+
+                            <div className={classes.filters}>
                                 <Expandable
                                     title={`Collections (${query.collections?.length || 0})`}
                                     defaultOpen
@@ -131,9 +132,9 @@ export default function Search({ collections }) {
                                         counts={collectionsCount}
                                     />
                                 </Expandable>
-                            </List>
 
-                            <Filters className={classes.filters} />
+                                <Filters />
+                            </div>
                         </>
                     }
                     right={
