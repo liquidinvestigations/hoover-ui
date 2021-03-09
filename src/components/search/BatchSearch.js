@@ -106,18 +106,20 @@ export default function BatchSearch({ collections, limits }) {
     return (
         <Grid container>
             <Grid item sm={2}>
-                <Expandable
-                    title={`Collections (${selectedCollections?.length || 0})`}
-                    defaultOpen
-                    highlight={false}
-                >
-                    <CollectionsFilter
-                        collections={collections}
-                        selected={selectedCollections}
-                        changeSelection={handleSelectedCollectionsChange}
-                        counts={results?.count_by_index}
-                    />
-                </Expandable>
+                <List dense>
+                    <Expandable
+                        title="Collections"
+                        defaultOpen
+                        highlight={false}
+                    >
+                        <CollectionsFilter
+                            collections={collections}
+                            selected={selectedCollections}
+                            changeSelection={handleSelectedCollectionsChange}
+                            counts={results?.count_by_index}
+                        />
+                    </Expandable>
+                </List>
             </Grid>
             <Grid item sm={6}>
                 <div className={classes.main}>

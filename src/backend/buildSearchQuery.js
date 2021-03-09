@@ -57,57 +57,24 @@ const buildSortQuery = order => order?.reverse().map(([field, direction = 'asc']
     {[field]: {order: direction, missing: '_last'}}
 ) || []
 
-const buildTermsField = (field, uuid, terms, page = 1, missing) => {
-    const fieldKey = expandPrivate(field, uuid)
-
-    let filterMissing = null
-    let filterClause = null
-    if (terms?.include?.length) {
-        const include = terms.include.filter(term => term !== missing)
-        if (include.length) {
-            if (aggregationFields[field].type === 'term-and') {
-                filterClause = include.map(term => ({
-                    term: {[fieldKey]: term}
-                }))
-            } else {
-                filterClause = {
-                    terms: {[fieldKey]: include},
-                }
+const buildTermsField = (field, uuid, terms, page = 1, size = DEFAULT_FACET_SIZE) => ({
+    field,
+    aggregation: {
+        terms: { field: expandPrivate(field, uuid), size: page * size },
+    },
+    filterClause: terms?.include?.length ?
+        aggregationFields[field].type === 'term-and' ?
+            terms?.include.map(term => ({
+                term: { [expandPrivate(field, uuid)]: term }
+            }))
+            : {
+                terms: { [expandPrivate(field, uuid)]: terms?.include },
             }
-        }
-
-        if (terms.include.includes(missing)) {
-            filterMissing = false
-        }
-    }
-
-    let filterExclude = null
-    if (terms?.exclude?.length) {
-        const exclude = terms.exclude.filter(term => term !== missing)
-        if (exclude.length) {
-            filterExclude = {
-                terms: { [fieldKey]: exclude },
-            }
-        }
-
-        if (terms.exclude.includes(missing)) {
-            filterMissing = true
-        }
-    }
-
-    return {
-        field,
-        aggregation: {
-            terms: {
-                field: fieldKey, size: page * DEFAULT_FACET_SIZE,
-                missing,
-            },
-        },
-        filterClause,
-        filterExclude,
-        filterMissing,
-    }
-}
+        : null,
+    filterExclude: terms?.exclude?.length ? {
+        terms: { [expandPrivate(field, uuid)]: terms?.exclude },
+    } : null,
+})
 
 const intervalFormat = (interval, param) => {
     switch (interval) {
@@ -184,17 +151,6 @@ const buildFilter = fields => {
     const filter = fields.map(field => field.filterClause).filter(Boolean)
     const must_not = fields.map(field => field.filterExclude).filter(Boolean)
 
-    fields.forEach(field => {
-        if (typeof field.filterMissing === 'boolean') {
-            const exists = { exists: { field: field.field } }
-            if (field.filterMissing) {
-                filter.push(exists)
-            } else {
-                must_not.push(exists)
-            }
-        }
-    })
-
     if (filter.length || must_not.length) {
         return {
             bool: {
@@ -220,37 +176,21 @@ const buildAggs = fields => fields.reduce((result, field) => ({
     },
 }), {})
 
-const buildSearchQuery = (
-    {
-        q = '*',
-        page = 1,
-        size = 0,
-        order,
-        collections = [],
-        facets = {},
-        filters = {},
-        missing,
-    } = {},
-    type,
-    searchFields,
-    uuid
-) => {
+const buildSearchQuery = ({ q = '*', page = 1, size = 0, order, collections = [], facets = {}, filters = {} } = {},
+                          type, searchFields, uuid) => {
 
     const query = buildQuery(q, filters, searchFields)
     const sort = buildSortQuery(order)
 
-    const dateFields = Object.entries(aggregationFields)
-        .filter(([,field]) => field.type === 'date')
-        .map(([key]) => key)
-
-    const termFields = Object.entries(aggregationFields)
-        .filter(([,field]) => field.type.startsWith('term'))
-        .map(([key]) => key)
-
     const fields = [
-        ...dateFields.map(field => buildHistogramField(field, uuid, filters[field], facets[field])),
-        ...dateFields.map(buildMissingField),
-        ...termFields.map(field => buildTermsField(field, uuid, filters[field], facets[field], missing)),
+        ...['date', 'date-created'].map(field =>
+            buildHistogramField(field, uuid, filters[field], facets[field]),
+        ),
+        ...['date', 'date-created'].map(buildMissingField),
+        ...['tags', 'priv-tags', 'filetype', 'lang',
+            'email-domains', 'from.keyword', 'to.keyword', 'path-parts'].map(field =>
+            buildTermsField(field, uuid, filters[field], facets[field])
+        ),
     ]
 
     const postFilter = buildFilter(fields);

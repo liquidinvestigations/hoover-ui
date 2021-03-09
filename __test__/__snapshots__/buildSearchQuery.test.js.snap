@@ -108,7 +108,6 @@ Object {
         "values": Object {
           "terms": Object {
             "field": "email-domains",
-            "missing": undefined,
             "size": 100,
           },
         },
@@ -127,7 +126,6 @@ Object {
         "values": Object {
           "terms": Object {
             "field": "filetype",
-            "missing": undefined,
             "size": 100,
           },
         },
@@ -146,7 +144,6 @@ Object {
         "values": Object {
           "terms": Object {
             "field": "from.keyword",
-            "missing": undefined,
             "size": 100,
           },
         },
@@ -165,7 +162,6 @@ Object {
         "values": Object {
           "terms": Object {
             "field": "lang",
-            "missing": undefined,
             "size": 100,
           },
         },
@@ -184,7 +180,6 @@ Object {
         "values": Object {
           "terms": Object {
             "field": "path-parts",
-            "missing": undefined,
             "size": 100,
           },
         },
@@ -203,7 +198,6 @@ Object {
         "values": Object {
           "terms": Object {
             "field": "priv-tags.testuser",
-            "missing": undefined,
             "size": 100,
           },
         },
@@ -222,7 +216,6 @@ Object {
         "values": Object {
           "terms": Object {
             "field": "tags",
-            "missing": undefined,
             "size": 100,
           },
         },
@@ -241,7 +234,6 @@ Object {
         "values": Object {
           "terms": Object {
             "field": "to.keyword",
-            "missing": undefined,
             "size": 100,
           },
         },
