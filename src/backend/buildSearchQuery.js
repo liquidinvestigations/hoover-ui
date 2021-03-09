@@ -95,14 +95,6 @@ const buildTermsField = (field, uuid, terms, page = 1, missing) => {
         }
     }
 
-    if (field === 'tags' && !terms?.include?.includes('trash') && !terms?.exclude?.includes('trash')) {
-        if (filterExclude === null) {
-            filterExclude = { terms: { [fieldKey]: ['trash'] } }
-        } else {
-            filterExclude.terms[fieldKey].push('trash')
-        }
-    }
-
     return {
         field,
         aggregation: {
