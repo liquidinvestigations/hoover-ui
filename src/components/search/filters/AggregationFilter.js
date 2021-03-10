@@ -51,15 +51,23 @@ function AggregationFilter({ field, queryFilter, aggregations, missing, loading,
         const include = new Set(queryFilter?.include || [])
         const exclude = new Set(queryFilter?.exclude || [])
 
-        if (include.has(value)) {
-            include.delete(value)
-            if (triState) {
-                exclude.add(value)
+        if (field === 'tags' && value === 'trash') {
+            if (include.has(value)) {
+                include.delete(value)
+            } else {
+                include.add(value)
             }
-        } else if (exclude.has(value)) {
-            exclude.delete(value)
         } else {
-            include.add(value)
+            if (include.has(value)) {
+                include.delete(value)
+                if (triState) {
+                    exclude.add(value)
+                }
+            } else if (exclude.has(value)) {
+                exclude.delete(value)
+            } else {
+                include.add(value)
+            }
         }
 
         onChange(field, {
@@ -94,8 +102,9 @@ function AggregationFilter({ field, queryFilter, aggregations, missing, loading,
         const label = bucketLabel ? bucketLabel(bucket) : bucket.key
         const subLabel = bucketSubLabel ? bucketSubLabel(bucket) : null
         const value = bucketValue ? bucketValue(bucket) : bucket.key
+        const trash = (field === 'tags' && value === 'trash' && !queryFilter?.include?.includes(value))
         const checked = queryFilter?.include?.includes(value) ||
-            queryFilter?.exclude?.includes(value) || false
+            queryFilter?.exclude?.includes(value) || trash || false
 
         return (
             <ListItem
@@ -111,7 +120,7 @@ function AggregationFilter({ field, queryFilter, aggregations, missing, loading,
                     disableRipple
                     value={value}
                     checked={checked}
-                    indeterminate={triState && queryFilter?.exclude?.includes(value)}
+                    indeterminate={(triState && queryFilter?.exclude?.includes(value)) || trash}
                     classes={{ root: classes.checkbox }}
                     disabled={loading || !bucket.doc_count}
                     onChange={handler(value)}
