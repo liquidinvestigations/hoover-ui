@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import cn from 'classnames'
 import { DateTime } from 'luxon'
-import { Box, Collapse, Grid, IconButton, Menu, MenuItem, Typography } from '@material-ui/core'
+import { Box, ButtonBase, Collapse, Grid, IconButton, Menu, MenuItem, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { ExpandMore } from '@material-ui/icons'
 import Loading from '../../Loading'
@@ -12,7 +12,7 @@ import { useSearch } from '../SearchProvider'
 import { useHashState } from '../../HashStateProvider'
 import { formatsLabel, formatsValue } from './DateHistogramFilter'
 import { DATE_FORMAT, DEFAULT_INTERVAL } from '../../../constants/general'
-import { daysInMonth, formatThousands, getClosestInterval } from '../../../utils'
+import { daysInMonth, getClosestInterval } from '../../../utils'
 
 const chartWidth = 300
 const chartHeight = 100
@@ -33,13 +33,6 @@ const useStyles = makeStyles(theme => ({
     histogramTitle: {
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
-    },
-    foundCount: {
-        color: theme.palette.grey[600],
-    },
-    missingCount: {
-        color: theme.palette.grey[500],
-        marginLeft: theme.spacing(2),
     },
     chartBox: {
         marginBottom: theme.spacing(1)
@@ -200,9 +193,6 @@ function Histogram({ title, field }) {
         }
     }, [aggregations])
 
-    const found = aggregations?.[field]?.count
-    const missing = aggregations?.[`${field}-missing`]?.values
-
     return (
         <Box>
             <Grid container
@@ -210,6 +200,8 @@ function Histogram({ title, field }) {
                   justify="space-between"
                   alignItems="center"
                   wrap="nowrap"
+                  component={ButtonBase}
+                  onClick={toggle}
             >
                 <Grid item>
                     <Typography variant="h6">
@@ -217,22 +209,9 @@ function Histogram({ title, field }) {
                     </Typography>
                 </Grid>
                 <Grid item>
-                    {found && (
-                        <Typography variant="subtitle2" component="span" className={classes.foundCount}>
-                            found: ({formatThousands(found.value)})
-                        </Typography>
-                    )}
-
-                    {missing && (
-                        <Typography variant="subtitle2" component="span" className={classes.missingCount}>
-                            missing: ({formatThousands(missing.doc_count)})
-                        </Typography>
-                    )}
-
                     <IconButton
                         size="small"
                         className={cn(classes.expand, { [classes.expandOpen]: open })}
-                        onClick={toggle}
                         aria-expanded={open}
                         aria-label="Show histogram"
                     >
