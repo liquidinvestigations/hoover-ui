@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import cn from 'classnames'
 import { DateTime } from 'luxon'
-import { Box, ButtonBase, Collapse, Grid, IconButton, Menu, MenuItem, Typography } from '@material-ui/core'
+import { Collapse, Grid, IconButton, ListItem, Menu, MenuItem, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { ExpandMore } from '@material-ui/icons'
 import Loading from '../../Loading'
@@ -194,31 +194,31 @@ function Histogram({ title, field }) {
     }, [aggregations])
 
     return (
-        <Box>
-            <Grid container
-                  className={classes.histogramTitle}
-                  justify="space-between"
-                  alignItems="center"
-                  wrap="nowrap"
-                  component={ButtonBase}
-                  onClick={toggle}
-            >
-                <Grid item>
-                    <Typography variant="h6">
-                        {title}
-                    </Typography>
+        <>
+            <ListItem onClick={toggle} button dense className={classes.histogramTitle}>
+                <Grid container
+                      className={classes.histogramTitle}
+                      justify="space-between"
+                      alignItems="center"
+                      wrap="nowrap"
+                >
+                    <Grid item>
+                        <Typography variant="h6">
+                            {title}
+                        </Typography>
+                    </Grid>
+                    <Grid item>
+                        <IconButton
+                            size="small"
+                            className={cn(classes.expand, { [classes.expandOpen]: open })}
+                            aria-expanded={open}
+                            aria-label="Show histogram"
+                        >
+                            <ExpandMore color="action" />
+                        </IconButton>
+                    </Grid>
                 </Grid>
-                <Grid item>
-                    <IconButton
-                        size="small"
-                        className={cn(classes.expand, { [classes.expandOpen]: open })}
-                        aria-expanded={open}
-                        aria-label="Show histogram"
-                    >
-                        <ExpandMore color="action" />
-                    </IconButton>
-                </Grid>
-            </Grid>
+            </ListItem>
 
             <Collapse in={open}>
                 <div className={classes.chartBox}>
@@ -264,7 +264,7 @@ function Histogram({ title, field }) {
                     set filter for this interval (zoom in)
                 </MenuItem>
             </Menu>
-        </Box>
+        </>
     )
 }
 
