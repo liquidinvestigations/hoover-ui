@@ -57,24 +57,57 @@ const buildSortQuery = order => order?.reverse().map(([field, direction = 'asc']
     {[field]: {order: direction, missing: '_last'}}
 ) || []
 
-const buildTermsField = (field, uuid, terms, page = 1, size = DEFAULT_FACET_SIZE) => ({
-    field,
-    aggregation: {
-        terms: { field: expandPrivate(field, uuid), size: page * size },
-    },
-    filterClause: terms?.include?.length ?
-        aggregationFields[field].type === 'term-and' ?
-            terms?.include.map(term => ({
-                term: { [expandPrivate(field, uuid)]: term }
+const buildTermsField = (field, uuid, terms, page = 1, size = DEFAULT_FACET_SIZE) => {
+    const fieldKey = expandPrivate(field, uuid)
+
+    let filterClause = null
+    if (terms?.include?.length) {
+        if (aggregationFields[field].type === 'term-and') {
+            filterClause = terms.include.map(term => ({
+                term: {[fieldKey]: term}
             }))
-            : {
-                terms: { [expandPrivate(field, uuid)]: terms?.include },
+        } else {
+            filterClause = {
+                terms: {[fieldKey]: terms.include},
             }
-        : null,
-    filterExclude: terms?.exclude?.length ? {
-        terms: { [expandPrivate(field, uuid)]: terms?.exclude },
-    } : null,
-})
+        }
+    }
+
+    let filterExclude = null
+    if (terms?.exclude?.length) {
+        filterExclude = {
+            terms: { [fieldKey]: terms.exclude },
+        }
+    }
+
+    let filterMissing = null
+    if (terms?.missing === 'true') {
+        filterMissing = false
+    } else if (terms?.missing === 'false') {
+        filterMissing = true
+    }
+
+    if (field === 'tags' && !terms?.include?.includes('trash') && !terms?.exclude?.includes('trash')) {
+        if (filterExclude === null) {
+            filterExclude = { terms: { [fieldKey]: ['trash'] } }
+        } else {
+            filterExclude.terms[fieldKey].push('trash')
+        }
+    }
+
+    return {
+        field,
+        aggregation: {
+            terms: {
+                field: fieldKey,
+                size: page * size,
+            },
+        },
+        filterClause,
+        filterExclude,
+        filterMissing,
+    }
+}
 
 const intervalFormat = (interval, param) => {
     switch (interval) {
@@ -110,50 +143,89 @@ const intervalFormat = (interval, param) => {
     }
 }
 
-const buildHistogramField = (field, username, { interval = DEFAULT_INTERVAL, intervals = [] } = {},
-                             page = 1, size = DEFAULT_FACET_SIZE) => ({
-    field,
-    aggregation: {
-        date_histogram: {
-            field: expandPrivate(field, username),
-            interval,
-            min_doc_count: 1,
-            order: { '_key': 'desc' },
-        },
-        aggs: {
-            bucket_truncate: {
-                bucket_sort: {
-                    from: (page - 1) * size,
-                    size
+const buildHistogramField = (field, uuid, { interval = DEFAULT_INTERVAL, intervals } = {},
+                             page = 1, size = DEFAULT_FACET_SIZE) => {
+
+    const fieldKey = expandPrivate(field, uuid)
+
+    let filterClause = null
+    if (intervals?.include?.length) {
+        filterClause = {
+            bool: {
+                should: intervals.include.map(selected => ({
+                    range: {
+                        [fieldKey]: intervalFormat(interval, selected),
+                    },
+                })),
+            },
+        }
+    }
+
+    let filterMissing = null
+    if (intervals?.missing === 'true') {
+        filterMissing = false
+    } else if (intervals?.missing === 'false') {
+        filterMissing = true
+    }
+
+    return {
+        field,
+        aggregation: {
+            date_histogram: {
+                field: fieldKey,
+                interval,
+                min_doc_count: 1,
+                order: { '_key': 'desc' },
+            },
+            aggs: {
+                bucket_truncate: {
+                    bucket_sort: {
+                        from: (page - 1) * size,
+                        size
+                    }
                 }
             }
-        }
-    },
-    filterClause: intervals.include?.length ? {
-        bool: {
-            should: intervals.include.map(selected => ({
-                range: {
-                    [expandPrivate(field, username)]: intervalFormat(interval, selected),
-                },
-            })),
         },
-    } : null,
-})
+        filterClause,
+        filterMissing,
+    }
+}
 
-const buildMissingField = field => ({
+const buildMissingField = (field, uuid) => ({
     field: `${field}-missing`,
     aggregation: {
-        missing: { field },
+        missing: { field: expandPrivate(field, uuid) },
     }
 })
 
 const buildFilter = fields => {
+    const should = []
     const filter = fields.map(field => field.filterClause).filter(Boolean)
     const must_not = fields.map(field => field.filterExclude).filter(Boolean)
 
-    if (filter.length || must_not.length) {
+    fields.forEach(field => {
+        if (typeof field.filterMissing === 'boolean') {
+            const exists = { exists: { field: field.field } }
+            if (aggregationFields[field.field].type === 'term-and') {
+                if (field.filterMissing) {
+                    filter.push(exists)
+                } else {
+                    must_not.push(exists)
+                }
+            } else {
+                if (field.filterMissing) {
+                    should.push(exists, filter)
+                } else {
+                    should.push({ bool: { must_not: exists } }, filter)
+                }
+            }
+        }
+    })
+
+    if (should.length || filter.length || must_not.length) {
         return {
             bool: {
+                should,
                 filter,
                 must_not,
             },
@@ -171,26 +243,34 @@ const buildAggs = fields => fields.reduce((result, field) => ({
             count: { cardinality: { field: field.field } },
         },
         filter: buildFilter(
-            fields.filter(other => other.field !== field.field)
+            fields.filter(other => other.field !== field.field && other.field !== `${field.field}-missing`)
         ),
     },
 }), {})
 
-const buildSearchQuery = ({ q = '*', page = 1, size = 0, order, collections = [], facets = {}, filters = {} } = {},
-                          type, searchFields, uuid) => {
-
+const buildSearchQuery = (
+    {
+        q = '*',
+        page = 1,
+        size = 0,
+        order,
+        collections = [],
+        facets = {},
+        filters = {},
+    } = {},
+    type,
+    searchFields,
+    uuid
+) => {
+    try{
     const query = buildQuery(q, filters, searchFields)
     const sort = buildSortQuery(order)
 
     const fields = [
-        ...['date', 'date-created'].map(field =>
-            buildHistogramField(field, uuid, filters[field], facets[field]),
-        ),
-        ...['date', 'date-created'].map(buildMissingField),
-        ...['tags', 'priv-tags', 'filetype', 'lang',
-            'email-domains', 'from.keyword', 'to.keyword', 'path-parts'].map(field =>
-            buildTermsField(field, uuid, filters[field], facets[field])
-        ),
+        ...dateFields.map(field => buildHistogramField(field, uuid, filters[field], facets[field])),
+        ...dateFields.map(field => buildMissingField(field, uuid)),
+        ...termFields.map(field => buildTermsField(field, uuid, filters[field], facets[field])),
+        ...termFields.map(field => buildMissingField(field, uuid)),
     ]
 
     const postFilter = buildFilter(fields);
@@ -214,6 +294,7 @@ const buildSearchQuery = ({ q = '*', page = 1, size = 0, order, collections = []
             fields: highlightFields,
         },
     }
+    } catch(e) { console.log(e)}
 }
 
 export default buildSearchQuery

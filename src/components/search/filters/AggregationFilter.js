@@ -28,6 +28,9 @@ const useStyles = makeStyles(theme => ({
     labelWithSub: {
         margin: 0,
     },
+    italic: {
+        fontStyle: 'italic',
+    },
     subLabel: {
         fontSize: '8.5pt',
     },
@@ -37,7 +40,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function AggregationFilter({ field, queryFilter, aggregations, loading, onChange,
+function AggregationFilter({ field, queryFilter, aggregations, missing, loading, onChange,
                                triState, bucketLabel, bucketSubLabel, bucketValue }) {
 
     const classes = useStyles()
@@ -64,9 +67,19 @@ function AggregationFilter({ field, queryFilter, aggregations, loading, onChange
         })
     }
 
+    const handleMissingChange = () => {
+        if (queryFilter?.missing === 'true') {
+            onChange(field, { missing: 'false' })
+        } else if (queryFilter?.missing === 'false') {
+            onChange(field, { missing: undefined })
+        } else {
+            onChange(field, { missing: 'true' })
+        }
+    }
+
     const handleReset = () => onChange(field, [], true)
 
-    const renderBucket = bucket => {
+    const renderBucket = (bucket, handler = handleChange, italic = false) => {
         const label = bucketLabel ? bucketLabel(bucket) : bucket.key
         const subLabel = bucketSubLabel ? bucketSubLabel(bucket) : null
         const value = bucketValue ? bucketValue(bucket) : bucket.key
@@ -79,7 +92,7 @@ function AggregationFilter({ field, queryFilter, aggregations, loading, onChange
                 role={undefined}
                 dense
                 button
-                onClick={handleChange(value)}
+                onClick={handler(value)}
             >
                 <Checkbox
                     size="small"
@@ -90,13 +103,13 @@ function AggregationFilter({ field, queryFilter, aggregations, loading, onChange
                     indeterminate={triState && queryFilter?.exclude?.includes(value)}
                     classes={{ root: classes.checkbox }}
                     disabled={loading || !bucket.doc_count}
-                    onChange={handleChange(value)}
+                    onChange={handler(value)}
                 />
 
                 <ListItemText
                     primary={label}
                     secondary={subLabel}
-                    className={cn(classes.label, {[classes.labelWithSub]: subLabel})}
+                    className={cn(classes.label, {[classes.labelWithSub]: subLabel, [classes.italic]: italic})}
                     secondaryTypographyProps={{
                         className: classes.subLabel
                     }}
@@ -119,7 +132,43 @@ function AggregationFilter({ field, queryFilter, aggregations, loading, onChange
 
     return (
         <List dense>
-            {aggregation?.buckets.map(renderBucket).filter(Boolean)}
+            <ListItem
+                role={undefined}
+                dense
+                button
+                onClick={handleMissingChange}
+            >
+                <Checkbox
+                    size="small"
+                    tabIndex={-1}
+                    disableRipple
+                    checked={!!queryFilter?.missing}
+                    indeterminate={queryFilter?.missing === 'false'}
+                    classes={{ root: classes.checkbox }}
+                    disabled={loading}
+                    onChange={handleMissingChange}
+                />
+
+                <ListItemText
+                    primary="N/A"
+                    className={cn(classes.label, classes.italic)}
+                    secondaryTypographyProps={{
+                        className: classes.subLabel
+                    }}
+                />
+
+                <ListItemText
+                    primary={
+                        <Typography variant="caption">
+                            {formatThousands(missing?.values.doc_count)}
+                        </Typography>
+                    }
+                    disableTypography
+                    align="right"
+                />
+            </ListItem>
+
+            {aggregation?.buckets.map(bucket => renderBucket(bucket)).filter(Boolean)}
 
             <ListItem dense>
                 <Grid container alignItems="center" justify="space-between">

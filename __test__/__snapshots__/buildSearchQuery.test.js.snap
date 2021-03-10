@@ -31,7 +31,19 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {},
+        "bool": Object {
+          "filter": Array [],
+          "must_not": Array [
+            Object {
+              "terms": Object {
+                "tags": Array [
+                  "trash",
+                ],
+              },
+            },
+          ],
+          "should": Array [],
+        },
       },
     },
     "date-created": Object {
@@ -61,7 +73,19 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {},
+        "bool": Object {
+          "filter": Array [],
+          "must_not": Array [
+            Object {
+              "terms": Object {
+                "tags": Array [
+                  "trash",
+                ],
+              },
+            },
+          ],
+          "should": Array [],
+        },
       },
     },
     "date-created-missing": Object {
@@ -78,7 +102,19 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {},
+        "bool": Object {
+          "filter": Array [],
+          "must_not": Array [
+            Object {
+              "terms": Object {
+                "tags": Array [
+                  "trash",
+                ],
+              },
+            },
+          ],
+          "should": Array [],
+        },
       },
     },
     "date-missing": Object {
@@ -95,7 +131,19 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {},
+        "bool": Object {
+          "filter": Array [],
+          "must_not": Array [
+            Object {
+              "terms": Object {
+                "tags": Array [
+                  "trash",
+                ],
+              },
+            },
+          ],
+          "should": Array [],
+        },
       },
     },
     "email-domains": Object {
@@ -113,7 +161,48 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {},
+        "bool": Object {
+          "filter": Array [],
+          "must_not": Array [
+            Object {
+              "terms": Object {
+                "tags": Array [
+                  "trash",
+                ],
+              },
+            },
+          ],
+          "should": Array [],
+        },
+      },
+    },
+    "email-domains-missing": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "email-domains-missing",
+          },
+        },
+        "values": Object {
+          "missing": Object {
+            "field": "email-domains",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {
+          "filter": Array [],
+          "must_not": Array [
+            Object {
+              "terms": Object {
+                "tags": Array [
+                  "trash",
+                ],
+              },
+            },
+          ],
+          "should": Array [],
+        },
       },
     },
     "filetype": Object {
@@ -131,7 +220,48 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {},
+        "bool": Object {
+          "filter": Array [],
+          "must_not": Array [
+            Object {
+              "terms": Object {
+                "tags": Array [
+                  "trash",
+                ],
+              },
+            },
+          ],
+          "should": Array [],
+        },
+      },
+    },
+    "filetype-missing": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "filetype-missing",
+          },
+        },
+        "values": Object {
+          "missing": Object {
+            "field": "filetype",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {
+          "filter": Array [],
+          "must_not": Array [
+            Object {
+              "terms": Object {
+                "tags": Array [
+                  "trash",
+                ],
+              },
+            },
+          ],
+          "should": Array [],
+        },
       },
     },
     "from.keyword": Object {
@@ -149,7 +279,48 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {},
+        "bool": Object {
+          "filter": Array [],
+          "must_not": Array [
+            Object {
+              "terms": Object {
+                "tags": Array [
+                  "trash",
+                ],
+              },
+            },
+          ],
+          "should": Array [],
+        },
+      },
+    },
+    "from.keyword-missing": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "from.keyword-missing",
+          },
+        },
+        "values": Object {
+          "missing": Object {
+            "field": "from.keyword",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {
+          "filter": Array [],
+          "must_not": Array [
+            Object {
+              "terms": Object {
+                "tags": Array [
+                  "trash",
+                ],
+              },
+            },
+          ],
+          "should": Array [],
+        },
       },
     },
     "lang": Object {
@@ -167,7 +338,48 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {},
+        "bool": Object {
+          "filter": Array [],
+          "must_not": Array [
+            Object {
+              "terms": Object {
+                "tags": Array [
+                  "trash",
+                ],
+              },
+            },
+          ],
+          "should": Array [],
+        },
+      },
+    },
+    "lang-missing": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "lang-missing",
+          },
+        },
+        "values": Object {
+          "missing": Object {
+            "field": "lang",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {
+          "filter": Array [],
+          "must_not": Array [
+            Object {
+              "terms": Object {
+                "tags": Array [
+                  "trash",
+                ],
+              },
+            },
+          ],
+          "should": Array [],
+        },
       },
     },
     "path-parts": Object {
@@ -185,7 +397,48 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {},
+        "bool": Object {
+          "filter": Array [],
+          "must_not": Array [
+            Object {
+              "terms": Object {
+                "tags": Array [
+                  "trash",
+                ],
+              },
+            },
+          ],
+          "should": Array [],
+        },
+      },
+    },
+    "path-parts-missing": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "path-parts-missing",
+          },
+        },
+        "values": Object {
+          "missing": Object {
+            "field": "path-parts",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {
+          "filter": Array [],
+          "must_not": Array [
+            Object {
+              "terms": Object {
+                "tags": Array [
+                  "trash",
+                ],
+              },
+            },
+          ],
+          "should": Array [],
+        },
       },
     },
     "priv-tags": Object {
@@ -203,7 +456,48 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {},
+        "bool": Object {
+          "filter": Array [],
+          "must_not": Array [
+            Object {
+              "terms": Object {
+                "tags": Array [
+                  "trash",
+                ],
+              },
+            },
+          ],
+          "should": Array [],
+        },
+      },
+    },
+    "priv-tags-missing": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "priv-tags-missing",
+          },
+        },
+        "values": Object {
+          "missing": Object {
+            "field": "priv-tags.testuser",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {
+          "filter": Array [],
+          "must_not": Array [
+            Object {
+              "terms": Object {
+                "tags": Array [
+                  "trash",
+                ],
+              },
+            },
+          ],
+          "should": Array [],
+        },
       },
     },
     "tags": Object {
@@ -224,6 +518,35 @@ Object {
         "bool": Object {},
       },
     },
+    "tags-missing": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "tags-missing",
+          },
+        },
+        "values": Object {
+          "missing": Object {
+            "field": "tags",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {
+          "filter": Array [],
+          "must_not": Array [
+            Object {
+              "terms": Object {
+                "tags": Array [
+                  "trash",
+                ],
+              },
+            },
+          ],
+          "should": Array [],
+        },
+      },
+    },
     "to.keyword": Object {
       "aggs": Object {
         "count": Object {
@@ -239,7 +562,48 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {},
+        "bool": Object {
+          "filter": Array [],
+          "must_not": Array [
+            Object {
+              "terms": Object {
+                "tags": Array [
+                  "trash",
+                ],
+              },
+            },
+          ],
+          "should": Array [],
+        },
+      },
+    },
+    "to.keyword-missing": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "to.keyword-missing",
+          },
+        },
+        "values": Object {
+          "missing": Object {
+            "field": "to.keyword",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {
+          "filter": Array [],
+          "must_not": Array [
+            Object {
+              "terms": Object {
+                "tags": Array [
+                  "trash",
+                ],
+              },
+            },
+          ],
+          "should": Array [],
+        },
       },
     },
   },
@@ -249,7 +613,19 @@ Object {
     "fields": Object {},
   },
   "post_filter": Object {
-    "bool": Object {},
+    "bool": Object {
+      "filter": Array [],
+      "must_not": Array [
+        Object {
+          "terms": Object {
+            "tags": Array [
+              "trash",
+            ],
+          },
+        },
+      ],
+      "should": Array [],
+    },
   },
   "query": Object {
     "query_string": Object {
