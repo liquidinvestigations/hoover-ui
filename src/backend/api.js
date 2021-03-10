@@ -5,7 +5,7 @@ import buildSearchQuery from './buildSearchQuery'
 
 const { API_URL } = process.env
 
-const prefix = '/api/v0/'
+const prefix = '/api/v1/'
 
 const buildUrl = (...paths) => {
     const queryObj = paths.reduce((prev, curr, index) => {
