@@ -148,7 +148,11 @@ function AggregationFilter({ field, queryFilter, aggregations, missing, loading,
         )
     }
 
-    const disableReset = loading || (!queryFilter?.include?.length && !queryFilter?.exclude?.length)
+    const disableReset = loading || (
+        !queryFilter?.include?.length &&
+        !queryFilter?.exclude?.length &&
+        !queryFilter?.missing
+    )
 
     return (
         <List dense>
