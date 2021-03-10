@@ -8,7 +8,7 @@ import { aggregationFields } from '../../../constants/aggregationFields'
 
 const formatLang = bucket => getLanguageName(bucket.key)
 
-function Filters({ ...props }) {
+function Filters() {
     const { query, search, aggregations, resultsLoading, aggregationsLoading } = useSearch()
 
     const triggerSearch = params => {

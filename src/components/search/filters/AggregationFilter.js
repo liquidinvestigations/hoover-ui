@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import {
     Button,
     Checkbox,
+    Divider,
     Grid,
     List,
     ListItem,
@@ -177,6 +178,8 @@ function AggregationFilter({ field, queryFilter, aggregations, missing, loading,
                     align="right"
                 />
             </ListItem>
+
+            <Divider />
 
             {aggregation?.buckets.map(bucket => renderBucket(bucket)).filter(Boolean)}
 

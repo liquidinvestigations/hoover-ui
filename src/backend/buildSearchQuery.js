@@ -97,6 +97,7 @@ const buildTermsField = (field, uuid, terms, page = 1, size = DEFAULT_FACET_SIZE
 
     return {
         field,
+        originalField: field,
         aggregation: {
             terms: {
                 field: fieldKey,
@@ -170,6 +171,7 @@ const buildHistogramField = (field, uuid, { interval = DEFAULT_INTERVAL, interva
 
     return {
         field,
+        originalField: field,
         aggregation: {
             date_histogram: {
                 field: fieldKey,
@@ -193,46 +195,54 @@ const buildHistogramField = (field, uuid, { interval = DEFAULT_INTERVAL, interva
 
 const buildMissingField = (field, uuid) => ({
     field: `${field}-missing`,
+    originalField: field,
     aggregation: {
         missing: { field: expandPrivate(field, uuid) },
     }
 })
 
+const prepareFilter = field => {
+    const filter = []
+
+    if (field.filterClause) {
+        filter.push(field.filterClause)
+    }
+
+    if (field.filterExclude) {
+        filter.push({ bool: { must_not: field.filterExclude } })
+    }
+
+    if (typeof field.filterMissing === 'boolean') {
+        const exists = { exists: { field: field.field } }
+        if (field.filterMissing) {
+            filter.push(exists)
+        } else {
+            filter.push({ bool: { must_not: exists } })
+        }
+    }
+
+    if (filter.length) {
+        return filter
+    }
+}
+
 const buildFilter = fields => {
-    const should = []
-    const filter = fields.map(field => field.filterClause).filter(Boolean)
-    const must_not = fields.map(field => field.filterExclude).filter(Boolean)
+    const filter = []
 
     fields.forEach(field => {
-        if (typeof field.filterMissing === 'boolean') {
-            const exists = { exists: { field: field.field } }
-            if (aggregationFields[field.field].type === 'term-and') {
-                if (field.filterMissing) {
-                    filter.push(exists)
-                } else {
-                    must_not.push(exists)
-                }
+        const fieldFilter = prepareFilter(field)
+
+        if (fieldFilter) {
+            if (aggregationFields[field.originalField].type === 'term-and') {
+                filter.push(...fieldFilter)
             } else {
-                if (field.filterMissing) {
-                    should.push(exists)
-                } else {
-                    should.push({ bool: { must_not: exists } })
-                }
-                if (filter.length) {
-                    should.push(filter.pop())
-                }
+                filter.push({ bool: { should: fieldFilter } })
             }
         }
     })
 
-    if (should.length || filter.length || must_not.length) {
-        return {
-            bool: {
-                should,
-                filter,
-                must_not,
-            },
-        }
+    if (filter.length) {
+        return { bool: { filter } }
     } else {
         return { bool: {} }
     }
@@ -245,13 +255,7 @@ const buildAggs = fields => fields.reduce((result, field) => ({
             values: field.aggregation,
             count: { cardinality: { field: field.field } },
         },
-        filter: buildFilter(
-            fields.filter(other =>
-                other.field !== field.field &&
-                other.field !== `${field.field}-missing` &&
-                field.field !== `${other.field}-missing`
-            )
-        ),
+        filter: buildFilter(fields.filter(other => other.originalField !== field.originalField)),
     },
 }), {})
 
@@ -269,7 +273,7 @@ const buildSearchQuery = (
     searchFields,
     uuid
 ) => {
-    try{
+
     const query = buildQuery(q, filters, searchFields)
     const sort = buildSortQuery(order)
 
@@ -309,7 +313,6 @@ const buildSearchQuery = (
             fields: highlightFields,
         },
     }
-    } catch(e) { console.log(e)}
 }
 
 export default buildSearchQuery
