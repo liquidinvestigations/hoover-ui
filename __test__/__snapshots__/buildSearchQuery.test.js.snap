@@ -32,17 +32,19 @@ Object {
       },
       "filter": Object {
         "bool": Object {
-          "filter": Array [],
-          "must_not": Array [
+          "filter": Array [
             Object {
-              "terms": Object {
-                "tags": Array [
-                  "trash",
-                ],
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
               },
             },
           ],
-          "should": Array [],
         },
       },
     },
@@ -74,17 +76,19 @@ Object {
       },
       "filter": Object {
         "bool": Object {
-          "filter": Array [],
-          "must_not": Array [
+          "filter": Array [
             Object {
-              "terms": Object {
-                "tags": Array [
-                  "trash",
-                ],
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
               },
             },
           ],
-          "should": Array [],
         },
       },
     },
@@ -103,17 +107,19 @@ Object {
       },
       "filter": Object {
         "bool": Object {
-          "filter": Array [],
-          "must_not": Array [
+          "filter": Array [
             Object {
-              "terms": Object {
-                "tags": Array [
-                  "trash",
-                ],
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
               },
             },
           ],
-          "should": Array [],
         },
       },
     },
@@ -132,17 +138,19 @@ Object {
       },
       "filter": Object {
         "bool": Object {
-          "filter": Array [],
-          "must_not": Array [
+          "filter": Array [
             Object {
-              "terms": Object {
-                "tags": Array [
-                  "trash",
-                ],
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
               },
             },
           ],
-          "should": Array [],
         },
       },
     },
@@ -162,17 +170,19 @@ Object {
       },
       "filter": Object {
         "bool": Object {
-          "filter": Array [],
-          "must_not": Array [
+          "filter": Array [
             Object {
-              "terms": Object {
-                "tags": Array [
-                  "trash",
-                ],
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
               },
             },
           ],
-          "should": Array [],
         },
       },
     },
@@ -191,17 +201,19 @@ Object {
       },
       "filter": Object {
         "bool": Object {
-          "filter": Array [],
-          "must_not": Array [
+          "filter": Array [
             Object {
-              "terms": Object {
-                "tags": Array [
-                  "trash",
-                ],
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
               },
             },
           ],
-          "should": Array [],
         },
       },
     },
@@ -221,17 +233,19 @@ Object {
       },
       "filter": Object {
         "bool": Object {
-          "filter": Array [],
-          "must_not": Array [
+          "filter": Array [
             Object {
-              "terms": Object {
-                "tags": Array [
-                  "trash",
-                ],
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
               },
             },
           ],
-          "should": Array [],
         },
       },
     },
@@ -250,17 +264,19 @@ Object {
       },
       "filter": Object {
         "bool": Object {
-          "filter": Array [],
-          "must_not": Array [
+          "filter": Array [
             Object {
-              "terms": Object {
-                "tags": Array [
-                  "trash",
-                ],
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
               },
             },
           ],
-          "should": Array [],
         },
       },
     },
@@ -280,17 +296,19 @@ Object {
       },
       "filter": Object {
         "bool": Object {
-          "filter": Array [],
-          "must_not": Array [
+          "filter": Array [
             Object {
-              "terms": Object {
-                "tags": Array [
-                  "trash",
-                ],
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
               },
             },
           ],
-          "should": Array [],
         },
       },
     },
@@ -309,17 +327,19 @@ Object {
       },
       "filter": Object {
         "bool": Object {
-          "filter": Array [],
-          "must_not": Array [
+          "filter": Array [
             Object {
-              "terms": Object {
-                "tags": Array [
-                  "trash",
-                ],
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
               },
             },
           ],
-          "should": Array [],
         },
       },
     },
@@ -339,17 +359,19 @@ Object {
       },
       "filter": Object {
         "bool": Object {
-          "filter": Array [],
-          "must_not": Array [
+          "filter": Array [
             Object {
-              "terms": Object {
-                "tags": Array [
-                  "trash",
-                ],
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
               },
             },
           ],
-          "should": Array [],
         },
       },
     },
@@ -368,17 +390,19 @@ Object {
       },
       "filter": Object {
         "bool": Object {
-          "filter": Array [],
-          "must_not": Array [
+          "filter": Array [
             Object {
-              "terms": Object {
-                "tags": Array [
-                  "trash",
-                ],
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
               },
             },
           ],
-          "should": Array [],
         },
       },
     },
@@ -398,17 +422,19 @@ Object {
       },
       "filter": Object {
         "bool": Object {
-          "filter": Array [],
-          "must_not": Array [
+          "filter": Array [
             Object {
-              "terms": Object {
-                "tags": Array [
-                  "trash",
-                ],
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
               },
             },
           ],
-          "should": Array [],
         },
       },
     },
@@ -427,17 +453,19 @@ Object {
       },
       "filter": Object {
         "bool": Object {
-          "filter": Array [],
-          "must_not": Array [
+          "filter": Array [
             Object {
-              "terms": Object {
-                "tags": Array [
-                  "trash",
-                ],
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
               },
             },
           ],
-          "should": Array [],
         },
       },
     },
@@ -457,17 +485,19 @@ Object {
       },
       "filter": Object {
         "bool": Object {
-          "filter": Array [],
-          "must_not": Array [
+          "filter": Array [
             Object {
-              "terms": Object {
-                "tags": Array [
-                  "trash",
-                ],
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
               },
             },
           ],
-          "should": Array [],
         },
       },
     },
@@ -486,17 +516,19 @@ Object {
       },
       "filter": Object {
         "bool": Object {
-          "filter": Array [],
-          "must_not": Array [
+          "filter": Array [
             Object {
-              "terms": Object {
-                "tags": Array [
-                  "trash",
-                ],
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
               },
             },
           ],
-          "should": Array [],
         },
       },
     },
@@ -532,19 +564,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [],
-          "must_not": Array [
-            Object {
-              "terms": Object {
-                "tags": Array [
-                  "trash",
-                ],
-              },
-            },
-          ],
-          "should": Array [],
-        },
+        "bool": Object {},
       },
     },
     "to.keyword": Object {
@@ -563,17 +583,19 @@ Object {
       },
       "filter": Object {
         "bool": Object {
-          "filter": Array [],
-          "must_not": Array [
+          "filter": Array [
             Object {
-              "terms": Object {
-                "tags": Array [
-                  "trash",
-                ],
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
               },
             },
           ],
-          "should": Array [],
         },
       },
     },
@@ -592,17 +614,19 @@ Object {
       },
       "filter": Object {
         "bool": Object {
-          "filter": Array [],
-          "must_not": Array [
+          "filter": Array [
             Object {
-              "terms": Object {
-                "tags": Array [
-                  "trash",
-                ],
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
               },
             },
           ],
-          "should": Array [],
         },
       },
     },
@@ -614,17 +638,19 @@ Object {
   },
   "post_filter": Object {
     "bool": Object {
-      "filter": Array [],
-      "must_not": Array [
+      "filter": Array [
         Object {
-          "terms": Object {
-            "tags": Array [
-              "trash",
-            ],
+          "bool": Object {
+            "must_not": Object {
+              "terms": Object {
+                "tags": Array [
+                  "trash",
+                ],
+              },
+            },
           },
         },
       ],
-      "should": Array [],
     },
   },
   "query": Object {
