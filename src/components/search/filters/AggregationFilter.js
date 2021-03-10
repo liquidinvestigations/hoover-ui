@@ -62,6 +62,7 @@ function AggregationFilter({ field, queryFilter, aggregations, missing, loading,
         }
 
         onChange(field, {
+            ...queryFilter,
             include: Array.from(include),
             exclude: Array.from(exclude),
         })
@@ -69,11 +70,20 @@ function AggregationFilter({ field, queryFilter, aggregations, missing, loading,
 
     const handleMissingChange = () => {
         if (queryFilter?.missing === 'true') {
-            onChange(field, { missing: 'false' })
+            onChange(field, {
+                ...queryFilter,
+                missing: 'false'
+            })
         } else if (queryFilter?.missing === 'false') {
-            onChange(field, { missing: undefined })
+            onChange(field, {
+                ...queryFilter,
+                missing: undefined
+            })
         } else {
-            onChange(field, { missing: 'true' })
+            onChange(field, {
+                ...queryFilter,
+                missing: 'true'
+            })
         }
     }
 

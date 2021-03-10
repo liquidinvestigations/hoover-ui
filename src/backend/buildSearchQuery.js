@@ -214,9 +214,12 @@ const buildFilter = fields => {
                 }
             } else {
                 if (field.filterMissing) {
-                    should.push(exists, filter)
+                    should.push(exists)
                 } else {
-                    should.push({ bool: { must_not: exists } }, filter)
+                    should.push({ bool: { must_not: exists } })
+                }
+                if (filter.length) {
+                    should.push(filter.pop())
                 }
             }
         }
@@ -243,7 +246,11 @@ const buildAggs = fields => fields.reduce((result, field) => ({
             count: { cardinality: { field: field.field } },
         },
         filter: buildFilter(
-            fields.filter(other => other.field !== field.field && other.field !== `${field.field}-missing`)
+            fields.filter(other =>
+                other.field !== field.field &&
+                other.field !== `${field.field}-missing` &&
+                field.field !== `${other.field}-missing`
+            )
         ),
     },
 }), {})
@@ -265,6 +272,14 @@ const buildSearchQuery = (
     try{
     const query = buildQuery(q, filters, searchFields)
     const sort = buildSortQuery(order)
+
+    const dateFields = Object.entries(aggregationFields)
+        .filter(([,field]) => field.type === 'date')
+        .map(([key]) => key)
+
+    const termFields = Object.entries(aggregationFields)
+        .filter(([,field]) => field.type.startsWith('term'))
+        .map(([key]) => key)
 
     const fields = [
         ...dateFields.map(field => buildHistogramField(field, uuid, filters[field], facets[field])),
