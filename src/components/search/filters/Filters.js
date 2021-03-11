@@ -1,5 +1,4 @@
 import React, { memo, useCallback } from 'react'
-import { List } from '@material-ui/core'
 import Loading from '../../Loading'
 import DateHistogramFilter from './DateHistogramFilter'
 import TermsAggregationFilter from './TermsAggregationFilter'
@@ -9,7 +8,7 @@ import { aggregationFields } from '../../../constants/aggregationFields'
 
 const formatLang = bucket => getLanguageName(bucket.key)
 
-function Filters({ ...props }) {
+function Filters() {
     const { query, search, aggregations, resultsLoading, aggregationsLoading } = useSearch()
 
     const triggerSearch = params => {
@@ -39,38 +38,35 @@ function Filters({ ...props }) {
         return null
     }
 
-    return (
-        <List {...props}>
-            {Object.entries(aggregationFields).map(([field, params]) => {
-                let FilterComponent, filterTypeProps = {}
-                if (params.type === 'date') {
-                    FilterComponent = DateHistogramFilter
-                } else {
-                    FilterComponent = TermsAggregationFilter
-                }
+    return Object.entries(aggregationFields).map(([field, params]) => {
+            let FilterComponent, filterTypeProps = {}
+            if (params.type === 'date') {
+                FilterComponent = DateHistogramFilter
+            } else {
+                FilterComponent = TermsAggregationFilter
+            }
 
-                if (params.hideEmpty) {
-                    //filterTypeProps.emptyDisabled = true
-                }
+            if (params.hideEmpty) {
+                //filterTypeProps.emptyDisabled = true
+            }
 
-                if (field === 'lang') {
-                    filterTypeProps.bucketLabel = formatLang
-                }
+            if (field === 'lang') {
+                filterTypeProps.bucketLabel = formatLang
+            }
 
-                return (
-                    <FilterComponent
-                        key={field}
-                        title={params.filterLabel}
-                        field={field}
-                        queryFilter={query.filters?.[field]}
-                        aggregations={aggregations[field]}
-                        {...filterTypeProps}
-                        {...filterProps}
-                    />
-                )
-            })}
-        </List>
-    )
+        return (
+            <FilterComponent
+                key={field}
+                title={params.filterLabel}
+                field={field}
+                queryFilter={query.filters?.[field]}
+                aggregations={aggregations[field]}
+                missing={aggregations[`${field}-missing`]}
+                {...filterTypeProps}
+                {...filterProps}
+            />
+        )
+    })
 }
 
 export default memo(Filters)

@@ -151,7 +151,9 @@ const Meta = () => {
                     )
                 })}
             </List>
+
             <Divider />
+
             <Box>
                 {Object.entries(data.content)
                     .filter(([key, value]) =>
@@ -194,6 +196,7 @@ const Meta = () => {
                     })
                 }
             </Box>
+
             <LinkMenu
                 link={currentLink}
                 anchorPosition={menuPosition}

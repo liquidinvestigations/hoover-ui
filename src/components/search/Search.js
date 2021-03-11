@@ -35,12 +35,6 @@ const useStyles = makeStyles(theme => ({
     info: {
         color: theme.palette.grey.A700,
     },
-    collections: {
-        paddingBottom: 0,
-    },
-    filters: {
-        paddingTop: 0,
-    },
     sorting: {
         display: 'flex',
         marginTop: theme.spacing(2),
@@ -118,22 +112,20 @@ export default function Search({ collections }) {
                 <SplitPaneLayout
                     left={
                         <>
-                            <List dense className={classes.collections}>
-                                <Expandable
-                                    title={`Collections (${query.collections?.length || 0})`}
-                                    defaultOpen
-                                    highlight={false}
-                                >
-                                    <CollectionsFilter
-                                        collections={collections}
-                                        selected={query.collections || []}
-                                        changeSelection={handleCollectionsChange}
-                                        counts={collectionsCount}
-                                    />
-                                </Expandable>
-                            </List>
+                            <Expandable
+                                title={`Collections (${query.collections?.length || 0})`}
+                                defaultOpen
+                                highlight={false}
+                            >
+                                <CollectionsFilter
+                                    collections={collections}
+                                    selected={query.collections || []}
+                                    changeSelection={handleCollectionsChange}
+                                    counts={collectionsCount}
+                                />
+                            </Expandable>
 
-                            <Filters className={classes.filters} />
+                            <Filters />
                         </>
                     }
                     right={

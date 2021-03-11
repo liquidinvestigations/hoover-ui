@@ -51,6 +51,10 @@ const deleteFilterNode = (filters, node) => {
             filters[node.field].from = filters[node.field].to = undefined
         }
 
+        if (node.boost === 1 && filters[node.field].intervals?.missing) {
+            filters[node.field].intervals.missing = undefined
+        }
+
     } else if (node.term) {
         let index
         const filter = filters[node.field]
@@ -59,6 +63,8 @@ const deleteFilterNode = (filters, node) => {
             filter.include.splice(index, 1)
         } else if ((index = filter.exclude?.indexOf(node.term)) > -1) {
             filter.exclude.splice(index, 1)
+        } else if (node.boost === 1 && filter.missing) {
+            filter.missing = undefined
         }
     }
     return filters
@@ -91,7 +97,13 @@ export default function FiltersChips() {
                 if (values.from && values.to) {
                     filter = `${key}:[${values.from} TO ${values.to}]`
                 }
+
                 const intervalsArray = []
+                if (values.intervals?.missing === 'true') {
+                    intervalsArray.push(`(${key}:"N/A"^1)`)
+                } else if (values.intervals?.missing === 'true') {
+                    intervalsArray.push(`(${key}:-"N/A"^1)`)
+                }
                 values.intervals?.include?.forEach(value => {
                     intervalsArray.push(`${key}:${value}`)
                 })
@@ -107,6 +119,9 @@ export default function FiltersChips() {
 
                 const includeArray = []
                 const includeOperator = aggregationFields[key]?.type === 'term-and' ? ' AND ' : ' OR '
+                if (values.missing === 'true') {
+                    includeArray.push(`(${key}:"N/A"^1)`)
+                }
                 values.include?.forEach(value => {
                     includeArray.push(`${key}:"${clearQuotedParam(value)}"`)
                 })
@@ -119,6 +134,9 @@ export default function FiltersChips() {
                 }
 
                 const excludeArray = []
+                if (values.missing === 'false') {
+                    excludeArray.push(`(${key}:-"N/A"^1)`)
+                }
                 values.exclude?.forEach(value => {
                     excludeArray.push(`(${key}:-"${clearQuotedParam(value)}")`)
                 })
@@ -165,7 +183,7 @@ export default function FiltersChips() {
             label = (
                 <span>
                     <strong>{name}:</strong>{' '}
-                    {shortenName(q.term)}
+                    {q.boost === 1 ? <i>{q.term}</i> : shortenName(q.term)}
                 </span>
             )
         }

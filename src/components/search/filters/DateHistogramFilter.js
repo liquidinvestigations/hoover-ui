@@ -24,7 +24,7 @@ export const formatsValue = {
     hour: "yyyy-MM-dd'T'HH",
 }
 
-function DateHistogramFilter({ title, field, queryFilter, aggregations, loading, onChange }) {
+function DateHistogramFilter({ title, field, queryFilter, aggregations, missing, loading, onChange }) {
     const interval = queryFilter?.interval || DEFAULT_INTERVAL
 
     const onRangeChange = useCallback(range => {
@@ -37,8 +37,8 @@ function DateHistogramFilter({ title, field, queryFilter, aggregations, loading,
     }, [field, queryFilter, onChange])
 
     const onSelectionChange = useCallback((field, newIntervals, resetPage) => {
-        const { intervals, ...rest } = queryFilter || {}
-        if (newIntervals.include?.length) {
+        const { intervals, missing, ...rest } = queryFilter || {}
+        if (newIntervals.include?.length || newIntervals.missing) {
             onChange(field, { intervals: newIntervals, ...rest }, resetPage)
         } else {
             onChange(field, rest, resetPage)
@@ -81,6 +81,7 @@ function DateHistogramFilter({ title, field, queryFilter, aggregations, loading,
                 field={field}
                 queryFilter={queryFilter?.intervals}
                 aggregations={aggregations}
+                missing={missing}
                 loading={loading}
                 onChange={onSelectionChange}
                 bucketLabel={formatLabel}

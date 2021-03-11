@@ -22,7 +22,10 @@ it('builds a query with a filetype filter', () => {
 
     expect(query.post_filter).toMatchObject({
         bool: {
-            filter: [{ terms: { filetype: ['email', 'pdf'] } }],
+            filter: [
+                { bool: { must_not: { terms: { tags: ['trash'] } } } },
+                { bool: { should: [ { terms: { filetype: ['email', 'pdf'] } } ] } }
+            ],
         },
     })
 
@@ -34,7 +37,10 @@ it('builds a query with a filetype filter', () => {
         },
         filter: {
             bool: {
-                filter: [{ terms: { filetype: ['email', 'pdf'] } }],
+                filter: [
+                    { bool: { must_not: { terms: { tags: ['trash'] } } } },
+                    { bool: { should: [ { terms: { filetype: ['email', 'pdf'] } } ] } }
+                ],
             },
         },
     })
@@ -61,22 +67,27 @@ it('builds a query with a date histogram by years filter', () => {
 
     const yearFilter = {
         bool: {
-            should: [
-                {
-                    range: {
-                        date: {
-                            gte: '2009-01-01T00:00:00.000Z',
-                            lte: '2009-12-31T23:59:59.999Z',
+            should: [{
+                bool: {
+                    should: [{
+                        range: {
+                            date: {
+                                gte: '2009-01-01T00:00:00.000Z',
+                                lte: '2009-12-31T23:59:59.999Z',
+                            },
                         },
-                    },
-                },
-            ],
+                    }],
+                }
+            }],
         },
     }
 
     expect(query.post_filter).toMatchObject({
         bool: {
-            filter: [yearFilter],
+            filter: [
+                yearFilter,
+                { bool: { must_not: { terms: { tags: ['trash'] } } } }
+            ],
         },
     })
 
@@ -88,7 +99,10 @@ it('builds a query with a date histogram by years filter', () => {
         },
         filter: {
             bool: {
-                filter: [yearFilter],
+                filter: [
+                    yearFilter,
+                    { bool: { must_not: { terms: { tags: ['trash'] } } } }
+                ],
             },
         },
     })
@@ -100,7 +114,11 @@ it('builds a query with a date histogram by years filter', () => {
             },
         },
         filter: {
-            bool: {},
+            bool: {
+                filter: [
+                    { bool: { must_not: { terms: { tags: ['trash'] } } } },
+                ],
+            },
         },
     })
 })
@@ -120,8 +138,9 @@ it('builds a query with multiple fields filtered', () => {
     expect(query.post_filter).toMatchObject({
         bool: {
             filter: [
-                { terms: { filetype: ['doc', 'email'] } },
-                { terms: { 'email-domains': ['gmail.com'] } },
+                { bool: { must_not: { terms: { tags: ['trash'] } } } },
+                { bool: { should: [ { terms: { filetype: ['doc', 'email'] } } ] } },
+                { bool: { should: [ { terms: { 'email-domains': ['gmail.com'] } } ] } },
             ],
         },
     })
@@ -134,8 +153,11 @@ it('builds a query with multiple fields filtered', () => {
         },
         filter: {
             bool: {
-                filter: [{ terms: { 'email-domains': ['gmail.com'] } }],
-            },
+                filter: [
+                    { bool: { must_not: { terms: { tags: ['trash'] } } } },
+                    { bool: { should: [ { terms: { 'email-domains': ['gmail.com'] } } ] } },
+                ],
+            }
         },
     })
 
@@ -147,7 +169,10 @@ it('builds a query with multiple fields filtered', () => {
         },
         filter: {
             bool: {
-                filter: [{ terms: { filetype: ['doc', 'email'] } }],
+                filter: [
+                    { bool: { must_not: { terms: { tags: ['trash'] } } } },
+                    { bool: { should: [ { terms: { filetype: ['doc', 'email'] } } ] } }
+                ],
             },
         },
     })

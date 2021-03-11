@@ -8,7 +8,7 @@ function TermsAggregationFilter({ title, field, queryFilter, aggregations,
 
     const enabled = !emptyDisabled || !!aggregations?.values.buckets.length
 
-    const defaultOpen = !!queryFilter?.include?.length || !!queryFilter?.exclude?.length
+    const defaultOpen = !!queryFilter?.include?.length || !!queryFilter?.exclude?.length || !!queryFilter?.missing
 
     return (
         <Expandable
