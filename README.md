@@ -35,13 +35,13 @@ You can work on this repository by either using some already existing backend se
 
 ### Only run the UI code, use existing backend
 
-To run UI on localhost set environment variable `API_URL=https://your.server.url` and `REWRITE_API=true`
+To run UI on localhost set environment variable `API_URL=https://hoover.your.server.url` and `REWRITE_API=true`
 Also add `NODE_TLS_REJECT_UNAUTHORIZED=0` to allow local proxy without SSL.
 You can set environment variables in your OS shell or as a part of the startup script in `package.json`
 
     "scripts": {
         ...
-        "dev": "cross-env API_URL=https://your.server.url REWRITE_API=1 NODE_TLS_REJECT_UNAUTHORIZED=0 next dev -p 8000 -H 0.0.0.0",
+        "dev": "cross-env API_URL=https://hoover.your.server.url REWRITE_API=1 NODE_TLS_REJECT_UNAUTHORIZED=0 next dev -p 8000 -H 0.0.0.0",
         ...
     }
 
