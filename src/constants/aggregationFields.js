@@ -19,6 +19,11 @@ export const aggregationFields = {
         chipLabel: 'Date created',
         type: 'date',
     },
+    'content-type': {
+        filterLabel: 'Content type',
+        chipLabel: 'Content type',
+        type: 'term-or',
+    },
     filetype: {
         filterLabel: 'File type',
         chipLabel: 'File type',
