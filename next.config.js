@@ -45,7 +45,11 @@ module.exports = withPlugins([ withTM ],
         compress: false,
         redirects: () => [{
             source: '/doc/:collection/:id/raw/:filename',
-            destination: '/api/v1/doc/:collection/:id/raw/:filename',
+            destination: '/doc/:collection/:id',
+            permanent: true,
+        },{
+            source: '/doc/:collection/:id/ocr/:tag',
+            destination: '/doc/:collection/:id',
             permanent: true,
         }],
         rewrites: () => REWRITE_API ? [{

@@ -5,18 +5,30 @@ import { List, ListItem, ListItemIcon, Typography } from '@material-ui/core'
 import { Folder } from '@material-ui/icons'
 import Loading from './Loading'
 import { locations as locationsAPI } from '../backend/api'
+import { makeStyles } from '@material-ui/core/styles'
+
+const useStyles = makeStyles(theme => ({
+    error: {
+        padding: theme.spacing(3),
+    },
+}))
 
 function Locations({ url: docUrl, data }) {
+    const classes = useStyles()
     const [locations, setLocations] = useState([])
+    const [error, setError] = useState(null)
     const [page, setPage] = useState(1)
     const [hasNextPage, setHasNextPage] = useState(false)
     const [loadingNextPage, setLoadingNextPage] = useState(false)
 
     useEffect(() => {
         if (docUrl) {
+            setError(null)
             locationsAPI(docUrl, page).then(response => {
                 setLocations(response.locations)
                 setHasNextPage(response.has_next_page)
+            }).catch(res => {
+                setError({ status: res.status, statusText: res.statusText, url: res.url })
             })
         }
     }, [docUrl])
@@ -29,6 +41,16 @@ function Locations({ url: docUrl, data }) {
         setLocations([...locations, ...response.locations])
         setHasNextPage(response.has_next_page)
         setLoadingNextPage(false)
+    }
+
+    if (error) {
+        return (
+            <div className={classes.error}>
+                <Typography color="error">
+                    Error: Request to <a href={error.url}>{error.url}</a> returned HTTP {error.status} {error.statusText}
+                </Typography>
+            </div>
+        )
     }
 
     if (!docUrl || !data) {
