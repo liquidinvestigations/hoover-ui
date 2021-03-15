@@ -10,6 +10,7 @@ import Finder from '../Finder'
 import SplitPaneLayout from '../SplitPaneLayout'
 import HotKeysWithHelp from '../HotKeysWithHelp'
 import { useUser } from '../UserProvider'
+import Error from '../../../pages/_error'
 import { copyMetadata, shortenName } from '../../utils'
 
 const useStyles = makeStyles(theme => ({
@@ -49,9 +50,23 @@ export default function DocPage() {
     const whoAmI = useUser()
 
     const {
-        data, loading, printMode,
+        data, loading, error, printMode,
         digest, digestUrl, urlIsSha,
     } = useDocument()
+
+    if (error) {
+        return (
+            <Error
+                statusCode={error.status}
+                title={error.statusText}
+                message={
+                    <>
+                        Request to <a href={error.url}>{error.url}</a> returned HTTP {error.status} {error.statusText}
+                    </>
+                }
+            />
+        )
+    }
 
     const infoPane = (
         <>

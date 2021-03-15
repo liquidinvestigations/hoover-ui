@@ -25,6 +25,9 @@ import { specialTags, specialTagsList } from '../../constants/specialTags'
 const forbiddenCharsRegex = /[^a-z0-9_!@#$%^&*()-=+:,./?]/gi
 
 const useStyles = makeStyles(theme => ({
+    error: {
+        padding: theme.spacing(1),
+    },
     toolbarButtons: {
         marginBottom: theme.spacing(3),
     },
@@ -67,7 +70,7 @@ function Tags({ toolbarButtons }) {
     const whoAmI = useUser()
 
     const {
-        digestUrl, printMode, tags, tagsLocked, tagsLoading,
+        digestUrl, printMode, tags, tagsLocked, tagsLoading, tagsError,
         handleTagAdd, handleTagDelete, handleTagLockClick,
     } = useDocument()
 
@@ -94,6 +97,17 @@ function Tags({ toolbarButtons }) {
         })
         return Object.entries(usersTags)
     }, [tags])
+
+    if (tagsError) {
+        return (
+            <div className={classes.error}>
+                <Typography color="error">
+                    Error: Request to <a href={tagsError.url}>{tagsError.url}</a>{' '}
+                    returned HTTP {tagsError.status} {tagsError.statusText}
+                </Typography>
+            </div>
+        )
+    }
 
     if (!digestUrl) {
         return null

@@ -35,7 +35,7 @@ const fetchJson = async (url, opts = {}) => {
         }
         return res.json()
     } else {
-        throw await res.json()
+        throw res
     }
 }
 

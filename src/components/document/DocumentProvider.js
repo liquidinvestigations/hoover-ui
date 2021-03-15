@@ -8,6 +8,7 @@ const DocumentContext = createContext({})
 
 export function DocumentProvider({ children, collection, id, path, fullPage, printMode, setHash }) {
     const [data, setData] = useState()
+    const [error, setError] = useState(null)
     const [pathname, setPathname] = useState()
     const [loading, setLoading] = useState(true)
 
@@ -29,6 +30,7 @@ export function DocumentProvider({ children, collection, id, path, fullPage, pri
             const newPath = path || documentViewUrl({ _collection: collection, _id: id })
             setPathname(newPath)
             setLoading(true)
+            setError(null)
             if (!newPath.includes('_file_') && !newPath.includes('_directory_')) {
                 setDigestUrl(newPath)
                 setUrlIsSha(true)
@@ -71,6 +73,8 @@ export function DocumentProvider({ children, collection, id, path, fullPage, pri
                         setSubTab(0)
                     }
                 }
+            }).catch(res => {
+                setError({ status: res.status, statusText: res.statusText, url: res.url })
             }).finally(() => {
                 setLoading(false)
             })
@@ -101,15 +105,22 @@ export function DocumentProvider({ children, collection, id, path, fullPage, pri
     const [tags, setTags] = useState([])
     const [tagsLocked, setTagsLocked] = useState(false)
     const [tagsLoading, setTagsLoading] = useState(true)
+    const [tagsError, setTagsError] = useState(null)
 
     useEffect(() => {
         if (digestUrl) {
             setTagsLoading(true)
             setTagsLocked(true)
+            setTagsError(null)
             tagsAPI(digestUrl).then(data => {
                 setTags(data)
                 setTagsLoading(false)
                 setTagsLocked(false)
+            }).catch(res => {
+                setTags([])
+                setTagsError({ status: res.status, statusText: res.statusText, url: res.url })
+            }).finally(() => {
+                setTagsLoading(false)
             })
         }
     }, [digestUrl])
@@ -178,13 +189,13 @@ export function DocumentProvider({ children, collection, id, path, fullPage, pri
 
     return (
         <DocumentContext.Provider value={{
-            data, pathname, loading,
+            data, pathname, loading, error,
             ocrData, fullPage, printMode,
             collection, collectionBaseUrl,
             digest, digestUrl, urlIsSha, docRawUrl,
             tab, handleTabChange,
             subTab, handleSubTabChange,
-            tags, tagsLocked, tagsLoading,
+            tags, tagsLocked, tagsLoading, tagsError,
             handleSpecialTagClick, handleTagAdd,
             handleTagDelete, handleTagLockClick,
         }}>
