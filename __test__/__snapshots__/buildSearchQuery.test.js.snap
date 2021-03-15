@@ -4,6 +4,69 @@ exports[`builds a default query 1`] = `
 Object {
   "_source": Array [],
   "aggs": Object {
+    "content-type": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "content-type",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "content-type",
+            "size": 100,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {
+          "filter": Array [
+            Object {
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
+    "content-type-missing": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "content-type-missing",
+          },
+        },
+        "values": Object {
+          "missing": Object {
+            "field": "content-type",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {
+          "filter": Array [
+            Object {
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
     "date": Object {
       "aggs": Object {
         "count": Object {
