@@ -11,7 +11,10 @@ export const fetchJson = async (url, opts = {}) => {
     if (res.ok) {
         return res.json()
     } else {
-        throw await res.json()
+        const json = await res.json()
+        const message = json.reason || json.message || `HTTP ${res.status} ${res.statusText}`
+
+        throw { message }
     }
 }
 

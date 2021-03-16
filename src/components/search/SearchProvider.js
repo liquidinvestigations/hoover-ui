@@ -51,7 +51,6 @@ export function SearchProvider({ children, serverQuery }) {
 
             searchAPI(query).then(results => {
                 setResults(results)
-                setResultsLoading(false)
                 setCollectionsCount(results.count_by_index)
 
                 if (previewOnLoad === 'first') {
@@ -65,7 +64,8 @@ export function SearchProvider({ children, serverQuery }) {
                 }
             }).catch(error => {
                 setResults(null)
-                setError(error.reason ? error.reason : error.message)
+                setError(error.message)
+            }).finally(() => {
                 setResultsLoading(false)
             })
         } else {
@@ -90,18 +90,20 @@ export function SearchProvider({ children, serverQuery }) {
     })])
 
     const [aggregations, setAggregations] = useState()
+    const [aggregationsError, setAggregationsError] = useState()
     const [aggregationsLoading, setAggregationsLoading] = useState(!!query.collections?.length)
     useEffect(() => {
         if (query.collections?.length) {
+            setAggregationsError(null)
             setAggregationsLoading(true)
 
             aggregationsAPI(query).then(results => {
                 setAggregations(results.aggregations)
-                setAggregationsLoading(false)
                 setCollectionsCount(results.count_by_index)
             }).catch(error => {
                 setAggregations(null)
-                //setError(error.reason ? error.reason : error.message)
+                setAggregationsError(error.message)
+            }).finally(() => {
                 setAggregationsLoading(false)
             })
         } else {
@@ -152,8 +154,8 @@ export function SearchProvider({ children, serverQuery }) {
 
     return (
         <SearchContext.Provider value={{
-            query, error, search, results, aggregations, collectionsCount,
-            resultsLoading, aggregationsLoading,
+            query, error, search, results, aggregations, aggregationsError,
+            collectionsCount, resultsLoading, aggregationsLoading,
             previewNextDoc, previewPreviousDoc, selectedDocData,
             clearResults
         }}>
