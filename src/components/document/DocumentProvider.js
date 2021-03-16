@@ -131,15 +131,13 @@ export function DocumentProvider({ children, collection, collections, id, path, 
         if (tag) {
             deleteTag(digestUrl, tag.id).then(() => {
                 setTags([...(tags.filter(t => t.id !== tag.id))])
-                setTagsLocked(false)
-            }).catch(() => {
+            }).finally(() => {
                 setTagsLocked(false)
             })
         } else {
             createTag(digestUrl, { tag: name, public: publicTagsList.includes(name) }).then(newTag => {
                 setTags([...tags, newTag])
-                setTagsLocked(false)
-            }).catch(() => {
+            }).finally(() => {
                 setTagsLocked(false)
             })
         }
@@ -149,39 +147,29 @@ export function DocumentProvider({ children, collection, collections, id, path, 
         setTagsLocked(true)
         createTag(digestUrl, { tag, public: publicTagsList.includes(tag) || publicTag }).then(newTag => {
             setTags([...tags, newTag])
-            setTagsLocked(false)
-        }).catch(() => {
+        }).finally(() => {
             setTagsLocked(false)
         })
     }
 
     const handleTagDelete = tag => {
-        tag.isMutating = true
         setTags([...tags])
         setTagsLocked(true)
         deleteTag(digestUrl, tag.id).then(() => {
             setTags([...(tags.filter(t => t.id !== tag.id))])
-            setTagsLocked(false)
         }).catch(() => {
-            tag.isMutating = false
             setTags([...tags])
+        }).finally(() => {
             setTagsLocked(false)
         })
     }
 
     const handleTagLockClick = tag => () => {
-        tag.isMutating = true
         setTags([...tags])
         setTagsLocked(true)
         updateTag(digestUrl, tag.id, {public: !tag.public}).then(changedTag => {
-            Object.assign(tag, {
-                ...changedTag,
-                isMutating: false,
-            })
-            setTags([...tags])
-            setTagsLocked(false)
-        }).catch(() => {
-            tag.isMutating = false
+            Object.assign(tag, { ...changedTag })
+        }).finally(() => {
             setTags([...tags])
             setTagsLocked(false)
         })

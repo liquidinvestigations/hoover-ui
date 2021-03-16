@@ -237,7 +237,12 @@ function Tags({ toolbarButtons }) {
                     value={tagsValue}
                     disabled={tagsLocked}
                     options={options || []}
-                    getOptionDisabled={option => tagsValue.map(tag => tag.tag).includes(option.key)}
+                    getOptionDisabled={option => (
+                        tagsValue
+                            .filter(tag => newTagVisibility === 'public' ? tag.public : !tag.public)
+                            .map(tag => tag.tag)
+                            .includes(option.key)
+                    )}
                     getOptionLabel={option => option.key}
                     renderOption={option => (
                         <span className={classes.option}>
@@ -261,7 +266,6 @@ function Tags({ toolbarButtons }) {
                                             </IconButton>
                                         </Tooltip> : null
                                     }
-                                    disabled={chip.isMutating}
                                     style={{ backgroundColor: getChipColor(chip) }}
                                     {...getTagProps({ index })}
                                 />
