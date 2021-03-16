@@ -5,11 +5,20 @@ import TermsAggregationFilter from './TermsAggregationFilter'
 import { useSearch } from '../SearchProvider'
 import { getLanguageName } from '../../../utils'
 import { aggregationFields } from '../../../constants/aggregationFields'
+import { Typography } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
+
+const useStyles = makeStyles(theme => ({
+    error: {
+        padding: theme.spacing(2),
+    },
+}))
 
 const formatLang = bucket => getLanguageName(bucket.key)
 
 function Filters() {
-    const { query, search, aggregations, resultsLoading, aggregationsLoading } = useSearch()
+    const classes = useStyles()
+    const { query, search, aggregations, aggregationsError, resultsLoading, aggregationsLoading } = useSearch()
 
     const triggerSearch = params => {
         search({ ...params, page: 1 })
@@ -28,6 +37,10 @@ function Filters() {
     const filterProps = {
         loading: aggregationsLoading || resultsLoading,
         onChange: handleChange,
+    }
+
+    if (aggregationsError) {
+        return <Typography color="error" className={classes.error}>{aggregationsError}</Typography>
     }
 
     if (!aggregations && aggregationsLoading) {
