@@ -6,7 +6,7 @@ import { publicTagsList } from '../../constants/specialTags'
 
 const DocumentContext = createContext({})
 
-export function DocumentProvider({ children, collection, id, path, fullPage, printMode, setHash }) {
+export function DocumentProvider({ children, collection, collections, id, path, fullPage, printMode, setHash }) {
     const [data, setData] = useState()
     const [error, setError] = useState(null)
     const [pathname, setPathname] = useState()
@@ -191,7 +191,7 @@ export function DocumentProvider({ children, collection, id, path, fullPage, pri
         <DocumentContext.Provider value={{
             data, pathname, loading, error,
             ocrData, fullPage, printMode,
-            collection, collectionBaseUrl,
+            collection, collections, collectionBaseUrl,
             digest, digestUrl, urlIsSha, docRawUrl,
             tab, handleTabChange,
             subTab, handleSubTabChange,

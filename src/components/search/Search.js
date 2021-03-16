@@ -107,6 +107,7 @@ export default function Search({ collections }) {
         <DocumentProvider
             id={selectedDocData?.i}
             collection={selectedDocData?.c}
+            collections={collections}
         >
             <HotKeys inputRef={inputRef}>
                 <SplitPaneLayout

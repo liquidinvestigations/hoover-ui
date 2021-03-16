@@ -1,2 +1,2 @@
 import searchHandler from '../../src/backend/searchHandler'
-export default searchHandler('aggregations')
+export default searchHandler('tagsAggregations')

@@ -24,3 +24,8 @@ export const aggregations = params => fetchJson('/api/aggregations', {
     method: 'POST',
     body: JSON.stringify(params),
 })
+
+export const tagsAggregations = params => fetchJson('/api/tagsAggregations', {
+    method: 'POST',
+    body: JSON.stringify(params),
+})
