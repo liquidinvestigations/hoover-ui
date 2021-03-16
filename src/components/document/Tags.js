@@ -262,10 +262,7 @@ function Tags({ toolbarButtons }) {
                                         </Tooltip> : null
                                     }
                                     disabled={chip.isMutating}
-                                    style={{
-                                        backgroundColor: getChipColor(chip)
-                                    }}
-                                    onDelete={chip.user === whoAmI.username ? getTagProps({ index }).onDelete : null}
+                                    style={{ backgroundColor: getChipColor(chip) }}
                                     {...getTagProps({ index })}
                                 />
                             </TagTooltip>
