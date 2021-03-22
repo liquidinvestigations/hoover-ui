@@ -30,6 +30,11 @@ const forbiddenCharsRegex = /[^a-z0-9_!@#$%^&*()-=+:,./?]/gi
 const useStyles = makeStyles(theme => ({
     error: {
         padding: theme.spacing(1),
+        fontSize: '14px',
+
+        '& a': {
+            color: theme.palette.error.main,
+        }
     },
     toolbarButtons: {
         marginBottom: theme.spacing(3),
@@ -127,12 +132,10 @@ function Tags({ toolbarButtons }) {
 
     if (tagsError) {
         return (
-            <div className={classes.error}>
-                <Typography color="error">
-                    Error: Request to <a href={tagsError.url}>{tagsError.url}</a>{' '}
-                    returned HTTP {tagsError.status} {tagsError.statusText}
-                </Typography>
-            </div>
+            <Typography color="error" className={classes.error}>
+                Error: Request to <a href={tagsError.url}>{tagsError.url}</a>{' '}
+                returned HTTP {tagsError.status} {tagsError.statusText}
+            </Typography>
         )
     }
 

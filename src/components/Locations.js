@@ -10,6 +10,11 @@ import { makeStyles } from '@material-ui/core/styles'
 const useStyles = makeStyles(theme => ({
     error: {
         padding: theme.spacing(3),
+        fontSize: '14px',
+
+        '& a': {
+            color: theme.palette.error.main,
+        }
     },
 }))
 
@@ -45,11 +50,9 @@ function Locations({ url: docUrl, data }) {
 
     if (error) {
         return (
-            <div className={classes.error}>
-                <Typography color="error">
-                    Error: Request to <a href={error.url}>{error.url}</a> returned HTTP {error.status} {error.statusText}
-                </Typography>
-            </div>
+            <Typography color="error" className={classes.error}>
+                Error: Request to <a href={error.url}>{error.url}</a> returned HTTP {error.status} {error.statusText}
+            </Typography>
         )
     }
 

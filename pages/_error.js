@@ -37,6 +37,19 @@ const useStyles = makeStyles(theme => ({
         lineHeight: '49px',
         height: '49px',
         verticalAlign: 'middle',
+        color: theme.palette.error.main,
+
+        '& a': {
+            color: theme.palette.error.main,
+        },
+
+        '& h2': {
+            fontSize: '14px',
+            fontWeight: 'normal',
+            lineHeight: 'inherit',
+            margin: 0,
+            padding: 0,
+        },
     },
 
     h1: {
@@ -48,14 +61,6 @@ const useStyles = makeStyles(theme => ({
         fontSize: '24px',
         fontWeight: 500,
         verticalAlign: 'top',
-    },
-
-    h2: {
-        fontSize: '14px',
-        fontWeight: 'normal',
-        lineHeight: 'inherit',
-        margin: 0,
-        padding: 0,
     },
 }))
 
@@ -80,10 +85,9 @@ function Error({ statusCode, title, message }) {
                 </title>
             </Head>
             <div>
-                <style dangerouslySetInnerHTML={{ __html: 'body { margin: 0 }' }} />
                 {statusCode ? <h1 className={classes.h1}>{statusCode}</h1> : null}
                 <div className={classes.desc}>
-                    <h2 className={classes.h2}>{description}.</h2>
+                    <h2>{description}.</h2>
                 </div>
             </div>
         </div>

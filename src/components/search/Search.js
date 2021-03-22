@@ -193,11 +193,7 @@ export default function Search({ collections }) {
                             </Grid>
                         </Grid>
 
-                        {error && (
-                            <div className={classes.error}>
-                                <Typography color="error">{error}</Typography>
-                            </div>
-                        )}
+                        {error && <Typography color="error" className={classes.error}>{error}</Typography>}
 
                         <Grid container>
                             <Grid item sm={12}>
