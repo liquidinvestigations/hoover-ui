@@ -1,18 +1,20 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import ChipInput from 'material-ui-chip-input'
+import React, { memo, useEffect, useMemo, useState } from 'react'
 import {
     Box,
     Button,
     ButtonGroup,
     Chip,
+    CircularProgress,
     FormControl,
     Grid,
     IconButton,
     MenuItem,
     Select,
+    TextField,
     Tooltip,
     Typography
 } from '@material-ui/core'
+import { Autocomplete } from '@material-ui/lab'
 import { Lock, LockOpen } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles'
 import { blue } from '@material-ui/core/colors'
@@ -21,6 +23,7 @@ import TagTooltip from './TagTooltip'
 import { useUser } from '../UserProvider'
 import { useDocument } from './DocumentProvider'
 import { specialTags, specialTagsList } from '../../constants/specialTags'
+import { tagsAggregations as tagsAggregationsAPI } from '../../api'
 
 const forbiddenCharsRegex = /[^a-z0-9_!@#$%^&*()-=+:,./?]/gi
 
@@ -58,6 +61,14 @@ const useStyles = makeStyles(theme => ({
     tag: {
         marginRight: theme.spacing(1),
         marginBottom: theme.spacing(1),
+    },
+    option: {
+        width: '100%',
+        display: 'inline-flex',
+        justifyContent: 'space-between',
+    },
+    optionCount: {
+        color: theme.palette.grey[500],
     }
 }))
 
@@ -76,8 +87,24 @@ function Tags({ toolbarButtons }) {
 
     const {
         digestUrl, printMode, tags, tagsLocked, tagsLoading, tagsError,
-        handleTagAdd, handleTagDelete, handleTagLockClick,
+        handleTagAdd, handleTagDelete, handleTagLockClick, collections
     } = useDocument()
+
+    const [tagsAggregations, setTagsAggregations] = useState()
+    const [tagsAggregationsLoading, setTagsAggregationsLoading] = useState(false)
+    const handleInputFocus = () => {
+        if (!tagsAggregations) {
+            setTagsAggregationsLoading(true)
+
+            tagsAggregationsAPI({ collections: collections.map(c => c.name) }).then(results => {
+                setTagsAggregations(results.aggregations)
+            }).catch(() => {
+                setTagsAggregations(null)
+            }).finally(() => {
+                setTagsAggregationsLoading(false)
+            })
+        }
+    }
 
     const [inputValue, setInputValue] = useState('')
     const [newTagVisibility, setNewTagVisibility] = useState('public')
@@ -146,38 +173,45 @@ function Tags({ toolbarButtons }) {
         )
     }
 
-    const handleTagInputUpdate = event => {
-        setInputValue(event.target.value.replace(' ', '-').replace(forbiddenCharsRegex, ""))
+    const handleInputChange = (event, value, reason) => {
+        if (reason === 'input') {
+            setInputValue(value.replace(' ', '-').replace(forbiddenCharsRegex, ""))
+        }
     }
 
-    const handleAdd = tag => {
-        handleTagAdd(tag, newTagVisibility === 'public')
+    const handleChange = (event, value, reason) => {
+        switch(reason) {
+            case 'create-option':
+                value.forEach(tag => {
+                    if (typeof tag === 'string') {
+                        handleTagAdd(tag, newTagVisibility === 'public')
+                    }
+                })
+                break
+
+            case 'select-option':
+                value.forEach(tag => {
+                    if (tag.key) {
+                        handleTagAdd(tag.key, newTagVisibility === 'public')
+                    }
+                })
+                break
+
+            case 'remove-option':
+                tagsValue.forEach(tag => {
+                    if (!value.includes(tag)) {
+                        handleTagDelete(tag)
+                    }
+                })
+                break
+        }
     }
 
-    const renderChip = ({ value, text, chip, isDisabled, isReadOnly, handleDelete, className }, key) => (
-        <TagTooltip key={key} chip={chip}>
-            <Chip
-                icon={chip.user === whoAmI.username && !specialTagsList.includes(chip.tag) ?
-                    <Tooltip title={`make ${chip.public ? 'private' : 'public'}`}>
-                        <IconButton
-                            size="small"
-                            onClick={handleTagLockClick(chip)}
-                        >
-                            {chip.public ? <LockOpen /> : <Lock />}
-                        </IconButton>
-                    </Tooltip> : null
-                }
-                disabled={chip.isMutating}
-                className={className}
-                style={{
-                    pointerEvents: isDisabled || isReadOnly ? 'none' : undefined,
-                    backgroundColor: getChipColor(chip)
-                }}
-                onDelete={chip.user === whoAmI.username ? handleDelete : null}
-                label={chip.tag}
-            />
-        </TagTooltip>
-    )
+    const tagsValue = tags.filter(tag => tag.user === whoAmI.username)
+
+    const options = newTagVisibility === 'public' ?
+        tagsAggregations?.tags?.values?.buckets :
+        tagsAggregations?.['priv-tags']?.values?.buckets
 
     return (
         tagsLoading ? <Loading /> :
@@ -198,18 +232,68 @@ function Tags({ toolbarButtons }) {
                     ))}
                 </ButtonGroup>
 
-                <ChipInput
-                    value={tags.filter(tag => tag.user === whoAmI.username)}
-                    onAdd={handleAdd}
-                    onDelete={handleTagDelete}
-                    disabled={tagsLocked}
-                    chipRenderer={renderChip}
-                    newChipKeys={['Enter']}
-                    newChipKeyCodes={[13]}
-                    inputValue={inputValue}
-                    onUpdateInput={handleTagInputUpdate}
-                    placeholder="no tags, start typing to add"
+                <Autocomplete
+                    multiple
+                    freeSolo
                     fullWidth
+                    disableClearable
+                    value={tagsValue}
+                    disabled={tagsLocked}
+                    options={options || []}
+                    getOptionDisabled={option => (
+                        tagsValue
+                            .filter(tag => newTagVisibility === 'public' ? tag.public : !tag.public)
+                            .map(tag => tag.tag)
+                            .includes(option.key)
+                    )}
+                    getOptionLabel={option => option.key}
+                    renderOption={option => (
+                        <span className={classes.option}>
+                            <span>{option.key}</span>
+                            <span className={classes.optionCount}>{option.doc_count}</span>
+                        </span>
+                    )}
+                    loading={tagsAggregationsLoading}
+                    renderTags={(value, getTagProps) =>
+                        value.map((chip, index) => (
+                            <TagTooltip key={index} chip={chip}>
+                                <Chip
+                                    label={chip.tag}
+                                    icon={chip.user === whoAmI.username && !specialTagsList.includes(chip.tag) ?
+                                        <Tooltip title={`make ${chip.public ? 'private' : 'public'}`}>
+                                            <IconButton
+                                                size="small"
+                                                onClick={handleTagLockClick(chip)}
+                                            >
+                                                {chip.public ? <LockOpen /> : <Lock />}
+                                            </IconButton>
+                                        </Tooltip> : null
+                                    }
+                                    style={{ backgroundColor: getChipColor(chip) }}
+                                    {...getTagProps({ index })}
+                                />
+                            </TagTooltip>
+                        ))
+                    }
+                    inputValue={inputValue}
+                    onInputChange={handleInputChange}
+                    renderInput={params => (
+                        <TextField
+                            {...params}
+                            placeholder={(tagsValue.length === 0 ? 'no tags, ' : '') + 'start typing to add'}
+                            InputProps={{
+                                ...params.InputProps,
+                                endAdornment: (
+                                    <React.Fragment>
+                                        {tagsAggregationsLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                                        {params.InputProps.endAdornment}
+                                    </React.Fragment>
+                                ),
+                                onFocus: handleInputFocus
+                            }}
+                        />
+                    )}
+                    onChange={handleChange}
                 />
 
                 <Grid container className={classes.buttons} justify="flex-end">
@@ -242,7 +326,22 @@ function Tags({ toolbarButtons }) {
                         <Grid container>
                             {tags.map((chip, key) =>
                                 <Grid item className={classes.tag} key={key}>
-                                    {renderChip({chip}, key)}
+                                    <TagTooltip key={key} chip={chip}>
+                                        <Chip
+                                            label={chip.tag}
+                                            icon={!specialTagsList.includes(chip.tag) ?
+                                                <Tooltip title={`make ${chip.public ? 'private' : 'public'}`}>
+                                                    <IconButton size="small">
+                                                        {chip.public ? <LockOpen /> : <Lock />}
+                                                    </IconButton>
+                                                </Tooltip> : null
+                                            }
+                                            style={{
+                                                pointerEvents: 'none',
+                                                backgroundColor: getChipColor(chip)
+                                            }}
+                                        />
+                                    </TagTooltip>
                                 </Grid>
                             )}
                         </Grid>

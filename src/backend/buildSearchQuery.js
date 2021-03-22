@@ -285,12 +285,14 @@ const buildSearchQuery = (
         .filter(([,field]) => field.type.startsWith('term'))
         .map(([key]) => key)
 
-    const fields = [
-        ...dateFields.map(field => buildHistogramField(field, uuid, filters[field], facets[field])),
-        ...dateFields.map(field => buildMissingField(field, uuid)),
-        ...termFields.map(field => buildTermsField(field, uuid, filters[field], facets[field])),
-        ...termFields.map(field => buildMissingField(field, uuid)),
-    ]
+    const fields = type === 'tagsAggregations' ?
+        ['tags', 'priv-tags'].map(field => buildTermsField(field, uuid)) :
+        [
+            ...dateFields.map(field => buildHistogramField(field, uuid, filters[field], facets[field])),
+            ...dateFields.map(field => buildMissingField(field, uuid)),
+            ...termFields.map(field => buildTermsField(field, uuid, filters[field], facets[field])),
+            ...termFields.map(field => buildMissingField(field, uuid)),
+        ]
 
     const postFilter = buildFilter(fields);
     const aggs = buildAggs(fields);
@@ -302,7 +304,7 @@ const buildSearchQuery = (
 
     return {
         from: (page - 1) * size,
-        size: type === 'aggregations' ? 0 : size,
+        size: type === 'results' ? size : 0,
         query,
         sort,
         post_filter: postFilter,
