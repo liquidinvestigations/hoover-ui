@@ -45,7 +45,7 @@
     "next-transpile-modules": "^6.3.0",
     "node-fetch": "^2.6.1",
     "pdfjs-dist": "^2.7.570",
-    "qs": "^6.9.6",
+    "qs": "^6.10.1",
     "react": "^17.0.1",
     "react-beautiful-dnd": "^13.0.0",
     "react-dom": "^17.0.1",
