@@ -1,7 +1,7 @@
 import React, { memo } from 'react'
 import { Box, Tab, Tabs, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { FolderOutlined, Subject, TextFields } from '@material-ui/icons'
+import { FolderOutlined, Subject, Translate } from '@material-ui/icons'
 import Expandable from '../Expandable'
 import Preview, { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './Preview'
 import { useDocument } from './DocumentProvider'
@@ -50,7 +50,7 @@ function SubTabs() {
         ...ocrData.map(({tag, text}) => ({
             tag,
             name: `OCR ${tag}`,
-            icon: <TextFields />,
+            icon: <Translate />,
             content: <Text content={text} />,
         }))
     )

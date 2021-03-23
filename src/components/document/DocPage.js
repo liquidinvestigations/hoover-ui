@@ -49,10 +49,7 @@ export default function DocPage() {
     const classes = useStyles()
     const whoAmI = useUser()
 
-    const {
-        data, loading, error, printMode,
-        digest, digestUrl, urlIsSha,
-    } = useDocument()
+    const { data, loading, error, printMode, digest, digestUrl, urlIsSha } = useDocument()
 
     if (error) {
         return (

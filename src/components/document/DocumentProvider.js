@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useHashState } from '../HashStateProvider'
+import { TextSearchProvider } from './TextSearchProvider'
+import { TagsProvider } from './TagsProvider'
 import { collectionUrl, documentViewUrl } from '../../utils'
-import { createDownloadUrl, createTag, deleteTag, doc as docAPI, tags as tagsAPI, updateTag } from '../../backend/api'
-import { publicTagsList } from '../../constants/specialTags'
+import { createDownloadUrl, doc as docAPI } from '../../backend/api'
 
 const DocumentContext = createContext({})
 
-export function DocumentProvider({ children, collection, collections, id, path, fullPage, printMode, setHash }) {
+export function DocumentProvider({ children, collection, collections, id, path, fullPage, printMode }) {
     const [data, setData] = useState()
     const [error, setError] = useState(null)
     const [pathname, setPathname] = useState()
@@ -102,92 +103,21 @@ export function DocumentProvider({ children, collection, collections, id, path, 
         setHashState({ subTab: newValue }, false)
     }
 
-    const [tags, setTags] = useState([])
-    const [tagsLocked, setTagsLocked] = useState(false)
-    const [tagsLoading, setTagsLoading] = useState(true)
-    const [tagsError, setTagsError] = useState(null)
-
-    useEffect(() => {
-        if (digestUrl) {
-            setTagsLoading(true)
-            setTagsLocked(true)
-            setTagsError(null)
-            tagsAPI(digestUrl).then(data => {
-                setTags(data)
-                setTagsLoading(false)
-                setTagsLocked(false)
-            }).catch(res => {
-                setTags([])
-                setTagsError({ status: res.status, statusText: res.statusText, url: res.url })
-            }).finally(() => {
-                setTagsLoading(false)
-            })
-        }
-    }, [digestUrl])
-
-    const handleSpecialTagClick = (tag, name) => event => {
-        event.stopPropagation()
-        setTagsLocked(true)
-        if (tag) {
-            deleteTag(digestUrl, tag.id).then(() => {
-                setTags([...(tags.filter(t => t.id !== tag.id))])
-            }).finally(() => {
-                setTagsLocked(false)
-            })
-        } else {
-            createTag(digestUrl, { tag: name, public: publicTagsList.includes(name) }).then(newTag => {
-                setTags([...tags, newTag])
-            }).finally(() => {
-                setTagsLocked(false)
-            })
-        }
-    }
-
-    const handleTagAdd = (tag, publicTag = true) => {
-        setTagsLocked(true)
-        createTag(digestUrl, { tag, public: publicTagsList.includes(tag) || publicTag }).then(newTag => {
-            setTags([...tags, newTag])
-        }).finally(() => {
-            setTagsLocked(false)
-        })
-    }
-
-    const handleTagDelete = tag => {
-        setTags([...tags])
-        setTagsLocked(true)
-        deleteTag(digestUrl, tag.id).then(() => {
-            setTags([...(tags.filter(t => t.id !== tag.id))])
-        }).catch(() => {
-            setTags([...tags])
-        }).finally(() => {
-            setTagsLocked(false)
-        })
-    }
-
-    const handleTagLockClick = tag => () => {
-        setTags([...tags])
-        setTagsLocked(true)
-        updateTag(digestUrl, tag.id, {public: !tag.public}).then(changedTag => {
-            Object.assign(tag, { ...changedTag })
-        }).finally(() => {
-            setTags([...tags])
-            setTagsLocked(false)
-        })
-    }
-
     return (
         <DocumentContext.Provider value={{
             data, pathname, loading, error,
             ocrData, fullPage, printMode,
             collection, collections, collectionBaseUrl,
             digest, digestUrl, urlIsSha, docRawUrl,
+
             tab, handleTabChange,
             subTab, handleSubTabChange,
-            tags, tagsLocked, tagsLoading, tagsError,
-            handleSpecialTagClick, handleTagAdd,
-            handleTagDelete, handleTagLockClick,
         }}>
-            {children}
+            <TextSearchProvider>
+                <TagsProvider>
+                    {children}
+                </TagsProvider>
+            </TextSearchProvider>
         </DocumentContext.Provider>
     )
 }

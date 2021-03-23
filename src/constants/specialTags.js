@@ -24,8 +24,6 @@ export const specialTags = [{
         icon: <StarOutline />,
         color: grey[600],
     },
-    showInToolbar: true,
-    showInTagsTab: false,
 },{
     tag: 'recommended',
     color: green[200],
@@ -39,8 +37,6 @@ export const specialTags = [{
         icon: <ErrorOutline />,
         color: grey[600],
     },
-    showInToolbar: true,
-    showInTagsTab: false,
 },{
     tag: 'seen',
     color: brown[200],
@@ -56,8 +52,6 @@ export const specialTags = [{
         icon: <VisibilityOffOutlined />,
         color: grey[600],
     },
-    showInToolbar: true,
-    showInTagsTab: false,
 },{
     tag: 'trash',
     color: red[200],
@@ -73,8 +67,6 @@ export const specialTags = [{
         icon: <DeleteOutlined />,
         color: grey[600],
     },
-    showInToolbar: true,
-    showInTagsTab: false,
 }]
 
 export const specialTagsList = specialTags.map(tag => tag.tag)

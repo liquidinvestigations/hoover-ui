@@ -13,7 +13,7 @@ import {
     Tooltip,
     Typography
 } from '@material-ui/core'
-import { AttachFile, CloudDownloadOutlined, Launch, Lock, TextFields } from '@material-ui/icons'
+import { AttachFile, CloudDownloadOutlined, Launch, Lock, Translate } from '@material-ui/icons'
 import { useUser } from '../UserProvider'
 import { useHashState } from '../HashStateProvider'
 import { getIconReactComponent, getPreviewParams, humanFileSize, makeUnsearchable, truncatePath } from '../../utils'
@@ -172,7 +172,7 @@ function ResultItem({ hit, url, index }) {
                             {fields.ocr && (
                                 <Grid item component="span" className={classes.infoBox}>
                                     <Tooltip placement="top" title="OCR">
-                                        <TextFields className={classes.infoIcon} />
+                                        <Translate className={classes.infoIcon} />
                                     </Tooltip>
                                 </Grid>
                             )}

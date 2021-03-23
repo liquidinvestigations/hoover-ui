@@ -1,8 +1,6 @@
 import React, { memo, useEffect, useMemo, useState } from 'react'
 import {
     Box,
-    Button,
-    ButtonGroup,
     Chip,
     CircularProgress,
     FormControl,
@@ -22,6 +20,7 @@ import Loading from '../Loading'
 import TagTooltip from './TagTooltip'
 import { useUser } from '../UserProvider'
 import { useDocument } from './DocumentProvider'
+import { useTags } from './TagsProvider'
 import { specialTags, specialTagsList } from '../../constants/specialTags'
 import { tagsAggregations as tagsAggregationsAPI } from '../../api'
 
@@ -36,14 +35,11 @@ const useStyles = makeStyles(theme => ({
             color: theme.palette.error.main,
         }
     },
-    toolbarButtons: {
-        marginBottom: theme.spacing(3),
-    },
-    toolbarButton: {
-        textTransform: 'none',
-    },
     buttons: {
         marginTop: theme.spacing(1),
+    },
+    input: {
+        marginTop: theme.spacing(4),
     },
     info: {
         display: 'block',
@@ -81,14 +77,16 @@ export const getChipColor = chip => {
     }
 }
 
-function Tags({ toolbarButtons }) {
+function Tags() {
     const classes = useStyles()
     const whoAmI = useUser()
 
+    const { digestUrl, printMode, collections } = useDocument()
+
     const {
-        digestUrl, printMode, tags, tagsLocked, tagsLoading, tagsError,
-        handleTagAdd, handleTagDelete, handleTagLockClick, collections
-    } = useDocument()
+        tags, tagsLocked, tagsLoading, tagsError,
+        handleTagAdd, handleTagDelete, handleTagLockClick
+    } = useTags()
 
     const [tagsAggregations, setTagsAggregations] = useState()
     const [tagsAggregationsLoading, setTagsAggregationsLoading] = useState(false)
@@ -216,27 +214,12 @@ function Tags({ toolbarButtons }) {
     return (
         tagsLoading ? <Loading /> :
             <>
-                <ButtonGroup className={classes.toolbarButtons}>
-                    {toolbarButtons && toolbarButtons.map(({tooltip, label, icon, ...props}, index) => (
-                        <Tooltip title={tooltip} key={index}>
-                            <Button
-                                className={classes.toolbarButton}
-                                color="default"
-                                size="small"
-                                component="a"
-                                endIcon={icon}
-                                {...props}>
-                                {label}
-                            </Button>
-                        </Tooltip>
-                    ))}
-                </ButtonGroup>
-
                 <Autocomplete
                     multiple
                     freeSolo
                     fullWidth
                     disableClearable
+                    className={classes.input}
                     value={tagsValue}
                     disabled={tagsLocked}
                     options={options || []}

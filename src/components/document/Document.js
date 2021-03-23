@@ -1,20 +1,9 @@
 import React, { memo, useEffect } from 'react'
 import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
-import {
-    AccountTreeOutlined,
-    CloudDownload,
-    CodeOutlined,
-    Launch,
-    LocalOfferOutlined,
-    NavigateBefore,
-    NavigateNext,
-    Print,
-    SettingsApplicationsOutlined,
-    TextFields,
-    Toc
-} from '@material-ui/icons'
-import { Badge, Box, Chip, Grid, IconButton, Tabs, Toolbar, Tooltip, Typography } from '@material-ui/core'
+import { AccountTreeOutlined, CodeOutlined, LocalOfferOutlined, SettingsApplicationsOutlined, Toc } from '@material-ui/icons'
+import { Badge, Box, Chip, Grid, Tabs, Typography } from '@material-ui/core'
+import Toolbar from './Toolbar'
 import StyledTab from './StyledTab'
 import TabPanel from './TabPanel'
 import HTML from './HTML'
@@ -24,29 +13,14 @@ import Loading from '../Loading'
 import TagTooltip from './TagTooltip'
 import SubTabs from './SubTabs'
 import Tags, { getChipColor } from './Tags'
-import { useUser } from '../UserProvider'
-import { createOcrUrl } from '../../backend/api'
-import { specialTags } from '../../constants/specialTags'
 import { useDocument } from './DocumentProvider'
+import { useTags } from './TagsProvider'
 
 const useStyles = makeStyles(theme => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-    },
-    toolbar: {
-        backgroundColor: theme.palette.grey[100],
-        borderBottomColor: theme.palette.grey[400],
-        borderBottomWidth: 1,
-        borderBottomStyle: 'solid',
-        justifyContent: 'space-between',
-    },
-    toolbarIcon: {
-        marginRight: theme.spacing(1),
-        '&:last-child': {
-            marginRight: 0,
-        }
     },
     filename: {
         padding: theme.spacing(1),
@@ -91,35 +65,20 @@ const useStyles = makeStyles(theme => ({
         right: theme.spacing(2),
         color: theme.palette.primary.contrastText,
         zIndex: theme.zIndex.drawer + 2,
-    }
+    },
 }))
 
 function Document({ onPrev, onNext }) {
     const classes = useStyles()
-    const whoAmI = useUser()
 
-    const {
-        data, pathname, loading,
-        fullPage, printMode,
-        collection,
-        digestUrl, docRawUrl,
-        tab, handleTabChange,
-        tags, tagsLocked, tagsLoading, handleSpecialTagClick
-    } = useDocument()
+    const { data, pathname, loading, printMode, collection, tab, handleTabChange } = useDocument()
+    const { tags, tagsLoading } = useTags()
 
     useEffect(() => {
         if (printMode && !loading && !tagsLoading) {
             window.setTimeout(window.print)
         }
     }, [printMode, loading, tagsLoading])
-
-    const headerLinks = {
-        actions: [],
-        navigation: [],
-        tags: [],
-    }
-
-    const tagsLinks = []
 
     if (loading) {
         return <Loading />
@@ -129,86 +88,9 @@ function Document({ onPrev, onNext }) {
         return null
     }
 
-    const ocrData = Object.keys(data.content.ocrtext || {}).map((tag, index) => {
-        return {tag: tag, text: data.content.ocrtext[tag]}
-    })
-
-    if (data.content.filetype !== 'folder') {
-        if (!fullPage) {
-            headerLinks.actions.push({
-                href: pathname,
-                tooltip: 'Open in new tab',
-                icon: <Launch />,
-                target: '_blank',
-            })
-        }
-
-        headerLinks.actions.push({
-            href: `${pathname}?print=true`,
-            tooltip: 'Print metadata and content',
-            icon: <Print />,
-            target: '_blank',
-        })
-
-        headerLinks.actions.push({
-            href: docRawUrl,
-            tooltip: 'Download original file',
-            icon: <CloudDownload />,
-            target: fullPage ? null : '_blank',
-        })
-
-        headerLinks.actions.push(
-            ...ocrData.map(({tag}) => ({
-                href: createOcrUrl(digestUrl, tag),
-                tooltip: `OCR ${tag}`,
-                icon: <TextFields />,
-                target: fullPage ? null : '_blank',
-            }))
-        )
-
-        if (onPrev) {
-            headerLinks.navigation.push({
-                icon: <NavigateBefore />,
-                tooltip: 'Previous result',
-                onClick: onPrev,
-            })
-        }
-
-        if (onNext) {
-            headerLinks.navigation.push({
-                icon: <NavigateNext />,
-                tooltip: 'Next result',
-                onClick: onNext,
-            })
-        }
-
-        specialTags.forEach(s => {
-            const present = tags.find(tag => tag.tag === s.tag && tag.user === whoAmI.username)
-            const count = tags.filter(tag => tag.tag === s.tag && tag.user !== whoAmI.username)?.length || null
-            const link = {
-                icon: present ? s.present.icon : s.absent.icon,
-                label: present ? s.present.label : s.absent.label,
-                style: { color: present ? s.present.color : s.absent.color },
-                tooltip: s.tooltip,
-                disabled: tagsLocked,
-                onClick: handleSpecialTagClick(present, s.tag),
-                count: present && count ? count + 1: count,
-            }
-            if (s.showInToolbar) {
-                headerLinks.tags.push(link)
-            }
-            if (s.showInTagsTab) {
-                tagsLinks.push(link)
-            }
-        })
-    }
-
     const tabsClasses = {
         root: classes.tabsRoot,
         indicator: classes.tabsIndicator,
-    }
-    const tabClasses = {
-        root: classes.tabRoot,
     }
 
     const tabsData = [{
@@ -221,7 +103,7 @@ function Document({ onPrev, onNext }) {
         name: 'Tags',
         icon: <LocalOfferOutlined />,
         visible: !printMode && data.content.filetype !== 'folder',
-        content: <Tags toolbarButtons={tagsLinks} />,
+        content: <Tags />,
     },{
         name: 'Meta',
         icon: <SettingsApplicationsOutlined />,
@@ -241,27 +123,7 @@ function Document({ onPrev, onNext }) {
 
     return (
         <div className={classes.root}>
-            {!printMode && data.content.filetype !== 'folder' && (
-                <Toolbar variant="dense" classes={{root: classes.toolbar}}>
-                    {Object.entries(headerLinks).map(([group, links]) => (
-                        <Box key={group}>
-                            {links.map(({tooltip, icon, count, ...props}, index) => (
-                                <Tooltip title={tooltip} key={index}>
-                                    <IconButton
-                                        size="small"
-                                        component="a"
-                                        className={classes.toolbarIcon}
-                                        {...props}>
-                                        <Badge badgeContent={count} color="secondary">
-                                            {icon}
-                                        </Badge>
-                                    </IconButton>
-                                </Tooltip>
-                            ))}
-                        </Box>
-                    ))}
-                </Toolbar>
-            )}
+            {!printMode && data.content.filetype !== 'folder' && <Toolbar onPrev={onPrev} onNext={onNext} />}
 
             {printMode && (
                 <Link href={pathname}>
@@ -318,7 +180,6 @@ function Document({ onPrev, onNext }) {
                             key={index}
                             icon={tabData.icon}
                             label={tabData.name}
-                            classes={tabClasses}
                         />
                     ))}
                 </Tabs>
