@@ -12,6 +12,7 @@ import {
 import LinkMenu from './LinkMenu'
 import { useDocument } from './DocumentProvider'
 import { formatDateTime, getLanguageName, humanFileSize, shortenName } from '../../utils'
+import { useTextSearch } from './TextSearchProvider'
 
 const useStyles = makeStyles(theme => ({
     icon: {
@@ -88,6 +89,7 @@ const tableFields = {
 const Meta = () => {
     const classes = useStyles()
     const { data, collection, collectionBaseUrl } = useDocument()
+    const { highlight } = useTextSearch()
 
     const [menuPosition, setMenuPosition] = useState(null)
     const [currentLink, setCurrentLink] = useState(null)
@@ -128,9 +130,10 @@ const Meta = () => {
                     .filter(([,config]) => !config.visible || config.visible(data.content) !== false)
                     .map(([field, config]) => {
 
-                    const display = config.format ? config.format(data.content[field]) : data.content[field]
+                    const formatted = config.format ? config.format(data.content[field]) : data.content[field]
                     const searchKey = config.searchKey || field
                     const searchTerm = config.searchTerm ? config.searchTerm(data.content[field]) : data.content[field]
+                    const highlighted = highlight(formatted.toString())
 
                     return (
                         <ListItem key={field} disableGutters>
@@ -142,7 +145,7 @@ const Meta = () => {
                                             className={classes.searchField}
                                             onClick={handleLinkClick(searchKey, searchTerm)}
                                         >
-                                            {display}
+                                            {highlighted}
                                         </span>
                                     </>
                                 }
@@ -163,11 +166,11 @@ const Meta = () => {
                     .map(([key, value]) => {
                         let description
                         if (typeof value === 'object') {
-                            description = shortenName(JSON.stringify(value), 200)
+                            description = shortenName(JSON.stringify(value), 200, highlight)
                         } else if (typeof value === 'boolean') {
-                            description = value ? 'true' : 'false'
+                            description = highlight(value ? 'true' : 'false')
                         } else {
-                            description = shortenName(value, 200)
+                            description = shortenName(value.toString(), 200, highlight)
                         }
 
                         return (
@@ -179,7 +182,7 @@ const Meta = () => {
                                             className={classes.searchField}
                                             onClick={handleLinkClick(key, element.toString())}
                                         >
-                                            {element.toString()}
+                                            {highlight(element.toString())}
                                         </span>
                                     </Typography>
                                 ) :

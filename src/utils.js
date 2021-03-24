@@ -81,35 +81,6 @@ export const getClosestInterval = range => {
 
 export const getBasePath = docUrl => url.parse(url.resolve(docUrl, './')).pathname
 
-export const makeUnsearchable = text => {
-    let inMark = false;
-
-    const chars = text.split('');
-
-    return chars
-        .map((c, i) => {
-            if (c === '<') {
-                const slice = text.slice(i);
-                inMark =
-                    slice.indexOf('<mark>') === 0 || slice.indexOf('</mark>') === 0;
-            }
-
-            if (c === '>') {
-                const prefix = text.slice(i - 5, i);
-                inMark = !(
-                    prefix.indexOf('<mark') === 0 || prefix.indexOf('</mark')
-                );
-            }
-
-            if (inMark || c === ' ' || c === '\n') {
-                return c;
-            } else {
-                return `${c}<span class="no-find">S</span>`;
-            }
-        })
-        .join('')
-}
-
 export const truncatePath = str => {
     if (str.length < 100) {
         return str;
@@ -123,10 +94,10 @@ export const truncatePath = str => {
     ].join('/')
 }
 
-export const shortenName = (name, length = ELLIPSIS_TERM_LENGTH) => name && name.length > length ?
-    <Tooltip title={name}>
-        <span>{`${name.substr(0, 2/3*length-3)}...${name.substr(-1/3*length)}`}</span>
-    </Tooltip> : name
+export const shortenName = (name, length = ELLIPSIS_TERM_LENGTH, highlight = name => name) => name && name.length > length ?
+    <Tooltip title={highlight(name)}>
+        <span>{highlight(`${name.substr(0, 2/3*length-3)}...${name.substr(-1/3*length)}`)}</span>
+    </Tooltip> : highlight(name)
 
 export const formatThousands = n =>
     String(n).replace(/(?<!\..*)(\d)(?=(?:\d{3})+(?:\.|$))/g, '$1,')
@@ -167,4 +138,12 @@ export const humanFileSize = (bytes, si= true, dp= 1) => {
 
 
     return bytes.toFixed(dp) + ' ' + units[u]
+}
+
+export function debounce(fn, wait) {
+    let t
+    return function () {
+        clearTimeout(t)
+        t = setTimeout(() => fn.apply(this, arguments), wait)
+    }
 }

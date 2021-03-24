@@ -2,14 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Document from './Document'
 import DocumentProvider from './DocumentProvider'
 import { useHashState } from '../../HashStateProvider'
-
-function debounce (fn, wait) {
-    let t
-    return function () {
-        clearTimeout(t)
-        t = setTimeout(() => fn.apply(this, arguments), wait)
-    }
-}
+import { debounce } from '../../../utils'
 
 export default function Viewer({
     url,

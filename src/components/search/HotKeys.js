@@ -2,6 +2,7 @@ import React, { useMemo } from 'react'
 import { useSearch } from './SearchProvider'
 import { useHashState } from '../HashStateProvider'
 import { useDocument } from '../document/DocumentProvider'
+import { useTextSearch } from '../document/TextSearchProvider'
 import HotKeysWithHelp from '../HotKeysWithHelp'
 import { copyMetadata, documentViewUrl } from '../../utils'
 
@@ -9,6 +10,7 @@ export default function HotKeys({ children, inputRef  }) {
     const { hashState } = useHashState()
     const { data } = useDocument()
     const { previewNextDoc, previewPreviousDoc } = useSearch()
+    const { setSearchOpen } = useTextSearch()
     const isInputFocused = () => inputRef.current === document.activeElement
 
     const keys = useMemo(() => ({
@@ -66,6 +68,19 @@ export default function HotKeys({ children, inputRef  }) {
                     inputRef.current?.focus()
                 }
             },
+        },
+        openSearchDocument: {
+            key: ['f', 'ctrl+f'],
+            help: 'Search in document preview',
+            handler: event => {
+                event.preventDefault()
+                setSearchOpen(true)
+            }
+        },
+        closeSearchDocument: {
+            key: 'esc',
+            help: 'Close document search',
+            handler: () => setSearchOpen(false)
         }
     }), [JSON.stringify(hashState?.preview), data, previewNextDoc, previewPreviousDoc])
 

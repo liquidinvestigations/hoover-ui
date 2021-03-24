@@ -8,10 +8,6 @@ main {
     font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
-.no-find {
-    font-size: 0;
-}
-
 .mono {
     font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
@@ -20,6 +16,10 @@ mark {
     background-color: rgba(250, 221, 0, 0.5);
     color: #000;
     font-style: normal;
+}
+
+mark.current {
+    background-color: rgba(255, 150, 50, 0.5);
 }
 
 div[tabindex="-1"]:focus {

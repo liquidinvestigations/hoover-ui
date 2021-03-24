@@ -16,7 +16,7 @@ import {
 import { AttachFile, CloudDownloadOutlined, Launch, Lock, Translate } from '@material-ui/icons'
 import { useUser } from '../UserProvider'
 import { useHashState } from '../HashStateProvider'
-import { getIconReactComponent, getPreviewParams, humanFileSize, makeUnsearchable, truncatePath } from '../../utils'
+import { getIconReactComponent, getPreviewParams, humanFileSize, truncatePath } from '../../utils'
 import { createDownloadUrl } from '../../backend/api'
 import { specialTags, specialTagsList } from '../../constants/specialTags'
 
@@ -117,7 +117,6 @@ function ResultItem({ hit, url, index }) {
     const { hashState, setHashState } = useHashState()
 
     const isPreview = hit._collection === hashState.preview?.c && hit._id === hashState.preview?.i
-    const unsearchable = !!hashState.preview
 
     const nodeRef = useRef()
     const handleMouseDown = () => {
@@ -350,11 +349,7 @@ function ResultItem({ hit, url, index }) {
                                 }
                                 <Grid item container direction="column">
                                     {[...highlight].map((item, index) =>
-                                        <Grid item key={index}
-                                              dangerouslySetInnerHTML={{
-                                                  __html: unsearchable ? makeUnsearchable(item) : item,
-                                              }}
-                                        />
+                                        <Grid item key={index} dangerouslySetInnerHTML={{ __html: item }} />
                                     )}
                                 </Grid>
                             </Grid>

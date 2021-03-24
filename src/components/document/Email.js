@@ -7,6 +7,7 @@ import { useDocument } from './DocumentProvider'
 import { useHashState } from '../HashStateProvider'
 import { formatDateTime } from '../../utils'
 import { createSearchUrl } from '../../queryUtils'
+import { useTextSearch } from './TextSearchProvider'
 
 const useStyles = makeStyles(theme => ({
     preWrap: {
@@ -49,6 +50,7 @@ function Email() {
     const classes = useStyles()
     const { hashState } = useHashState()
     const { data, collection, digest, printMode } = useDocument()
+    const { highlight } = useTextSearch()
 
     const [menuPosition, setMenuPosition] = useState(null)
     const [currentLink, setCurrentLink] = useState(null)
@@ -70,22 +72,23 @@ function Email() {
                 <TableBody>
                     {Object.entries(tableFields).map(([field, config]) => {
                         const term = data.content[field]
-                        const display = config.format ? config.format(term) : term
+                        const formatted = config.format ? config.format(term) : term
                         const searchKey = config.searchKey || field
                         const searchTerm = config.searchTerm ? config.searchTerm(term) : term
+                        const highlighted = highlight(formatted)
 
                         return (
                             <TableRow key={field}>
                                 <TableCell>{config.label}</TableCell>
                                 <TableCell>
                                     <pre className={classes.preWrap}>
-                                        {printMode || !config.linkVisible(term) ? display :
+                                        {printMode || !config.linkVisible(term) ? highlighted :
                                             <>
                                                 <span
                                                     className={classes.searchField}
                                                     onClick={handleLinkClick(searchKey, searchTerm)}
                                                 >
-                                                    {display}
+                                                    {highlighted}
                                                 </span>
                                             </>
                                         }

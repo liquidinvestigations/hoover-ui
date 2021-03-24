@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { HotKeys } from 'react-hotkeys'
+import { GlobalHotKeys } from 'react-hotkeys'
 import { makeStyles } from '@material-ui/core/styles'
 import { List, ListItem, ListItemText, Modal, Snackbar, Typography } from '@material-ui/core'
 
@@ -21,7 +21,10 @@ const useStyles = makeStyles(theme => ({
 export default function HotKeysWithHelp({ keys, children }) {
     const classes = useStyles()
     const [keyHelpOpen, setKeyHelpOpen] = useState(false)
-    const openHelp = () => setKeyHelpOpen(true)
+    const openHelp = event => {
+        event.preventDefault()
+        setKeyHelpOpen(true)
+    }
     const hideKeyHelp = () => setKeyHelpOpen(false)
 
     const [snackbarMessage, setSnackbarMessage] = useState(null)
@@ -30,7 +33,7 @@ export default function HotKeysWithHelp({ keys, children }) {
     const keysWithHelp = {
         ...keys,
         openHelp: {
-            key: ['?', 'h'],
+            key: ['F1', '?', 'shift+?', 'h'],
             help: 'Open this help',
             handler: openHelp
         },
@@ -46,9 +49,9 @@ export default function HotKeysWithHelp({ keys, children }) {
 
     return (
         <>
-            <HotKeys keyMap={keyMap} handlers={handlers} allowChanges>
+            <GlobalHotKeys keyMap={keyMap} handlers={handlers} allowChanges>
                 {children}
-            </HotKeys>
+            </GlobalHotKeys>
 
             <Modal open={keyHelpOpen} onClose={hideKeyHelp}>
                 <div className={classes.keyHelp}>

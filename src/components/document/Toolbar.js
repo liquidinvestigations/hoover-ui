@@ -47,6 +47,11 @@ const useStyles = makeStyles(theme => ({
             marginRight: 0,
         }
     },
+    popperContainer: {
+        top: 0,
+        left: 0,
+        position: 'absolute',
+    },
     searchPopper: {
         '&:after': {
             content: '""',
@@ -76,6 +81,9 @@ const useStyles = makeStyles(theme => ({
     },
     ignoreCase: {
         color: theme.palette.grey.A100,
+    },
+    resultsCount: {
+        marginRight: theme.spacing(1),
     }
 }))
 
@@ -89,18 +97,24 @@ export default function Toolbar({ onPrev, onNext }) {
     const searchAnchorRef = useRef()
     const searchInputRef = useRef()
     const {
-        searchOpen, setSearchOpen,
+        searchText, searchOpen, setSearchOpen,
         searchMatchCase, setSearchMatchCase,
-        onKeyDown, onChange
+        onKeyDown, onChange,
+        currentSearchResult, searchResultsCount,
+        prevSearchResult, nextSearchResult,
     } = useTextSearch()
 
     const toggleSearch = () => setSearchOpen(prev => !prev)
     const toggleMatchCase = () => setSearchMatchCase(prev => !prev)
 
     useEffect(() => {
-        if (searchOpen && searchInputRef.current) {
-            searchInputRef.current.focus()
-            searchInputRef.current.select()
+        if (searchInputRef.current) {
+            if (searchOpen) {
+                searchInputRef.current.focus()
+                searchInputRef.current.select()
+            } else {
+                searchInputRef.current.blur()
+            }
         }
     }, [searchOpen])
 
@@ -182,21 +196,19 @@ export default function Toolbar({ onPrev, onNext }) {
 
     const searchButtons = [
         {
-            tooltip: 'Previous',
             icon: <ExpandLess />,
+            onClick: prevSearchResult,
         },
         {
-            tooltip: 'Next',
             icon: <ExpandMore />,
+            onClick: nextSearchResult,
         },
         {
-            tooltip: 'Match case',
             icon: <TextFields />,
             onClick: toggleMatchCase,
             className: searchMatchCase ? classes.matchCase : classes.ignoreCase,
         },
         {
-            tooltip: 'Close',
             icon: <Close />,
             onClick: () => setSearchOpen(false)
         }
@@ -228,6 +240,7 @@ export default function Toolbar({ onPrev, onNext }) {
                 transition
                 keepMounted
                 open={searchOpen}
+                className={classes.popperContainer}
                 anchorEl={searchAnchorRef.current}
                 placement="bottom-start"
                 modifiers={{
@@ -237,7 +250,7 @@ export default function Toolbar({ onPrev, onNext }) {
                 }}
             >
                 {({ TransitionProps }) => (
-                    <Grow {...TransitionProps} timeout={200} onExited={() => { /* fix for style clear */ }}>
+                    <Grow {...TransitionProps} timeout={200}>
                         <Paper elevation={5} className={classes.searchPopper}>
                             <MuiToolbar
                                 disableGutters
@@ -247,6 +260,7 @@ export default function Toolbar({ onPrev, onNext }) {
                                 <TextField
                                     autoFocus
                                     size="small"
+                                    value={searchText}
                                     onKeyDown={onKeyDown}
                                     onChange={onChange}
                                     inputRef={searchInputRef}
@@ -260,19 +274,22 @@ export default function Toolbar({ onPrev, onNext }) {
                                     }}
                                 />
 
+                                <span className={classes.resultsCount}>
+                                    {searchResultsCount > 0 ? currentSearchResult + 1 : 0}/{searchResultsCount}
+                                </span>
+
                                 <Divider flexItem orientation="vertical" />
 
                                 {searchButtons.map(({tooltip, icon, ...props}, index) =>
-                                    <Tooltip title={tooltip} key={index}>
-                                        <IconButton
-                                            size="small"
-                                            component="a"
-                                            className={classes.searchToolbarIcon}
-                                            {...props}
-                                        >
-                                            {icon}
-                                        </IconButton>
-                                    </Tooltip>
+                                    <IconButton
+                                        key={index}
+                                        size="small"
+                                        component="a"
+                                        className={classes.searchToolbarIcon}
+                                        {...props}
+                                    >
+                                        {icon}
+                                    </IconButton>
                                 )}
                             </MuiToolbar>
                         </Paper>
