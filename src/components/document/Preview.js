@@ -1,6 +1,7 @@
 import React, { memo } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import PDFViewer from './pdf-viewer/Dynamic'
+import TIFFViewer from './TIFFViewer'
 import { useDocument } from './DocumentProvider'
 
 // List copy/pasted from https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
@@ -21,6 +22,7 @@ export const PREVIEWABLE_MIME_TYPE_SUFFEXES = [
     '/msvideo',
     '/ogg',
     '/opus',
+    '/pdf',
     '/pjpeg',
     '/png',
     '/svg+xml',
@@ -49,8 +51,12 @@ function Preview() {
     const classes = useStyles()
     const { data, docRawUrl } = useDocument()
 
-    if (data.content['content-type'] === 'application/pdf') {
-        return <PDFViewer url={docRawUrl} />
+    switch (data.content['content-type']) {
+        case 'application/pdf':
+            return <PDFViewer url={docRawUrl} />
+
+        case 'image/tiff':
+            return <TIFFViewer url={docRawUrl} />
     }
 
     return (

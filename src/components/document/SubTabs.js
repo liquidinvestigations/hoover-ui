@@ -37,7 +37,6 @@ function SubTabs() {
     }
 
     const hasPreview = docRawUrl && data.content['content-type'] && (
-        data.content['content-type'] === 'application/pdf' ||
         PREVIEWABLE_MIME_TYPE_SUFFEXES.some(x => data.content['content-type'].endsWith(x))
     )
 
@@ -84,13 +83,11 @@ function SubTabs() {
 
                 {tabs.map(({tag}, index) => {
                     let preview = null
-                    if (index === 0) {
-                        if (hasPreview) {
-                            preview = <Preview />
-                        }
-                    } else {
-                        if (data.content['content-type'] === 'application/pdf') {
-                            preview = <PDFViewer url={createOcrUrl(digestUrl, tag)} />
+                    if (hasPreview){
+                        if (index !== 0 && data.content['content-type'] === 'application/pdf') {
+                            preview = <PDFViewer url={createOcrUrl(digestUrl, tag)}/>
+                        } else {
+                            preview = <Preview/>
                         }
                     }
 
