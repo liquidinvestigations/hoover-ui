@@ -95,7 +95,7 @@ export const truncatePath = str => {
 }
 
 export const shortenName = (name, length = ELLIPSIS_TERM_LENGTH, highlight = name => name) => name && name.length > length ?
-    <Tooltip title={highlight(name)}>
+    <Tooltip title={name}>
         <span>{highlight(`${name.substr(0, 2/3*length-3)}...${name.substr(-1/3*length)}`)}</span>
     </Tooltip> : highlight(name)
 
