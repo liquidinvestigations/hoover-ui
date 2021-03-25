@@ -82,26 +82,13 @@ function SubTabs() {
                 )}
 
                 {tabs.map(({tag}, index) => {
-                    let preview = null
-                    if (hasPreview){
+                    if (subTab === index && hasPreview){
                         if (index !== 0 && data.content['content-type'] === 'application/pdf') {
-                            preview = <PDFViewer url={createOcrUrl(digestUrl, tag)}/>
+                            return <PDFViewer url={createOcrUrl(digestUrl, tag)}/>
                         } else {
-                            preview = <Preview/>
+                            return <Preview/>
                         }
                     }
-
-                    return !preview ? null : (
-                        <TabPanel
-                            key={index}
-                            padding={0}
-                            value={subTab}
-                            index={index}
-                            alwaysVisible={printMode}
-                        >
-                            {preview}
-                        </TabPanel>
-                    )
                 })}
 
                 {!!data.children?.length && (
