@@ -37,7 +37,6 @@ function SubTabs() {
     }
 
     const hasPreview = docRawUrl && data.content['content-type'] && (
-        data.content['content-type'] === 'application/pdf' ||
         PREVIEWABLE_MIME_TYPE_SUFFEXES.some(x => data.content['content-type'].endsWith(x))
     )
 
@@ -83,28 +82,13 @@ function SubTabs() {
                 )}
 
                 {tabs.map(({tag}, index) => {
-                    let preview = null
-                    if (index === 0) {
-                        if (hasPreview) {
-                            preview = <Preview />
-                        }
-                    } else {
-                        if (data.content['content-type'] === 'application/pdf') {
-                            preview = <PDFViewer url={createOcrUrl(digestUrl, tag)} />
+                    if (subTab === index && hasPreview){
+                        if (index !== 0 && data.content['content-type'] === 'application/pdf') {
+                            return <PDFViewer url={createOcrUrl(digestUrl, tag)}/>
+                        } else {
+                            return <Preview/>
                         }
                     }
-
-                    return !preview ? null : (
-                        <TabPanel
-                            key={index}
-                            padding={0}
-                            value={subTab}
-                            index={index}
-                            alwaysVisible={printMode}
-                        >
-                            {preview}
-                        </TabPanel>
-                    )
                 })}
 
                 {!!data.children?.length && (
