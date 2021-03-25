@@ -2,7 +2,9 @@ import React, { useEffect, useRef } from 'react'
 import {
     Badge,
     Box,
+    Checkbox,
     Divider,
+    FormControlLabel,
     Grow,
     IconButton,
     Paper,
@@ -21,7 +23,6 @@ import {
     NavigateNext,
     Print,
     Search,
-    TextFields,
     Translate
 } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles'
@@ -76,11 +77,8 @@ const useStyles = makeStyles(theme => ({
     searchToolbarIcon: {
         marginLeft: theme.spacing(1),
     },
-    matchCase: {
-        color: theme.palette.grey.A400,
-    },
-    ignoreCase: {
-        color: theme.palette.grey.A100,
+    matchCaseLabel: {
+        color: theme.palette.grey[500],
     },
     resultsCount: {
         marginRight: theme.spacing(1),
@@ -194,26 +192,6 @@ export default function Toolbar({ onPrev, onNext }) {
         })
     })
 
-    const searchButtons = [
-        {
-            icon: <ExpandLess />,
-            onClick: prevSearchResult,
-        },
-        {
-            icon: <ExpandMore />,
-            onClick: nextSearchResult,
-        },
-        {
-            icon: <TextFields />,
-            onClick: toggleMatchCase,
-            className: searchMatchCase ? classes.matchCase : classes.ignoreCase,
-        },
-        {
-            icon: <Close />,
-            onClick: () => setSearchOpen(false)
-        }
-    ]
-
     return (
         <>
             <MuiToolbar variant="dense" classes={{root: classes.toolbar}}>
@@ -260,7 +238,7 @@ export default function Toolbar({ onPrev, onNext }) {
                                 <TextField
                                     autoFocus
                                     size="small"
-                                    value={searchText}
+                                    defaultValue={searchText}
                                     onKeyDown={onKeyDown}
                                     onChange={onChange}
                                     inputRef={searchInputRef}
@@ -280,17 +258,42 @@ export default function Toolbar({ onPrev, onNext }) {
 
                                 <Divider flexItem orientation="vertical" />
 
-                                {searchButtons.map(({tooltip, icon, ...props}, index) =>
-                                    <IconButton
-                                        key={index}
-                                        size="small"
-                                        component="a"
-                                        className={classes.searchToolbarIcon}
-                                        {...props}
-                                    >
-                                        {icon}
-                                    </IconButton>
-                                )}
+                                <IconButton
+                                    size="small"
+                                    className={classes.searchToolbarIcon}
+                                    onClick={prevSearchResult}
+                                >
+                                    <ExpandLess />
+                                </IconButton>
+
+                                <IconButton
+                                    size="small"
+                                    className={classes.searchToolbarIcon}
+                                    onClick={nextSearchResult}
+                                >
+                                    <ExpandMore />
+                                </IconButton>
+
+                                <FormControlLabel
+                                    label={<span className={classes.matchCaseLabel}>Match Case</span>}
+                                    className={classes.searchToolbarIcon}
+                                    control={
+                                        <Checkbox
+                                            size="small"
+                                            color="primary"
+                                            checked={searchMatchCase}
+                                            onChange={toggleMatchCase}
+                                        />
+                                    }
+                                />
+
+                                <IconButton
+                                    size="small"
+                                    className={classes.searchToolbarIcon}
+                                    onClick={() => setSearchOpen(false)}
+                                >
+                                    <Close />
+                                </IconButton>
                             </MuiToolbar>
                         </Paper>
                     </Grow>

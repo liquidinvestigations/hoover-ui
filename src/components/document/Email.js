@@ -11,7 +11,10 @@ import { useTextSearch } from './TextSearchProvider'
 
 const useStyles = makeStyles(theme => ({
     preWrap: {
-        whiteSpace: 'pre-wrap'
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        whiteSpace: 'pre-wrap',
     },
     icon: {
         transform: 'rotate(-90deg)',
@@ -31,7 +34,6 @@ const tableFields = {
     to: {
         label: 'To',
         searchKey: 'to.keyword',
-        searchTerm: term => (term || []).filter(Boolean).join(', '),
         linkVisible: term => !!term?.length,
     },
     date: {
@@ -74,22 +76,30 @@ function Email() {
                         const term = data.content[field]
                         const formatted = config.format ? config.format(term) : term
                         const searchKey = config.searchKey || field
-                        const searchTerm = config.searchTerm ? config.searchTerm(term) : term
-                        const highlighted = highlight(formatted)
 
                         return (
                             <TableRow key={field}>
                                 <TableCell>{config.label}</TableCell>
                                 <TableCell>
                                     <pre className={classes.preWrap}>
-                                        {printMode || !config.linkVisible(term) ? highlighted :
+                                        {printMode || !config.linkVisible(term) ? formatted :
                                             <>
-                                                <span
-                                                    className={classes.searchField}
-                                                    onClick={handleLinkClick(searchKey, searchTerm)}
-                                                >
-                                                    {highlighted}
-                                                </span>
+                                                {Array.isArray(term) ? term.map((termEl, index) =>
+                                                        <span
+                                                            key={index}
+                                                            className={classes.searchField}
+                                                            onClick={handleLinkClick(searchKey, termEl)}
+                                                        >
+                                                            {highlight(termEl)}
+                                                        </span>
+                                                    ) :
+                                                    <span
+                                                        className={classes.searchField}
+                                                        onClick={handleLinkClick(searchKey, term)}
+                                                    >
+                                                        {highlight(formatted)}
+                                                    </span>
+                                                }
                                             </>
                                         }
                                     </pre>

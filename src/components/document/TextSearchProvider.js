@@ -1,5 +1,7 @@
 import React, { createContext, createRef, useContext, useEffect, useState } from 'react'
 import { useDocument } from './DocumentProvider'
+import { debounce } from '../../utils'
+import { MAX_FIND_HIGHLIGHTS } from '../../constants/general'
 
 const TextSearchContext = createContext({})
 
@@ -7,28 +9,50 @@ function escapeRegex(string) {
     return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
 
+const nthIndex = (str, pat, n, matchCase) => {
+    const L = str.length
+    const lowerStr = str.toLowerCase()
+    let i = -1
+    while (n-- && i++ < L) {
+        i = matchCase ? str.indexOf(pat, i) : lowerStr.indexOf(pat.toLowerCase(), i)
+        if (i < 0){
+            break
+        }
+    }
+    return i
+}
+
 export function TextSearchProvider({children}) {
     const { pathname } = useDocument()
     const [searchOpen, setSearchOpen] = useState(false)
 
     const [searchText, setSearchText] = useState('')
-    const [searchMatchCase, setSearchMatchCase] = useState(true)
+    const [searchMatchCase, setSearchMatchCase] = useState(false)
     const [searchResultsRefs, setSearchResultsRefs] = useState([])
     const [searchResultsCount, setSearchResultsCount] = useState(0)
     const [currentSearchResult, setCurrentSearchResult] = useState(0)
 
-    useEffect(() => {
-        setSearchResultsRefs([])
-        setSearchResultsCount(0)
-        setCurrentSearchResult(0)
-    }, [searchText, searchMatchCase, pathname])
+    const [changed, setChanged] = useState(true)
 
     useEffect(() => {
-        searchResultsRefs[currentSearchResult]?.current?.scrollIntoView()
+        setChanged(true)
+        setSearchResultsRefs([])
+        setCurrentSearchResult(0)
+    }, [searchText, searchMatchCase])
+
+    useEffect(() => {
+        if (resultsCount >= MAX_FIND_HIGHLIGHTS) {
+            searchResultsRefs[resultsCount]?.current?.scrollIntoView()
+        } else {
+            searchResultsRefs[currentSearchResult]?.current?.scrollIntoView()
+        }
     }, [currentSearchResult])
 
     useEffect(() => {
+        setChanged(true)
         setSearchOpen(false)
+        setSearchResultsCount(0)
+        setCurrentSearchResult(0)
     }, [pathname])
 
     const onKeyDown = event => {
@@ -47,7 +71,7 @@ export function TextSearchProvider({children}) {
     }
 
     const onChange = event => {
-        setSearchText(event.target.value)
+        debounce(() => setSearchText(event.target.value), 300)()
     }
 
     const prevSearchResult = () => {
@@ -71,19 +95,30 @@ export function TextSearchProvider({children}) {
     let resultIndex = 0
     let tempResultRefs = []
 
-    const highlight = text => {
-        if (searchOpen && searchText.length > 1) {
-            let miniWords
+    const updateState = () => {
+        if (changed) {
+            setTimeout(() => {
+                setChanged(false)
+                setSearchResultsCount(resultsCount)
+                setSearchResultsRefs(tempResultRefs)
+            })
+        }
+    }
 
-            if (Array.isArray(text)) {
-                miniWords = text.reduce((acc, txt) => {
-                    acc.push(...txt.split(splitPattern))
-                    resultsCount += (txt.match(splitPattern) || []).length
-                    return acc
-                }, [])
-            } else {
-                miniWords = text.split(splitPattern)
-                resultsCount += (text.match(splitPattern) || []).length
+    const highlight = text => {
+        if (searchOpen && searchText.length) {
+            let miniWords = text.split(splitPattern)
+            resultsCount += (text.match(splitPattern) || []).length
+
+            const exceedsMaxHighlights = resultsCount >= MAX_FIND_HIGHLIGHTS
+
+            if (exceedsMaxHighlights) {
+                const position = nthIndex(text, searchText, currentSearchResult + 1, searchMatchCase)
+                miniWords = [
+                    text.substr(0, position),
+                    text.substr(position, searchText.length),
+                    text.substr(position + searchText.length)
+                ]
             }
 
             const html = []
@@ -91,13 +126,16 @@ export function TextSearchProvider({children}) {
                 if (searchMatchCase ? miniWord === searchText : miniWord.toLowerCase() === searchText.toLowerCase()) {
                     const resultRef = searchResultsRefs[resultIndex] || createRef()
                     if (!searchResultsRefs[resultIndex]) {
-                        tempResultRefs.push(resultRef)
+                        tempResultRefs[resultIndex] = resultRef
                     }
                     html.push(
                         <mark
                             key={index}
                             ref={resultRef}
-                            className={resultIndex === currentSearchResult ? 'current' : null}
+                            className={resultIndex === currentSearchResult || exceedsMaxHighlights ? 'current' : null}
+                            onClick={exceedsMaxHighlights ? null : (function (index) {
+                                return () => setCurrentSearchResult(index)
+                            })(resultIndex)}
                         >
                             {miniWord}
                         </mark>
@@ -108,22 +146,18 @@ export function TextSearchProvider({children}) {
                 }
             })
 
-            if (tempResultRefs.length || resultsCount === 0) {
-                setTimeout(() => {
-                    setSearchResultsCount(resultsCount)
-                    setSearchResultsRefs(tempResultRefs)
-                })
-            }
-
+            updateState()
             return html
         }
-        setTimeout(() => {
-            setSearchResultsCount(resultsCount)
-            setSearchResultsRefs(tempResultRefs)
-        })
 
+        updateState()
         return text
     }
+
+    useEffect(() => {
+        setSearchResultsCount(resultsCount)
+        setSearchResultsRefs(tempResultRefs)
+    }, [resultsCount])
 
     return (
         <TextSearchContext.Provider value={{

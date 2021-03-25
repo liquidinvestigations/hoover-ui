@@ -14,6 +14,7 @@ export const DEFAULT_FACET_SIZE = 100
 export const DEFAULT_INTERVAL = 'year'
 export const DEFAULT_OPERATOR = 'AND'
 export const ELLIPSIS_TERM_LENGTH = 30
+export const MAX_FIND_HIGHLIGHTS = 1000
 export const DEFAULT_MAX_RESULTS = 10000
 export const HIGHLIGHT_SETTINGS = {
     fragment_size: 150,
