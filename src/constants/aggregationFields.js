@@ -57,5 +57,145 @@ export const aggregationFields = {
         chipLabel: 'Path',
         type: 'term-or',
         hideEmpty: true,
+    },
+    size: {
+        filterLabel: 'Size',
+        chipLabel: 'Size',
+        type: 'range-or',
+        aggregations: {
+            values: {
+                buckets: [
+                    {
+                        key: '0',
+                        label: '0 B',
+                    },
+                    {
+                        key: '0-1000',
+                        label: '1 B - 1 KB',
+                    },
+                    {
+                        key: '1000-500000',
+                        label: '1 KB - 500 KB',
+                    },
+                    {
+                        key: '500000-1000000',
+                        label: '500 KB - 1 MB',
+                    },
+                    {
+                        key: '1000000-500000000',
+                        label: '1 MB - 500 MB',
+                    },
+                    {
+                        key: '500000000-1000000000',
+                        label: '500 MB - 1 GB',
+                    },
+                    {
+                        key: '1000000000-500000000000',
+                        label: '1 GB - 500 GB',
+                    },
+                    {
+                        key: '500000000000-1000000000000',
+                        label: '500 GB - 1 TB',
+                    },
+                    {
+                        key: '1000000000000-',
+                        label: '>= 1 TB',
+                    },
+                ]
+            }
+        }
+    },
+    'word-count': {
+        filterLabel: 'Word count',
+        chipLabel: 'Word count',
+        type: 'range-or',
+        aggregations: {
+            values: {
+                buckets: [
+                    {
+                        key: '0',
+                    },
+                    {
+                        key: '1-9',
+                        label: '1 - 9',
+                    },
+                    {
+                        key: '10-99',
+                        label: '10 - 99',
+                    },
+                    {
+                        key: '100-999',
+                        label: '100 - 999',
+                    },
+                    {
+                        key: '1000-9999',
+                        label: '1,000 - 9,999',
+                    },
+                    {
+                        key: '10000-99999',
+                        label: '10,000 - 99,999',
+                    },
+                    {
+                        key: '100000-999999',
+                        label: '100,000 - 999,999',
+                    },
+                    {
+                        key: '1000000-',
+                        label: '>= 1,000,000',
+                    },
+                ]
+            }
+        }
+    },
+    ocr: {
+        filterLabel: 'OCRed',
+        chipLabel: 'OCRed',
+        type: 'boolean-or',
+        aggregations: {
+            values: {
+                buckets: [
+                    {
+                        key: 'true',
+                    },
+                    {
+                        key: 'false',
+                    },
+                ]
+            }
+        }
+    },
+    attachments: {
+        filterLabel: 'Has Attachments',
+        chipLabel: 'Has Attachments',
+        type: 'boolean-or',
+        aggregations: {
+            values: {
+                buckets: [
+                    {
+                        key: 'true',
+                    },
+                    {
+                        key: 'false',
+                    },
+                ]
+            }
+        }
+    },
+    pgp: {
+        filterLabel: 'PGP Encrypted',
+        chipLabel: 'PGP Encrypted',
+        type: 'boolean-or',
+        aggregations: {
+            values: {
+                buckets: [
+                    {
+                        key: 'true',
+                    },
+                    {
+                        key: 'false',
+                    },
+                ]
+            }
+        }
     }
 }
