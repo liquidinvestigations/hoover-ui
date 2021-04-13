@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { useDocument } from './DocumentProvider'
 import Loading from '../Loading'
 import { humanFileSize } from '../../utils'
-import { doc as docAPI } from '../../backend/api'
+import { createDownloadUrl, doc as docAPI } from '../../backend/api'
 
 const useStyles = makeStyles(theme => ({
     box: {
@@ -60,7 +60,7 @@ function Files() {
             <TableCell className={classes.cell}>
                 {digest && (
                     <a
-                        href={docRawUrl}
+                        href={createDownloadUrl(`${collectionBaseUrl}/${digest}`, filename)}
                         target={fullPage ? null : '_blank'}
                         title="Original file"
                         className={classes.link}
