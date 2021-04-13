@@ -67,6 +67,13 @@ function Filters() {
                 filterTypeProps.bucketLabel = formatLang
             }
 
+            if (params.buckets) {
+                filterTypeProps.bucketLabel = key => {
+                    const bucket = params.buckets.find(bucket => bucket.key === key.key)
+                    return bucket ? bucket.label || bucket.key : key.key
+                }
+            }
+
         return (
             <FilterComponent
                 key={field}

@@ -23,7 +23,7 @@ const buildQuery = (q, filters, searchFields) => {
             default_operator: DEFAULT_OPERATOR,
             fields: searchFields.all,
             lenient: true,
-        },
+        }
     }
 
     const ranges = [];
@@ -35,8 +35,8 @@ const buildQuery = (q, filters, searchFields) => {
                     [field]: {
                         gte: value.from,
                         lte: value.to,
-                    },
-                },
+                    }
+                }
             })
         }
     })
@@ -44,8 +44,8 @@ const buildQuery = (q, filters, searchFields) => {
     if (ranges.length) {
         return {
             bool: {
-                must: [qs, ...ranges],
-            },
+                must: [qs, ...ranges]
+            }
         }
     }
 
@@ -68,7 +68,7 @@ const buildTermsField = (field, uuid, terms, page = 1, size = DEFAULT_FACET_SIZE
             }))
         } else {
             filterClause = {
-                terms: {[fieldKey]: terms.include},
+                terms: {[fieldKey]: terms.include}
             }
         }
     }
@@ -76,7 +76,7 @@ const buildTermsField = (field, uuid, terms, page = 1, size = DEFAULT_FACET_SIZE
     let filterExclude = null
     if (terms?.exclude?.length) {
         filterExclude = {
-            terms: { [fieldKey]: terms.exclude },
+            terms: { [fieldKey]: terms.exclude }
         }
     }
 
@@ -102,7 +102,7 @@ const buildTermsField = (field, uuid, terms, page = 1, size = DEFAULT_FACET_SIZE
             terms: {
                 field: fieldKey,
                 size: page * size,
-            },
+            }
         },
         filterClause,
         filterExclude,
@@ -155,10 +155,10 @@ const buildHistogramField = (field, uuid, { interval = DEFAULT_INTERVAL, interva
             bool: {
                 should: intervals.include.map(selected => ({
                     range: {
-                        [fieldKey]: intervalFormat(interval, selected),
-                    },
-                })),
-            },
+                        [fieldKey]: intervalFormat(interval, selected)
+                    }
+                }))
+            }
         }
     }
 
@@ -189,6 +189,88 @@ const buildHistogramField = (field, uuid, { interval = DEFAULT_INTERVAL, interva
             }
         },
         filterClause,
+        filterMissing,
+    }
+}
+
+const rangeFormat = (fieldKey, range, isFilter = false) => {
+    if (!range.includes('-')) {
+        throw new Error('Invalid range format. Missing "-" sign.')
+    }
+
+    let rangeQuery
+    const rangeEdges = range.split('-')
+
+    if (!rangeEdges[0].length || !rangeEdges[1].length) {
+        throw new Error('Invalid range format. Missing range edge.')
+    }
+
+    if (rangeEdges[0] === '*') {
+        return {
+            [isFilter ? 'lte' : 'to']: rangeEdges[1],
+        }
+    } else if (rangeEdges[1] === '*') {
+        return {
+            [isFilter ? 'gte' : 'from']: rangeEdges[0],
+        }
+    }
+
+    return {
+        [isFilter ? 'gte' : 'from']: rangeEdges[0],
+        [isFilter ? 'lt' : 'to']: rangeEdges[1],
+    }
+}
+
+const buildRangeField = (field, uuid, ranges) => {
+    const fieldKey = expandPrivate(field, uuid)
+
+    let filterClause = null
+    if (ranges?.include?.length) {
+        filterClause = {
+            bool: {
+                should: ranges.include.map(selected => ({
+                    range: {
+                        [fieldKey]: rangeFormat(fieldKey, selected, true)
+                    }
+                }))
+            }
+        }
+    }
+
+    let filterExclude = null
+    if (ranges?.exclude?.length) {
+        filterExclude = {
+            bool: {
+                should: ranges.exclude.map(selected => ({
+                    range: {
+                        [fieldKey]: rangeFormat(fieldKey, selected, true)
+                    }
+                }))
+            }
+        }
+    }
+
+    let filterMissing = null
+    if (ranges?.missing === 'true') {
+        filterMissing = false
+    } else if (ranges?.missing === 'false') {
+        filterMissing = true
+    }
+
+    return {
+        field,
+        originalField: field,
+        aggregation: {
+            range: {
+                field: fieldKey,
+                ranges: aggregationFields[field].buckets.map(({ key }) => ({
+                    key,
+                    ...rangeFormat(fieldKey, key)
+                }))
+            }
+        },
+        filterClause,
+        filterExclude,
         filterMissing,
     }
 }
@@ -285,6 +367,10 @@ const buildSearchQuery = (
         .filter(([,field]) => field.type.startsWith('term'))
         .map(([key]) => key)
 
+    const rangeFields = Object.entries(aggregationFields)
+        .filter(([,field]) => field.type.startsWith('range'))
+        .map(([key]) => key)
+
     const fields = type === 'tagsAggregations' ?
         ['tags', 'priv-tags'].map(field => buildTermsField(field, uuid)) :
         [
@@ -292,10 +378,12 @@ const buildSearchQuery = (
             ...dateFields.map(field => buildMissingField(field, uuid)),
             ...termFields.map(field => buildTermsField(field, uuid, filters[field], facets[field])),
             ...termFields.map(field => buildMissingField(field, uuid)),
+            ...rangeFields.map(field => buildRangeField(field, uuid, filters[field], facets[field])),
+            ...rangeFields.map(field => buildMissingField(field, uuid)),
         ]
 
-    const postFilter = buildFilter(fields);
-    const aggs = buildAggs(fields);
+    const postFilter = buildFilter(fields)
+    const aggs = buildAggs(fields)
 
     const highlightFields = {}
     searchFields.highlight.forEach(field => {
