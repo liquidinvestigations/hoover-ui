@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import Router from 'next/router'
 import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
-import { Grid, IconButton, InputAdornment, List, TextField, Typography } from '@material-ui/core'
+import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Typography } from '@material-ui/core'
 import { Cancel } from '@material-ui/icons'
 import Expandable from '../Expandable'
 import SplitPaneLayout from '../SplitPaneLayout'
@@ -45,17 +45,11 @@ const useStyles = makeStyles(theme => ({
 export default function Search({ collections }) {
     const classes = useStyles()
     const inputRef = useRef()
-    const { query, error, search, resultsLoading, clearResults, collectionsCount,
+    const { query, error, search, searchText, setSearchText, resultsLoading, clearResults, collectionsCount,
         selectedDocData, previewNextDoc, previewPreviousDoc } = useSearch()
 
-    useEffect(() => {
-        if (query.q) {
-            inputRef.current.value = query.q
-        }
-    }, [query])
-
     const clearInput = () => {
-        inputRef.current.value = null
+        setSearchText('')
         inputRef.current.focus()
     }
 
@@ -92,16 +86,20 @@ export default function Search({ collections }) {
         search({ collections: value, page: 1 })
     }, [collections, search])
 
-    const handleSubmit = useCallback(event => {
+    const handleSubmit = event => {
         event.preventDefault()
-        search({ q: inputRef.current.value, page: 1 })
-    }, [search])
+        search({ page: 1 })
+    }
 
-    const handleInputKey = useCallback(event => {
+    const handleInputKey = event => {
         if (event.key === 'Enter' && !event.shiftKey) {
             handleSubmit(event)
         }
-    }, [search])
+    }
+
+    const handleInputChange = event => {
+        setSearchText(event.target.value)
+    }
 
     return (
         <DocumentProvider
@@ -140,23 +138,36 @@ export default function Search({ collections }) {
                         <Grid container>
                             <Grid item sm={12}>
                                 <form onSubmit={handleSubmit}>
-                                    <TextField
-                                        inputRef={inputRef}
-                                        label="Search"
-                                        margin="normal"
-                                        defaultValue={query.q || ''}
-                                        onKeyDown={handleInputKey}
-                                        autoFocus
-                                        fullWidth
-                                        multiline
-                                        InputProps={{ endAdornment:
-                                            <InputAdornment position="end">
-                                                <IconButton onClick={clearInput} size="small">
-                                                    <Cancel className={classes.clear} />
-                                                </IconButton>
-                                            </InputAdornment>,
-                                        }}
-                                    />
+                                    <Grid container justify="space-between" alignItems="flex-end">
+                                        <Grid item style={{ flex: 1 }}>
+                                            <TextField
+                                                inputRef={inputRef}
+                                                label="Search"
+                                                margin="normal"
+                                                value={searchText}
+                                                onKeyDown={handleInputKey}
+                                                onChange={handleInputChange}
+                                                autoFocus
+                                                fullWidth
+                                                multiline
+                                                InputProps={{ endAdornment:
+                                                    <InputAdornment position="end">
+                                                        <IconButton onClick={clearInput} size="small">
+                                                            <Cancel className={classes.clear} />
+                                                        </IconButton>
+                                                    </InputAdornment>,
+                                                }}
+                                            />
+                                        </Grid>
+
+                                        <Grid item style={{ marginLeft: 20 }}>
+                                            <FormControl margin="normal">
+                                                <Button variant="contained" color="primary" type="submit" size="large">
+                                                    Search
+                                                </Button>
+                                            </FormControl>
+                                        </Grid>
+                                    </Grid>
                                 </form>
 
                                 <Grid container justify="space-between">

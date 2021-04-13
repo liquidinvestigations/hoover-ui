@@ -22,14 +22,19 @@ export function SearchProvider({ children, serverQuery }) {
         return memoQuery
     }, [queryString])
 
+    const [searchText, setSearchText] = useState(query.q || '')
+    useEffect(() => {
+        setSearchText(query.q)
+    }, [query])
+
     const search = useCallback(params => {
-        const newQuery = buildSearchQuerystring({ ...query, ...params })
+        const newQuery = buildSearchQuerystring({ ...query, q: searchText, ...params })
         router.push(
             { pathname, search: newQuery, hash: hashState ? qs.stringify(rollupParams(hashState)) : undefined },
             undefined,
             { shallow: true },
         )
-    }, [query, hashState])
+    }, [query, hashState, searchText])
 
     const [previewOnLoad, setPreviewOnLoad] = useState()
     const [selectedDocData, setSelectedDocData] = useState()
@@ -154,7 +159,8 @@ export function SearchProvider({ children, serverQuery }) {
 
     return (
         <SearchContext.Provider value={{
-            query, error, search, results, aggregations, aggregationsError,
+            query, error, search, searchText, setSearchText,
+            results, aggregations, aggregationsError,
             collectionsCount, resultsLoading, aggregationsLoading,
             previewNextDoc, previewPreviousDoc, selectedDocData,
             clearResults
