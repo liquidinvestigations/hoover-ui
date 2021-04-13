@@ -4,6 +4,69 @@ exports[`builds a default query 1`] = `
 Object {
   "_source": Array [],
   "aggs": Object {
+    "attachments": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "attachments",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "attachments",
+            "size": 100,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {
+          "filter": Array [
+            Object {
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
+    "attachments-missing": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "attachments-missing",
+          },
+        },
+        "values": Object {
+          "missing": Object {
+            "field": "attachments",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {
+          "filter": Array [
+            Object {
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
     "content-type": Object {
       "aggs": Object {
         "count": Object {
@@ -469,6 +532,69 @@ Object {
         },
       },
     },
+    "ocr": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "ocr",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "ocr",
+            "size": 100,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {
+          "filter": Array [
+            Object {
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
+    "ocr-missing": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "ocr-missing",
+          },
+        },
+        "values": Object {
+          "missing": Object {
+            "field": "ocr",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {
+          "filter": Array [
+            Object {
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
     "path-parts": Object {
       "aggs": Object {
         "count": Object {
@@ -532,6 +658,69 @@ Object {
         },
       },
     },
+    "pgp": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "pgp",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "pgp",
+            "size": 100,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {
+          "filter": Array [
+            Object {
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
+    "pgp-missing": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "pgp-missing",
+          },
+        },
+        "values": Object {
+          "missing": Object {
+            "field": "pgp",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {
+          "filter": Array [
+            Object {
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
     "priv-tags": Object {
       "aggs": Object {
         "count": Object {
@@ -574,6 +763,114 @@ Object {
         "values": Object {
           "missing": Object {
             "field": "priv-tags.testuser",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {
+          "filter": Array [
+            Object {
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
+    "size": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "size",
+          },
+        },
+        "values": Object {
+          "range": Object {
+            "field": "size",
+            "ranges": Array [
+              Object {
+                "from": "0",
+                "key": "0-1",
+                "to": "1",
+              },
+              Object {
+                "from": "1",
+                "key": "1-1000",
+                "to": "1000",
+              },
+              Object {
+                "from": "1000",
+                "key": "1000-500000",
+                "to": "500000",
+              },
+              Object {
+                "from": "500000",
+                "key": "500000-1000000",
+                "to": "1000000",
+              },
+              Object {
+                "from": "1000000",
+                "key": "1000000-500000000",
+                "to": "500000000",
+              },
+              Object {
+                "from": "500000000",
+                "key": "500000000-1000000000",
+                "to": "1000000000",
+              },
+              Object {
+                "from": "1000000000",
+                "key": "1000000000-500000000000",
+                "to": "500000000000",
+              },
+              Object {
+                "from": "500000000000",
+                "key": "500000000000-1000000000000",
+                "to": "1000000000000",
+              },
+              Object {
+                "from": "1000000000000",
+                "key": "1000000000000-*",
+              },
+            ],
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {
+          "filter": Array [
+            Object {
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
+    "size-missing": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "size-missing",
+          },
+        },
+        "values": Object {
+          "missing": Object {
+            "field": "size",
           },
         },
       },
@@ -672,6 +969,109 @@ Object {
         "values": Object {
           "missing": Object {
             "field": "to.keyword",
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {
+          "filter": Array [
+            Object {
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
+    "word-count": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "word-count",
+          },
+        },
+        "values": Object {
+          "range": Object {
+            "field": "word-count",
+            "ranges": Array [
+              Object {
+                "from": "0",
+                "key": "0-1",
+                "to": "1",
+              },
+              Object {
+                "from": "1",
+                "key": "1-9",
+                "to": "9",
+              },
+              Object {
+                "from": "10",
+                "key": "10-99",
+                "to": "99",
+              },
+              Object {
+                "from": "100",
+                "key": "100-999",
+                "to": "999",
+              },
+              Object {
+                "from": "1000",
+                "key": "1000-9999",
+                "to": "9999",
+              },
+              Object {
+                "from": "10000",
+                "key": "10000-99999",
+                "to": "99999",
+              },
+              Object {
+                "from": "100000",
+                "key": "100000-999999",
+                "to": "999999",
+              },
+              Object {
+                "from": "1000000",
+                "key": "1000000-*",
+              },
+            ],
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {
+          "filter": Array [
+            Object {
+              "bool": Object {
+                "must_not": Object {
+                  "terms": Object {
+                    "tags": Array [
+                      "trash",
+                    ],
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
+    "word-count-missing": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "word-count-missing",
+          },
+        },
+        "values": Object {
+          "missing": Object {
+            "field": "word-count",
           },
         },
       },
