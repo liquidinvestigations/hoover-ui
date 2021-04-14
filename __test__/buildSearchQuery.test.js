@@ -23,7 +23,6 @@ it('builds a query with a filetype filter', () => {
     expect(query.post_filter).toMatchObject({
         bool: {
             filter: [
-                { bool: { must_not: { terms: { tags: ['trash'] } } } },
                 { bool: { should: [ { terms: { filetype: ['email', 'pdf'] } } ] } }
             ],
         },
@@ -38,7 +37,6 @@ it('builds a query with a filetype filter', () => {
         filter: {
             bool: {
                 filter: [
-                    { bool: { must_not: { terms: { tags: ['trash'] } } } },
                     { bool: { should: [ { terms: { filetype: ['email', 'pdf'] } } ] } }
                 ],
             },
@@ -85,8 +83,7 @@ it('builds a query with a date histogram by years filter', () => {
     expect(query.post_filter).toMatchObject({
         bool: {
             filter: [
-                yearFilter,
-                { bool: { must_not: { terms: { tags: ['trash'] } } } }
+                yearFilter
             ],
         },
     })
@@ -100,8 +97,7 @@ it('builds a query with a date histogram by years filter', () => {
         filter: {
             bool: {
                 filter: [
-                    yearFilter,
-                    { bool: { must_not: { terms: { tags: ['trash'] } } } }
+                    yearFilter
                 ],
             },
         },
@@ -113,13 +109,7 @@ it('builds a query with a date histogram by years filter', () => {
                 date_histogram: { field: 'date', interval: 'year' },
             },
         },
-        filter: {
-            bool: {
-                filter: [
-                    { bool: { must_not: { terms: { tags: ['trash'] } } } },
-                ],
-            },
-        },
+        filter: {},
     })
 })
 
@@ -138,7 +128,6 @@ it('builds a query with multiple fields filtered', () => {
     expect(query.post_filter).toMatchObject({
         bool: {
             filter: [
-                { bool: { must_not: { terms: { tags: ['trash'] } } } },
                 { bool: { should: [ { terms: { filetype: ['doc', 'email'] } } ] } },
                 { bool: { should: [ { terms: { 'email-domains': ['gmail.com'] } } ] } },
             ],
@@ -154,7 +143,6 @@ it('builds a query with multiple fields filtered', () => {
         filter: {
             bool: {
                 filter: [
-                    { bool: { must_not: { terms: { tags: ['trash'] } } } },
                     { bool: { should: [ { terms: { 'email-domains': ['gmail.com'] } } ] } },
                 ],
             }
@@ -170,7 +158,6 @@ it('builds a query with multiple fields filtered', () => {
         filter: {
             bool: {
                 filter: [
-                    { bool: { must_not: { terms: { tags: ['trash'] } } } },
                     { bool: { should: [ { terms: { filetype: ['doc', 'email'] } } ] } }
                 ],
             },

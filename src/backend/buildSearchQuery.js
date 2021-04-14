@@ -87,14 +87,6 @@ const buildTermsField = (field, uuid, terms, page = 1, size = DEFAULT_FACET_SIZE
         filterMissing = true
     }
 
-    if (field === 'tags' && !terms?.include?.includes('trash') && !terms?.exclude?.includes('trash')) {
-        if (filterExclude === null) {
-            filterExclude = { terms: { [fieldKey]: ['trash'] } }
-        } else {
-            filterExclude.terms[fieldKey].push('trash')
-        }
-    }
-
     return {
         field,
         originalField: field,
