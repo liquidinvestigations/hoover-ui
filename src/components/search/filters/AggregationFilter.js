@@ -99,9 +99,9 @@ function AggregationFilter({ field, queryFilter, aggregations, missing, loading,
     const handleReset = () => onChange(field, [], true)
 
     const renderBucket = (bucket, handler = handleChange, italic = false) => {
-        const label = bucketLabel ? bucketLabel(bucket) : bucket.key
+        const label = bucketLabel ? bucketLabel(bucket) : bucket.key_as_string || bucket.key
         const subLabel = bucketSubLabel ? bucketSubLabel(bucket) : null
-        const value = bucketValue ? bucketValue(bucket) : bucket.key
+        const value = bucketValue ? bucketValue(bucket) : bucket.key_as_string || bucket.key
         const trash = (field === 'tags' && value === 'trash' && !queryFilter?.include?.includes(value))
         const checked = queryFilter?.include?.includes(value) ||
             queryFilter?.exclude?.includes(value) || trash || false
@@ -199,9 +199,11 @@ function AggregationFilter({ field, queryFilter, aggregations, missing, loading,
             <ListItem dense>
                 <Grid container alignItems="center" justify="space-between">
                     <Grid item>
-                        {aggregationFields[field].type === 'date' ?
-                            <Pagination field={field} /> :
-                            <MoreButton field={field} />
+                        {!aggregationFields[field].buckets && (
+                            aggregationFields[field].type === 'date' ?
+                                <Pagination field={field} /> :
+                                <MoreButton field={field} />
+                            )
                         }
                     </Grid>
                     <Grid item>

@@ -180,10 +180,18 @@ export default function FiltersChips() {
                 </span>
             )
         } else {
+            let term = q.term
+
+            let buckets
+            if (buckets = aggregationFields[q.field]?.buckets) {
+                const bucket = buckets.find(bucket => bucket.key === term)
+                term = bucket ? bucket.label || bucket.key : term
+            }
+
             label = (
                 <span>
                     <strong>{name}:</strong>{' '}
-                    {q.boost === 1 ? <i>{q.term}</i> : shortenName(q.term)}
+                    {q.boost === 1 ? <i>{term}</i> : shortenName(term)}
                 </span>
             )
         }
