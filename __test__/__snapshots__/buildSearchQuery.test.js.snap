@@ -19,21 +19,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "attachments-missing": Object {
@@ -50,21 +36,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "content-type": Object {
@@ -82,21 +54,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "content-type-missing": Object {
@@ -113,21 +71,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "date": Object {
@@ -157,21 +101,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "date-created": Object {
@@ -201,21 +131,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "date-created-missing": Object {
@@ -232,21 +148,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "date-missing": Object {
@@ -263,21 +165,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "email-domains": Object {
@@ -295,21 +183,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "email-domains-missing": Object {
@@ -326,21 +200,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "filetype": Object {
@@ -358,21 +218,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "filetype-missing": Object {
@@ -389,21 +235,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "from.keyword": Object {
@@ -421,21 +253,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "from.keyword-missing": Object {
@@ -452,21 +270,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "lang": Object {
@@ -484,21 +288,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "lang-missing": Object {
@@ -515,21 +305,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "ocr": Object {
@@ -547,21 +323,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "ocr-missing": Object {
@@ -578,21 +340,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "path-parts": Object {
@@ -610,21 +358,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "path-parts-missing": Object {
@@ -641,21 +375,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "pgp": Object {
@@ -673,21 +393,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "pgp-missing": Object {
@@ -704,21 +410,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "priv-tags": Object {
@@ -736,21 +428,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "priv-tags-missing": Object {
@@ -767,21 +445,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "size": Object {
@@ -844,21 +508,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "size-missing": Object {
@@ -875,21 +525,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "tags": Object {
@@ -942,21 +578,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "to.keyword-missing": Object {
@@ -973,21 +595,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "word-count": Object {
@@ -1045,21 +653,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
     "word-count-missing": Object {
@@ -1076,21 +670,7 @@ Object {
         },
       },
       "filter": Object {
-        "bool": Object {
-          "filter": Array [
-            Object {
-              "bool": Object {
-                "must_not": Object {
-                  "terms": Object {
-                    "tags": Array [
-                      "trash",
-                    ],
-                  },
-                },
-              },
-            },
-          ],
-        },
+        "bool": Object {},
       },
     },
   },
@@ -1100,21 +680,7 @@ Object {
     "fields": Object {},
   },
   "post_filter": Object {
-    "bool": Object {
-      "filter": Array [
-        Object {
-          "bool": Object {
-            "must_not": Object {
-              "terms": Object {
-                "tags": Array [
-                  "trash",
-                ],
-              },
-            },
-          },
-        },
-      ],
-    },
+    "bool": Object {},
   },
   "query": Object {
     "query_string": Object {
