@@ -9,7 +9,7 @@ const useStyles = makeStyles(theme => ({
         textTransform: 'uppercase',
     },
     expand: {
-        transform: 'rotate(90deg)',
+        transform: 'rotate(0deg)',
         transition: theme.transitions.create('transform', {
             duration: theme.transitions.duration.shortest,
         }),
@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
         },
     },
     expandOpen: {
-        transform: 'rotate(0deg)',
+        transform: 'rotate(180deg)',
     },
     header: {
         backgroundColor: theme.palette.grey[100]

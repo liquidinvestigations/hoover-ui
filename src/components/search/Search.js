@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Router from 'next/router'
 import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
 import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Typography } from '@material-ui/core'
-import { Cancel } from '@material-ui/icons'
+import { Cancel, Collections } from '@material-ui/icons'
 import Expandable from '../Expandable'
 import SplitPaneLayout from '../SplitPaneLayout'
 import { useProgressIndicator } from '../ProgressIndicator'
@@ -20,6 +20,7 @@ import SortingChips from './sorting/SortingChips'
 import SortingMenu from './sorting/SortingMenu'
 import { DocumentProvider } from '../document/DocumentProvider'
 import Document from '../document/Document'
+import CategoryDrawer from './filters/CategoryDrawer'
 
 const useStyles = makeStyles(theme => ({
     error: {
@@ -39,6 +40,9 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         marginTop: theme.spacing(2),
         justifyContent: 'flex-end',
+    },
+    filters: {
+        borderRight: '1px solid rgba(0, 0, 0, 0.2)',
     },
 }))
 
@@ -86,6 +90,8 @@ export default function Search({ collections }) {
         search({ collections: value, page: 1 })
     }, [collections, search])
 
+    const [drawerOpenCategory, setDrawerOpenCategory] = useState('collections')
+
     const handleSubmit = event => {
         event.preventDefault()
         search({ page: 1 })
@@ -108,9 +114,16 @@ export default function Search({ collections }) {
             collections={collections}
         >
             <HotKeys inputRef={inputRef}>
-                <SplitPaneLayout
-                    left={
-                        <>
+                <Grid container>
+                    <Grid item className={classes.filters}>
+                        <CategoryDrawer
+                            key="collections"
+                            title="Collections"
+                            icon={<Collections />}
+                            highlight={false}
+                            open={drawerOpenCategory === 'collections'}
+                            onToggle={open => setDrawerOpenCategory(open ? 'collections' : null)}
+                        >
                             <Expandable
                                 title={`Collections (${query.collections?.length || 0})`}
                                 defaultOpen
@@ -123,96 +136,107 @@ export default function Search({ collections }) {
                                     counts={collectionsCount}
                                 />
                             </Expandable>
+                        </CategoryDrawer>
 
-                            <Filters />
-                        </>
-                    }
-                    right={
-                        <Document
-                            onPrev={previewPreviousDoc}
-                            onNext={previewNextDoc}
+                        <Filters
+                            drawerOpenCategory={drawerOpenCategory}
+                            onDrawerOpen={setDrawerOpenCategory}
                         />
-                    }
-                >
-                    <div className={classes.main}>
-                        <Grid container>
-                            <Grid item sm={12}>
-                                <form onSubmit={handleSubmit}>
-                                    <Grid container justify="space-between" alignItems="flex-end">
-                                        <Grid item style={{ flex: 1 }}>
-                                            <TextField
-                                                inputRef={inputRef}
-                                                label="Search"
-                                                margin="normal"
-                                                value={searchText}
-                                                onKeyDown={handleInputKey}
-                                                onChange={handleInputChange}
-                                                autoFocus
-                                                fullWidth
-                                                multiline
-                                                InputProps={{ endAdornment:
-                                                    <InputAdornment position="end">
-                                                        <IconButton onClick={clearInput} size="small">
-                                                            <Cancel className={classes.clear} />
-                                                        </IconButton>
-                                                    </InputAdornment>,
-                                                }}
-                                            />
+                    </Grid>
+
+                    <Grid item style={{ flex: 1 }}>
+                        <SplitPaneLayout
+                            left={
+                                <div id="category-drawer" />
+                            }
+                            right={
+                                <Document
+                                    onPrev={previewPreviousDoc}
+                                    onNext={previewNextDoc}
+                                />
+                            }
+                        >
+                            <div className={classes.main}>
+                                <Grid container>
+                                    <Grid item sm={12}>
+                                        <form onSubmit={handleSubmit}>
+                                            <Grid container justify="space-between" alignItems="flex-end">
+                                                <Grid item style={{ flex: 1 }}>
+                                                    <TextField
+                                                        inputRef={inputRef}
+                                                        label="Search"
+                                                        margin="normal"
+                                                        value={searchText}
+                                                        onKeyDown={handleInputKey}
+                                                        onChange={handleInputChange}
+                                                        autoFocus
+                                                        fullWidth
+                                                        multiline
+                                                        InputProps={{ endAdornment:
+                                                            <InputAdornment position="end">
+                                                                <IconButton onClick={clearInput} size="small">
+                                                                    <Cancel className={classes.clear} />
+                                                                </IconButton>
+                                                            </InputAdornment>,
+                                                        }}
+                                                    />
+                                                </Grid>
+
+                                                <Grid item style={{ marginLeft: 20 }}>
+                                                    <FormControl margin="normal">
+                                                        <Button variant="contained" color="primary" type="submit" size="large">
+                                                            Search
+                                                        </Button>
+                                                    </FormControl>
+                                                </Grid>
+                                            </Grid>
+                                        </form>
+
+                                        <Grid container justify="space-between">
+                                            <Grid item style={{ flex: 1 }}>
+                                                <Typography variant="caption" className={classes.info}>
+                                                    Enter to search, Shift+Enter for a new line.
+                                                    All lines are combined into a single search.
+                                                    Refine your search using {' '}
+                                                    <a href={SEARCH_GUIDE}>this handy guide</a>.
+                                                </Typography>
+                                            </Grid>
+
+                                            <Grid item style={{ marginLeft: 20 }}>
+                                                <Typography variant="caption">
+                                                    <Link href="/batch-search">
+                                                        <a>Batch search</a>
+                                                    </Link>
+                                                </Typography>
+                                            </Grid>
                                         </Grid>
 
-                                        <Grid item style={{ marginLeft: 20 }}>
-                                            <FormControl margin="normal">
-                                                <Button variant="contained" color="primary" type="submit" size="large">
-                                                    Search
-                                                </Button>
-                                            </FormControl>
-                                        </Grid>
-                                    </Grid>
-                                </form>
+                                        <FiltersChips />
 
-                                <Grid container justify="space-between">
-                                    <Grid item style={{ flex: 1 }}>
-                                        <Typography variant="caption" className={classes.info}>
-                                            Enter to search, Shift+Enter for a new line.
-                                            All lines are combined into a single search.
-                                            Refine your search using {' '}
-                                            <a href={SEARCH_GUIDE}>this handy guide</a>.
-                                        </Typography>
-                                    </Grid>
+                                        <QueryChips />
 
-                                    <Grid item style={{ marginLeft: 20 }}>
-                                        <Typography variant="caption">
-                                            <Link href="/batch-search">
-                                                <a>Batch search</a>
-                                            </Link>
-                                        </Typography>
+                                        <Histogram title="Date modified" field="date" />
+
+                                        <Histogram title="Date created" field="date-created" />
+
+                                        <div className={classes.sorting}>
+                                            <SortingChips />
+                                            <SortingMenu />
+                                        </div>
                                     </Grid>
                                 </Grid>
 
-                                <FiltersChips />
+                                {error && <Typography color="error" className={classes.error}>{error}</Typography>}
 
-                                <QueryChips />
-
-                                <Histogram title="Date modified" field="date" />
-
-                                <Histogram title="Date created" field="date-created" />
-
-                                <div className={classes.sorting}>
-                                    <SortingChips />
-                                    <SortingMenu />
-                                </div>
-                            </Grid>
-                        </Grid>
-
-                        {error && <Typography color="error" className={classes.error}>{error}</Typography>}
-
-                        <Grid container>
-                            <Grid item sm={12}>
-                                <SearchResults maxCount={maxResultsCount} />
-                            </Grid>
-                        </Grid>
-                    </div>
-                </SplitPaneLayout>
+                                <Grid container>
+                                    <Grid item sm={12}>
+                                        <SearchResults maxCount={maxResultsCount} />
+                                    </Grid>
+                                </Grid>
+                            </div>
+                        </SplitPaneLayout>
+                    </Grid>
+                </Grid>
             </HotKeys>
         </DocumentProvider>
     )

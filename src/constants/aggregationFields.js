@@ -1,14 +1,17 @@
+import React from 'react'
+import { AccountTree, AlternateEmail, Category, DateRange, Language, LocalOffer, SettingsEthernet, Translate } from '@material-ui/icons'
+
 export const aggregationFields = {
     tags: {
         category: 'tags',
         categoryLabel: 'Tags',
+        categoryIcon: <LocalOffer />,
         filterLabel: 'Public tags',
         chipLabel: 'Public tag',
         type: 'term-and',
     },
     'priv-tags': {
         category: 'tags',
-        categoryLabel: 'Tags',
         filterLabel: 'Private tags',
         chipLabel: 'Private tag',
         type: 'term-and',
@@ -16,13 +19,13 @@ export const aggregationFields = {
     date: {
         category: 'dates',
         categoryLabel: 'Dates',
+        categoryIcon: <DateRange />,
         filterLabel: 'Date modified',
         chipLabel: 'Date modified',
         type: 'date',
     },
     'date-created': {
         category: 'dates',
-        categoryLabel: 'Dates',
         filterLabel: 'Date created',
         chipLabel: 'Date created',
         type: 'date',
@@ -30,13 +33,13 @@ export const aggregationFields = {
     'content-type': {
         category: 'type',
         categoryLabel: 'File Types',
+        categoryIcon: <Category />,
         filterLabel: 'Content type',
         chipLabel: 'Content type',
         type: 'term-or',
     },
     filetype: {
         category: 'type',
-        categoryLabel: 'File Types',
         filterLabel: 'File type',
         chipLabel: 'File type',
         type: 'term-or',
@@ -44,6 +47,7 @@ export const aggregationFields = {
     lang: {
         category: 'language',
         categoryLabel: 'Language',
+        categoryIcon: <Language />,
         filterLabel: 'Language',
         chipLabel: 'Language',
         type: 'term-or',
@@ -51,6 +55,7 @@ export const aggregationFields = {
     'email-domains': {
         category: 'email',
         categoryLabel: 'Email',
+        categoryIcon: <AlternateEmail />,
         filterLabel: 'Email domain',
         chipLabel: 'Email domain',
         type: 'term-or',
@@ -58,7 +63,6 @@ export const aggregationFields = {
     },
     'from.keyword': {
         category: 'email',
-        categoryLabel: 'Email',
         filterLabel: 'Email from',
         chipLabel: 'Email from',
         type: 'term-or',
@@ -66,7 +70,6 @@ export const aggregationFields = {
     },
     'to.keyword': {
         category: 'email',
-        categoryLabel: 'Email',
         filterLabel: 'Email to',
         chipLabel: 'Email to',
         type: 'term-or',
@@ -75,6 +78,7 @@ export const aggregationFields = {
     'path-parts': {
         category: 'location',
         categoryLabel: 'Location',
+        categoryIcon: <AccountTree />,
         filterLabel: 'Path',
         chipLabel: 'Path',
         type: 'term-or',
@@ -83,6 +87,7 @@ export const aggregationFields = {
     size: {
         category: 'size',
         categoryLabel: 'File Sizes',
+        categoryIcon: <SettingsEthernet />,
         filterLabel: 'Size',
         chipLabel: 'Size',
         type: 'range-or',
@@ -127,7 +132,6 @@ export const aggregationFields = {
     },
     'word-count': {
         category: 'size',
-        categoryLabel: 'File Sizes',
         filterLabel: 'Word count',
         chipLabel: 'Word count',
         type: 'range-or',
@@ -169,6 +173,7 @@ export const aggregationFields = {
     ocr: {
         category: 'ocr',
         categoryLabel: 'OCR',
+        categoryIcon: <Translate />,
         filterLabel: 'OCRed',
         chipLabel: 'OCRed',
         type: 'term-or',
