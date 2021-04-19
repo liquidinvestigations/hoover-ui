@@ -53,6 +53,7 @@
     "react-hotkeys": "^2.0.0",
     "react-placeholder": "^4.1.0",
     "react-split-pane": "^0.1.92",
+    "react-transition-group": "^4.4.1",
     "tiff": "^4.3.0"
   },
   "devDependencies": {

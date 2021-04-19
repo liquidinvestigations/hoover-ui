@@ -1,31 +1,99 @@
-import React, { useMemo, useState } from 'react'
+import React, { cloneElement, useEffect, useMemo, useState } from 'react'
 import cn from 'classnames'
-import { makeStyles } from '@material-ui/core/styles'
-import { Grid, IconButton, ListItem, Slide, Typography } from '@material-ui/core'
-import { ExpandMore } from '@material-ui/icons'
+import { makeStyles, duration } from '@material-ui/core/styles'
+import { Grid, IconButton, ListItem, Portal, Slide, Typography } from '@material-ui/core'
+import { ChevronRight } from '@material-ui/icons'
+import { Transition } from 'react-transition-group'
 
 const useStyles = makeStyles(theme => ({
     root: {
-        width: 150,
-        maxWidth: 400,
-        backgroundColor: theme.palette.background.paper
-    }
+        width: '100%',
+        overflow: 'hidden',
+        position: 'absolute',
+        height: 'calc(100vh - 56px)',
+
+        '@media (min-width: 0px) and (orientation: landscape)': {
+            height: 'calc(100vh - 48px)',
+        },
+
+        '@media (min-width: 600px)': {
+            height: 'calc(100vh - 64px)',
+        }
+    },
+
+    inner: {
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        overflow: 'auto',
+        position: 'absolute',
+        backgroundColor: theme.palette.background.paper,
+    },
+
+    upper: {
+        textTransform: 'uppercase',
+    },
+
+    icon: {
+        alignSelf: 'center',
+        marginRight: theme.spacing(2),
+    },
+
+    label: {
+        marginRight: 'auto',
+    },
+
+    expand: {
+        transform: 'rotate(0deg)',
+        transition: theme.transitions.create('transform', {
+            duration: theme.transitions.duration.shortest,
+        }),
+        marginLeft: 'auto',
+        [theme.breakpoints.up('sm')]: {
+            marginRight: -8,
+        },
+    },
+
+    expandOpen: {
+        transform: 'rotate(180deg)',
+    },
 }))
 
-export default function CategoryDrawer({ title, children, defaultOpen, enabled = true, highlight = true }) {
+export default function CategoryDrawer({ title, icon, children, open, onToggle, enabled = true, highlight = true }) {
     const classes = useStyles()
-    const [open, setOpen] = useState(defaultOpen || false)
-    const toggle = () => setOpen(!open)
+    const toggle = () => {
+        onToggle(!open)
+    }
+
+    const [position, setPosition] = useState({ top: 0, left: 0 })
+
+    useEffect(() => {
+        const positionElement = document.querySelector('#category-drawer')
+        const position = positionElement.getBoundingClientRect()
+
+        setPosition({
+            top: position.top + 'px',
+            left: position.left + 'px',
+        })
+    }, [])
 
     const titleBar = useMemo(() => (
         <ListItem onClick={toggle} button dense className={classes.header}>
             <Grid container alignItems="baseline" justify="space-between">
-                <Grid item>
+                <Grid item className={classes.icon}>
+                    {cloneElement(icon, { color: highlight
+                            ? 'secondary'
+                            : 'inherit'
+                    })}
+                </Grid>
+
+                <Grid item className={classes.label}>
                     <Typography
                         variant="body2"
                         className={classes.upper}
                         color={
-                            defaultOpen && highlight
+                            highlight
                                 ? 'secondary'
                                 : 'initial'
                         }>
@@ -43,9 +111,9 @@ export default function CategoryDrawer({ title, children, defaultOpen, enabled =
                         aria-expanded={open}
                         aria-label="Open"
                     >
-                        <ExpandMore
+                        <ChevronRight
                             color={
-                                defaultOpen && highlight
+                                highlight
                                     ? 'secondary'
                                     : 'action'
                             }
@@ -54,7 +122,7 @@ export default function CategoryDrawer({ title, children, defaultOpen, enabled =
                 </Grid>
             </Grid>
         </ListItem>
-    ), [title, defaultOpen, highlight, open])
+    ), [title, highlight, open])
 
     if (!enabled) {
         return null
@@ -64,11 +132,20 @@ export default function CategoryDrawer({ title, children, defaultOpen, enabled =
         <>
             {titleBar}
 
-            <Slide direction="right" in={open} mountOnEnter unmountOnExit>
-                <div className={classes.root}>
-                    {children}
-                </div>
-            </Slide>
+            <Portal container={typeof document !== 'undefined' ? document.querySelector('#category-drawer') : undefined}>
+                <Transition in={open} timeout={{
+                    enter: duration.enteringScreen,
+                    exit: duration.leavingScreen,
+                }} mountOnEnter unmountOnExit>
+                    <div /*style={position}*/ className={classes.root}>
+                        <Slide direction="right" in={open}>
+                            <div className={classes.inner}>
+                                {children}
+                            </div>
+                        </Slide>
+                    </div>
+                </Transition>
+            </Portal>
         </>
     )
 }
