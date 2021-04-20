@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
 
 let startY, startHeight
 
-function Expandable({ title, children, defaultOpen, enabled = true, highlight = true }) {
+function Expandable({ title, children, greyed, defaultOpen, enabled = true, highlight = true }) {
     const classes = useStyles()
     const [open, setOpen] = useState(defaultOpen || false)
     const toggle = () => setOpen(!open)
@@ -72,11 +72,7 @@ function Expandable({ title, children, defaultOpen, enabled = true, highlight = 
                     <Typography
                         variant="body2"
                         className={classes.upper}
-                        color={
-                            defaultOpen && highlight
-                                ? 'secondary'
-                                : 'initial'
-                        }>
+                        color={greyed ? 'textSecondary' : defaultOpen && highlight ? 'secondary' : 'initial'}>
                         {title}
                     </Typography>
                 </Grid>
@@ -102,7 +98,7 @@ function Expandable({ title, children, defaultOpen, enabled = true, highlight = 
                 </Grid>
             </Grid>
         </ListItem>
-    ), [title, defaultOpen, highlight, open])
+    ), [title, greyed, defaultOpen, highlight, open])
 
     if (!enabled) {
         return null

@@ -76,11 +76,16 @@ function Filters({ drawerOpenCategory, onDrawerOpen }) {
                 || !!(queryFilter?.from || queryFilter?.to || queryFilter?.intervals)
         })
 
+        const greyed = filters.every(({ field }) => {
+            return aggregations[field].values.buckets.length === 0
+        })
+
         return (
             <CategoryDrawer
                 key={category}
                 title={label}
                 icon={icon}
+                greyed={greyed}
                 highlight={highlight}
                 open={drawerOpenCategory === category}
                 onToggle={open => onDrawerOpen(open ? category : null)}
