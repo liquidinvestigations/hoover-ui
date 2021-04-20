@@ -60,12 +60,8 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function CategoryDrawer({ title, icon, children, open, onToggle, enabled = true, highlight = true }) {
+export default function CategoryDrawer({ title, icon, children, open, onToggle, enabled = true, greyed = false, highlight = true }) {
     const classes = useStyles()
-    const toggle = () => {
-        onToggle(!open)
-    }
-
     const [position, setPosition] = useState({ top: 0, left: 0 })
 
     useEffect(() => {
@@ -78,25 +74,23 @@ export default function CategoryDrawer({ title, icon, children, open, onToggle, 
         })
     }, [])
 
+    const toggle = () => {
+        onToggle(!open)
+    }
+
     const titleBar = useMemo(() => (
         <ListItem onClick={toggle} button dense className={classes.header}>
             <Grid container alignItems="baseline" justify="space-between">
                 <Grid item className={classes.icon}>
-                    {cloneElement(icon, { color: highlight
-                            ? 'secondary'
-                            : 'inherit'
-                    })}
+                    {cloneElement(icon, { color: highlight ? 'secondary' : 'inherit'})}
                 </Grid>
 
                 <Grid item className={classes.label}>
                     <Typography
                         variant="body2"
                         className={classes.upper}
-                        color={
-                            highlight
-                                ? 'secondary'
-                                : 'initial'
-                        }>
+                        color={greyed ? 'textSecondary' : highlight ? 'secondary' : 'initial'}
+                    >
                         {title}
                     </Typography>
                 </Grid>
@@ -111,18 +105,12 @@ export default function CategoryDrawer({ title, icon, children, open, onToggle, 
                         aria-expanded={open}
                         aria-label="Open"
                     >
-                        <ChevronRight
-                            color={
-                                highlight
-                                    ? 'secondary'
-                                    : 'action'
-                            }
-                        />
+                        <ChevronRight color={highlight ? 'secondary' : 'action'} />
                     </IconButton>
                 </Grid>
             </Grid>
         </ListItem>
-    ), [title, highlight, open])
+    ), [title, greyed, highlight, open])
 
     if (!enabled) {
         return null

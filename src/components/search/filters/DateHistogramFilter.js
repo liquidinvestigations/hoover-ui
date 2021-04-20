@@ -65,6 +65,7 @@ function DateHistogramFilter({ title, field, queryFilter, aggregations, missing,
     return (
         <Expandable
             title={title}
+            greyed={!aggregations?.values.buckets.length}
             defaultOpen={!!(queryFilter?.from || queryFilter?.to || queryFilter?.intervals)}>
             <DateRangeFilter
                 defaultFrom={queryFilter?.from}

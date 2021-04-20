@@ -13,6 +13,7 @@ function TermsAggregationFilter({ title, field, queryFilter, aggregations,
     return (
         <Expandable
             title={title}
+            greyed={!aggregations?.values.buckets.length}
             enabled={enabled}
             defaultOpen={defaultOpen}
         >
