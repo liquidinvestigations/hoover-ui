@@ -31,9 +31,13 @@ const useStyles = makeStyles(theme => ({
         maxHeight: 435,
         overflow: 'auto',
     },
-    fullHeight: {
+    fullHeightCollapseEntered: {
+        overflow: 'auto',
+    },
+    fullHeightContent: {
         height: '100%',
         maxHeight: 'none',
+        overflow: 'hidden',
     },
 }))
 
@@ -125,10 +129,13 @@ function Expandable({ title, children, greyed, defaultOpen, open, onToggle, resi
         <>
             {headerBar}
 
-            <Collapse in={openState}>
+            <Collapse
+                in={openState}
+                classes={{ entered: cn({ [classes.fullHeightCollapseEntered]: fullHeight }) }}
+            >
                 <div
                     ref={contentRef}
-                    className={cn(classes.content, { [classes.fullHeight]: fullHeight })}
+                    className={cn(classes.content, { [classes.fullHeightContent]: fullHeight })}
                 >
                     {children}
                 </div>

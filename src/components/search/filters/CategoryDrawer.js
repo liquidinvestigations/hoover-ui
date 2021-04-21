@@ -22,17 +22,18 @@ const useStyles = makeStyles(theme => ({
     },
 
     inner: {
-        top: 0,
-        left: 0,
-        width: '100%',
         height: '100%',
-        overflow: 'auto',
-        position: 'absolute',
+        display: 'flex',
+        flexDirection: 'column',
         backgroundColor: theme.palette.background.paper,
     },
 
     upper: {
         textTransform: 'uppercase',
+    },
+
+    bold: {
+        fontWeight: 'bold',
     },
 
     icon: {
@@ -86,7 +87,7 @@ export default function CategoryDrawer({ title, icon, children, open, onOpen, en
                 <Grid item className={classes.label}>
                     <Typography
                         variant="body2"
-                        className={classes.upper}
+                        className={cn(classes.upper, { [classes.bold]: open })}
                         color={greyed ? 'textSecondary' : highlight ? 'secondary' : 'initial'}
                     >
                         {title}
