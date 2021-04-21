@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Router from 'next/router'
 import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
-import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Typography } from '@material-ui/core'
+import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Toolbar, Typography } from '@material-ui/core'
 import { Cancel, Collections } from '@material-ui/icons'
 import Expandable from '../Expandable'
 import SplitPaneLayout from '../SplitPaneLayout'
@@ -21,6 +21,7 @@ import SortingMenu from './sorting/SortingMenu'
 import { DocumentProvider } from '../document/DocumentProvider'
 import Document from '../document/Document'
 import CategoryDrawer from './filters/CategoryDrawer'
+import { aggregationFields } from '../../constants/aggregationFields'
 
 const useStyles = makeStyles(theme => ({
     error: {
@@ -40,6 +41,12 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         marginTop: theme.spacing(2),
         justifyContent: 'flex-end',
+    },
+    drawerToolbar: {
+        backgroundColor: theme.palette.grey[100],
+        borderBottomColor: theme.palette.grey[400],
+        borderBottomWidth: 1,
+        borderBottomStyle: 'solid',
     },
     filters: {
         borderRight: '1px solid rgba(0, 0, 0, 0.2)',
@@ -61,6 +68,7 @@ export default function Search({ collections }) {
         if (url === '/') {
             clearInput()
             clearResults()
+            setDrawerOpenCategory('collections')
         }
     }
     useEffect(() => {
@@ -90,7 +98,39 @@ export default function Search({ collections }) {
         search({ collections: value, page: 1 })
     }, [collections, search])
 
+    const filtersCategories = useMemo(() => Object.entries(aggregationFields).reduce((acc, [field, params]) => {
+        const { category, categoryLabel, categoryIcon, ...filterParams } = params
+
+        if (!acc[category]) {
+            acc[category] = {
+                label: categoryLabel,
+                icon: categoryIcon,
+                filters: [],
+            }
+        }
+        acc[category].filters.push({ field, ...filterParams })
+        return acc
+
+    }, {}), [aggregationFields])
+
     const [drawerOpenCategory, setDrawerOpenCategory] = useState('collections')
+    const [expandedFilters, setExpandedFilters] = useState(
+        Object.entries(filtersCategories).reduce((acc, [category, { filters }]) => {
+            if (filters.length === 1) {
+                acc[category] = filters[0].field
+            } else if (!acc[category]) {
+                filters.some(({ field }) => {
+                    const queryFilter = query.filters?.[field]
+                    if (!!queryFilter?.include?.length || !!queryFilter?.exclude?.length || !!queryFilter?.missing ||
+                        !!(queryFilter?.from || queryFilter?.to || queryFilter?.intervals)) {
+                        acc[category] = field
+                        return true
+                    }
+                })
+            }
+            return acc
+        }, {})
+    )
 
     const handleSubmit = event => {
         event.preventDefault()
@@ -116,17 +156,19 @@ export default function Search({ collections }) {
             <HotKeys inputRef={inputRef}>
                 <Grid container>
                     <Grid item className={classes.filters}>
+                        <Toolbar variant="dense" className={classes.drawerToolbar} />
+
                         <CategoryDrawer
                             key="collections"
                             title="Collections"
                             icon={<Collections />}
                             highlight={false}
                             open={drawerOpenCategory === 'collections'}
-                            onToggle={open => setDrawerOpenCategory(open ? 'collections' : null)}
+                            onOpen={() => setDrawerOpenCategory('collections')}
                         >
                             <Expandable
                                 title={`Collections (${query.collections?.length || 0})`}
-                                defaultOpen
+                                open={true}
                                 highlight={false}
                             >
                                 <CollectionsFilter
@@ -139,15 +181,21 @@ export default function Search({ collections }) {
                         </CategoryDrawer>
 
                         <Filters
+                            categories={filtersCategories}
                             drawerOpenCategory={drawerOpenCategory}
                             onDrawerOpen={setDrawerOpenCategory}
+                            expandedFilters={expandedFilters}
+                            onFilterExpand={setExpandedFilters}
                         />
                     </Grid>
 
                     <Grid item style={{ flex: 1 }}>
                         <SplitPaneLayout
                             left={
-                                <div id="category-drawer" />
+                                <>
+                                    <Toolbar variant="dense" className={classes.drawerToolbar} />
+                                    <div id="category-drawer" />
+                                </>
                             }
                             right={
                                 <Document

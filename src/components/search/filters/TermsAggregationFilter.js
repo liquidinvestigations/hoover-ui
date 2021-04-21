@@ -3,22 +3,23 @@ import isEqual from 'react-fast-compare'
 import Expandable from '../../Expandable'
 import AggregationFilter from './AggregationFilter'
 
-function TermsAggregationFilter({ title, field, queryFilter, aggregations,
-                                    emptyDisabled = false, ...rest }) {
+function TermsAggregationFilter({ title, open, onToggle, queryFilter, aggregations, emptyDisabled = false, ...rest }) {
 
     const enabled = !emptyDisabled || !!aggregations?.values.buckets.length
 
-    const defaultOpen = !!queryFilter?.include?.length || !!queryFilter?.exclude?.length || !!queryFilter?.missing
+    const highlight = !!(queryFilter?.include?.length || queryFilter?.exclude?.length || queryFilter?.missing)
 
     return (
         <Expandable
             title={title}
+            highlight={highlight}
             greyed={!aggregations?.values.buckets.length}
             enabled={enabled}
-            defaultOpen={defaultOpen}
+            open={open}
+            onToggle={onToggle}
+            resizable={false}
         >
             <AggregationFilter
-                field={field}
                 queryFilter={queryFilter}
                 aggregations={aggregations}
                 triState

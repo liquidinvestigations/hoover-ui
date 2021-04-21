@@ -5,8 +5,11 @@ import { Collapse, Grid, IconButton, ListItem, Typography } from '@material-ui/c
 import { ExpandMore } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
-    upper: {
+    title: {
+        minHeight: 30,
         textTransform: 'uppercase',
+        paddingTop: theme.spacing(.5),
+        paddingBottom: theme.spacing(.5),
     },
     expand: {
         transform: 'rotate(0deg)',
@@ -28,19 +31,32 @@ const useStyles = makeStyles(theme => ({
         maxHeight: 435,
         overflow: 'auto',
     },
+    fullHeight: {
+        height: '100%',
+        maxHeight: 'none',
+    },
 }))
 
 let startY, startHeight
 
-function Expandable({ title, children, greyed, defaultOpen, enabled = true, highlight = true }) {
+function Expandable({ title, children, greyed, defaultOpen, open, onToggle, resizable = false,
+                        fullHeight = true, enabled = true, highlight = true }) {
+
     const classes = useStyles()
-    const [open, setOpen] = useState(defaultOpen || false)
-    const toggle = () => setOpen(!open)
+
+    let openState = open, setOpenState = onToggle
+    if (typeof open === 'undefined') {
+        const [openInternalState, setOpenInternalState] = useState(defaultOpen || false)
+        openState = openInternalState
+        setOpenState = setOpenInternalState
+    }
+
+    const toggle = () => setOpenState && setOpenState(!openState)
 
     const contentRef = useRef()
 
     useEffect(() => {
-        if (contentRef.current) {
+        if (!fullHeight && contentRef.current) {
             contentRef.current.style.height = contentRef.current.offsetHeight + 'px'
         }
     }, [contentRef])
@@ -66,39 +82,40 @@ function Expandable({ title, children, greyed, defaultOpen, enabled = true, high
     }, [])
 
     const headerBar = useMemo(() => (
-        <ListItem onClick={toggle} button dense className={classes.header}>
+        <ListItem
+            dense
+            className={classes.header}
+            button={!!setOpenState}
+            onClick={!!setOpenState ? toggle : null}
+        >
             <Grid container alignItems="baseline" justify="space-between">
                 <Grid item>
                     <Typography
                         variant="body2"
-                        className={classes.upper}
-                        color={greyed ? 'textSecondary' : defaultOpen && highlight ? 'secondary' : 'initial'}>
+                        className={classes.title}
+                        color={greyed ? 'textSecondary' : highlight ? 'secondary' : 'initial'}>
                         {title}
                     </Typography>
                 </Grid>
 
-                <Grid item>
-                    <IconButton
-                        size="small"
-                        className={cn(classes.expand, {
-                            [classes.expandOpen]: open,
-                        })}
-                        onClick={toggle}
-                        aria-expanded={open}
-                        aria-label="Show more"
-                    >
-                        <ExpandMore
-                            color={
-                                defaultOpen && highlight
-                                    ? 'secondary'
-                                    : 'action'
-                            }
-                        />
-                    </IconButton>
-                </Grid>
+                {!!setOpenState && (
+                    <Grid item>
+                        <IconButton
+                            size="small"
+                            className={cn(classes.expand, {
+                                [classes.expandOpen]: openState,
+                            })}
+                            onClick={toggle}
+                            aria-expanded={openState}
+                            aria-label="Show more"
+                        >
+                            <ExpandMore color={highlight ? 'secondary' : 'action'} />
+                        </IconButton>
+                    </Grid>
+                )}
             </Grid>
         </ListItem>
-    ), [title, greyed, defaultOpen, highlight, open])
+    ), [title, greyed, defaultOpen, highlight, openState])
 
     if (!enabled) {
         return null
@@ -108,19 +125,21 @@ function Expandable({ title, children, greyed, defaultOpen, enabled = true, high
         <>
             {headerBar}
 
-            <Collapse in={open}>
+            <Collapse in={openState}>
                 <div
                     ref={contentRef}
-                    className={classes.content}
+                    className={cn(classes.content, { [classes.fullHeight]: fullHeight })}
                 >
                     {children}
                 </div>
 
-                <div
-                    role="presentation"
-                    className={cn('Resizer horizontal')}
-                    onMouseDown={handleMouseDown}
-                />
+                {resizable && (
+                    <div
+                        role="presentation"
+                        className={cn('Resizer horizontal')}
+                        onMouseDown={handleMouseDown}
+                    />
+                )}
             </Collapse>
         </>
     )

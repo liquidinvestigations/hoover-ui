@@ -117,6 +117,10 @@ export const aggregationFields = {
                 label: '500 MB - 1 GB',
             },
             {
+                key: '1000000000-*',
+                label: '>= 1 GB',
+            },
+            /*{
                 key: '1000000000-500000000000',
                 label: '1 GB - 500 GB',
             },
@@ -127,7 +131,7 @@ export const aggregationFields = {
             {
                 key: '1000000000000-*',
                 label: '>= 1 TB',
-            },
+            },*/
         ]
     },
     'word-count': {
