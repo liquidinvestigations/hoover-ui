@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
 
 const formatLang = bucket => getLanguageName(bucket.key)
 
-function Filters({ drawerOpenCategory, onDrawerOpen }) {
+function Filters({ categories, drawerOpenCategory, onDrawerOpen, expandedFilters, onFilterExpand }) {
     const classes = useStyles()
     const { query, search, aggregations, aggregationsError, resultsLoading, aggregationsLoading } = useSearch()
 
@@ -36,21 +36,6 @@ function Filters({ drawerOpenCategory, onDrawerOpen }) {
         }
     }, [query])
 
-    const filtersCategories = useMemo(() => Object.entries(aggregationFields).reduce((acc, [field, params]) => {
-        const { category, categoryLabel, categoryIcon, ...filterParams } = params
-
-        if (!acc[category]) {
-            acc[category] = {
-                label: categoryLabel,
-                icon: categoryIcon,
-                filters: [],
-            }
-        }
-        acc[category].filters.push({ field, ...filterParams })
-        return acc
-
-    }, {}), [aggregationFields])
-
     const filterProps = {
         loading: aggregationsLoading || resultsLoading,
         onChange: handleChange,
@@ -68,7 +53,7 @@ function Filters({ drawerOpenCategory, onDrawerOpen }) {
         return null
     }
 
-    return Object.entries(filtersCategories).map(([category, { label, icon, filters }]) => {
+    return Object.entries(categories).map(([category, { label, icon, filters }]) => {
         const highlight = filters.some(filter => {
             const queryFilter = query.filters?.[filter.field]
 
@@ -88,7 +73,7 @@ function Filters({ drawerOpenCategory, onDrawerOpen }) {
                 greyed={greyed}
                 highlight={highlight}
                 open={drawerOpenCategory === category}
-                onToggle={open => onDrawerOpen(open ? category : null)}
+                onOpen={() => onDrawerOpen(category)}
             >
                 {filters.map(({ field, type, hideEmpty, buckets, filterLabel }) => {
 
@@ -114,6 +99,15 @@ function Filters({ drawerOpenCategory, onDrawerOpen }) {
                         }
                     }
 
+                    const onToggle = open => {
+                        if (open) {
+                            onFilterExpand({ ...expandedFilters, ...{ [category]: field } })
+                        } else {
+                            const { [category]: closed, ...expanded } = expandedFilters
+                            onFilterExpand(expanded)
+                        }
+                    }
+
                     return (
                         <FilterComponent
                             key={field}
@@ -122,6 +116,8 @@ function Filters({ drawerOpenCategory, onDrawerOpen }) {
                             queryFilter={query.filters?.[field]}
                             aggregations={aggregations[field]}
                             missing={aggregations[`${field}-missing`]}
+                            open={expandedFilters[category] === field}
+                            onToggle={filters.length > 1 ? onToggle : null}
                             {...filterTypeProps}
                             {...filterProps}
                         />

@@ -94,8 +94,10 @@ function SubTabs() {
                 {!!data.children?.length && (
                     <Box>
                         <Expandable
+                            resizable
                             defaultOpen
                             highlight={false}
+                            fullHeight={false}
                             title={
                                 <>
                                     <FolderOutlined className={classes.icon} />

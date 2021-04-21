@@ -10,14 +10,14 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
         overflow: 'hidden',
         position: 'absolute',
-        height: 'calc(100vh - 56px)',
+        height: 'calc(100vh - 56px - 48px)',
 
         '@media (min-width: 0px) and (orientation: landscape)': {
-            height: 'calc(100vh - 48px)',
+            height: 'calc(100vh - 48px - 48px)',
         },
 
         '@media (min-width: 600px)': {
-            height: 'calc(100vh - 64px)',
+            height: 'calc(100vh - 64px - 48px)',
         }
     },
 
@@ -60,7 +60,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function CategoryDrawer({ title, icon, children, open, onToggle, enabled = true, greyed = false, highlight = true }) {
+export default function CategoryDrawer({ title, icon, children, open, onOpen, enabled = true, greyed = false, highlight = true }) {
     const classes = useStyles()
     const [position, setPosition] = useState({ top: 0, left: 0 })
 
@@ -74,12 +74,10 @@ export default function CategoryDrawer({ title, icon, children, open, onToggle, 
         })
     }, [])
 
-    const toggle = () => {
-        onToggle(!open)
-    }
+    const handleClick = () => onOpen()
 
     const titleBar = useMemo(() => (
-        <ListItem onClick={toggle} button dense className={classes.header}>
+        <ListItem onClick={handleClick} button dense className={classes.header}>
             <Grid container alignItems="baseline" justify="space-between">
                 <Grid item className={classes.icon}>
                     {cloneElement(icon, { color: highlight ? 'secondary' : 'inherit'})}
@@ -101,7 +99,7 @@ export default function CategoryDrawer({ title, icon, children, open, onToggle, 
                         className={cn(classes.expand, {
                             [classes.expandOpen]: open,
                         })}
-                        onClick={toggle}
+                        onClick={handleClick}
                         aria-expanded={open}
                         aria-label="Open"
                     >
