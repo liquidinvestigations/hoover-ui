@@ -184,6 +184,7 @@ export default function Search({ collections }) {
             <HotKeys inputRef={inputRef}>
                 <Grid container>
                     <Grid item className={classes.filters}>
+                        {/*
                         <Toolbar variant="dense" className={classes.drawerToolbar}>
                             <Tooltip title="Collapse">
                                 <IconButton
@@ -195,6 +196,7 @@ export default function Search({ collections }) {
                                 </IconButton>
                             </Tooltip>
                         </Toolbar>
+                        */}
 
                         <CategoryDrawer
                             key="collections"
@@ -231,6 +233,7 @@ export default function Search({ collections }) {
                         <SplitPaneLayout
                             left={
                                 <>
+                                    {/*
                                     <Toolbar variant="dense" className={classes.drawerToolbar}>
                                         <Tooltip title="Unpin">
                                             <IconButton
@@ -242,6 +245,7 @@ export default function Search({ collections }) {
                                             </IconButton>
                                         </Tooltip>
                                     </Toolbar>
+                                    */}
 
                                     <div id="category-drawer" />
                                 </>

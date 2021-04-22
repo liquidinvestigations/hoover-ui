@@ -10,14 +10,17 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
         overflow: 'hidden',
         position: 'absolute',
-        height: 'calc(100vh - 56px - 48px)',
+        //height: 'calc(100vh - 56px - 48px)',
+        height: 'calc(100vh - 56px)',
 
         '@media (min-width: 0px) and (orientation: landscape)': {
-            height: 'calc(100vh - 48px - 48px)',
+            //height: 'calc(100vh - 48px - 48px)',
+            height: 'calc(100vh - 48px)',
         },
 
         '@media (min-width: 600px)': {
-            height: 'calc(100vh - 64px - 48px)',
+            //height: 'calc(100vh - 64px - 48px)',
+            height: 'calc(100vh - 64px)',
         }
     },
 
