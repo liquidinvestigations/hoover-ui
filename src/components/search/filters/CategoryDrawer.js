@@ -2,8 +2,8 @@ import React, { cloneElement, useEffect, useMemo, useState } from 'react'
 import cn from 'classnames'
 import { makeStyles, duration } from '@material-ui/core/styles'
 import { Grid, IconButton, ListItem, Portal, Slide, Typography } from '@material-ui/core'
-import { ChevronRight } from '@material-ui/icons'
 import { Transition } from 'react-transition-group'
+import { ChevronRight } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -28,8 +28,11 @@ const useStyles = makeStyles(theme => ({
         backgroundColor: theme.palette.background.paper,
     },
 
-    upper: {
+    title: {
+        minHeight: 32,
         textTransform: 'uppercase',
+        paddingTop: 6,
+        paddingBottom: 6,
     },
 
     bold: {
@@ -37,6 +40,7 @@ const useStyles = makeStyles(theme => ({
     },
 
     icon: {
+        display: 'flex',
         alignSelf: 'center',
         marginRight: theme.spacing(2),
     },
@@ -45,19 +49,13 @@ const useStyles = makeStyles(theme => ({
         marginRight: 'auto',
     },
 
-    expand: {
-        transform: 'rotate(0deg)',
-        transition: theme.transitions.create('transform', {
-            duration: theme.transitions.duration.shortest,
-        }),
-        marginLeft: 'auto',
+    open: {
+        display: 'flex',
+        alignSelf: 'center',
+        marginLeft: theme.spacing(1),
         [theme.breakpoints.up('sm')]: {
             marginRight: -8,
         },
-    },
-
-    expandOpen: {
-        transform: 'rotate(180deg)',
     },
 }))
 
@@ -78,7 +76,7 @@ export default function CategoryDrawer({ title, icon, children, open, onOpen, en
     const handleClick = () => onOpen()
 
     const titleBar = useMemo(() => (
-        <ListItem onClick={handleClick} button dense className={classes.header}>
+        <ListItem onClick={handleClick} button dense>
             <Grid container alignItems="baseline" justify="space-between">
                 <Grid item className={classes.icon}>
                     {cloneElement(icon, { color: highlight ? 'secondary' : 'inherit'})}
@@ -87,26 +85,18 @@ export default function CategoryDrawer({ title, icon, children, open, onOpen, en
                 <Grid item className={classes.label}>
                     <Typography
                         variant="body2"
-                        className={cn(classes.upper, { [classes.bold]: open })}
+                        className={cn(classes.title, { [classes.bold]: open })}
                         color={greyed ? 'textSecondary' : highlight ? 'secondary' : 'initial'}
                     >
                         {title}
                     </Typography>
                 </Grid>
 
-                <Grid item>
-                    <IconButton
-                        size="small"
-                        className={cn(classes.expand, {
-                            [classes.expandOpen]: open,
-                        })}
-                        onClick={handleClick}
-                        aria-expanded={open}
-                        aria-label="Open"
-                    >
+                {open && (
+                    <Grid item className={classes.open} >
                         <ChevronRight color={highlight ? 'secondary' : 'action'} />
-                    </IconButton>
-                </Grid>
+                    </Grid>
+                )}
             </Grid>
         </ListItem>
     ), [title, greyed, highlight, open])

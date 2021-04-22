@@ -1,12 +1,12 @@
 import React, { memo, useCallback } from 'react'
 import { DateTime } from 'luxon'
-import { ListItem } from '@material-ui/core'
+import { ListItem, Typography } from '@material-ui/core'
 import Expandable from '../../Expandable'
 import IntervalSelect from './IntervalSelect'
 import DateRangeFilter from './DateRangeFilter'
 import AggregationFilter from './AggregationFilter'
 import { DEFAULT_INTERVAL } from '../../../constants/general'
-import { getClosestInterval } from '../../../utils'
+import { formatThousands, getClosestInterval } from '../../../utils'
 
 export const formatsLabel = {
     year: 'y',
@@ -70,6 +70,13 @@ function DateHistogramFilter({ title, open, onToggle, field, queryFilter, aggreg
             open={open}
             onToggle={onToggle}
             resizable={false}
+            summary={
+                <Typography variant="caption" display="block" style={{ lineHeight: 1.4 }}>
+                    {formatThousands(aggregations?.values.buckets.reduce((acc, { doc_count }) => acc + parseInt(doc_count), 0))} hits
+                    {', '}
+                    {aggregations?.values.buckets.length} buckets
+                </Typography>
+            }
         >
             <DateRangeFilter
                 defaultFrom={queryFilter?.from}

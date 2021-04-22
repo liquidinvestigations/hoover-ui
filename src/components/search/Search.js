@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import cn from 'classnames'
 import Router from 'next/router'
 import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
-import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Toolbar, Typography } from '@material-ui/core'
-import { Cancel, Collections } from '@material-ui/icons'
+import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Toolbar, Tooltip, Typography } from '@material-ui/core'
+import { Cancel, Collections, DoubleArrow, PinDrop } from '@material-ui/icons'
 import Expandable from '../Expandable'
 import SplitPaneLayout from '../SplitPaneLayout'
 import { useProgressIndicator } from '../ProgressIndicator'
@@ -48,16 +49,31 @@ const useStyles = makeStyles(theme => ({
         borderBottomWidth: 1,
         borderBottomStyle: 'solid',
     },
+    drawerToolbarButton: {
+        marginLeft: 'auto',
+        [theme.breakpoints.up('sm')]: {
+            marginRight: -8,
+        },
+    },
+    drawerToolbarIcon: {
+        transition: theme.transitions.create('transform', {
+            duration: theme.transitions.duration.shortest,
+        }),
+    },
     filters: {
+        width: 200,
         borderRight: '1px solid rgba(0, 0, 0, 0.2)',
     },
+    expanded: {
+        transform: 'rotate(180deg)',
+    }
 }))
 
 export default function Search({ collections }) {
     const classes = useStyles()
     const inputRef = useRef()
-    const { query, error, search, searchText, setSearchText, resultsLoading, clearResults, collectionsCount,
-        selectedDocData, previewNextDoc, previewPreviousDoc } = useSearch()
+    const { query, aggregations, error, search, searchText, setSearchText, resultsLoading,
+        clearResults, collectionsCount, selectedDocData, previewNextDoc, previewPreviousDoc } = useSearch()
 
     const clearInput = () => {
         setSearchText('')
@@ -116,9 +132,7 @@ export default function Search({ collections }) {
     const [drawerOpenCategory, setDrawerOpenCategory] = useState('collections')
     const [expandedFilters, setExpandedFilters] = useState(
         Object.entries(filtersCategories).reduce((acc, [category, { filters }]) => {
-            if (filters.length === 1) {
-                acc[category] = filters[0].field
-            } else if (!acc[category]) {
+            if (!acc[category]) {
                 filters.some(({ field }) => {
                     const queryFilter = query.filters?.[field]
                     if (!!queryFilter?.include?.length || !!queryFilter?.exclude?.length || !!queryFilter?.missing ||
@@ -128,6 +142,20 @@ export default function Search({ collections }) {
                     }
                 })
             }
+
+            if (!acc[category]) {
+                filters.some(({ field }) => {
+                    if (!!aggregations?.[field]?.values.buckets.length) {
+                        acc[category] = field
+                        return true
+                    }
+                })
+            }
+
+            if (!acc[category]) {
+                acc[category] = filters[0].field
+            }
+
             return acc
         }, {})
     )
@@ -156,7 +184,17 @@ export default function Search({ collections }) {
             <HotKeys inputRef={inputRef}>
                 <Grid container>
                     <Grid item className={classes.filters}>
-                        <Toolbar variant="dense" className={classes.drawerToolbar} />
+                        <Toolbar variant="dense" className={classes.drawerToolbar}>
+                            <Tooltip title="Collapse">
+                                <IconButton
+                                    size="small"
+                                    className={classes.drawerToolbarButton}
+                                    disabled
+                                >
+                                    <DoubleArrow className={cn(classes.drawerToolbarIcon, { [classes.expanded]: true })} />
+                                </IconButton>
+                            </Tooltip>
+                        </Toolbar>
 
                         <CategoryDrawer
                             key="collections"
@@ -193,7 +231,18 @@ export default function Search({ collections }) {
                         <SplitPaneLayout
                             left={
                                 <>
-                                    <Toolbar variant="dense" className={classes.drawerToolbar} />
+                                    <Toolbar variant="dense" className={classes.drawerToolbar}>
+                                        <Tooltip title="Unpin">
+                                            <IconButton
+                                                size="small"
+                                                className={classes.drawerToolbarButton}
+                                                disabled
+                                            >
+                                                <PinDrop className={classes.drawerToolbarIcon} />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Toolbar>
+
                                     <div id="category-drawer" />
                                 </>
                             }

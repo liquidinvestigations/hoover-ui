@@ -6,10 +6,10 @@ import { ExpandMore } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
     title: {
-        minHeight: 30,
+        minHeight: 32,
         textTransform: 'uppercase',
-        paddingTop: theme.spacing(.5),
-        paddingBottom: theme.spacing(.5),
+        paddingTop: 6,
+        paddingBottom: 6,
     },
     expand: {
         transform: 'rotate(0deg)',
@@ -25,7 +25,10 @@ const useStyles = makeStyles(theme => ({
         transform: 'rotate(180deg)',
     },
     header: {
-        backgroundColor: theme.palette.grey[100]
+        backgroundColor: theme.palette.grey[100],
+        '&:hover': {
+            backgroundColor: theme.palette.grey[200],
+        }
     },
     content: {
         maxHeight: 435,
@@ -43,7 +46,7 @@ const useStyles = makeStyles(theme => ({
 
 let startY, startHeight
 
-function Expandable({ title, children, greyed, defaultOpen, open, onToggle, resizable = false,
+function Expandable({ title, summary, children, greyed, defaultOpen, open, onToggle, resizable = false,
                         fullHeight = true, enabled = true, highlight = true }) {
 
     const classes = useStyles()
@@ -88,11 +91,11 @@ function Expandable({ title, children, greyed, defaultOpen, open, onToggle, resi
     const headerBar = useMemo(() => (
         <ListItem
             dense
+            button
+            onClick={toggle}
             className={classes.header}
-            button={!!setOpenState}
-            onClick={!!setOpenState ? toggle : null}
         >
-            <Grid container alignItems="baseline" justify="space-between">
+            <Grid container alignItems="center" justify="space-between">
                 <Grid item>
                     <Typography
                         variant="body2"
@@ -102,7 +105,13 @@ function Expandable({ title, children, greyed, defaultOpen, open, onToggle, resi
                     </Typography>
                 </Grid>
 
-                {!!setOpenState && (
+                {summary && (
+                    <Grid item>
+                        {summary}
+                    </Grid>
+                )}
+
+                {typeof open === 'undefined' && (
                     <Grid item>
                         <IconButton
                             size="small"
@@ -119,7 +128,7 @@ function Expandable({ title, children, greyed, defaultOpen, open, onToggle, resi
                 )}
             </Grid>
         </ListItem>
-    ), [title, greyed, defaultOpen, highlight, openState])
+    ), [title, greyed, defaultOpen, highlight, openState, summary])
 
     if (!enabled) {
         return null

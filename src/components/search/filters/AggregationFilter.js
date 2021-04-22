@@ -32,6 +32,9 @@ const useStyles = makeStyles(theme => ({
     italic: {
         fontStyle: 'italic',
     },
+    empty: {
+        color: theme.palette.grey[500]
+    },
     subLabel: {
         fontSize: '8.5pt',
     },
@@ -165,7 +168,7 @@ function AggregationFilter({ field, queryFilter, aggregations, missing, loading,
 
                 <ListItemText
                     primary="N/A"
-                    className={cn(classes.label, classes.italic)}
+                    className={cn(classes.label, classes.italic, classes.empty)}
                     secondaryTypographyProps={{
                         className: classes.subLabel
                     }}
@@ -173,7 +176,7 @@ function AggregationFilter({ field, queryFilter, aggregations, missing, loading,
 
                 <ListItemText
                     primary={
-                        <Typography variant="caption">
+                        <Typography variant="caption" className={classes.empty}>
                             {formatThousands(missing?.values.doc_count)}
                         </Typography>
                     }

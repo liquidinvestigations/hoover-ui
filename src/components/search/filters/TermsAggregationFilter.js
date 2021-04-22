@@ -1,7 +1,9 @@
 import React, { memo } from 'react'
 import isEqual from 'react-fast-compare'
+import { Typography } from '@material-ui/core'
 import Expandable from '../../Expandable'
 import AggregationFilter from './AggregationFilter'
+import { formatThousands } from '../../../utils'
 
 function TermsAggregationFilter({ title, open, onToggle, queryFilter, aggregations, emptyDisabled = false, ...rest }) {
 
@@ -18,6 +20,13 @@ function TermsAggregationFilter({ title, open, onToggle, queryFilter, aggregatio
             open={open}
             onToggle={onToggle}
             resizable={false}
+            summary={
+                <Typography variant="caption" display="block" style={{ lineHeight: 1.4 }}>
+                    {formatThousands(aggregations?.values.buckets.reduce((acc, { doc_count }) => acc + parseInt(doc_count), 0))} hits
+                    {', '}
+                    {aggregations?.values.buckets.length} buckets
+                </Typography>
+            }
         >
             <AggregationFilter
                 queryFilter={queryFilter}
