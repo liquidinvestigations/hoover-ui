@@ -5,7 +5,7 @@ import Expandable from '../../Expandable'
 import IntervalSelect from './IntervalSelect'
 import DateRangeFilter from './DateRangeFilter'
 import AggregationFilter from './AggregationFilter'
-import { DEFAULT_INTERVAL } from '../../../constants/general'
+import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL } from '../../../constants/general'
 import { formatThousands, getClosestInterval } from '../../../utils'
 
 export const formatsLabel = {
@@ -24,7 +24,7 @@ export const formatsValue = {
     hour: "yyyy-MM-dd'T'HH",
 }
 
-function DateHistogramFilter({ title, open, onToggle, field, queryFilter, aggregations, missing, loading, onChange }) {
+function DateHistogramFilter({ title, open, onToggle, field, queryFilter, queryFacets, aggregations, missing, loading, onChange }) {
     const interval = queryFilter?.interval || DEFAULT_INTERVAL
 
     const onRangeChange = useCallback(range => {
@@ -71,9 +71,11 @@ function DateHistogramFilter({ title, open, onToggle, field, queryFilter, aggreg
             onToggle={onToggle}
             resizable={false}
             summary={
-                <Typography variant="caption" display="block" style={{ lineHeight: 1.4 }}>
+                <Typography variant="caption" display="block">
+                    {aggregations?.values.buckets.length >= DEFAULT_FACET_SIZE && '> '}
                     {formatThousands(aggregations?.values.buckets.reduce((acc, { doc_count }) => acc + parseInt(doc_count), 0))} hits
                     {', '}
+                    {aggregations?.values.buckets.length >= DEFAULT_FACET_SIZE && '> '}
                     {aggregations?.values.buckets.length} buckets
                 </Typography>
             }
@@ -92,6 +94,7 @@ function DateHistogramFilter({ title, open, onToggle, field, queryFilter, aggreg
             <AggregationFilter
                 field={field}
                 queryFilter={queryFilter?.intervals}
+                queryFacets={queryFacets}
                 aggregations={aggregations}
                 missing={missing}
                 loading={loading}
