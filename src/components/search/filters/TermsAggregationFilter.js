@@ -5,7 +5,7 @@ import Expandable from '../../Expandable'
 import AggregationFilter from './AggregationFilter'
 import { formatThousands } from '../../../utils'
 
-function TermsAggregationFilter({ title, open, onToggle, queryFilter, aggregations, emptyDisabled = false, ...rest }) {
+function TermsAggregationFilter({ title, open, onToggle, queryFilter, queryFacets, aggregations, emptyDisabled = false, ...rest }) {
 
     const enabled = !emptyDisabled || !!aggregations?.values.buckets.length
 
@@ -21,15 +21,18 @@ function TermsAggregationFilter({ title, open, onToggle, queryFilter, aggregatio
             onToggle={onToggle}
             resizable={false}
             summary={
-                <Typography variant="caption" display="block" style={{ lineHeight: 1.4 }}>
+                <Typography variant="caption" display="block">
+                    {aggregations?.count.value > aggregations?.values.buckets.length && '> '}
                     {formatThousands(aggregations?.values.buckets.reduce((acc, { doc_count }) => acc + parseInt(doc_count), 0))} hits
                     {', '}
+                    {aggregations?.count.value > aggregations?.values.buckets.length && '> '}
                     {aggregations?.values.buckets.length} buckets
                 </Typography>
             }
         >
             <AggregationFilter
                 queryFilter={queryFilter}
+                queryFacets={queryFacets}
                 aggregations={aggregations}
                 triState
                 {...rest}

@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function AggregationFilter({ field, queryFilter, aggregations, missing, loading, onChange,
+function AggregationFilter({ field, queryFilter, queryFacets, aggregations, missing, loading, onChange,
                                triState, bucketLabel, bucketSubLabel, bucketValue }) {
 
     const classes = useStyles()
@@ -144,7 +144,8 @@ function AggregationFilter({ field, queryFilter, aggregations, missing, loading,
     const disableReset = loading || (
         !queryFilter?.include?.length &&
         !queryFilter?.exclude?.length &&
-        !queryFilter?.missing
+        !queryFilter?.missing &&
+        !queryFacets
     )
 
     return (

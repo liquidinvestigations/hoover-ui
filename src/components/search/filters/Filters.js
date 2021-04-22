@@ -114,6 +114,7 @@ function Filters({ categories, drawerOpenCategory, onDrawerOpen, expandedFilters
                             title={filterLabel}
                             field={field}
                             queryFilter={query.filters?.[field]}
+                            queryFacets={query.facets?.[field]}
                             aggregations={aggregations[field]}
                             missing={aggregations[`${field}-missing`]}
                             open={expandedFilters[category] === field}
