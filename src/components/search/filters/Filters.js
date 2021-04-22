@@ -3,7 +3,7 @@ import Loading from '../../Loading'
 import DateHistogramFilter from './DateHistogramFilter'
 import TermsAggregationFilter from './TermsAggregationFilter'
 import { useSearch } from '../SearchProvider'
-import { getLanguageName } from '../../../utils'
+import { formatThousands, getLanguageName } from '../../../utils'
 import { aggregationFields } from '../../../constants/aggregationFields'
 import { Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
@@ -117,7 +117,7 @@ function Filters({ categories, drawerOpenCategory, onDrawerOpen, expandedFilters
                             aggregations={aggregations[field]}
                             missing={aggregations[`${field}-missing`]}
                             open={expandedFilters[category] === field}
-                            onToggle={filters.length > 1 ? onToggle : null}
+                            onToggle={filters.length > 1 && expandedFilters[category] !== field ? onToggle : null}
                             {...filterTypeProps}
                             {...filterProps}
                         />
