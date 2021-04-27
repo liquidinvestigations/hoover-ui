@@ -23,7 +23,7 @@ import TagTooltip from './TagTooltip'
 import { useUser } from '../UserProvider'
 import { useDocument } from './DocumentProvider'
 import { specialTags, specialTagsList } from '../../constants/specialTags'
-import { tagsAggregations as tagsAggregationsAPI } from '../../api'
+import { search as searchAPI } from '../../api'
 
 const forbiddenCharsRegex = /[^a-z0-9_!@#$%^&*()-=+:,./?]/gi
 
@@ -96,15 +96,31 @@ function Tags({ toolbarButtons }) {
         if (!tagsAggregations) {
             setTagsAggregationsLoading(true)
 
-            tagsAggregationsAPI({ collections: collections.map(c => c.name) }).then(results => {
+            searchAPI({
+                type: 'aggregations',
+                fieldList: ['tags', 'priv-tags'],
+                collections: collections.map(c => c.name),
+            }).then(results => {
                 setTagsAggregations(results.aggregations)
-            }).catch(() => {
-                setTagsAggregations(null)
-            }).finally(() => {
                 setTagsAggregationsLoading(false)
+            }).catch(error => {
+                if (error.name !== 'AbortError') {
+                    setTagsAggregations(null)
+                    setTagsAggregationsLoading(false)
+                }
             })
         }
     }
+
+    useEffect(() => {
+        return () => {
+            searchAPI({
+                type: 'aggregations',
+                fieldList: ['tags', 'priv-tags'],
+                cancel: true
+            }).catch(() => {})
+        }
+    }, [])
 
     const [inputValue, setInputValue] = useState('')
     const [newTagVisibility, setNewTagVisibility] = useState('public')

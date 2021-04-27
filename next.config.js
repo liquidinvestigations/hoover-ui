@@ -3,7 +3,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const withTM = require('next-transpile-modules')(['pdfjs-dist'])
 const withPlugins = require('next-compose-plugins')
 
-const { API_URL, REWRITE_API } = process.env
+const API_URL = process.env.API_URL
+const REWRITE_API = process.env.REWRITE_API
 
 module.exports = withPlugins([ withTM ],
     {

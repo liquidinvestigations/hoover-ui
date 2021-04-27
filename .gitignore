@@ -4,6 +4,5 @@
 /node_modules
 /.node-version
 /.npmrc
-/.env
 /.coverage
 /.env.local

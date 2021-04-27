@@ -5,7 +5,7 @@ import fixLegacyQuery from '../../fixLegacyQuery'
 import { getPreviewParams } from '../../utils'
 import { useHashState } from '../HashStateProvider'
 import { buildSearchQuerystring, rollupParams, unwindParams } from '../../queryUtils'
-import { aggregations as aggregationsAPI, search as searchAPI } from '../../api'
+import { search as searchAPI } from '../../api'
 
 const SearchContext = createContext({})
 
@@ -54,8 +54,13 @@ export function SearchProvider({ children, serverQuery }) {
             setError(null)
             setResultsLoading(true)
 
-            searchAPI(query).then(results => {
+            searchAPI({
+                type: 'results',
+                fieldList: '*',
+                ...query,
+            }).then(results => {
                 setResults(results)
+                setResultsLoading(false)
                 setCollectionsCount(results.count_by_index)
 
                 if (previewOnLoad === 'first') {
@@ -68,10 +73,11 @@ export function SearchProvider({ children, serverQuery }) {
                         tab: undefined, subTab: undefined, previewPage: undefined })
                 }
             }).catch(error => {
-                setResults(null)
-                setError(error.message)
-            }).finally(() => {
-                setResultsLoading(false)
+                if (error.name !== 'AbortError') {
+                    setResults(null)
+                    setError(error.message)
+                    setResultsLoading(false)
+                }
             })
         } else {
             setResults(null)
@@ -102,14 +108,20 @@ export function SearchProvider({ children, serverQuery }) {
             setAggregationsError(null)
             setAggregationsLoading(true)
 
-            aggregationsAPI(query).then(results => {
+            searchAPI({
+                type: 'aggregations',
+                fieldList: '*',
+                ...query,
+            }).then(results => {
                 setAggregations(results.aggregations)
                 setCollectionsCount(results.count_by_index)
-            }).catch(error => {
-                setAggregations(null)
-                setAggregationsError(error.message)
-            }).finally(() => {
                 setAggregationsLoading(false)
+            }).catch(error => {
+                if (error.name !== 'AbortError') {
+                    setAggregations(null)
+                    setAggregationsError(error.message)
+                    setAggregationsLoading(false)
+                }
             })
         } else {
             setAggregations(null)

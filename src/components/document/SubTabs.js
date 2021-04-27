@@ -84,9 +84,9 @@ function SubTabs() {
                 {tabs.map(({tag}, index) => {
                     if (subTab === index && hasPreview){
                         if (index !== 0 && data.content['content-type'] === 'application/pdf') {
-                            return <PDFViewer url={createOcrUrl(digestUrl, tag)}/>
+                            return <PDFViewer key={index} url={createOcrUrl(digestUrl, tag)} />
                         } else {
-                            return <Preview/>
+                            return <Preview key={index} />
                         }
                     }
                 })}
