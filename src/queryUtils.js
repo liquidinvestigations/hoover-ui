@@ -6,11 +6,6 @@ import { aggregationFields } from './constants/aggregationFields'
 export const defaultSearchParams = {
     page: 1,
     size: 10,
-    filters: {
-        tags: {
-            exclude: ['trash']
-        }
-    }
 }
 
 const PARAMS_MAP = {
