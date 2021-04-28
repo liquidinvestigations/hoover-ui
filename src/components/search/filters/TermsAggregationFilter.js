@@ -5,7 +5,7 @@ import Expandable from '../../Expandable'
 import AggregationFilter from './AggregationFilter'
 import { formatThousands } from '../../../utils'
 
-function TermsAggregationFilter({ title, open, onToggle, queryFilter, queryFacets, aggregations, emptyDisabled = false, ...rest }) {
+function TermsAggregationFilter({ title, loading, open, onToggle, queryFilter, queryFacets, aggregations, emptyDisabled = false, ...rest }) {
 
     const enabled = !emptyDisabled || !!aggregations?.values.buckets.length
 
@@ -14,6 +14,7 @@ function TermsAggregationFilter({ title, open, onToggle, queryFilter, queryFacet
     return (
         <Expandable
             title={title}
+            loading={loading}
             highlight={highlight}
             greyed={!aggregations?.values.buckets.length}
             enabled={enabled}
@@ -34,6 +35,7 @@ function TermsAggregationFilter({ title, open, onToggle, queryFilter, queryFacet
                 queryFilter={queryFilter}
                 queryFacets={queryFacets}
                 aggregations={aggregations}
+                loading={loading}
                 triState
                 {...rest}
             />

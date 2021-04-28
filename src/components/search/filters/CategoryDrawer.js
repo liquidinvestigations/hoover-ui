@@ -88,6 +88,7 @@ export default function CategoryDrawer({ title, icon, children, open, onOpen, en
                 <Grid item className={classes.label}>
                     <Typography
                         variant="body2"
+                        component="div"
                         className={cn(classes.title, { [classes.bold]: open })}
                         color={greyed ? 'textSecondary' : highlight ? 'secondary' : 'initial'}
                     >

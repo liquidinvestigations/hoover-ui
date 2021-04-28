@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function MoreButton ({ field }) {
     const classes = useStyles()
-    const { aggregations, aggregationsLoading, resultsLoading, query, search } = useSearch()
+    const { aggregations, aggregationsLoading, query, search } = useSearch()
 
     const pageParam = parseInt(query.facets?.[field])
     const page = isNaN(pageParam) ? 1 : pageParam
@@ -26,19 +26,17 @@ export default function MoreButton ({ field }) {
     const cardinality = aggregations?.[field]?.count
     const hasMore = cardinality?.value > page * DEFAULT_FACET_SIZE
 
-    const loading = aggregationsLoading || resultsLoading
-
     return hasMore && (
         <>
             <Button
                 size="small"
-                disabled={loading}
+                disabled={aggregationsLoading[field]}
                 variant="text"
                 onClick={handleLoadMore}>
                 More ({cardinality.value - page * DEFAULT_FACET_SIZE})
             </Button>
 
-            {loading && (
+            {aggregationsLoading[field] && (
                 <CircularProgress
                     size={18}
                     thickness={5}

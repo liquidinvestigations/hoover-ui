@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import cn from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
-import { Collapse, Grid, IconButton, ListItem, Typography } from '@material-ui/core'
+import { CircularProgress, Collapse, Grid, IconButton, ListItem, Typography } from '@material-ui/core'
 import { ExpandMore } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
@@ -30,6 +30,10 @@ const useStyles = makeStyles(theme => ({
             backgroundColor: theme.palette.grey[200],
         }
     },
+    loading: {
+        verticalAlign: 'middle',
+        marginLeft: theme.spacing(1),
+    },
     content: {
         maxHeight: 435,
         overflow: 'auto',
@@ -46,7 +50,7 @@ const useStyles = makeStyles(theme => ({
 
 let startY, startHeight
 
-function Expandable({ title, summary, children, greyed, defaultOpen, open, onToggle, resizable = false,
+function Expandable({ title, loading, summary, children, greyed, defaultOpen, open, onToggle, resizable = false,
                         fullHeight = true, enabled = true, highlight = true }) {
 
     const classes = useStyles()
@@ -99,9 +103,18 @@ function Expandable({ title, summary, children, greyed, defaultOpen, open, onTog
                 <Grid item>
                     <Typography
                         variant="body2"
+                        component="div"
                         className={classes.title}
-                        color={greyed ? 'textSecondary' : highlight ? 'secondary' : 'initial'}>
+                        color={greyed ? 'textSecondary' : highlight ? 'secondary' : 'initial'}
+                    >
                         {title}
+                        {loading && (
+                            <CircularProgress
+                                size={16}
+                                thickness={4}
+                                className={classes.loading}
+                            />
+                        )}
                     </Typography>
                 </Grid>
 

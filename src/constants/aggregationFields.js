@@ -75,6 +75,20 @@ export const aggregationFields = {
         type: 'term-or',
         hideEmpty: true,
     },
+    attachments: {
+        category: 'email',
+        categoryLabel: 'Email',
+        filterLabel: 'Has Attachments',
+        chipLabel: 'Has Attachments',
+        type: 'term-or',
+    },
+    pgp: {
+        category: 'email',
+        categoryLabel: 'Email',
+        filterLabel: 'PGP Encrypted',
+        chipLabel: 'PGP Encrypted',
+        type: 'term-or',
+    },
     'path-parts': {
         category: 'location',
         categoryLabel: 'Location',
@@ -182,18 +196,4 @@ export const aggregationFields = {
         chipLabel: 'OCRed',
         type: 'term-or',
     },
-    attachments: {
-        category: 'email',
-        categoryLabel: 'Email',
-        filterLabel: 'Has Attachments',
-        chipLabel: 'Has Attachments',
-        type: 'term-or',
-    },
-    pgp: {
-        category: 'email',
-        categoryLabel: 'Email',
-        filterLabel: 'PGP Encrypted',
-        chipLabel: 'PGP Encrypted',
-        type: 'term-or',
-    }
 }

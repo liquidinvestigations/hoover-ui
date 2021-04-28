@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
 
 function Histogram({ title, field }) {
     const classes = useStyles()
-    const { aggregations, query, search, aggregationsLoading, resultsLoading } = useSearch()
+    const { aggregations, query, search, aggregationsLoading } = useSearch()
 
     const { hashState, setHashState } = useHashState()
     const [open, setOpen] = useState(false)
@@ -148,7 +148,6 @@ function Histogram({ title, field }) {
     const interval = query.filters?.[field]?.interval || DEFAULT_INTERVAL
     const selected = query.filters?.[field]?.intervals?.include
     const axisHeight = interval === 'year' ? 20 : 40
-    const loading = aggregationsLoading || resultsLoading
 
     const formatLabel = value => DateTime
         .fromISO(value, { setZone: true })
@@ -222,7 +221,7 @@ function Histogram({ title, field }) {
 
             <Collapse in={open}>
                 <div className={classes.chartBox}>
-                    {loading ? <Loading /> : (
+                    {aggregationsLoading[field] ? <Loading /> : (
                         <HistogramChart
                             width={chartWidth}
                             height={chartHeight}

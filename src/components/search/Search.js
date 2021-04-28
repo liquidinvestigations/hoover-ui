@@ -61,7 +61,7 @@ const useStyles = makeStyles(theme => ({
         }),
     },
     filters: {
-        width: 200,
+        width: 210,
         borderRight: '1px solid rgba(0, 0, 0, 0.2)',
     },
     expanded: {

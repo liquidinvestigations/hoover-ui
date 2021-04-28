@@ -1,6 +1,7 @@
 import AbortController from 'abort-controller'
 
 const ongoingRequests = {}
+const retryCount = {}
 
 export const search = async params => {
     const { type, fieldList, cancel } = params
@@ -19,7 +20,9 @@ export const search = async params => {
     const signal = controller.signal
     ongoingRequests[requestKey] = controller
 
-    const res = await fetch('/api/search', {
+    retryCount[requestKey] = 0
+
+    const makeRequest = async () => await fetch('/api/search', {
         signal,
         method: 'POST',
         body: JSON.stringify(params),
@@ -29,6 +32,16 @@ export const search = async params => {
             Accept: 'application/json',
         },
     })
+
+    let res = await makeRequest()
+
+    while (!res.ok && retryCount[requestKey] < process.env.MAX_SEARCH_RETRIES) {
+        retryCount[requestKey] += 1
+        res = await makeRequest()
+    }
+
+    delete ongoingRequests[requestKey]
+    delete retryCount[requestKey]
 
     if (res.ok) {
         return res.json()

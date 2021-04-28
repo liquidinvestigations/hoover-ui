@@ -1,11 +1,9 @@
-import React, { memo, useCallback, useMemo } from 'react'
-import Loading from '../../Loading'
+import React, { memo, useCallback } from 'react'
 import DateHistogramFilter from './DateHistogramFilter'
 import TermsAggregationFilter from './TermsAggregationFilter'
 import { useSearch } from '../SearchProvider'
-import { formatThousands, getLanguageName } from '../../../utils'
-import { aggregationFields } from '../../../constants/aggregationFields'
-import { Typography } from '@material-ui/core'
+import { getLanguageName } from '../../../utils'
+import { CircularProgress, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import CategoryDrawer from './CategoryDrawer'
 
@@ -13,13 +11,17 @@ const useStyles = makeStyles(theme => ({
     error: {
         padding: theme.spacing(2),
     },
+    loading: {
+        verticalAlign: 'middle',
+        marginLeft: theme.spacing(1),
+    },
 }))
 
 const formatLang = bucket => getLanguageName(bucket.key)
 
 function Filters({ categories, drawerOpenCategory, onDrawerOpen, expandedFilters, onFilterExpand }) {
     const classes = useStyles()
-    const { query, search, aggregations, aggregationsError, resultsLoading, aggregationsLoading } = useSearch()
+    const { query, search, aggregations, aggregationsError, aggregationsLoading } = useSearch()
 
     const triggerSearch = params => {
         search({ ...params, page: 1 })
@@ -36,21 +38,8 @@ function Filters({ categories, drawerOpenCategory, onDrawerOpen, expandedFilters
         }
     }, [query])
 
-    const filterProps = {
-        loading: aggregationsLoading || resultsLoading,
-        onChange: handleChange,
-    }
-
     if (aggregationsError) {
         return <Typography color="error" className={classes.error}>{aggregationsError}</Typography>
-    }
-
-    if (!aggregations && aggregationsLoading) {
-        return <Loading />
-    }
-
-    if (!aggregations) {
-        return null
     }
 
     return Object.entries(categories).map(([category, { label, icon, filters }]) => {
@@ -62,13 +51,26 @@ function Filters({ categories, drawerOpenCategory, onDrawerOpen, expandedFilters
         })
 
         const greyed = filters.every(({ field }) => {
-            return aggregations[field].values.buckets.length === 0
+            return aggregations?.[field]?.values?.buckets?.length === 0
         })
+
+        const loading = filters.some(({ field }) => aggregationsLoading[field])
 
         return (
             <CategoryDrawer
                 key={category}
-                title={label}
+                title={
+                    <>
+                        {label}
+                        {loading && (
+                            <CircularProgress
+                                size={16}
+                                thickness={4}
+                                className={classes.loading}
+                            />
+                        )}
+                    </>
+                }
                 icon={icon}
                 greyed={greyed}
                 highlight={highlight}
@@ -115,12 +117,13 @@ function Filters({ categories, drawerOpenCategory, onDrawerOpen, expandedFilters
                             field={field}
                             queryFilter={query.filters?.[field]}
                             queryFacets={query.facets?.[field]}
-                            aggregations={aggregations[field]}
-                            missing={aggregations[`${field}-missing`]}
+                            aggregations={aggregations?.[field]}
+                            missing={aggregations?.[`${field}-missing`]}
                             open={expandedFilters[category] === field}
                             onToggle={filters.length > 1 && expandedFilters[category] !== field ? onToggle : null}
+                            loading={aggregationsLoading[field]}
+                            onChange={handleChange}
                             {...filterTypeProps}
-                            {...filterProps}
                         />
                     )
                 })}

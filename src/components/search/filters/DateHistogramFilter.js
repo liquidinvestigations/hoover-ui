@@ -65,6 +65,7 @@ function DateHistogramFilter({ title, open, onToggle, field, queryFilter, queryF
     return (
         <Expandable
             title={title}
+            loading={loading}
             highlight={!!(queryFilter?.from || queryFilter?.to || queryFilter?.intervals)}
             greyed={!aggregations?.values.buckets.length}
             open={open}
