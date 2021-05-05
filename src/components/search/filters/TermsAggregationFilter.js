@@ -5,7 +5,7 @@ import Expandable from '../../Expandable'
 import AggregationFilter from './AggregationFilter'
 import { formatThousands } from '../../../utils'
 
-function TermsAggregationFilter({ title, loading, open, onToggle, queryFilter, queryFacets, aggregations, emptyDisabled = false, ...rest }) {
+function TermsAggregationFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations, loading, ...rest }) {
 
     const highlight = !!(queryFilter?.include?.length || queryFilter?.exclude?.length || queryFilter?.missing)
 
@@ -30,6 +30,7 @@ function TermsAggregationFilter({ title, loading, open, onToggle, queryFilter, q
             }
         >
             <AggregationFilter
+                field={field}
                 queryFilter={queryFilter}
                 queryFacets={queryFacets}
                 aggregations={aggregations}

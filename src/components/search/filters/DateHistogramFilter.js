@@ -24,7 +24,7 @@ export const formatsValue = {
     hour: "yyyy-MM-dd'T'HH",
 }
 
-function DateHistogramFilter({ title, open, onToggle, field, queryFilter, queryFacets, aggregations, missing, loading, onChange }) {
+function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations, missing, loading, onChange }) {
     const interval = queryFilter?.interval || DEFAULT_INTERVAL
 
     const onRangeChange = useCallback(range => {
