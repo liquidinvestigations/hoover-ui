@@ -177,9 +177,11 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, miss
 
                 <ListItemText
                     primary={
-                        <Typography variant="caption" className={classes.empty}>
-                            {formatThousands(missing?.values.doc_count)}
-                        </Typography>
+                        !!missing?.values.doc_count && (
+                            <Typography variant="caption" className={classes.empty}>
+                                {formatThousands(missing?.values.doc_count)}
+                            </Typography>
+                        )
                     }
                     disableTypography
                     align="right"

@@ -1,12 +1,47 @@
-export const fetchJson = async (url, opts = {}) => {
-    const res = await fetch(url, {
-        ...opts,
+import AbortController from 'abort-controller'
+
+const ongoingRequests = {}
+const retryCount = {}
+
+export const search = async params => {
+    const { type, fieldList, cancel } = params
+    const requestKey = `${type}-${Array.isArray(fieldList) ? fieldList.join('-') : fieldList}`
+
+    if (ongoingRequests[requestKey]) {
+        ongoingRequests[requestKey].abort()
+        delete ongoingRequests[requestKey]
+
+        if (cancel) {
+            throw { name: 'AbortError' }
+        }
+    }
+
+    const controller = new AbortController()
+    const signal = controller.signal
+    ongoingRequests[requestKey] = controller
+
+    retryCount[requestKey] = 0
+
+    const makeRequest = async () => await fetch('/api/search', {
+        signal,
+        method: 'POST',
+        body: JSON.stringify(params),
         credentials: 'same-origin',
         headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json',
         },
     })
+
+    let res = await makeRequest()
+
+    while (!res.ok && retryCount[requestKey] < process.env.MAX_SEARCH_RETRIES) {
+        retryCount[requestKey] += 1
+        res = await makeRequest()
+    }
+
+    delete ongoingRequests[requestKey]
+    delete retryCount[requestKey]
 
     if (res.ok) {
         return res.json()
@@ -17,18 +52,3 @@ export const fetchJson = async (url, opts = {}) => {
         throw { message }
     }
 }
-
-export const search = params => fetchJson('/api/search', {
-    method: 'POST',
-    body: JSON.stringify(params),
-})
-
-export const aggregations = params => fetchJson('/api/aggregations', {
-    method: 'POST',
-    body: JSON.stringify(params),
-})
-
-export const tagsAggregations = params => fetchJson('/api/tagsAggregations', {
-    method: 'POST',
-    body: JSON.stringify(params),
-})

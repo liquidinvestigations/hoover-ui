@@ -1,17 +1,19 @@
 import { search, searchFields, whoami } from './api'
 import getAuthorizationHeaders from './getAuthorizationHeaders'
 
-const handler = type => async (req, res) => {
+const handler = async (req, res) => {
     if (req.method !== 'POST') {
         res.status(405)
         res.end()
+        return
     }
 
     try {
         const headers = getAuthorizationHeaders(req)
         const whoAmI = await whoami(headers)
         const fields = await searchFields(headers)
-        const response = await search(headers, req.body, type, fields.fields, whoAmI.uuid)
+        const { type, fieldList, ...params } = req.body
+        const response = await search(headers, params, type, fieldList, fields.fields, whoAmI.uuid)
         res.json(response)
         res.end()
 

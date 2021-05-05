@@ -333,6 +333,11 @@ const buildAggs = fields => fields.reduce((result, field) => ({
     },
 }), {})
 
+const getAggregationFields = (type, fieldList) => Object.entries(aggregationFields)
+    .filter(([,field]) => field.type.startsWith(type))
+    .map(([key]) => key)
+    .filter(field => fieldList === '*' || (Array.isArray(fieldList) && fieldList.includes(field)))
+
 const buildSearchQuery = (
     {
         q = '*',
@@ -343,7 +348,8 @@ const buildSearchQuery = (
         facets = {},
         filters = {},
     } = {},
-    type,
+    type = 'results',
+    fieldList = '*',
     searchFields,
     uuid
 ) => {
@@ -351,28 +357,18 @@ const buildSearchQuery = (
     const query = buildQuery(q, filters, searchFields)
     const sort = buildSortQuery(order)
 
-    const dateFields = Object.entries(aggregationFields)
-        .filter(([,field]) => field.type === 'date')
-        .map(([key]) => key)
+    const dateFields = getAggregationFields('date', fieldList)
+    const termFields = getAggregationFields('term', fieldList)
+    const rangeFields = getAggregationFields('range', fieldList)
 
-    const termFields = Object.entries(aggregationFields)
-        .filter(([,field]) => field.type.startsWith('term'))
-        .map(([key]) => key)
-
-    const rangeFields = Object.entries(aggregationFields)
-        .filter(([,field]) => field.type.startsWith('range'))
-        .map(([key]) => key)
-
-    const fields = type === 'tagsAggregations' ?
-        ['tags', 'priv-tags'].map(field => buildTermsField(field, uuid)) :
-        [
-            ...dateFields.map(field => buildHistogramField(field, uuid, filters[field], facets[field])),
-            ...dateFields.map(field => buildMissingField(field, uuid)),
-            ...termFields.map(field => buildTermsField(field, uuid, filters[field], facets[field])),
-            ...termFields.map(field => buildMissingField(field, uuid)),
-            ...rangeFields.map(field => buildRangeField(field, uuid, filters[field], facets[field])),
-            ...rangeFields.map(field => buildMissingField(field, uuid)),
-        ]
+    const fields = [
+        ...dateFields.map(field => buildHistogramField(field, uuid, filters[field], facets[field])),
+        ...dateFields.map(field => buildMissingField(field, uuid)),
+        ...termFields.map(field => buildTermsField(field, uuid, filters[field], facets[field])),
+        ...termFields.map(field => buildMissingField(field, uuid)),
+        ...rangeFields.map(field => buildRangeField(field, uuid, filters[field], facets[field])),
+        ...rangeFields.map(field => buildMissingField(field, uuid)),
+    ]
 
     const postFilter = buildFilter(fields)
     const aggs = buildAggs(fields)

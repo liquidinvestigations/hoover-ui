@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Pagination({ field }) {
     const classes = useStyles()
-    const { aggregations, aggregationsLoading, resultsLoading, query, search } = useSearch()
+    const { aggregations, aggregationsLoading, query, search } = useSearch()
 
     const handlePagination = newPage => {
         const { [field]: prevFacet, ...restFacets } = query.facets || {}
@@ -34,26 +34,24 @@ export default function Pagination({ field }) {
     const hasNext = aggregations?.[field]?.values.buckets.length >= DEFAULT_FACET_SIZE
     const hasPrev = page > 1
 
-    const loading = aggregationsLoading || resultsLoading
-
     return (hasPrev || hasNext) && (
         <>
             <IconButton
                 size="small"
                 tabIndex="-1"
                 onClick={handlePrev}
-                disabled={loading || !hasPrev}>
+                disabled={aggregationsLoading[field] || !hasPrev}>
                 <NavigateBefore/>
             </IconButton>
 
             <IconButton
                 size="small"
                 onClick={handleNext}
-                disabled={loading || !hasNext}>
+                disabled={aggregationsLoading[field] || !hasNext}>
                 <NavigateNext/>
             </IconButton>
 
-            {loading && (
+            {aggregationsLoading[field] && (
                 <CircularProgress
                     size={18}
                     thickness={5}

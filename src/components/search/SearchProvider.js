@@ -1,13 +1,16 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import qs from 'qs'
 import fixLegacyQuery from '../../fixLegacyQuery'
 import { getPreviewParams } from '../../utils'
 import { useHashState } from '../HashStateProvider'
 import { buildSearchQuerystring, rollupParams, unwindParams } from '../../queryUtils'
-import { aggregations as aggregationsAPI, search as searchAPI } from '../../api'
+import { aggregationFields } from '../../constants/aggregationFields'
+import { search as searchAPI } from '../../api'
 
 const SearchContext = createContext({})
+
+const maxAggregationsBatchSize = Math.ceil(Object.entries(aggregationFields).length / process.env.AGGREGATIONS_SPLIT)
 
 export function SearchProvider({ children, serverQuery }) {
     const router = useRouter()
@@ -54,8 +57,13 @@ export function SearchProvider({ children, serverQuery }) {
             setError(null)
             setResultsLoading(true)
 
-            searchAPI(query).then(results => {
+            searchAPI({
+                type: 'results',
+                fieldList: '*',
+                ...query,
+            }).then(results => {
                 setResults(results)
+                setResultsLoading(false)
                 setCollectionsCount(results.count_by_index)
 
                 if (previewOnLoad === 'first') {
@@ -68,10 +76,11 @@ export function SearchProvider({ children, serverQuery }) {
                         tab: undefined, subTab: undefined, previewPage: undefined })
                 }
             }).catch(error => {
-                setResults(null)
-                setError(error.message)
-            }).finally(() => {
-                setResultsLoading(false)
+                if (error.name !== 'AbortError') {
+                    setResults(null)
+                    setError(error.message)
+                    setResultsLoading(false)
+                }
             })
         } else {
             setResults(null)
@@ -94,26 +103,119 @@ export function SearchProvider({ children, serverQuery }) {
         }
     })])
 
+    const aggregationGroups = Object.entries(aggregationFields)
+        .reduce((acc, [key]) => {
+            if (acc?.[acc.length - 1]?.fieldList?.length < maxAggregationsBatchSize) {
+                acc[acc.length - 1].fieldList.push(key)
+            } else {
+                acc.push({ fieldList: [key] })
+            }
+            return acc
+        }, [])
+
+    async function* asyncSearchGenerator() {
+        let i = 0
+        while (i < aggregationGroups.length) {
+            try {
+                yield searchAPI({
+                    type: 'aggregations',
+                    fieldList: aggregationGroups[i].fieldList,
+                    ...query,
+                })
+            } catch (error) {
+                if (error.name !== 'AbortError') {
+                    setAggregations(null)
+                    setAggregationsError(error.message)
+                    setAggregationsLoading(
+                        Object.entries(aggregationFields).reduce((acc, [field]) => {
+                            acc[field] = false
+                            return acc
+                        }, {})
+                    )
+                }
+            }
+            i++
+        }
+    }
+
     const [aggregations, setAggregations] = useState()
     const [aggregationsError, setAggregationsError] = useState()
-    const [aggregationsLoading, setAggregationsLoading] = useState(!!query.collections?.length)
-    useEffect(() => {
+    const [aggregationsLoading, setAggregationsLoading] = useState(
+        Object.entries(aggregationFields).reduce((acc, [field]) => {
+            acc[field] = !!query.collections?.length
+            return acc
+        }, {})
+    )
+
+    useEffect(async () => {
         if (query.collections?.length) {
             setAggregationsError(null)
-            setAggregationsLoading(true)
+            setAggregationsLoading(
+                Object.entries(aggregationFields).reduce((acc, [field]) => {
+                    acc[field] = true
+                    return acc
+                }, {})
+            )
 
-            aggregationsAPI(query).then(results => {
-                setAggregations(results.aggregations)
+            let i = 0
+            for await (let results of asyncSearchGenerator()) {
+                setAggregations(aggregations => ({ ...(aggregations || {}), ...results.aggregations }))
                 setCollectionsCount(results.count_by_index)
-            }).catch(error => {
-                setAggregations(null)
-                setAggregationsError(error.message)
-            }).finally(() => {
-                setAggregationsLoading(false)
-            })
+                setAggregationsLoading(loading => ({
+                    ...loading,
+                    ...aggregationGroups[i++].fieldList.reduce((acc, field) => {
+                        acc[field] = false
+                        return acc
+                    }, {}),
+                }))
+            }
+
         } else {
             setAggregations(null)
         }
+    }, [JSON.stringify({
+        ...query,
+        facets: null,
+        page: null,
+        size: null,
+        order: null,
+    })])
+
+    const prevQueryRef = useRef()
+    useEffect(() => {
+        const { facets, page, size, order, ...queryRest } = query
+        const { facets: prevFacets, page: prevPage, size: prevSize, order: prevOrder, ...prevQueryRest } = prevQueryRef.current || {}
+
+        if (JSON.stringify(queryRest) === JSON.stringify(prevQueryRest)) {
+            const loading = state => Object.entries({
+                ...(facets || {}),
+                ...(prevFacets || {}),
+            }).reduce((acc, [field]) => {
+                if (JSON.stringify(facets?.[field]) !== JSON.stringify(prevFacets?.[field])) {
+                    acc[field] = state
+                }
+                return acc
+            }, {})
+
+            setAggregationsError(null)
+            setAggregationsLoading(loading(true))
+
+            searchAPI({
+                type: 'aggregations',
+                fieldList: Object.entries(loading(true)).map(([key]) => key),
+                ...query,
+            }).then(results => {
+                setAggregations(aggregations => ({...(aggregations || {}), ...results.aggregations}))
+                setAggregationsLoading(loading(false))
+            }).catch(error => {
+                if (error.name !== 'AbortError') {
+                    setAggregations(null)
+                    setAggregationsError(error.message)
+                    setAggregationsLoading(loading(false))
+                }
+            })
+        }
+        prevQueryRef.current = query
     }, [JSON.stringify({
         ...query,
         page: null,

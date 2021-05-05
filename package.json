@@ -28,6 +28,7 @@
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@material-ui/pickers": "^3.3.10",
     "@svgr/webpack": "^5.5.0",
+    "abort-controller": "^3.0.0",
     "canvas": "^2.7.0",
     "classnames": "^2.2.6",
     "copy-text-to-clipboard": "^2.2.0",

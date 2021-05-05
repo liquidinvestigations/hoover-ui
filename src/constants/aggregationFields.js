@@ -1,93 +1,116 @@
 import React from 'react'
 import { AccountTree, AlternateEmail, Category, DateRange, Language, LocalOffer, SettingsEthernet, Translate } from '@material-ui/icons'
 
+export const aggregationCategories = {
+    tags: {
+        label: 'Tags',
+        icon: <LocalOffer />,
+        filters: ['tags', 'priv-tags'],
+    },
+    dates: {
+        label: 'Dates',
+        icon: <DateRange />,
+        filters: ['date', 'date-created'],
+    },
+    type: {
+        label: 'File Types',
+        icon: <Category />,
+        filters: ['content-type', 'filetype'],
+    },
+    language: {
+        label: 'Language',
+        icon: <Language/>,
+        filters: ['lang'],
+    },
+    email: {
+        label: 'Email',
+        icon: <AlternateEmail/>,
+        filters: ['email-domains', 'from.keyword', 'to.keyword', 'attachments', 'pgp'],
+    },
+    location: {
+        label: 'Location',
+        icon: <AccountTree />,
+        filters: ['path-parts'],
+    },
+    size: {
+        label: 'File Sizes',
+        icon: <SettingsEthernet/>,
+        filters: ['size', 'word-count']
+    },
+    ocr: {
+        label: 'OCR',
+        icon: <Translate/>,
+        filters: ['ocr']
+    },
+}
+
 export const aggregationFields = {
     tags: {
-        category: 'tags',
-        categoryLabel: 'Tags',
-        categoryIcon: <LocalOffer />,
         filterLabel: 'Public tags',
         chipLabel: 'Public tag',
         type: 'term-and',
     },
     'priv-tags': {
-        category: 'tags',
         filterLabel: 'Private tags',
         chipLabel: 'Private tag',
         type: 'term-and',
     },
     date: {
-        category: 'dates',
-        categoryLabel: 'Dates',
-        categoryIcon: <DateRange />,
         filterLabel: 'Date modified',
         chipLabel: 'Date modified',
         type: 'date',
     },
     'date-created': {
-        category: 'dates',
         filterLabel: 'Date created',
         chipLabel: 'Date created',
         type: 'date',
     },
     'content-type': {
-        category: 'type',
-        categoryLabel: 'File Types',
-        categoryIcon: <Category />,
         filterLabel: 'Content type',
         chipLabel: 'Content type',
         type: 'term-or',
     },
     filetype: {
-        category: 'type',
         filterLabel: 'File type',
         chipLabel: 'File type',
         type: 'term-or',
     },
     lang: {
-        category: 'language',
-        categoryLabel: 'Language',
-        categoryIcon: <Language />,
         filterLabel: 'Language',
         chipLabel: 'Language',
         type: 'term-or',
     },
     'email-domains': {
-        category: 'email',
-        categoryLabel: 'Email',
-        categoryIcon: <AlternateEmail />,
         filterLabel: 'Email domain',
         chipLabel: 'Email domain',
         type: 'term-or',
-        hideEmpty: true,
     },
     'from.keyword': {
-        category: 'email',
         filterLabel: 'Email from',
         chipLabel: 'Email from',
         type: 'term-or',
-        hideEmpty: true,
     },
     'to.keyword': {
-        category: 'email',
         filterLabel: 'Email to',
         chipLabel: 'Email to',
         type: 'term-or',
-        hideEmpty: true,
+    },
+    attachments: {
+        filterLabel: 'Has Attachments',
+        chipLabel: 'Has Attachments',
+        type: 'term-or',
+    },
+    pgp: {
+        filterLabel: 'PGP Encrypted',
+        chipLabel: 'PGP Encrypted',
+        type: 'term-or',
     },
     'path-parts': {
-        category: 'location',
-        categoryLabel: 'Location',
-        categoryIcon: <AccountTree />,
         filterLabel: 'Path',
         chipLabel: 'Path',
         type: 'term-or',
-        hideEmpty: true,
     },
     size: {
-        category: 'size',
-        categoryLabel: 'File Sizes',
-        categoryIcon: <SettingsEthernet />,
         filterLabel: 'Size',
         chipLabel: 'Size',
         type: 'range-or',
@@ -135,7 +158,6 @@ export const aggregationFields = {
         ]
     },
     'word-count': {
-        category: 'size',
         filterLabel: 'Word count',
         chipLabel: 'Word count',
         type: 'range-or',
@@ -175,25 +197,8 @@ export const aggregationFields = {
         ]
     },
     ocr: {
-        category: 'ocr',
-        categoryLabel: 'OCR',
-        categoryIcon: <Translate />,
         filterLabel: 'OCRed',
         chipLabel: 'OCRed',
         type: 'term-or',
     },
-    attachments: {
-        category: 'email',
-        categoryLabel: 'Email',
-        filterLabel: 'Has Attachments',
-        chipLabel: 'Has Attachments',
-        type: 'term-or',
-    },
-    pgp: {
-        category: 'email',
-        categoryLabel: 'Email',
-        filterLabel: 'PGP Encrypted',
-        chipLabel: 'PGP Encrypted',
-        type: 'term-or',
-    }
 }
