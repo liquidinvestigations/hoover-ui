@@ -22,7 +22,7 @@ import SortingMenu from './sorting/SortingMenu'
 import { DocumentProvider } from '../document/DocumentProvider'
 import Document from '../document/Document'
 import CategoryDrawer from './filters/CategoryDrawer'
-import { aggregationFields } from '../../constants/aggregationFields'
+import { aggregationCategories, aggregationFields } from '../../constants/aggregationFields'
 
 const useStyles = makeStyles(theme => ({
     error: {
@@ -114,20 +114,14 @@ export default function Search({ collections }) {
         search({ collections: value, page: 1 })
     }, [collections, search])
 
-    const filtersCategories = useMemo(() => Object.entries(aggregationFields).reduce((acc, [field, params]) => {
-        const { category, categoryLabel, categoryIcon, ...filterParams } = params
-
-        if (!acc[category]) {
-            acc[category] = {
-                label: categoryLabel,
-                icon: categoryIcon,
-                filters: [],
-            }
+    const filtersCategories = useMemo(() => Object.entries(aggregationCategories).reduce((acc, [category, { label, icon, filters }]) => {
+        acc[category] = {
+            label,
+            icon,
+            filters: filters.map(field => ({ field, ...aggregationFields[field] })),
         }
-        acc[category].filters.push({ field, ...filterParams })
         return acc
-
-    }, {}), [aggregationFields])
+    }, {}), [aggregationCategories, aggregationFields])
 
     const [drawerOpenCategory, setDrawerOpenCategory] = useState('collections')
     const [expandedFilters, setExpandedFilters] = useState(

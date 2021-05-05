@@ -86,10 +86,6 @@ function Filters({ categories, drawerOpenCategory, onDrawerOpen, expandedFilters
                         FilterComponent = TermsAggregationFilter
                     }
 
-                    if (hideEmpty) {
-                        //filterTypeProps.emptyDisabled = true
-                    }
-
                     if (field === 'lang') {
                         filterTypeProps.bucketLabel = formatLang
                     }

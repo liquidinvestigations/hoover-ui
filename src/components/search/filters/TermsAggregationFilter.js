@@ -7,8 +7,6 @@ import { formatThousands } from '../../../utils'
 
 function TermsAggregationFilter({ title, loading, open, onToggle, queryFilter, queryFacets, aggregations, emptyDisabled = false, ...rest }) {
 
-    const enabled = !emptyDisabled || !!aggregations?.values.buckets.length
-
     const highlight = !!(queryFilter?.include?.length || queryFilter?.exclude?.length || queryFilter?.missing)
 
     return (
@@ -17,18 +15,18 @@ function TermsAggregationFilter({ title, loading, open, onToggle, queryFilter, q
             loading={loading}
             highlight={highlight}
             greyed={!aggregations?.values.buckets.length}
-            enabled={enabled}
             open={open}
             onToggle={onToggle}
             resizable={false}
             summary={
-                <Typography variant="caption" display="block">
-                    {aggregations?.count.value > aggregations?.values.buckets.length && '> '}
-                    {formatThousands(aggregations?.values.buckets.reduce((acc, { doc_count }) => acc + parseInt(doc_count), 0))} hits
-                    {', '}
-                    {aggregations?.count.value > aggregations?.values.buckets.length && '> '}
-                    {aggregations?.values.buckets.length} buckets
-                </Typography>
+                !!aggregations?.values.buckets.length && (
+                    <Typography variant="caption" display="block">
+                        {aggregations?.count.value > aggregations?.values.buckets.length && '> '}
+                        {formatThousands(aggregations?.values.buckets.reduce((acc, { doc_count }) => acc + parseInt(doc_count), 0))} hits
+                        {', '}
+                        {aggregations?.count.value} buckets
+                    </Typography>
+                )
             }
         >
             <AggregationFilter

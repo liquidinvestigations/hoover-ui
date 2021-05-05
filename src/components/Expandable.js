@@ -50,8 +50,8 @@ const useStyles = makeStyles(theme => ({
 
 let startY, startHeight
 
-function Expandable({ title, loading, summary, children, greyed, defaultOpen, open, onToggle, resizable = false,
-                        fullHeight = true, enabled = true, highlight = true }) {
+function Expandable({ title, loading, summary, children, greyed, defaultOpen, open, onToggle,
+                        resizable = false, fullHeight = true, highlight = true }) {
 
     const classes = useStyles()
 
@@ -142,10 +142,6 @@ function Expandable({ title, loading, summary, children, greyed, defaultOpen, op
             </Grid>
         </ListItem>
     ), [title, greyed, defaultOpen, highlight, openState, summary])
-
-    if (!enabled) {
-        return null
-    }
 
     return (
         <>

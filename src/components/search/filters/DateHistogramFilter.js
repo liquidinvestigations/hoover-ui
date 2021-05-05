@@ -72,13 +72,14 @@ function DateHistogramFilter({ title, open, onToggle, field, queryFilter, queryF
             onToggle={onToggle}
             resizable={false}
             summary={
-                <Typography variant="caption" display="block">
-                    {aggregations?.values.buckets.length >= DEFAULT_FACET_SIZE && '> '}
-                    {formatThousands(aggregations?.values.buckets.reduce((acc, { doc_count }) => acc + parseInt(doc_count), 0))} hits
-                    {', '}
-                    {aggregations?.values.buckets.length >= DEFAULT_FACET_SIZE && '> '}
-                    {aggregations?.values.buckets.length} buckets
-                </Typography>
+                !!aggregations?.values.buckets.length && (
+                    <Typography variant="caption" display="block">
+                        {aggregations?.values.buckets.length >= DEFAULT_FACET_SIZE && '> '}
+                        {formatThousands(aggregations?.values.buckets.reduce((acc, { doc_count }) => acc + parseInt(doc_count), 0))} hits
+                        {', '}
+                        {aggregations?.values.buckets.length} buckets
+                    </Typography>
+                )
             }
         >
             <DateRangeFilter
