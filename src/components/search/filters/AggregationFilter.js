@@ -149,7 +149,7 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, miss
     )
 
     return (
-        <List dense>
+        <List dense disablePadding>
             <ListItem
                 role={undefined}
                 dense

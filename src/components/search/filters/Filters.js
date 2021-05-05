@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
 
 const formatLang = bucket => getLanguageName(bucket.key)
 
-function Filters({ categories, drawerOpenCategory, onDrawerOpen, expandedFilters, onFilterExpand }) {
+function Filters({ categories, wideFilters, drawerOpenCategory, onDrawerOpen, expandedFilters, onFilterExpand }) {
     const classes = useStyles()
     const { query, search, aggregations, aggregationsError, aggregationsLoading } = useSearch()
 
@@ -74,6 +74,7 @@ function Filters({ categories, drawerOpenCategory, onDrawerOpen, expandedFilters
                 icon={icon}
                 greyed={greyed}
                 highlight={highlight}
+                wideFilters={wideFilters}
                 open={drawerOpenCategory === category}
                 onOpen={() => onDrawerOpen(category)}
             >

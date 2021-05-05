@@ -39,7 +39,7 @@ function CollectionsFilter({ collections, selected, changeSelection, counts }) {
     }
 
     return (
-        <List>
+        <List dense disablePadding>
             {!collections?.length ? <Typography>no collections available</Typography> :
                 <>
                     {collections.map(collection =>
