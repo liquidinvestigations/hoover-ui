@@ -2,7 +2,7 @@ import React, { cloneElement, useEffect, useMemo, useState } from 'react'
 import cn from 'classnames'
 import { Transition } from 'react-transition-group'
 import { makeStyles, duration } from '@material-ui/core/styles'
-import { Grid, ListItem, Portal, Slide, Typography } from '@material-ui/core'
+import { ClickAwayListener, Grid, ListItem, Portal, Slide, Typography } from '@material-ui/core'
 import { ChevronRight } from '@material-ui/icons'
 
 const useStyles = makeStyles(theme => ({
@@ -10,14 +10,14 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
         overflow: 'hidden',
         position: 'absolute',
-        height: 'calc(100vh - 56px - 48px)',
+        height: 'calc(100vh - 56px)',
 
         '@media (min-width: 0px) and (orientation: landscape)': {
-            height: 'calc(100vh - 48px - 48px)',
+            height: 'calc(100vh - 48px)',
         },
 
         '@media (min-width: 600px)': {
-            height: 'calc(100vh - 64px - 48px)',
+            height: 'calc(100vh - 64px)',
         }
     },
     inner: {
@@ -25,6 +25,9 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: theme.palette.background.paper,
+    },
+    unpinned: {
+        borderRight: '1px solid rgba(0, 0, 0, 0.2)',
     },
     title: {
         minHeight: 32,
@@ -56,26 +59,40 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function CategoryDrawer({ title, icon, children, wideFilters, open, onOpen,
-                                           enabled = true, greyed = false, highlight = true }) {
-    const classes = useStyles()
-    const [position, setPosition] = useState({ top: 0, left: 0 })
+const hasDisabledClickAway = element => {
+    if (element.dataset?.disableClickAway) {
+        return true
+    }
+    return element.parentNode && hasDisabledClickAway(element.parentNode)
+}
 
-    useEffect(() => {
-        const positionElement = document.querySelector('#category-drawer')
-        const position = positionElement.getBoundingClientRect()
+export default function CategoryDrawer({ category, title, icon, children, wideFilters, portalRef, width, pinned, toolbar,
+                                           open, onOpen, greyed = false, highlight = true }) {
+    const classes = useStyles()
+    const [position, setPosition] = useState({ top: 0, left: 0, width: 0 })
+
+    const updatePosition = () => {
+        const position = portalRef.current.getBoundingClientRect()
 
         setPosition({
             top: position.top + 'px',
             left: position.left + 'px',
+            width,
         })
-    }, [])
+    }
+
+    useEffect(() => {
+        if (portalRef.current) {
+            updatePosition()
+        }
+    }, [portalRef.current, width, wideFilters, pinned])
 
     const titleBar = useMemo(() => (
         <ListItem
             dense
             button
-            onClick={() => onOpen()}
+            data-disable-click-away
+            onClick={() => onOpen(category)}
             className={cn({ [classes.openCollapsed]: !wideFilters && open })}
         >
             <Grid
@@ -107,30 +124,40 @@ export default function CategoryDrawer({ title, icon, children, wideFilters, ope
                 )}
             </Grid>
         </ListItem>
-    ), [title, greyed, highlight, wideFilters, open])
-
-    if (!enabled) {
-        return null
-    }
+    ), [category, title, greyed, highlight, wideFilters, open, onOpen])
 
     return (
         <>
             {titleBar}
 
-            <Portal container={typeof document !== 'undefined' ? document.querySelector('#category-drawer') : undefined}>
-                <Transition in={open} timeout={{
-                    enter: duration.enteringScreen,
-                    exit: duration.leavingScreen,
-                }} mountOnEnter unmountOnExit>
-                    <div /*style={position}*/ className={classes.root}>
-                        <Slide direction="right" in={open}>
-                            <div className={classes.inner}>
-                                {children}
+            {(!pinned || (pinned && portalRef.current)) && (
+                <Portal container={typeof document !== 'undefined' && pinned ? portalRef.current : undefined}>
+                    <Transition
+                        in={open}
+                        timeout={{
+                            enter: duration.enteringScreen,
+                            exit: duration.leavingScreen,
+                        }}
+                        mountOnEnter
+                        unmountOnExit
+                        onEntering={updatePosition}
+                        onExiting={updatePosition}
+                    >
+                        <ClickAwayListener onClickAway={event => {
+                            !pinned && !hasDisabledClickAway(event.target) && onOpen(null)
+                        }} disableReactTree>
+                            <div style={!pinned ? position : undefined} className={classes.root}>
+                                <Slide direction="right" in={open}>
+                                    <div className={cn(classes.inner, { [classes.unpinned]: !pinned })}>
+                                        {toolbar}
+                                        {children}
+                                    </div>
+                                </Slide>
                             </div>
-                        </Slide>
-                    </div>
-                </Transition>
-            </Portal>
+                        </ClickAwayListener>
+                    </Transition>
+                </Portal>
+            )}
         </>
     )
 }

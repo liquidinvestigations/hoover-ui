@@ -180,6 +180,41 @@ export default function Search({ collections }) {
         setSearchText(event.target.value)
     }
 
+    const drawerRef = useRef()
+    const [drawerWidth, setDrawerWidth] = useState()
+
+    useEffect(() => {
+        if (drawerRef.current && !drawerRef.current.className) {
+            setDrawerWidth(drawerRef.current.getBoundingClientRect().width)
+        }
+    }, [drawerRef.current])
+
+    const drawerToolbar = (
+        <Toolbar variant="dense" className={classes.drawerToolbar} disableGutters>
+            <Tooltip title={drawerPinned ? 'Unpin' : 'Pin'}>
+                <IconButton
+                    size="small"
+                    className={classes.drawerToolbarButton}
+                    onClick={() => setDrawerPinned(pinned => {
+                        if (!pinned) {
+                            setDrawerOpenCategory(category => {
+                                setTimeout(() => setDrawerOpenCategory(category), duration.leavingScreen)
+                                return null
+                            })
+                        }
+                        return !pinned
+                    })}
+                >
+                    {drawerPinned ? (
+                        <PinDrop className={classes.drawerToolbarIcon} />
+                    ) : (
+                        <Room className={cn(classes.drawerToolbarIcon, classes.unPinned)} />
+                    )}
+                </IconButton>
+            </Tooltip>
+        </Toolbar>
+    )
+
     return (
         <DocumentProvider
             id={selectedDocData?.i}
@@ -216,9 +251,14 @@ export default function Search({ collections }) {
                                     title="Collections"
                                     icon={<Collections />}
                                     highlight={false}
+                                    portalRef={drawerRef}
+                                    width={drawerWidth}
                                     wideFilters={wideFilters}
+                                    pinned={drawerPinned}
+                                    toolbar={drawerToolbar}
+                                    category="collections"
                                     open={drawerOpenCategory === 'collections'}
-                                    onOpen={() => setDrawerOpenCategory('collections')}
+                                    onOpen={setDrawerOpenCategory}
                                 >
                                     <Expandable
                                         title={`Collections (${query.collections?.length || 0})`}
@@ -241,6 +281,10 @@ export default function Search({ collections }) {
                                     onDrawerOpen={setDrawerOpenCategory}
                                     expandedFilters={expandedFilters}
                                     onFilterExpand={setExpandedFilters}
+                                    drawerWidth={drawerWidth}
+                                    drawerPinned={drawerPinned}
+                                    drawerToolbar={drawerToolbar}
+                                    drawerPortalRef={drawerRef}
                                 />
                             </Grid>
                         )}
@@ -249,26 +293,10 @@ export default function Search({ collections }) {
                     <Grid item style={{ flex: 1 }}>
                         <SplitPaneLayout
                             left={
-                                <>
-                                    <Toolbar variant="dense" className={classes.drawerToolbar} disableGutters>
-                                        <Tooltip title={drawerPinned ? 'Unpin' : 'Pin'}>
-                                            <IconButton
-                                                size="small"
-                                                className={classes.drawerToolbarButton}
-                                                onClick={() => setDrawerPinned(toggle => !toggle)}
-                                            >
-                                                {drawerPinned ? (
-                                                    <PinDrop className={classes.drawerToolbarIcon} />
-                                                ) : (
-                                                    <Room className={cn(classes.drawerToolbarIcon, classes.unPinned)} />
-                                                )}
-                                            </IconButton>
-                                        </Tooltip>
-                                    </Toolbar>
-
-                                    <div id="category-drawer" />
-                                </>
+                                drawerPinned && <div ref={drawerRef} />
                             }
+                            onLeftChange={size => setDrawerWidth(size)}
+                            defaultSizeLeft={drawerWidth}
                             right={
                                 <Document
                                     onPrev={previewPreviousDoc}
@@ -276,7 +304,7 @@ export default function Search({ collections }) {
                                 />
                             }
                         >
-                            <div className={classes.main}>
+                            <div className={classes.main} ref={!drawerPinned ? drawerRef : undefined}>
                                 <Grid container>
                                     <Grid item sm={12}>
                                         <form onSubmit={handleSubmit}>
