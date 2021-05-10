@@ -78,7 +78,7 @@ function Filters({ categories, wideFilters, drawerOpenCategory, onDrawerOpen, ex
                 open={drawerOpenCategory === category}
                 onOpen={() => onDrawerOpen(category)}
             >
-                {filters.map(({ field, type, hideEmpty, buckets, filterLabel }) => {
+                {filters.map(({ field, type, buckets, filterLabel }) => {
 
                     let FilterComponent, filterTypeProps = {}
                     if (type === 'date') {
