@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
+import { useSearch } from '../search/SearchProvider'
 import { useHashState } from '../HashStateProvider'
 import { collectionUrl, documentViewUrl } from '../../utils'
 import { createDownloadUrl, createTag, deleteTag, doc as docAPI, tags as tagsAPI, updateTag } from '../../backend/api'
@@ -6,7 +7,7 @@ import { publicTagsList } from '../../constants/specialTags'
 
 const DocumentContext = createContext({})
 
-export function DocumentProvider({ children, collection, collections, id, path, fullPage, printMode, setHash }) {
+export function DocumentProvider({ children, collection, collections, id, path, fullPage, printMode }) {
     const [data, setData] = useState()
     const [error, setError] = useState(null)
     const [pathname, setPathname] = useState()
@@ -21,6 +22,8 @@ export function DocumentProvider({ children, collection, collections, id, path, 
     const [tab, setTab] = useState(0)
     const [subTab, setSubTab] = useState(0)
     const { hashState, setHashState } = useHashState()
+
+    const { addTagToRefreshQueue } = useSearch()
 
     const collectionBaseUrl = collectionUrl(collection)
 
@@ -137,6 +140,9 @@ export function DocumentProvider({ children, collection, collections, id, path, 
         } else {
             createTag(digestUrl, { tag: name, public: publicTagsList.includes(name) }).then(newTag => {
                 setTags([...tags, newTag])
+                if (addTagToRefreshQueue) {
+                    addTagToRefreshQueue(digestUrl)
+                }
             }).finally(() => {
                 setTagsLocked(false)
             })
@@ -147,6 +153,9 @@ export function DocumentProvider({ children, collection, collections, id, path, 
         setTagsLocked(true)
         createTag(digestUrl, { tag, public: publicTagsList.includes(tag) || publicTag }).then(newTag => {
             setTags([...tags, newTag])
+            if (addTagToRefreshQueue) {
+                addTagToRefreshQueue(digestUrl)
+            }
         }).finally(() => {
             setTagsLocked(false)
         })
