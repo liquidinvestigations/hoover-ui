@@ -15,7 +15,6 @@ import {
     Typography
 } from '@material-ui/core'
 import { Autocomplete } from '@material-ui/lab'
-import { Lock, LockOpen } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles'
 import { blue } from '@material-ui/core/colors'
 import Loading from '../Loading'
@@ -24,6 +23,7 @@ import { useUser } from '../UserProvider'
 import { useDocument } from './DocumentProvider'
 import { specialTags, specialTagsList } from '../../constants/specialTags'
 import { search as searchAPI } from '../../api'
+import { reactIcons } from '../../constants/icons'
 
 const forbiddenCharsRegex = /[^a-z0-9_!@#$%^&*()-=+:,./?]/gi
 
@@ -281,7 +281,7 @@ function Tags({ toolbarButtons }) {
                                                 size="small"
                                                 onClick={handleTagLockClick(chip)}
                                             >
-                                                {chip.public ? <LockOpen /> : <Lock />}
+                                                {chip.public ? reactIcons.publicTag : reactIcons.privateTag}
                                             </IconButton>
                                         </Tooltip> : null
                                     }
@@ -348,7 +348,7 @@ function Tags({ toolbarButtons }) {
                                             icon={!specialTagsList.includes(chip.tag) ?
                                                 <Tooltip title={`make ${chip.public ? 'private' : 'public'}`}>
                                                     <IconButton size="small">
-                                                        {chip.public ? <LockOpen /> : <Lock />}
+                                                        {chip.public ? reactIcons.publicTag : reactIcons.privateTag}
                                                     </IconButton>
                                                 </Tooltip> : null
                                             }

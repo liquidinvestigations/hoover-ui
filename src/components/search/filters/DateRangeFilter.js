@@ -1,13 +1,13 @@
 import React, { memo, useEffect, useState } from 'react'
-import { ArrowLeft, ArrowRight, Event } from '@material-ui/icons'
 import { Button, Grid, List, ListItem } from '@material-ui/core'
 import { KeyboardDatePicker } from '@material-ui/pickers'
 import { DATE_FORMAT } from '../../../constants/general'
+import { reactIcons } from '../../../constants/icons'
 
 const icons = {
-    leftArrowIcon: <ArrowLeft />,
-    rightArrowIcon: <ArrowRight />,
-    keyboardIcon: <Event />,
+    leftArrowIcon: reactIcons.chevronLeft,
+    rightArrowIcon: reactIcons.chevronRight,
+    keyboardIcon: reactIcons.event,
 }
 
 const emptyLabel = 'YYYY-MM-DD'

@@ -1,11 +1,11 @@
 import React, { memo, useState } from 'react'
 import Link from 'next/link'
 import { Box, Table, TableBody, TableCell, TableRow } from '@material-ui/core'
-import { CloudDownload as IconCloudDownload } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles'
 import { useDocument } from './DocumentProvider'
 import Loading from '../Loading'
 import { humanFileSize } from '../../utils'
+import { reactIcons } from '../../constants/icons'
 import { createDownloadUrl, doc as docAPI } from '../../backend/api'
 
 const useStyles = makeStyles(theme => ({
@@ -65,7 +65,7 @@ function Files() {
                         title="Original file"
                         className={classes.link}
                     >
-                        <IconCloudDownload />
+                        {reactIcons.download}
                     </a>
                 )}
             </TableCell>

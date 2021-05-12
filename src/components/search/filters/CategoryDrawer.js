@@ -3,7 +3,7 @@ import cn from 'classnames'
 import { Transition } from 'react-transition-group'
 import { makeStyles, duration } from '@material-ui/core/styles'
 import { ClickAwayListener, Grid, ListItem, Portal, Slide, Typography } from '@material-ui/core'
-import { ChevronRight } from '@material-ui/icons'
+import { reactIcons } from '../../../constants/icons'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -102,7 +102,7 @@ export default function CategoryDrawer({ category, title, icon, children, wideFi
                 wrap="nowrap"
             >
                 <Grid item className={classes.icon}>
-                    {cloneElement(icon, { color: highlight ? 'secondary' : 'inherit'})}
+                    {cloneElement(reactIcons[icon], { color: highlight ? 'secondary' : 'inherit'})}
                 </Grid>
 
                 <Grid item className={classes.label}>
@@ -119,7 +119,7 @@ export default function CategoryDrawer({ category, title, icon, children, wideFi
 
                 {open && (
                     <Grid item className={classes.open} >
-                        <ChevronRight color={highlight ? 'secondary' : 'action'} />
+                        {cloneElement(reactIcons.chevronRight, { color: highlight ? 'secondary' : 'action'})}
                     </Grid>
                 )}
             </Grid>

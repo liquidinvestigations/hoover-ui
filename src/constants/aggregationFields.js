@@ -1,45 +1,42 @@
-import React from 'react'
-import { AccountTree, AlternateEmail, Category, DateRange, Language, LocalOffer, SettingsEthernet, Translate } from '@material-ui/icons'
-
 export const aggregationCategories = {
     tags: {
         label: 'Tags',
-        icon: <LocalOffer />,
+        icon: 'tag',
         filters: ['tags', 'priv-tags'],
     },
     dates: {
         label: 'Dates',
-        icon: <DateRange />,
+        icon: 'calendar',
         filters: ['date', 'date-created'],
     },
     type: {
         label: 'File Types',
-        icon: <Category />,
+        icon: 'category',
         filters: ['content-type', 'filetype'],
     },
     language: {
         label: 'Language',
-        icon: <Language/>,
+        icon: 'language',
         filters: ['lang'],
     },
     email: {
         label: 'Email',
-        icon: <AlternateEmail/>,
+        icon: 'email',
         filters: ['email-domains', 'from.keyword', 'to.keyword', 'attachments', 'pgp'],
     },
     location: {
         label: 'Location',
-        icon: <AccountTree />,
+        icon: 'tree',
         filters: ['path-parts'],
     },
     size: {
         label: 'File Sizes',
-        icon: <SettingsEthernet/>,
+        icon: 'size',
         filters: ['size', 'word-count']
     },
     ocr: {
         label: 'OCR',
-        icon: <Translate/>,
+        icon: 'ocr',
         filters: ['ocr']
     },
 }

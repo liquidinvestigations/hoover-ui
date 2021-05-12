@@ -1,9 +1,8 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react'
+import React, { cloneElement, memo, useCallback, useEffect, useMemo, useState } from 'react'
 import cn from 'classnames'
 import { DateTime } from 'luxon'
 import { Collapse, Grid, IconButton, ListItem, Menu, MenuItem, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { ExpandMore } from '@material-ui/icons'
 import Loading from '../../Loading'
 import HistogramChart from './HistogramChart'
 import IntervalSelect from './IntervalSelect'
@@ -13,6 +12,7 @@ import { useHashState } from '../../HashStateProvider'
 import { formatsLabel, formatsValue } from './DateHistogramFilter'
 import { DATE_FORMAT, DEFAULT_INTERVAL } from '../../../constants/general'
 import { daysInMonth, getClosestInterval } from '../../../utils'
+import { reactIcons } from '../../../constants/icons'
 
 const chartWidth = 300
 const chartHeight = 100
@@ -213,7 +213,7 @@ function Histogram({ title, field }) {
                             aria-expanded={open}
                             aria-label="Show histogram"
                         >
-                            <ExpandMore color="action" />
+                            {cloneElement(reactIcons.chevronDown, { color: 'action' })}
                         </IconButton>
                     </Grid>
                 </Grid>

@@ -1,7 +1,6 @@
-import React, { memo } from 'react'
+import React, { cloneElement, memo } from 'react'
 import { Box, Tab, Tabs, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { FolderOutlined, Subject, TextFields } from '@material-ui/icons'
 import Expandable from '../Expandable'
 import Preview, { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './Preview'
 import { useDocument } from './DocumentProvider'
@@ -11,6 +10,7 @@ import Files from './Files'
 import Text from './Text'
 import PDFViewer from './pdf-viewer/Dynamic'
 import { createOcrUrl } from '../../backend/api'
+import { reactIcons } from '../../constants/icons'
 
 const useStyles = makeStyles(theme => ({
     printTitle: {
@@ -42,7 +42,7 @@ function SubTabs() {
 
     const tabs = [{
         name: 'Extracted from file',
-        icon: <Subject />,
+        icon: reactIcons.content,
         content: <Text content={data.content.text} />,
     }]
 
@@ -50,7 +50,7 @@ function SubTabs() {
         ...ocrData.map(({tag, text}) => ({
             tag,
             name: `OCR ${tag}`,
-            icon: <TextFields />,
+            icon: reactIcons.ocr,
             content: <Text content={text} />,
         }))
     )
@@ -100,7 +100,7 @@ function SubTabs() {
                             fullHeight={false}
                             title={
                                 <>
-                                    <FolderOutlined className={classes.icon} />
+                                    {cloneElement(reactIcons.folderOutlined, { className: classes.icon })}
                                     Files
                                 </>
                             }

@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { Sort } from '@material-ui/icons'
 import { Fab, Menu, MenuItem } from '@material-ui/core'
 import { SORTABLE_FIELDS } from '../../../constants/general'
 import { useSearch } from '../SearchProvider'
+import { reactIcons } from '../../../constants/icons'
 
 export default function SortingMenu() {
     const { query, search } = useSearch()
@@ -29,7 +29,7 @@ export default function SortingMenu() {
                 style={{ flex: 'none', boxShadow: 'none' }}
                 onClick={handleSortingMenuClick}
             >
-                <Sort />
+                {reactIcons.sort}
             </Fab>
 
             <Menu

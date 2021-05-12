@@ -2,10 +2,10 @@ import React, { memo } from 'react'
 import cn from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
 import { Chip } from '@material-ui/core'
-import { ArrowUpward } from '@material-ui/icons'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import { useSearch } from '../SearchProvider'
 import { SORTABLE_FIELDS } from '../../../constants/general'
+import { reactIcons } from '../../../constants/icons'
 
 const useStyles = makeStyles(theme => ({
     icon: {
@@ -75,7 +75,7 @@ function SortingChips() {
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}
                                         size="small"
-                                        icon={<ArrowUpward />}
+                                        icon={reactIcons.arrowUp}
                                         label={SORTABLE_FIELDS[field]}
                                         onClick={handleClick(field)}
                                         onDelete={handleDelete(field)}

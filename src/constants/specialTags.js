@@ -1,77 +1,64 @@
-import React from 'react'
-import {
-    Delete,
-    DeleteOutlined,
-    Error,
-    ErrorOutline,
-    Star,
-    StarOutline,
-    Visibility,
-    VisibilityOffOutlined
-} from '@material-ui/icons'
-import { brown, green, grey, red } from '@material-ui/core/colors'
-
 export const specialTags = [{
     tag: 'starred',
     color: '#ffda80',
     public: false,
     tooltip: 'mark / unmark as starred (private, for yourself)',
     present: {
-        icon: <Star />,
+        icon: 'star',
         color: '#ffb400',
     },
     absent: {
-        icon: <StarOutline />,
-        color: grey[600],
+        icon: 'starOutlined',
+        color: '#757575',
     },
     showInToolbar: true,
     showInTagsTab: false,
 },{
     tag: 'recommended',
-    color: green[200],
+    color: '#a5d6a7',
     public: true,
     tooltip: 'mark / unmark as recommended (public, for everybody)',
     present: {
-        icon: <Error />,
-        color: green[500],
+        icon: 'recommended',
+        color: '#4caf50',
     },
     absent: {
-        icon: <ErrorOutline />,
-        color: grey[600],
+        icon: 'recommendedOutlined',
+        color: '#757575',
     },
     showInToolbar: true,
     showInTagsTab: false,
 },{
     tag: 'seen',
-    color: brown[200],
+    color: '#bcaaa4',
     public: true,
     tooltip: 'mark / unmark seen (public)',
     present: {
         label: 'seen',
-        icon: <Visibility />,
-        color: brown[500],
+        icon: 'visibility',
+        color: '#795548',
     },
     absent: {
         label: 'not seen',
-        icon: <VisibilityOffOutlined />,
-        color: grey[600],
+        icon: 'visibilityOutlined',
+        color: '#757575',
     },
     showInToolbar: true,
     showInTagsTab: false,
 },{
     tag: 'trash',
-    color: red[200],
+    color: '#ef9a9a',
     public: true,
     tooltip: 'mark / unmark trash (public)',
     present: {
         label: 'trash',
-        icon: <Delete />,
-        color: red[500],
+        icon: 'delete',
+        color: '#f44336',
     },
     absent: {
         label: 'not trash',
-        icon: <DeleteOutlined />,
-        color: grey[600],
+        icon: 'deleteOutlined',
+        color: '#757575',
     },
     showInToolbar: true,
     showInTagsTab: false,

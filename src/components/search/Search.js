@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { cloneElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import cn from 'classnames'
 import Router from 'next/router'
 import Link from 'next/link'
 import { Transition } from 'react-transition-group'
 import { duration, makeStyles } from '@material-ui/core/styles'
 import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Toolbar, Tooltip, Typography } from '@material-ui/core'
-import { Cancel, Collections, DoubleArrow, PinDrop, Room } from '@material-ui/icons'
 import Expandable from '../Expandable'
 import SplitPaneLayout from '../SplitPaneLayout'
 import { useProgressIndicator } from '../ProgressIndicator'
@@ -23,6 +22,7 @@ import SortingMenu from './sorting/SortingMenu'
 import { DocumentProvider } from '../document/DocumentProvider'
 import Document from '../document/Document'
 import CategoryDrawer from './filters/CategoryDrawer'
+import { reactIcons } from '../../constants/icons'
 import { aggregationCategories, aggregationFields } from '../../constants/aggregationFields'
 
 const useStyles = makeStyles(theme => ({
@@ -206,9 +206,9 @@ export default function Search({ collections }) {
                     })}
                 >
                     {drawerPinned ? (
-                        <PinDrop className={classes.drawerToolbarIcon} />
+                        cloneElement(reactIcons.pinned, { className: classes.drawerToolbarIcon})
                     ) : (
-                        <Room className={cn(classes.drawerToolbarIcon, classes.unPinned)} />
+                        cloneElement(reactIcons.unpinned, { className: cn(classes.drawerToolbarIcon, classes.unPinned)})
                     )}
                 </IconButton>
             </Tooltip>
@@ -241,7 +241,9 @@ export default function Search({ collections }) {
                                             className={classes.drawerToolbarButton}
                                             onClick={() => setWideFilters(toggle => !toggle)}
                                         >
-                                            <DoubleArrow className={cn(classes.drawerToolbarIcon, { [classes.expanded]: wideFilters })} />
+                                            {cloneElement(reactIcons.doubleArrow, {
+                                                className: cn(classes.drawerToolbarIcon, { [classes.expanded]: wideFilters })
+                                            })}
                                         </IconButton>
                                     </Tooltip>
                                 </Toolbar>
@@ -249,7 +251,7 @@ export default function Search({ collections }) {
                                 <CategoryDrawer
                                     key="collections"
                                     title="Collections"
-                                    icon={<Collections />}
+                                    icon="collections"
                                     highlight={false}
                                     portalRef={drawerRef}
                                     width={drawerWidth}
@@ -323,7 +325,7 @@ export default function Search({ collections }) {
                                                         InputProps={{ endAdornment:
                                                             <InputAdornment position="end">
                                                                 <IconButton onClick={clearInput} size="small">
-                                                                    <Cancel className={classes.clear} />
+                                                                    {cloneElement(reactIcons.cancel, { className: classes.clear })}
                                                                 </IconButton>
                                                             </InputAdornment>,
                                                         }}
