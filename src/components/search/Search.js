@@ -2,9 +2,10 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import cn from 'classnames'
 import Router from 'next/router'
 import Link from 'next/link'
-import { makeStyles } from '@material-ui/core/styles'
+import { Transition } from 'react-transition-group'
+import { duration, makeStyles } from '@material-ui/core/styles'
 import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Toolbar, Tooltip, Typography } from '@material-ui/core'
-import { Cancel, Collections, DoubleArrow, PinDrop } from '@material-ui/icons'
+import { Cancel, Collections, DoubleArrow, PinDrop, Room } from '@material-ui/icons'
 import Expandable from '../Expandable'
 import SplitPaneLayout from '../SplitPaneLayout'
 import { useProgressIndicator } from '../ProgressIndicator'
@@ -51,9 +52,7 @@ const useStyles = makeStyles(theme => ({
     },
     drawerToolbarButton: {
         marginLeft: 'auto',
-        [theme.breakpoints.up('sm')]: {
-            marginRight: -8,
-        },
+        marginRight: 11,
     },
     drawerToolbarIcon: {
         transition: theme.transitions.create('transform', {
@@ -61,12 +60,21 @@ const useStyles = makeStyles(theme => ({
         }),
     },
     filters: {
-        width: 210,
+        width: 55,
         borderRight: '1px solid rgba(0, 0, 0, 0.2)',
+        transition: theme.transitions.create('width', {
+            duration: theme.transitions.duration.shortest,
+        }),
+    },
+    wideFilters: {
+        width: 210,
     },
     expanded: {
         transform: 'rotate(180deg)',
-    }
+    },
+    unPinned: {
+        transform: 'translateY(-3px) rotate(45deg) scale(0.85)',
+    },
 }))
 
 export default function Search({ collections }) {
@@ -109,6 +117,9 @@ export default function Search({ collections }) {
             }, DEFAULT_MAX_RESULTS),
         [collections, query]
     )
+
+    const [wideFilters, setWideFilters] = useState(true)
+    const [drawerPinned, setDrawerPinned] = useState(true)
 
     const handleCollectionsChange = useCallback(value => {
         search({ collections: value, page: 1 })
@@ -169,6 +180,41 @@ export default function Search({ collections }) {
         setSearchText(event.target.value)
     }
 
+    const drawerRef = useRef()
+    const [drawerWidth, setDrawerWidth] = useState()
+
+    useEffect(() => {
+        if (drawerRef.current && !drawerRef.current.className) {
+            setDrawerWidth(drawerRef.current.getBoundingClientRect().width)
+        }
+    }, [drawerRef.current])
+
+    const drawerToolbar = (
+        <Toolbar variant="dense" className={classes.drawerToolbar} disableGutters>
+            <Tooltip title={drawerPinned ? 'Unpin' : 'Pin'}>
+                <IconButton
+                    size="small"
+                    className={classes.drawerToolbarButton}
+                    onClick={() => setDrawerPinned(pinned => {
+                        if (!pinned) {
+                            setDrawerOpenCategory(category => {
+                                setTimeout(() => setDrawerOpenCategory(category), duration.leavingScreen)
+                                return null
+                            })
+                        }
+                        return !pinned
+                    })}
+                >
+                    {drawerPinned ? (
+                        <PinDrop className={classes.drawerToolbarIcon} />
+                    ) : (
+                        <Room className={cn(classes.drawerToolbarIcon, classes.unPinned)} />
+                    )}
+                </IconButton>
+            </Tooltip>
+        </Toolbar>
+    )
+
     return (
         <DocumentProvider
             id={selectedDocData?.i}
@@ -177,73 +223,80 @@ export default function Search({ collections }) {
         >
             <HotKeys inputRef={inputRef}>
                 <Grid container>
-                    <Grid item className={classes.filters}>
-                        {/*
-                        <Toolbar variant="dense" className={classes.drawerToolbar}>
-                            <Tooltip title="Collapse">
-                                <IconButton
-                                    size="small"
-                                    className={classes.drawerToolbarButton}
-                                    disabled
-                                >
-                                    <DoubleArrow className={cn(classes.drawerToolbarIcon, { [classes.expanded]: true })} />
-                                </IconButton>
-                            </Tooltip>
-                        </Toolbar>
-                        */}
-
-                        <CategoryDrawer
-                            key="collections"
-                            title="Collections"
-                            icon={<Collections />}
-                            highlight={false}
-                            open={drawerOpenCategory === 'collections'}
-                            onOpen={() => setDrawerOpenCategory('collections')}
-                        >
-                            <Expandable
-                                title={`Collections (${query.collections?.length || 0})`}
-                                open={true}
-                                highlight={false}
+                    <Transition in={wideFilters} timeout={{
+                        enter: duration.enteringScreen,
+                        exit: duration.leavingScreen,
+                    }}>
+                        {state => (
+                            <Grid
+                                item
+                                className={cn(classes.filters, {
+                                    [classes.wideFilters]: state === 'entering' || state === 'entered'
+                                })}
                             >
-                                <CollectionsFilter
-                                    collections={collections}
-                                    selected={query.collections || []}
-                                    changeSelection={handleCollectionsChange}
-                                    counts={collectionsCount}
-                                />
-                            </Expandable>
-                        </CategoryDrawer>
+                                <Toolbar variant="dense" className={classes.drawerToolbar} disableGutters>
+                                    <Tooltip title={wideFilters ? 'Collapse' : 'Expand'}>
+                                        <IconButton
+                                            size="small"
+                                            className={classes.drawerToolbarButton}
+                                            onClick={() => setWideFilters(toggle => !toggle)}
+                                        >
+                                            <DoubleArrow className={cn(classes.drawerToolbarIcon, { [classes.expanded]: wideFilters })} />
+                                        </IconButton>
+                                    </Tooltip>
+                                </Toolbar>
 
-                        <Filters
-                            categories={filtersCategories}
-                            drawerOpenCategory={drawerOpenCategory}
-                            onDrawerOpen={setDrawerOpenCategory}
-                            expandedFilters={expandedFilters}
-                            onFilterExpand={setExpandedFilters}
-                        />
-                    </Grid>
+                                <CategoryDrawer
+                                    key="collections"
+                                    title="Collections"
+                                    icon={<Collections />}
+                                    highlight={false}
+                                    portalRef={drawerRef}
+                                    width={drawerWidth}
+                                    wideFilters={wideFilters}
+                                    pinned={drawerPinned}
+                                    toolbar={drawerToolbar}
+                                    category="collections"
+                                    open={drawerOpenCategory === 'collections'}
+                                    onOpen={setDrawerOpenCategory}
+                                >
+                                    <Expandable
+                                        title={`Collections (${query.collections?.length || 0})`}
+                                        open={true}
+                                        highlight={false}
+                                    >
+                                        <CollectionsFilter
+                                            collections={collections}
+                                            selected={query.collections || []}
+                                            changeSelection={handleCollectionsChange}
+                                            counts={collectionsCount}
+                                        />
+                                    </Expandable>
+                                </CategoryDrawer>
+
+                                <Filters
+                                    wideFilters={wideFilters}
+                                    categories={filtersCategories}
+                                    drawerOpenCategory={drawerOpenCategory}
+                                    onDrawerOpen={setDrawerOpenCategory}
+                                    expandedFilters={expandedFilters}
+                                    onFilterExpand={setExpandedFilters}
+                                    drawerWidth={drawerWidth}
+                                    drawerPinned={drawerPinned}
+                                    drawerToolbar={drawerToolbar}
+                                    drawerPortalRef={drawerRef}
+                                />
+                            </Grid>
+                        )}
+                    </Transition>
 
                     <Grid item style={{ flex: 1 }}>
                         <SplitPaneLayout
                             left={
-                                <>
-                                    {/*
-                                    <Toolbar variant="dense" className={classes.drawerToolbar}>
-                                        <Tooltip title="Unpin">
-                                            <IconButton
-                                                size="small"
-                                                className={classes.drawerToolbarButton}
-                                                disabled
-                                            >
-                                                <PinDrop className={classes.drawerToolbarIcon} />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </Toolbar>
-                                    */}
-
-                                    <div id="category-drawer" />
-                                </>
+                                drawerPinned && <div ref={drawerRef} />
                             }
+                            onLeftChange={size => setDrawerWidth(size)}
+                            defaultSizeLeft={drawerWidth}
                             right={
                                 <Document
                                     onPrev={previewPreviousDoc}
@@ -251,7 +304,7 @@ export default function Search({ collections }) {
                                 />
                             }
                         >
-                            <div className={classes.main}>
+                            <div className={classes.main} ref={!drawerPinned ? drawerRef : undefined}>
                                 <Grid container>
                                     <Grid item sm={12}>
                                         <form onSubmit={handleSubmit}>

@@ -109,6 +109,7 @@ export const aggregationFields = {
         filterLabel: 'Path',
         chipLabel: 'Path',
         type: 'term-or',
+        bucketsMax: true,
     },
     size: {
         filterLabel: 'Size',

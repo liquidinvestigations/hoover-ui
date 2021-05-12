@@ -41,7 +41,7 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange, loading }) {
     }, [defaultFrom, defaultTo])
 
     return (
-        <List>
+        <List disablePadding>
             <ListItem>
                 <KeyboardDatePicker
                     value={from}

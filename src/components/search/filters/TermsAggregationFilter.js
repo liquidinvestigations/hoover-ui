@@ -4,6 +4,7 @@ import { Typography } from '@material-ui/core'
 import Expandable from '../../Expandable'
 import AggregationFilter from './AggregationFilter'
 import { formatThousands } from '../../../utils'
+import { aggregationFields } from '../../../constants/aggregationFields'
 
 function TermsAggregationFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations, loading, ...rest }) {
 
@@ -21,8 +22,16 @@ function TermsAggregationFilter({ title, field, open, onToggle, queryFilter, que
             summary={
                 !!aggregations?.values.buckets.length && (
                     <Typography variant="caption" display="block">
-                        {aggregations?.count.value > aggregations?.values.buckets.length && '> '}
-                        {formatThousands(aggregations?.values.buckets.reduce((acc, { doc_count }) => acc + parseInt(doc_count), 0))} hits
+                        {
+                            !aggregationFields[field].buckets &&
+                            !aggregationFields[field].bucketsMax &&
+                            aggregations?.count.value > aggregations?.values.buckets.length &&
+                            '> '
+                        }
+                        {formatThousands(aggregationFields[field].bucketsMax ?
+                            aggregations?.values.buckets.reduce((acc, { doc_count }) => Math.max(acc, parseInt(doc_count)), 0) :
+                            aggregations?.values.buckets.reduce((acc, { doc_count }) => acc + parseInt(doc_count), 0)
+                        )} hits
                         {', '}
                         {aggregations?.count.value} buckets
                     </Typography>

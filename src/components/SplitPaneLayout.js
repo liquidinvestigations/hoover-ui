@@ -40,38 +40,54 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function SplitPaneLayout({ left, children, right,  defaultSizeLeft = '20%',
-                             defaultSizeMiddle = '60%', container = true, } = {}) {
+function SplitPaneLayout({ left, children, right, onLeftChange, onMiddleChange,
+                             defaultSizeLeft = '20%', defaultSizeMiddle = '60%', container = true, } = {}) {
 
     const classes = useStyles()
 
-    if (!left || !children) {
-        return null
-    }
-
     return (
         <div className={container ? classes.container : null}>
-            <SplitPane
-                split="vertical"
-                defaultSize={defaultSizeLeft}
-                allowResize
-                pane1ClassName={classes.left}
-                pane2ClassName={right ? null : classes.middle}
-            >
-                {left}
-                {right ? (
+            {left ? (
+                <SplitPane
+                    key="left"
+                    split="vertical"
+                    defaultSize={defaultSizeLeft}
+                    allowResize
+                    onChange={onLeftChange}
+                    pane1ClassName={classes.left}
+                    pane2ClassName={right ? null : classes.middle}
+                >
+                    {left}
+                    {right ? (
+                        <SplitPane
+                            split="vertical"
+                            defaultSize={defaultSizeMiddle}
+                            allowResize
+                            onChange={onMiddleChange}
+                            pane1ClassName={classes.middle}
+                            pane2ClassName={classes.right}
+                        >
+                            {children}
+                            {right}
+                        </SplitPane>
+                    ) : (children)}
+                </SplitPane>
+            ) : (
+                right ? (
                     <SplitPane
+                        key="middle"
                         split="vertical"
                         defaultSize={defaultSizeMiddle}
                         allowResize
+                        onChange={onMiddleChange}
                         pane1ClassName={classes.middle}
                         pane2ClassName={classes.right}
                     >
                         {children}
                         {right}
                     </SplitPane>
-                ) : (children)}
-            </SplitPane>
+                ) : (children)
+            )}
         </div>
     )
 }
