@@ -128,8 +128,24 @@ export const shortenName = (name, length = ELLIPSIS_TERM_LENGTH) => name && name
         <span>{`${name.substr(0, 2/3*length-3)}...${name.substr(-1/3*length)}`}</span>
     </Tooltip> : name
 
-export const formatThousands = n =>
-    String(n).replace(/(?<!\..*)(\d)(?=(?:\d{3})+(?:\.|$))/g, '$1,')
+export const formatThousands = n => {
+    let decimalPart = ''
+    n = n.toString()
+    if ( n.indexOf( '.' ) !== -1 ) {
+        decimalPart = '.'+ n.split( '.' )[1]
+        n = parseInt(n.split( '.' )[0])
+    }
+
+    const array = n.toString().split( '' )
+    let index = -3
+    while ( array.length + index > 0 ) {
+        array.splice( index, 0, ',' )
+        // Decrement by 4 since we just added another unit to the array.
+        index -= 4;
+    }
+
+    return array.join( '' ) + decimalPart
+}
 
 export const copyMetadata = doc => {
     const string = [doc.content.md5, doc.content.path].join('\n');
