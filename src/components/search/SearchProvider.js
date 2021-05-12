@@ -1,18 +1,31 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import AbortController from 'abort-controller/dist/abort-controller'
 import { useRouter } from 'next/router'
 import qs from 'qs'
+import { Button, IconButton, Snackbar } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
+import { Close } from '@material-ui/icons'
 import fixLegacyQuery from '../../fixLegacyQuery'
 import { getPreviewParams } from '../../utils'
 import { useHashState } from '../HashStateProvider'
 import { buildSearchQuerystring, rollupParams, unwindParams } from '../../queryUtils'
 import { aggregationFields } from '../../constants/aggregationFields'
 import { search as searchAPI } from '../../api'
+import { tags as tagsAPI } from '../../backend/api'
+import { TAGS_REFRESH_DELAYS } from '../../constants/general'
+
+const useStyles = makeStyles((theme) => ({
+    close: {
+        padding: theme.spacing(0.5),
+    },
+}))
 
 const SearchContext = createContext({})
 
 const maxAggregationsBatchSize = Math.ceil(Object.entries(aggregationFields).length / process.env.AGGREGATIONS_SPLIT)
 
 export function SearchProvider({ children, serverQuery }) {
+    const classes = useStyles()
     const router = useRouter()
     const { pathname } = router
 
@@ -138,6 +151,7 @@ export function SearchProvider({ children, serverQuery }) {
         }
     }
 
+    const [forcedRefresh, forceRefresh] = useState({})
     const [aggregations, setAggregations] = useState()
     const [aggregationsError, setAggregationsError] = useState()
     const [aggregationsLoading, setAggregationsLoading] = useState(
@@ -179,7 +193,7 @@ export function SearchProvider({ children, serverQuery }) {
         page: null,
         size: null,
         order: null,
-    })])
+    }), forcedRefresh])
 
     const prevQueryRef = useRef()
     useEffect(() => {
@@ -259,15 +273,99 @@ export function SearchProvider({ children, serverQuery }) {
         }
     }, [query, hashState, results, resultsLoading])
 
+
+    const periodicallyCheckIndexedTime = (digestUrl) => {
+        let timeout, delayIndex = 0
+
+        const promise = new Promise((resolve, reject) => {
+            const runDelayedQuery = delay => {
+                timeout = setTimeout(() => {
+                    tagsAPI(digestUrl).then(data => {
+                        if (data.every(tag => !!tag.date_indexed)) {
+                            resolve()
+                        } else if (delayIndex < TAGS_REFRESH_DELAYS.length) {
+                            runDelayedQuery(TAGS_REFRESH_DELAYS[delayIndex++])
+                        } else {
+                            reject()
+                        }
+                    })
+                }, delay)
+            }
+            runDelayedQuery(TAGS_REFRESH_DELAYS[delayIndex++])
+        })
+
+        const cancel = () => clearTimeout(timeout)
+
+        return { cancel, promise }
+    }
+
+    const [tagsRefreshQueue, setTagsRefreshQueue] = useState(null)
+    const addTagToRefreshQueue = digestUrl => {
+        if (tagsRefreshQueue) {
+            tagsRefreshQueue.cancel()
+        }
+        setTagsRefreshQueue(periodicallyCheckIndexedTime(digestUrl))
+    }
+
+    const [snackbarMessage, setSnackbarMessage] = useState(null)
+    const handleSnackbarClose = () => setSnackbarMessage(null)
+    useEffect(() => {
+        if (tagsRefreshQueue) {
+            tagsRefreshQueue.promise.then(() => {
+                setTagsRefreshQueue(null)
+                setSnackbarMessage(
+                    <Button color="inherit" onClick={() => {
+                        handleSnackbarClose()
+                        forceRefresh({})
+                    }}>
+                        Refresh for new tags
+                    </Button>
+                )
+            }).catch(() => {
+                setTagsRefreshQueue(null)
+            })
+        }
+
+        return () => {
+            if (tagsRefreshQueue) {
+                tagsRefreshQueue.cancel()
+            }
+        }
+    }, [tagsRefreshQueue])
+
     return (
         <SearchContext.Provider value={{
             query, error, search, searchText, setSearchText,
             results, aggregations, aggregationsError,
             collectionsCount, resultsLoading, aggregationsLoading,
             previewNextDoc, previewPreviousDoc, selectedDocData,
-            clearResults
+            clearResults, addTagToRefreshQueue
         }}>
             {children}
+            <Snackbar
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                open={Boolean(snackbarMessage)}
+                autoHideDuration={30000}
+                onClose={handleSnackbarClose}
+                message={snackbarMessage}
+                ClickAwayListenerProps={{
+                    mouseEvent: false,
+                    touchEvent: false,
+                }}
+                action={
+                    <IconButton
+                        aria-label="close"
+                        color="inherit"
+                        className={classes.close}
+                        onClick={handleSnackbarClose}
+                    >
+                        <Close />
+                    </IconButton>
+                }
+            />
         </SearchContext.Provider>
     )
 }
