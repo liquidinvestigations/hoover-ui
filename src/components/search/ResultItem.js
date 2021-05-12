@@ -9,13 +9,18 @@ import {
     CardHeader,
     Grid,
     IconButton,
-    SvgIcon,
     Tooltip,
     Typography
 } from '@material-ui/core'
 import { useUser } from '../UserProvider'
 import { useHashState } from '../HashStateProvider'
-import { getIconReactComponent, getPreviewParams, humanFileSize, makeUnsearchable, truncatePath } from '../../utils'
+import {
+    getPreviewParams,
+    getTypeIcon,
+    humanFileSize,
+    makeUnsearchable,
+    truncatePath
+} from '../../utils'
 import { createDownloadUrl } from '../../backend/api'
 import { specialTags, specialTagsList } from '../../constants/specialTags'
 import { reactIcons } from '../../constants/icons'
@@ -189,10 +194,7 @@ function ResultItem({ hit, url, index }) {
                             <Grid item component="span" className={classes.infoBox}>
                                 <Tooltip placement="top" title={fields['content-type']}>
                                     <Box component="span" className={classes.infoBox}>
-                                        <SvgIcon
-                                            className={classes.infoIcon}
-                                            component={getIconReactComponent(fields.filetype)}
-                                        />
+                                        {cloneElement(reactIcons[getTypeIcon(fields.filetype)], { className: classes.infoIcon })}
                                     </Box>
                                 </Tooltip>
                             </Grid>

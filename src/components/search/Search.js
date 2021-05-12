@@ -251,7 +251,7 @@ export default function Search({ collections }) {
                                 <CategoryDrawer
                                     key="collections"
                                     title="Collections"
-                                    icon="collections"
+                                    icon="categoryCollections"
                                     highlight={false}
                                     portalRef={drawerRef}
                                     width={drawerWidth}

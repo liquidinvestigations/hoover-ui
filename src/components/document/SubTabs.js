@@ -100,7 +100,7 @@ function SubTabs() {
                             fullHeight={false}
                             title={
                                 <>
-                                    {cloneElement(reactIcons.folderOutlined, { className: classes.icon })}
+                                    {cloneElement(reactIcons.contentFiles, { className: classes.icon })}
                                     Files
                                 </>
                             }

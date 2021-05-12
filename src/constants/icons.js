@@ -1,4 +1,5 @@
 import React from 'react'
+import { SvgIcon } from '@material-ui/core'
 import {
     AccountTree,
     AccountTreeOutlined,
@@ -50,25 +51,35 @@ import {
     ZoomOut,
 } from '@material-ui/icons'
 
+import folder, { ReactComponent as FolderIcon } from '../../icons/folder-line.svg'
+import archive, { ReactComponent as ArchiveIcon } from '../../icons/file-zip-line.svg'
+import email, { ReactComponent as EmailIcon } from '../../icons/mail-line.svg'
+import pdf, { ReactComponent as PdfIcon } from '../../icons/file-pdf-line.svg'
+import doc, { ReactComponent as DocIcon } from '../../icons/file-word-line.svg'
+import xls, { ReactComponent as XlsIcon } from '../../icons/file-excel-line.svg'
+import file, { ReactComponent as FileIcon } from '../../icons/file-line.svg'
+
+
 export const reactIcons = {
-    tag:                        <LocalOffer />,
-    calendar:                   <DateRange />,
-    event:                      <Event />,
-    category:                   <Category />,
-    language:                   <Language/>,
-    email:                      <AlternateEmail/>,
-    tree:                       <AccountTree />,
-    size:                       <SettingsEthernet/>,
+    categoryCollections:        <Collections />,
+    categoryTags:               <LocalOffer />,
+    categoryDates:              <DateRange />,
+    categoryType:               <Category />,
+    categoryLanguage:           <Language/>,
+    categoryEmail:              <AlternateEmail/>,
+    categoryLocation:           <AccountTree />,
+    categorySize:               <SettingsEthernet />,
     ocr:                        <Translate/>,
-    collections:                <Collections />,
+    event:                      <Event />,
+    tree:                       <AccountTree />,
     chevronLeft:                <ChevronLeft />,
     chevronRight:               <ChevronRight />,
     chevronDown:                <ExpandMore />,
     arrowUp:                    <ArrowUpward />,
     arrowDown:                  <ArrowDownward />,
     dropDown:                   <ArrowDropDown />,
-    folder:                     <Folder />,
-    folderOutlined:             <FolderOutlined />,
+    location:                   <Folder />,
+    contentFiles:               <FolderOutlined />,
     pinned:                     <PinDrop />,
     unpinned:                   <Room />,
     doubleArrow:                <DoubleArrow />,
@@ -101,4 +112,24 @@ export const reactIcons = {
     metaTab:                    <SettingsApplicationsOutlined />,
     codeTab:                    <CodeOutlined />,
     headersTab:                 <AccountTreeOutlined />,
+
+    typeFolder:                 <SvgIcon component={ FolderIcon } />,
+    typeArchive:                <SvgIcon component={ ArchiveIcon } />,
+    typeEmail:                  <SvgIcon component={ EmailIcon } />,
+    typePdf:                    <SvgIcon component={ PdfIcon } />,
+    typeDoc:                    <SvgIcon component={ DocIcon } />,
+    typeXls:                    <SvgIcon component={ XlsIcon } />,
+    typeEmailArchive:           <SvgIcon component={ ArchiveIcon } />,
+    typeFile:                   <SvgIcon component={ FileIcon } />,
+}
+
+export const imageIcons = {
+    typeFolder:                 folder,
+    typeArchive:                archive,
+    typeEmail:                  email,
+    typePdf:                    pdf,
+    typeDoc:                    doc,
+    typeXls:                    xls,
+    typeEmailArchive:           archive,
+    typeFile:                   file,
 }

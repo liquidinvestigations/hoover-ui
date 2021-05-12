@@ -80,7 +80,7 @@ function Locations({ url: docUrl, data }) {
                             <a>
                                 <ListItem button>
                                     <ListItemIcon>
-                                        {reactIcons.folder}
+                                        {reactIcons.location}
                                     </ListItemIcon>
 
                                     <Typography style={{ wordBreak: 'break-all' }}>

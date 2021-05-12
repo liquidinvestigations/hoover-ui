@@ -1,37 +1,37 @@
 export const aggregationCategories = {
     tags: {
         label: 'Tags',
-        icon: 'tag',
+        icon: 'categoryTags',
         filters: ['tags', 'priv-tags'],
     },
     dates: {
         label: 'Dates',
-        icon: 'calendar',
+        icon: 'categoryDates',
         filters: ['date', 'date-created'],
     },
     type: {
         label: 'File Types',
-        icon: 'category',
+        icon: 'categoryType',
         filters: ['content-type', 'filetype'],
     },
     language: {
         label: 'Language',
-        icon: 'language',
+        icon: 'categoryLanguage',
         filters: ['lang'],
     },
     email: {
         label: 'Email',
-        icon: 'email',
+        icon: 'categoryEmail',
         filters: ['email-domains', 'from.keyword', 'to.keyword', 'attachments', 'pgp'],
     },
     location: {
         label: 'Location',
-        icon: 'tree',
+        icon: 'categoryLocation',
         filters: ['path-parts'],
     },
     size: {
         label: 'File Sizes',
-        icon: 'size',
+        icon: 'categorySize',
         filters: ['size', 'word-count']
     },
     ocr: {
