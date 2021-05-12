@@ -1,5 +1,9 @@
 import React from 'react'
 import { SvgIcon } from '@material-ui/core'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
+import { faBoxes } from '@fortawesome/free-solid-svg-icons'
+
 import {
     AccountTree,
     AccountTreeOutlined,
@@ -16,7 +20,6 @@ import {
     CloudDownload,
     CloudDownloadOutlined,
     CodeOutlined,
-    Collections,
     DateRange,
     Delete,
     DeleteOutlined,
@@ -59,9 +62,9 @@ import doc, { ReactComponent as DocIcon } from '../../icons/file-word-line.svg'
 import xls, { ReactComponent as XlsIcon } from '../../icons/file-excel-line.svg'
 import file, { ReactComponent as FileIcon } from '../../icons/file-line.svg'
 
-
 export const reactIcons = {
-    categoryCollections:        <Collections />,
+    categoryCollections:        <FontAwesomeIcon icon={faBoxes} size="lg" />,
+
     categoryTags:               <LocalOffer />,
     categoryDates:              <DateRange />,
     categoryType:               <Category />,

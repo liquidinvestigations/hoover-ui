@@ -68,3 +68,21 @@ Upgrading the node version requires a version bump in the following files:
 -   .travis.yml
 -   Dockerfile
 
+## Icons
+
+The project uses the following icon libraries:
+
+- [MaterialUI Icons](https://material-ui.com/components/material-icons/)
+- [Font Awesome](https://fontawesome.com/icons?d=gallery&p=2&s=solid&m=free) (free, solid)
+- Individual icons loaded from SVG for file types: 
+![alt text](https://raw.githubusercontent.com/liquidinvestigations/hoover-ui/master/icons/file-excel-line.svg)
+![alt text](https://raw.githubusercontent.com/liquidinvestigations/hoover-ui/master/icons/file-line.svg)
+![alt text](https://raw.githubusercontent.com/liquidinvestigations/hoover-ui/master/icons/file-pdf-line.svg)
+![alt text](https://raw.githubusercontent.com/liquidinvestigations/hoover-ui/master/icons/file-word-line.svg)
+![alt text](https://raw.githubusercontent.com/liquidinvestigations/hoover-ui/master/icons/file-zip-line.svg)
+![alt text](https://raw.githubusercontent.com/liquidinvestigations/hoover-ui/master/icons/folder-line.svg)
+![alt text](https://raw.githubusercontent.com/liquidinvestigations/hoover-ui/master/icons/mail-line.svg)
+    
+
+Any additional library with icons in SVG format can be added, for example [Bootstrap Icons](https://icons.getbootstrap.com/)
+
