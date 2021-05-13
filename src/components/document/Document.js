@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from 'react'
+import React, { cloneElement, memo, useEffect } from 'react'
 import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
 import { Badge, Box, Chip, Grid, IconButton, Tabs, Toolbar, Tooltip, Typography } from '@material-ui/core'
@@ -16,6 +16,7 @@ import { useUser } from '../UserProvider'
 import { createOcrUrl } from '../../backend/api'
 import { specialTags } from '../../constants/specialTags'
 import { reactIcons } from '../../constants/icons'
+import { getTagIcon } from '../../utils'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -170,22 +171,22 @@ function Document({ onPrev, onNext }) {
             })
         }
 
-        specialTags.forEach(s => {
-            const present = tags.find(tag => tag.tag === s.tag && tag.user === whoAmI.username)
-            const count = tags.filter(tag => tag.tag === s.tag && tag.user !== whoAmI.username)?.length || null
+        Object.entries(specialTags).forEach(([tag, params]) => {
+            const present = tags.find(current => current.tag === tag && current.public === params.public && current.user === whoAmI.username)
+            const count = tags.filter(current => current.tag === tag && current.public === params.public && current.user !== whoAmI.username)?.length || null
             const link = {
-                icon: present ? reactIcons[s.present.icon] : reactIcons[s.absent.icon],
-                label: present ? s.present.label : s.absent.label,
-                style: { color: present ? s.present.color : s.absent.color },
-                tooltip: s.tooltip,
+                icon: present ? reactIcons[params.present.icon] : reactIcons[params.absent.icon],
+                label: present ? params.present.label : params.absent.label,
+                style: { color: present ? params.present.color : params.absent.color },
+                tooltip: params.tooltip,
                 disabled: tagsLocked,
-                onClick: handleSpecialTagClick(present, s.tag),
+                onClick: handleSpecialTagClick(present, tag),
                 count: present && count ? count + 1: count,
             }
-            if (s.showInToolbar) {
+            if (params.showInToolbar) {
                 headerLinks.tags.push(link)
             }
-            if (s.showInTagsTab) {
+            if (params.showInTagsTab) {
                 tagsLinks.push(link)
             }
         })
@@ -277,7 +278,23 @@ function Document({ onPrev, onNext }) {
                                     <Badge badgeContent={count > 1 ? count : null} color="secondary">
                                         <Chip
                                             size="small"
-                                            label={chip.tag}
+                                            label={ !!getTagIcon(chip.tag, chip.public) ?
+                                                <>
+                                                    {cloneElement(getTagIcon(chip.tag, chip.public), {
+                                                        style: {
+                                                            ...getTagIcon(chip.tag, chip.public).props.style,
+                                                            marginLeft: -4,
+                                                            marginTop: -2,
+                                                            marginRight: 2,
+                                                            fontSize: 18,
+                                                            verticalAlign: 'middle',
+                                                        }
+                                                    })}
+                                                    <span style={{ verticalAlign: 'middle' }}>
+                                                        {chip.tag}
+                                                    </span>
+                                                </> : chip.tag
+                                            }
                                             style={{
                                                 height: 20,
                                                 backgroundColor: getChipColor(chip),

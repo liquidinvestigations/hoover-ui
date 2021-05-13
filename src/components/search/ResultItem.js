@@ -243,15 +243,15 @@ function ResultItem({ hit, url, index }) {
                                 </Tooltip>
                             </Grid>
 
-                            {specialTags.map((s, k) => {
-                                const tagsField = s.public ? fields.tags : fields[`priv-tags.${whoAmI.uuid}`]
-                                if (tagsField?.includes(s.tag)) {
+                            {Object.entries(specialTags).map(([tag, params], index) => {
+                                const tagsField = params.public ? fields.tags : fields[`priv-tags.${whoAmI.uuid}`]
+                                if (tagsField?.includes(tag)) {
                                     return (
-                                        <Grid item key={k}>
-                                            <Tooltip placement="top" title={s.tag}>
-                                                {cloneElement(s.present.icon, {
+                                        <Grid item key={index}>
+                                            <Tooltip placement="top" title={tag}>
+                                                {cloneElement(reactIcons[params.present.icon], {
                                                     className: classes.actionIcon,
-                                                    style: { color: s.present.color }
+                                                    style: { color: params.present.color }
                                                 })}
                                             </Tooltip>
                                         </Grid>

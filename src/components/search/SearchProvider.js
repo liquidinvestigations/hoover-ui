@@ -43,7 +43,7 @@ export function SearchProvider({ children, serverQuery }) {
     }, [query])
 
     const search = useCallback(params => {
-        const newQuery = buildSearchQuerystring({ ...query, q: searchText || '*', ...params })
+        const newQuery = buildSearchQuerystring({ ...query, q: searchText, ...params })
         router.push(
             { pathname, search: newQuery, hash: hashState ? qs.stringify(rollupParams(hashState)) : undefined },
             undefined,

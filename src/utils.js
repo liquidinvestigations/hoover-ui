@@ -1,11 +1,12 @@
-import React from 'react'
+import React, { cloneElement } from 'react'
 import url from 'url'
 import copy from 'copy-text-to-clipboard'
 import langs from 'langs'
 import { Tooltip } from '@material-ui/core'
 import { ELLIPSIS_TERM_LENGTH } from './constants/general'
 import { DateTime } from 'luxon'
-import { imageIcons } from './constants/icons'
+import { imageIcons, reactIcons } from './constants/icons'
+import { specialTags } from './constants/specialTags'
 
 const typeIconsMap = {
     folder: 'typeFolder',
@@ -24,6 +25,20 @@ export const getIconImageElement = fileType => {
     const img = document.createElement('img')
     img.src = (imageIcons[typeIconsMap[fileType]] || imageIcons[typeIconsMap.default])
     return img
+}
+
+export const getTagIcon = (tag, isPublic = false, absent = false) => {
+    if (specialTags[tag]) {
+        const state = absent ? 'absent' : 'present'
+        if ((isPublic && specialTags[tag].public) || (!isPublic && !specialTags[tag].public)) {
+            return cloneElement(reactIcons[specialTags[tag][state].icon], {
+                style: {
+                    color: specialTags[tag][state].color,
+                },
+            })
+        }
+    }
+    return null
 }
 
 export const getLanguageName = key => {
