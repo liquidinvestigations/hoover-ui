@@ -189,7 +189,7 @@ export default function FiltersChips() {
             }
 
             const icon = getTagIcon(term, q.field === 'tags', q.prefix === '-' || q.prefix === '!')
-            if (q.field === 'tags' || g.field === 'priv-tags' && !!icon) {
+            if ((q.field === 'tags' || q.field === 'priv-tags') && !!icon) {
                 term = (
                     <>
                         {cloneElement(icon, {
