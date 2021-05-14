@@ -21,7 +21,7 @@ const buildUrl = (...paths) => {
 const fetchJson = async (url, opts = {}) => {
     const res = await fetch((typeof window === 'undefined' ? API_URL : '') + url, {
         ...opts,
-        timeout: 60000,
+        timeout: 100000,
         headers: {
             ...(opts.headers || {}),
             'Content-Type': 'application/json',
