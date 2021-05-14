@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { cloneElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import cn from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
 import { CircularProgress, Collapse, Grid, IconButton, ListItem, Typography } from '@material-ui/core'
-import { ExpandMore } from '@material-ui/icons'
+import { reactIcons } from '../constants/icons'
 
 const useStyles = makeStyles(theme => ({
     title: {
@@ -135,7 +135,7 @@ function Expandable({ title, loading, summary, children, greyed, defaultOpen, op
                             aria-expanded={openState}
                             aria-label="Show more"
                         >
-                            <ExpandMore color={highlight ? 'secondary' : 'action'} />
+                            {cloneElement(reactIcons.chevronDown, { color: highlight ? 'secondary' : 'action'})}
                         </IconButton>
                     </Grid>
                 )}

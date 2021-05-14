@@ -2,10 +2,10 @@ import React, { memo, useEffect, useState } from 'react'
 import Link from 'next/link'
 import url from 'url'
 import { List, ListItem, ListItemIcon, Typography } from '@material-ui/core'
-import { Folder } from '@material-ui/icons'
+import { makeStyles } from '@material-ui/core/styles'
 import Loading from './Loading'
 import { locations as locationsAPI } from '../backend/api'
-import { makeStyles } from '@material-ui/core/styles'
+import { reactIcons } from '../constants/icons'
 
 const useStyles = makeStyles(theme => ({
     error: {
@@ -80,7 +80,7 @@ function Locations({ url: docUrl, data }) {
                             <a>
                                 <ListItem button>
                                     <ListItemIcon>
-                                        <Folder />
+                                        {reactIcons.location}
                                     </ListItemIcon>
 
                                     <Typography style={{ wordBreak: 'break-all' }}>

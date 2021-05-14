@@ -1,9 +1,9 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { CircularProgress, IconButton } from '@material-ui/core'
-import { NavigateBefore, NavigateNext } from '@material-ui/icons'
 import { useSearch } from '../SearchProvider'
 import { DEFAULT_FACET_SIZE } from '../../../constants/general'
+import { reactIcons } from '../../../constants/icons'
 
 const useStyles = makeStyles(theme => ({
     loading: {
@@ -40,15 +40,17 @@ export default function Pagination({ field }) {
                 size="small"
                 tabIndex="-1"
                 onClick={handlePrev}
-                disabled={aggregationsLoading[field] || !hasPrev}>
-                <NavigateBefore/>
+                disabled={aggregationsLoading[field] || !hasPrev}
+            >
+                {reactIcons.chevronLeft}
             </IconButton>
 
             <IconButton
                 size="small"
                 onClick={handleNext}
-                disabled={aggregationsLoading[field] || !hasNext}>
-                <NavigateNext/>
+                disabled={aggregationsLoading[field] || !hasNext}
+            >
+                {reactIcons.chevronRight}
             </IconButton>
 
             {aggregationsLoading[field] && (

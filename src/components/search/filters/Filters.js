@@ -1,11 +1,11 @@
 import React, { memo, useCallback } from 'react'
-import DateHistogramFilter from './DateHistogramFilter'
+import { makeStyles } from '@material-ui/core/styles'
+import { CircularProgress, Typography } from '@material-ui/core'
 import TermsAggregationFilter from './TermsAggregationFilter'
+import DateHistogramFilter from './DateHistogramFilter'
+import CategoryDrawer from './CategoryDrawer'
 import { useSearch } from '../SearchProvider'
 import { getLanguageName } from '../../../utils'
-import { CircularProgress, Typography } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
-import CategoryDrawer from './CategoryDrawer'
 
 const useStyles = makeStyles(theme => ({
     error: {

@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useMemo, useState } from 'react'
+import React, { cloneElement, memo, useEffect, useMemo, useState } from 'react'
 import {
     Box,
     Button,
@@ -15,7 +15,6 @@ import {
     Typography
 } from '@material-ui/core'
 import { Autocomplete } from '@material-ui/lab'
-import { Lock, LockOpen } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles'
 import { blue } from '@material-ui/core/colors'
 import Loading from '../Loading'
@@ -24,6 +23,8 @@ import { useUser } from '../UserProvider'
 import { useDocument } from './DocumentProvider'
 import { specialTags, specialTagsList } from '../../constants/specialTags'
 import { search as searchAPI } from '../../api'
+import { reactIcons } from '../../constants/icons'
+import { getTagIcon } from '../../utils'
 
 const forbiddenCharsRegex = /[^a-z0-9_!@#$%^&*()-=+:,./?]/gi
 
@@ -72,14 +73,7 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-export const getChipColor = chip => {
-    const data = specialTags.find(tag => tag.tag === chip.tag)
-    if (data?.color) {
-        return data.color
-    } else if (chip.public) {
-        return blue[200]
-    }
-}
+export const getChipColor = chip => chip.public ? blue[200] : undefined
 
 function Tags({ toolbarButtons }) {
     const classes = useStyles()
@@ -274,14 +268,28 @@ function Tags({ toolbarButtons }) {
                         value.map((chip, index) => (
                             <TagTooltip key={index} chip={chip}>
                                 <Chip
-                                    label={chip.tag}
+                                    label={ !!getTagIcon(chip.tag, chip.public) ?
+                                        <>
+                                            {cloneElement(getTagIcon(chip.tag, chip.public), {
+                                                style: {
+                                                    ...getTagIcon(chip.tag, chip.public).props.style,
+                                                    marginLeft: -8,
+                                                    marginRight: 4,
+                                                    verticalAlign: 'middle',
+                                                }
+                                            })}
+                                            <span style={{ verticalAlign: 'middle' }}>
+                                                        {chip.tag}
+                                                    </span>
+                                        </> : chip.tag
+                                    }
                                     icon={chip.user === whoAmI.username && !specialTagsList.includes(chip.tag) ?
                                         <Tooltip title={`make ${chip.public ? 'private' : 'public'}`}>
                                             <IconButton
                                                 size="small"
                                                 onClick={handleTagLockClick(chip)}
                                             >
-                                                {chip.public ? <LockOpen /> : <Lock />}
+                                                {chip.public ? reactIcons.publicTag : reactIcons.privateTag}
                                             </IconButton>
                                         </Tooltip> : null
                                     }
@@ -344,11 +352,25 @@ function Tags({ toolbarButtons }) {
                                 <Grid item className={classes.tag} key={key}>
                                     <TagTooltip key={key} chip={chip}>
                                         <Chip
-                                            label={chip.tag}
+                                            label={ !!getTagIcon(chip.tag, chip.public) ?
+                                                <>
+                                                    {cloneElement(getTagIcon(chip.tag, chip.public), {
+                                                        style: {
+                                                            ...getTagIcon(chip.tag, chip.public).props.style,
+                                                            marginLeft: -8,
+                                                            marginRight: 4,
+                                                            verticalAlign: 'middle',
+                                                        }
+                                                    })}
+                                                    <span style={{ verticalAlign: 'middle' }}>
+                                                        {chip.tag}
+                                                    </span>
+                                                </> : chip.tag
+                                            }
                                             icon={!specialTagsList.includes(chip.tag) ?
                                                 <Tooltip title={`make ${chip.public ? 'private' : 'public'}`}>
                                                     <IconButton size="small">
-                                                        {chip.public ? <LockOpen /> : <Lock />}
+                                                        {chip.public ? reactIcons.publicTag : reactIcons.privateTag}
                                                     </IconButton>
                                                 </Tooltip> : null
                                             }

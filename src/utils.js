@@ -1,50 +1,48 @@
-import React from 'react'
+import React, { cloneElement } from 'react'
 import url from 'url'
 import copy from 'copy-text-to-clipboard'
 import langs from 'langs'
 import { Tooltip } from '@material-ui/core'
 import { ELLIPSIS_TERM_LENGTH } from './constants/general'
-import file, { ReactComponent as FileIcon } from '../icons/file-line.svg'
-import folder, { ReactComponent as FolderIcon } from '../icons/folder-line.svg'
-import archive, { ReactComponent as ArchiveIcon } from '../icons/file-zip-line.svg'
-import email, { ReactComponent as EmailIcon } from '../icons/mail-line.svg'
-import pdf, { ReactComponent as PdfIcon } from '../icons/file-pdf-line.svg'
-import doc, { ReactComponent as DocIcon } from '../icons/file-word-line.svg'
-import xls, { ReactComponent as XlsIcon } from '../icons/file-excel-line.svg'
 import { DateTime } from 'luxon'
+import { imageIcons, reactIcons } from './constants/icons'
+import { specialTags } from './constants/specialTags'
+
+const typeIconsMap = {
+    folder: 'typeFolder',
+    archive: 'typeArchive',
+    email: 'typeEmail',
+    pdf: 'typePdf',
+    doc: 'typeDoc',
+    xls: 'typeXls',
+    'email-archive': 'typeEmailArchive',
+    default: 'typeFile',
+}
+
+export const getTypeIcon = fileType => typeIconsMap[fileType] || typeIconsMap.default
 
 export const getIconImageElement = fileType => {
-    const srcMap = {
-        folder,
-        archive,
-        email,
-        pdf,
-        doc,
-        xls,
-        'email-archive': archive,
-        default: file
-    }
-    const img = document.createElement('img');
-    img.src = (srcMap[fileType] || srcMap.default);
+    const img = document.createElement('img')
+    img.src = (imageIcons[typeIconsMap[fileType]] || imageIcons[typeIconsMap.default])
     return img
 }
 
-export const getIconReactComponent = fileType => {
-    const iconMap = {
-        folder: FolderIcon,
-        archive: ArchiveIcon,
-        email: EmailIcon,
-        pdf: PdfIcon,
-        doc: DocIcon,
-        xls: XlsIcon,
-        'email-archive': ArchiveIcon,
-        default: FileIcon
+export const getTagIcon = (tag, isPublic = false, absent = false) => {
+    if (specialTags[tag]) {
+        const state = absent ? 'absent' : 'present'
+        if ((isPublic && specialTags[tag].public) || (!isPublic && !specialTags[tag].public)) {
+            return cloneElement(reactIcons[specialTags[tag][state].icon], {
+                style: {
+                    color: specialTags[tag][state].color,
+                },
+            })
+        }
     }
-    return iconMap[fileType] || iconMap.default
+    return null
 }
 
 export const getLanguageName = key => {
-    const found = langs.where('1', key);
+    const found = langs.where('1', key)
     return found ? found.name : key
 }
 
@@ -128,8 +126,24 @@ export const shortenName = (name, length = ELLIPSIS_TERM_LENGTH) => name && name
         <span>{`${name.substr(0, 2/3*length-3)}...${name.substr(-1/3*length)}`}</span>
     </Tooltip> : name
 
-export const formatThousands = n =>
-    String(n).replace(/(?<!\..*)(\d)(?=(?:\d{3})+(?:\.|$))/g, '$1,')
+export const formatThousands = n => {
+    let decimalPart = ''
+    n = n.toString()
+    if ( n.indexOf( '.' ) !== -1 ) {
+        decimalPart = '.'+ n.split( '.' )[1]
+        n = parseInt(n.split( '.' )[0])
+    }
+
+    const array = n.toString().split( '' )
+    let index = -3
+    while ( array.length + index > 0 ) {
+        array.splice( index, 0, ',' )
+        // Decrement by 4 since we just added another unit to the array.
+        index -= 4;
+    }
+
+    return array.join( '' ) + decimalPart
+}
 
 export const copyMetadata = doc => {
     const string = [doc.content.md5, doc.content.path].join('\n');

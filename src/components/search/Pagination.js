@@ -1,11 +1,11 @@
 import React, { memo } from 'react'
 import cn from 'classnames'
 import { Grid, IconButton, Typography } from '@material-ui/core'
-import { NavigateBefore, NavigateNext } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles'
 import { formatThousands } from '../../utils';
 import SearchSize from './SearchSize'
 import { useSearch } from './SearchProvider'
+import { reactIcons } from '../../constants/icons'
 
 const MAX_PREV_PAGES = 3
 const MAX_NEXT_PAGES = 3
@@ -93,8 +93,9 @@ function Pagination({ maxCount }) {
                     <Grid item>
                         <IconButton
                             onClick={handlePrev}
-                            disabled={!hasPrev}>
-                            <NavigateBefore />
+                            disabled={!hasPrev}
+                        >
+                            {reactIcons.chevronLeft}
                         </IconButton>
                     </Grid>
                     <Grid item container justify="space-between" style={{ flex: 1 }}>
@@ -117,8 +118,9 @@ function Pagination({ maxCount }) {
                     <Grid item>
                         <IconButton
                             onClick={handleNext}
-                            disabled={!hasNext}>
-                            <NavigateNext />
+                            disabled={!hasNext}
+                        >
+                            {reactIcons.chevronRight}
                         </IconButton>
                     </Grid>
                 </Grid>

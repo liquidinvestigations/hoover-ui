@@ -1,17 +1,9 @@
-import React, { memo, useEffect, useRef, useState } from 'react'
+import React, { cloneElement, memo, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
 import { Grid, IconButton, Menu, MenuItem, TextField, Toolbar as MuiToolbar, Tooltip } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import {
-    ArrowDownward,
-    ArrowDropDown,
-    ArrowUpward,
-    Fullscreen,
-    FullscreenExit,
-    ZoomIn,
-    ZoomOut
-} from '@material-ui/icons'
 import { zoomIn, zoomOut } from './zooming'
+import { reactIcons } from '../../../constants/icons'
 
 const useStyles = makeStyles(theme => ({
     toolbar: {
@@ -132,7 +124,7 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
                                     disabled={!firstPageData || initialPageIndex === 0}
                                     className={classes.toolbarIcon}
                                 >
-                                    <ArrowUpward />
+                                    {reactIcons.arrowUp}
                                 </IconButton>
                             </span>
                         </Tooltip>
@@ -144,7 +136,7 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
                                     disabled={!firstPageData || initialPageIndex === numPages - 1}
                                     className={classes.toolbarIcon}
                                 >
-                                    <ArrowDownward />
+                                    {reactIcons.arrowDown}
                                 </IconButton>
                             </span>
                         </Tooltip>
@@ -181,7 +173,7 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
                                     className={classes.toolbarIcon}
                                     disabled={!firstPageData}
                                 >
-                                    <ZoomOut />
+                                    {reactIcons.zoomOut}
                                 </IconButton>
                             </span>
                         </Tooltip>
@@ -193,7 +185,7 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
                                     className={classes.toolbarIcon}
                                     disabled={!firstPageData}
                                 >
-                                    <ZoomIn />
+                                    {reactIcons.zoomIn}
                                 </IconButton>
                             </span>
                         </Tooltip>
@@ -215,10 +207,9 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
                                 )}>
                                     {Math.round(scale * 100) + '%'}
                                 </span>
-                                <ArrowDropDown className={cn(
-                                    'MuiSelect-icon',
-                                    'MuiSelect-iconOutlined'
-                                )}/>
+                                {cloneElement(reactIcons.dropDown, {
+                                    className: cn('MuiSelect-icon', 'MuiSelect-iconOutlined')
+                                })}
                             </div>
                         </Tooltip>
                     </Grid>
@@ -229,7 +220,7 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
                                 onClick={onFullScreen}
                                 className={fullscreenClass}
                             >
-                                <Fullscreen />
+                                {reactIcons.fullscreen}
                             </IconButton>
                         </Tooltip>
                         <Tooltip title="Exit full screen" PopperProps={popperProps}>
@@ -238,7 +229,7 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
                                 onClick={onFullScreenExit}
                                 className={fullscreenExitClass}
                             >
-                                <FullscreenExit />
+                                {reactIcons.fullscreenExit}
                             </IconButton>
                         </Tooltip>
                     </Grid>

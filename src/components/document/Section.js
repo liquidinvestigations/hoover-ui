@@ -1,8 +1,8 @@
-import React, { memo, useState } from 'react'
+import React, { cloneElement, memo, useState } from 'react'
 import cn from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
 import { Button, Collapse, Divider, Grid, IconButton, ListItem, Tooltip, Typography } from '@material-ui/core'
-import { ExpandMore } from '@material-ui/icons'
+import { reactIcons } from '../../constants/icons'
 
 const useStyles = makeStyles(theme => ({
     expand: {
@@ -85,8 +85,9 @@ function Section({ title, toolbarButtons, children, defaultOpen = true, scrollX 
                             })}
                             onClick={toggle}
                             aria-expanded={open}
-                            aria-label="Show more">
-                            <ExpandMore color={'action'} />
+                            aria-label="Show more"
+                        >
+                            {cloneElement(reactIcons.chevronDown, { color: 'action' })}
                         </IconButton>
                     </Grid>
                 </Grid>

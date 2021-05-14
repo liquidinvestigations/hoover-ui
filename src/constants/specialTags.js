@@ -1,81 +1,69 @@
-import React from 'react'
-import {
-    Delete,
-    DeleteOutlined,
-    Error,
-    ErrorOutline,
-    Star,
-    StarOutline,
-    Visibility,
-    VisibilityOffOutlined
-} from '@material-ui/icons'
-import { brown, green, grey, red } from '@material-ui/core/colors'
+export const specialTags = {
+    starred: {
+        color: '#ffda80',
+        public: false,
+        tooltip: 'mark / unmark as starred (private, for yourself)',
+        present: {
+            icon: 'star',
+            color: '#ffb400',
+        },
+        absent: {
+            icon: 'starOutlined',
+            color: '#757575',
+        },
+        showInToolbar: true,
+        showInTagsTab: false,
+    },
+    recommended: {
+        color: '#a5d6a7',
+        public: true,
+        tooltip: 'mark / unmark as recommended (public, for everybody)',
+        present: {
+            icon: 'recommended',
+            color: '#4caf50',
+        },
+        absent: {
+            icon: 'recommendedOutlined',
+            color: '#757575',
+        },
+        showInToolbar: true,
+        showInTagsTab: false,
+    },
+    seen: {
+        color: '#bcaaa4',
+        public: true,
+        tooltip: 'mark / unmark seen (public)',
+        present: {
+            label: 'seen',
+            icon: 'visibility',
+            color: '#795548',
+        },
+        absent: {
+            label: 'not seen',
+            icon: 'visibilityOutlined',
+            color: '#757575',
+        },
+        showInToolbar: true,
+        showInTagsTab: false,
+    },
+    trash: {
+        color: '#ef9a9a',
+        public: true,
+        tooltip: 'mark / unmark trash (public)',
+        present: {
+            label: 'trash',
+            icon: 'delete',
+            color: '#f44336',
+        },
+        absent: {
+            label: 'not trash',
+            icon: 'deleteOutlined',
+            color: '#757575',
+        },
+        showInToolbar: true,
+        showInTagsTab: false,
+    },
+}
 
-export const specialTags = [{
-    tag: 'starred',
-    color: '#ffda80',
-    public: false,
-    tooltip: 'mark / unmark as starred (private, for yourself)',
-    present: {
-        icon: <Star />,
-        color: '#ffb400',
-    },
-    absent: {
-        icon: <StarOutline />,
-        color: grey[600],
-    },
-    showInToolbar: true,
-    showInTagsTab: false,
-},{
-    tag: 'recommended',
-    color: green[200],
-    public: true,
-    tooltip: 'mark / unmark as recommended (public, for everybody)',
-    present: {
-        icon: <Error />,
-        color: green[500],
-    },
-    absent: {
-        icon: <ErrorOutline />,
-        color: grey[600],
-    },
-    showInToolbar: true,
-    showInTagsTab: false,
-},{
-    tag: 'seen',
-    color: brown[200],
-    public: true,
-    tooltip: 'mark / unmark seen (public)',
-    present: {
-        label: 'seen',
-        icon: <Visibility />,
-        color: brown[500],
-    },
-    absent: {
-        label: 'not seen',
-        icon: <VisibilityOffOutlined />,
-        color: grey[600],
-    },
-    showInToolbar: true,
-    showInTagsTab: false,
-},{
-    tag: 'trash',
-    color: red[200],
-    public: true,
-    tooltip: 'mark / unmark trash (public)',
-    present: {
-        label: 'trash',
-        icon: <Delete />,
-        color: red[500],
-    },
-    absent: {
-        label: 'not trash',
-        icon: <DeleteOutlined />,
-        color: grey[600],
-    },
-    showInToolbar: true,
-    showInTagsTab: false,
-}]
-
-export const specialTagsList = specialTags.map(tag => tag.tag)
-export const publicTagsList = specialTags.filter(tag => tag.public).map(tag => tag.tag)
+export const specialTagsList = Object.entries(specialTags).map(([tag]) => tag)
+export const publicTagsList = Object.entries(specialTags).filter(([, tag]) => tag.public).map(([tag]) => tag)

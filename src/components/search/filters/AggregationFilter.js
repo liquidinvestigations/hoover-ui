@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import React, { cloneElement, memo } from 'react'
 import cn from 'classnames'
 import isEqual from 'react-fast-compare'
 import { makeStyles } from '@material-ui/core/styles'
@@ -14,7 +14,7 @@ import {
 } from '@material-ui/core'
 import Pagination from './Pagination'
 import MoreButton from './MoreButton'
-import { formatThousands } from '../../../utils'
+import { formatThousands, getTagIcon } from '../../../utils'
 import { aggregationFields } from '../../../constants/aggregationFields'
 
 const useStyles = makeStyles(theme => ({
@@ -97,7 +97,29 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, miss
         const label = bucketLabel ? bucketLabel(bucket) : bucket.key_as_string || bucket.key
         const subLabel = bucketSubLabel ? bucketSubLabel(bucket) : null
         const value = bucketValue ? bucketValue(bucket) : bucket.key_as_string || bucket.key
-        const checked = queryFilter?.include?.includes(value) || queryFilter?.exclude?.includes(value) || false
+        const included = queryFilter?.include?.includes(value)
+        const excluded = queryFilter?.exclude?.includes(value)
+        const checked = included || excluded || false
+
+        let displayLabel = label, icon
+        if ((field === 'tags' || field === 'priv-tags') && (icon = getTagIcon(bucket.key, field === 'tags', excluded))) {
+            displayLabel = (
+                <>
+                    {!!icon && cloneElement(icon, {
+                        style: {
+                            ...icon.props.style,
+                            marginTop: 3,
+                            marginBottom: -3,
+                            marginRight: 6,
+                            fontSize: 17,
+                        }
+                    })}
+                    <span>
+                        {bucket.key}
+                    </span>
+                </>
+            )
+        }
 
         return (
             <ListItem
@@ -113,14 +135,14 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, miss
                     disableRipple
                     value={value}
                     checked={checked}
-                    indeterminate={triState && queryFilter?.exclude?.includes(value)}
+                    indeterminate={triState && excluded}
                     classes={{ root: classes.checkbox }}
                     disabled={loading || !bucket.doc_count}
                     onChange={handler(value)}
                 />
 
                 <ListItemText
-                    primary={label}
+                    primary={displayLabel}
                     secondary={subLabel}
                     className={cn(classes.label, {[classes.labelWithSub]: subLabel, [classes.italic]: italic})}
                     secondaryTypographyProps={{

@@ -1,33 +1,22 @@
-import React, { memo, useEffect } from 'react'
+import React, { cloneElement, memo, useEffect } from 'react'
 import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
-import {
-    AccountTreeOutlined,
-    CloudDownload,
-    CodeOutlined,
-    Launch,
-    LocalOfferOutlined,
-    NavigateBefore,
-    NavigateNext,
-    Print,
-    SettingsApplicationsOutlined,
-    TextFields,
-    Toc
-} from '@material-ui/icons'
 import { Badge, Box, Chip, Grid, IconButton, Tabs, Toolbar, Tooltip, Typography } from '@material-ui/core'
 import StyledTab from './StyledTab'
 import TabPanel from './TabPanel'
 import HTML from './HTML'
 import Text from './Text'
 import Meta from './Meta'
-import Loading from '../Loading'
 import TagTooltip from './TagTooltip'
 import SubTabs from './SubTabs'
 import Tags, { getChipColor } from './Tags'
+import { useDocument } from './DocumentProvider'
+import Loading from '../Loading'
 import { useUser } from '../UserProvider'
 import { createOcrUrl } from '../../backend/api'
 import { specialTags } from '../../constants/specialTags'
-import { useDocument } from './DocumentProvider'
+import { reactIcons } from '../../constants/icons'
+import { getTagIcon } from '../../utils'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -138,7 +127,7 @@ function Document({ onPrev, onNext }) {
             headerLinks.actions.push({
                 href: pathname,
                 tooltip: 'Open in new tab',
-                icon: <Launch />,
+                icon: reactIcons.openNewTab,
                 target: '_blank',
             })
         }
@@ -146,14 +135,14 @@ function Document({ onPrev, onNext }) {
         headerLinks.actions.push({
             href: `${pathname}?print=true`,
             tooltip: 'Print metadata and content',
-            icon: <Print />,
+            icon: reactIcons.print,
             target: '_blank',
         })
 
         headerLinks.actions.push({
             href: docRawUrl,
             tooltip: 'Download original file',
-            icon: <CloudDownload />,
+            icon: reactIcons.download,
             target: fullPage ? null : '_blank',
         })
 
@@ -161,14 +150,14 @@ function Document({ onPrev, onNext }) {
             ...ocrData.map(({tag}) => ({
                 href: createOcrUrl(digestUrl, tag),
                 tooltip: `OCR ${tag}`,
-                icon: <TextFields />,
+                icon: reactIcons.ocr,
                 target: fullPage ? null : '_blank',
             }))
         )
 
         if (onPrev) {
             headerLinks.navigation.push({
-                icon: <NavigateBefore />,
+                icon: reactIcons.chevronLeft,
                 tooltip: 'Previous result',
                 onClick: onPrev,
             })
@@ -176,28 +165,28 @@ function Document({ onPrev, onNext }) {
 
         if (onNext) {
             headerLinks.navigation.push({
-                icon: <NavigateNext />,
+                icon: reactIcons.chevronRight,
                 tooltip: 'Next result',
                 onClick: onNext,
             })
         }
 
-        specialTags.forEach(s => {
-            const present = tags.find(tag => tag.tag === s.tag && tag.user === whoAmI.username)
-            const count = tags.filter(tag => tag.tag === s.tag && tag.user !== whoAmI.username)?.length || null
+        Object.entries(specialTags).forEach(([tag, params]) => {
+            const present = tags.find(current => current.tag === tag && current.public === params.public && current.user === whoAmI.username)
+            const count = tags.filter(current => current.tag === tag && current.public === params.public && current.user !== whoAmI.username)?.length || null
             const link = {
-                icon: present ? s.present.icon : s.absent.icon,
-                label: present ? s.present.label : s.absent.label,
-                style: { color: present ? s.present.color : s.absent.color },
-                tooltip: s.tooltip,
+                icon: present ? reactIcons[params.present.icon] : reactIcons[params.absent.icon],
+                label: present ? params.present.label : params.absent.label,
+                style: { color: present ? params.present.color : params.absent.color },
+                tooltip: params.tooltip,
                 disabled: tagsLocked,
-                onClick: handleSpecialTagClick(present, s.tag),
+                onClick: handleSpecialTagClick(present, tag),
                 count: present && count ? count + 1: count,
             }
-            if (s.showInToolbar) {
+            if (params.showInToolbar) {
                 headerLinks.tags.push(link)
             }
-            if (s.showInTagsTab) {
+            if (params.showInTagsTab) {
                 tagsLinks.push(link)
             }
         })
@@ -207,34 +196,31 @@ function Document({ onPrev, onNext }) {
         root: classes.tabsRoot,
         indicator: classes.tabsIndicator,
     }
-    const tabClasses = {
-        root: classes.tabRoot,
-    }
 
     const tabsData = [{
         name: data.content.filetype,
-        icon: <Toc />,
+        icon: reactIcons.contentTab,
         visible: true,
         padding: 0,
         content: <SubTabs />,
     },{
         name: 'Tags',
-        icon: <LocalOfferOutlined />,
+        icon: reactIcons.tagsTab,
         visible: !printMode && data.content.filetype !== 'folder',
         content: <Tags toolbarButtons={tagsLinks} />,
     },{
         name: 'Meta',
-        icon: <SettingsApplicationsOutlined />,
+        icon: reactIcons.metaTab,
         visible: !printMode,
         content: <Meta />,
     },{
         name: 'HTML',
-        icon: <CodeOutlined />,
+        icon: reactIcons.codeTab,
         visible: !!data.safe_html,
         content: <HTML html={data.safe_html} />,
     },{
         name: 'Headers & Parts',
-        icon: <AccountTreeOutlined />,
+        icon: reactIcons.headersTab,
         visible: !!data.content.tree,
         content: <Text content={data.content.tree} />,
     }]
@@ -292,7 +278,23 @@ function Document({ onPrev, onNext }) {
                                     <Badge badgeContent={count > 1 ? count : null} color="secondary">
                                         <Chip
                                             size="small"
-                                            label={chip.tag}
+                                            label={ !!getTagIcon(chip.tag, chip.public) ?
+                                                <>
+                                                    {cloneElement(getTagIcon(chip.tag, chip.public), {
+                                                        style: {
+                                                            ...getTagIcon(chip.tag, chip.public).props.style,
+                                                            marginLeft: -4,
+                                                            marginTop: -2,
+                                                            marginRight: 2,
+                                                            fontSize: 18,
+                                                            verticalAlign: 'middle',
+                                                        }
+                                                    })}
+                                                    <span style={{ verticalAlign: 'middle' }}>
+                                                        {chip.tag}
+                                                    </span>
+                                                </> : chip.tag
+                                            }
                                             style={{
                                                 height: 20,
                                                 backgroundColor: getChipColor(chip),
@@ -318,7 +320,6 @@ function Document({ onPrev, onNext }) {
                             key={index}
                             icon={tabData.icon}
                             label={tabData.name}
-                            classes={tabClasses}
                         />
                     ))}
                 </Tabs>

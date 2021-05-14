@@ -9,16 +9,21 @@ import {
     CardHeader,
     Grid,
     IconButton,
-    SvgIcon,
     Tooltip,
     Typography
 } from '@material-ui/core'
-import { AttachFile, CloudDownloadOutlined, Launch, Lock, TextFields } from '@material-ui/icons'
 import { useUser } from '../UserProvider'
 import { useHashState } from '../HashStateProvider'
-import { getIconReactComponent, getPreviewParams, humanFileSize, makeUnsearchable, truncatePath } from '../../utils'
+import {
+    getPreviewParams,
+    getTypeIcon,
+    humanFileSize,
+    makeUnsearchable,
+    truncatePath
+} from '../../utils'
 import { createDownloadUrl } from '../../backend/api'
 import { specialTags, specialTagsList } from '../../constants/specialTags'
+import { reactIcons } from '../../constants/icons'
 
 const useStyles = makeStyles(theme => ({
     card: {
@@ -172,7 +177,7 @@ function ResultItem({ hit, url, index }) {
                             {fields.ocr && (
                                 <Grid item component="span" className={classes.infoBox}>
                                     <Tooltip placement="top" title="OCR">
-                                        <TextFields className={classes.infoIcon} />
+                                        {cloneElement(reactIcons.ocr, { className: classes.infoIcon })}
                                     </Tooltip>
                                 </Grid>
                             )}
@@ -181,7 +186,7 @@ function ResultItem({ hit, url, index }) {
                             {fields.pgp && (
                                 <Grid item component="span" className={classes.infoBox}>
                                     <Tooltip placement="top" title="encrypted">
-                                        <Lock className={classes.infoIcon} />
+                                        {cloneElement(reactIcons.pgp, { className: classes.infoIcon })}
                                     </Tooltip>
                                 </Grid>
                             )}
@@ -189,10 +194,7 @@ function ResultItem({ hit, url, index }) {
                             <Grid item component="span" className={classes.infoBox}>
                                 <Tooltip placement="top" title={fields['content-type']}>
                                     <Box component="span" className={classes.infoBox}>
-                                        <SvgIcon
-                                            className={classes.infoIcon}
-                                            component={getIconReactComponent(fields.filetype)}
-                                        />
+                                        {cloneElement(reactIcons[getTypeIcon(fields.filetype)], { className: classes.infoIcon })}
                                     </Box>
                                 </Tooltip>
                             </Grid>
@@ -201,7 +203,7 @@ function ResultItem({ hit, url, index }) {
                                 <Grid item component="span" className={classes.infoBox}>
                                     <Tooltip placement="top" title="has attachment(s)">
                                         <Box component="span" className={classes.infoBox}>
-                                            <AttachFile className={classes.infoIcon} />
+                                            {cloneElement(reactIcons.attachment, { className: classes.infoIcon })}
                                         </Box>
                                     </Tooltip>
                                 </Grid>
@@ -225,7 +227,7 @@ function ResultItem({ hit, url, index }) {
                                 <Tooltip title="Download original file">
                                     <IconButton size="small">
                                         <a href={downloadUrl} className={classes.buttonLink}>
-                                            <CloudDownloadOutlined className={classes.actionIcon} />
+                                            {cloneElement(reactIcons.downloadOutlined, { className: classes.actionIcon })}
                                         </a>
                                     </IconButton>
                                 </Tooltip>
@@ -235,21 +237,21 @@ function ResultItem({ hit, url, index }) {
                                 <Tooltip title="Open in new tab">
                                     <IconButton size="small" style={{ marginRight: 15 }}>
                                         <a href={url} target="_blank" className={classes.buttonLink}>
-                                            <Launch className={classes.actionIcon} />
+                                            {cloneElement(reactIcons.openNewTab, { className: classes.actionIcon })}
                                         </a>
                                     </IconButton>
                                 </Tooltip>
                             </Grid>
 
-                            {specialTags.map((s, k) => {
-                                const tagsField = s.public ? fields.tags : fields[`priv-tags.${whoAmI.uuid}`]
-                                if (tagsField?.includes(s.tag)) {
+                            {Object.entries(specialTags).map(([tag, params], index) => {
+                                const tagsField = params.public ? fields.tags : fields[`priv-tags.${whoAmI.uuid}`]
+                                if (tagsField?.includes(tag)) {
                                     return (
-                                        <Grid item key={k}>
-                                            <Tooltip placement="top" title={s.tag}>
-                                                {cloneElement(s.present.icon, {
+                                        <Grid item key={index}>
+                                            <Tooltip placement="top" title={tag}>
+                                                {cloneElement(reactIcons[params.present.icon], {
                                                     className: classes.actionIcon,
-                                                    style: { color: s.present.color }
+                                                    style: { color: params.present.color }
                                                 })}
                                             </Tooltip>
                                         </Grid>

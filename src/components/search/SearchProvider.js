@@ -1,10 +1,8 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import AbortController from 'abort-controller/dist/abort-controller'
 import { useRouter } from 'next/router'
 import qs from 'qs'
 import { Button, IconButton, Snackbar } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import { Close } from '@material-ui/icons'
 import fixLegacyQuery from '../../fixLegacyQuery'
 import { getPreviewParams } from '../../utils'
 import { useHashState } from '../HashStateProvider'
@@ -13,6 +11,7 @@ import { aggregationFields } from '../../constants/aggregationFields'
 import { search as searchAPI } from '../../api'
 import { tags as tagsAPI } from '../../backend/api'
 import { TAGS_REFRESH_DELAYS } from '../../constants/general'
+import { reactIcons } from '../../constants/icons'
 
 const useStyles = makeStyles((theme) => ({
     close: {
@@ -44,7 +43,7 @@ export function SearchProvider({ children, serverQuery }) {
     }, [query])
 
     const search = useCallback(params => {
-        const newQuery = buildSearchQuerystring({ ...query, q: searchText || '*', ...params })
+        const newQuery = buildSearchQuerystring({ ...query, q: searchText, ...params })
         router.push(
             { pathname, search: newQuery, hash: hashState ? qs.stringify(rollupParams(hashState)) : undefined },
             undefined,
@@ -362,7 +361,7 @@ export function SearchProvider({ children, serverQuery }) {
                         className={classes.close}
                         onClick={handleSnackbarClose}
                     >
-                        <Close />
+                        {reactIcons.close}
                     </IconButton>
                 }
             />

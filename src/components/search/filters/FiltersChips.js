@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { cloneElement, useCallback, useEffect, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import lucene from 'lucene'
 import { Box, Chip, FormControl, Typography } from '@material-ui/core'
@@ -7,7 +7,7 @@ import ChipsTree from '../ChipsTree'
 import { useSearch } from '../SearchProvider'
 import { aggregationFields } from '../../../constants/aggregationFields'
 import { clearQuotedParam } from '../../../queryUtils'
-import { shortenName } from '../../../utils'
+import { getTagIcon, shortenName } from '../../../utils'
 
 const useStyles = makeStyles(theme => ({
     treeTitle: {
@@ -186,6 +186,21 @@ export default function FiltersChips() {
             if (buckets = aggregationFields[q.field]?.buckets) {
                 const bucket = buckets.find(bucket => bucket.key === term)
                 term = bucket ? bucket.label || bucket.key : term
+            }
+
+            const icon = getTagIcon(term, q.field === 'tags', q.prefix === '-' || q.prefix === '!')
+            if ((q.field === 'tags' || q.field === 'priv-tags') && !!icon) {
+                term = (
+                    <>
+                        {cloneElement(icon, {
+                            style: {
+                                ...icon.props.style,
+                                fontSize: 18,
+                                verticalAlign: 'middle',
+                            }
+                        })} {term}
+                    </>
+                )
             }
 
             label = (
