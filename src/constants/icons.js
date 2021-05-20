@@ -63,7 +63,7 @@ import xls, { ReactComponent as XlsIcon } from '../../icons/file-excel-line.svg'
 import file, { ReactComponent as FileIcon } from '../../icons/file-line.svg'
 
 export const reactIcons = {
-    categoryCollections:        <FontAwesomeIcon icon={faBoxes} size="lg" />,
+    categoryCollections:        <FontAwesomeIcon icon={faBoxes} size="lg" fixedWidth />,
 
     categoryTags:               <LocalOffer />,
     categoryDates:              <DateRange />,

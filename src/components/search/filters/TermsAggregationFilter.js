@@ -1,14 +1,22 @@
-import React, { memo } from 'react'
+import React, { memo, useEffect } from 'react'
 import isEqual from 'react-fast-compare'
 import { Typography } from '@material-ui/core'
 import Expandable from '../../Expandable'
 import AggregationFilter from './AggregationFilter'
+import { useSearch } from '../SearchProvider'
 import { formatThousands } from '../../../utils'
 import { aggregationFields } from '../../../constants/aggregationFields'
 
-function TermsAggregationFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations, loading, ...rest }) {
+function TermsAggregationFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations, missing, loading, ...rest }) {
 
     const highlight = !!(queryFilter?.include?.length || queryFilter?.exclude?.length || queryFilter?.missing)
+
+    const { loadMissing } = useSearch()
+    useEffect(() => {
+        if (open && !missing) {
+            loadMissing(field)
+        }
+    }, [open, missing])
 
     return (
         <Expandable
@@ -43,6 +51,7 @@ function TermsAggregationFilter({ title, field, open, onToggle, queryFilter, que
                 queryFilter={queryFilter}
                 queryFacets={queryFacets}
                 aggregations={aggregations}
+                missing={missing}
                 loading={loading}
                 triState
                 {...rest}

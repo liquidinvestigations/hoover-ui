@@ -1,10 +1,11 @@
-import React, { memo, useCallback } from 'react'
+import React, { memo, useCallback, useEffect } from 'react'
 import { DateTime } from 'luxon'
 import { ListItem, Typography } from '@material-ui/core'
 import Expandable from '../../Expandable'
 import IntervalSelect from './IntervalSelect'
 import DateRangeFilter from './DateRangeFilter'
 import AggregationFilter from './AggregationFilter'
+import { useSearch } from '../SearchProvider'
 import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL } from '../../../constants/general'
 import { formatThousands, getClosestInterval } from '../../../utils'
 
@@ -61,6 +62,13 @@ function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryF
             .toFormat(formatsValue[interval]),
         [interval]
     )
+
+    const { loadMissing } = useSearch()
+    useEffect(() => {
+        if (open && !missing) {
+            loadMissing(field)
+        }
+    }, [open, missing])
 
     return (
         <Expandable

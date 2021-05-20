@@ -350,6 +350,7 @@ const buildSearchQuery = (
     } = {},
     type = 'results',
     fieldList = '*',
+    missing = false,
     searchFields,
     uuid
 ) => {
@@ -361,13 +362,14 @@ const buildSearchQuery = (
     const termFields = getAggregationFields('term', fieldList)
     const rangeFields = getAggregationFields('range', fieldList)
 
-    const fields = [
-        ...dateFields.map(field => buildHistogramField(field, uuid, filters[field], facets[field])),
+    const fields = missing ? [
         ...dateFields.map(field => buildMissingField(field, uuid)),
-        ...termFields.map(field => buildTermsField(field, uuid, filters[field], facets[field])),
         ...termFields.map(field => buildMissingField(field, uuid)),
-        ...rangeFields.map(field => buildRangeField(field, uuid, filters[field], facets[field])),
         ...rangeFields.map(field => buildMissingField(field, uuid)),
+    ] : [
+        ...dateFields.map(field => buildHistogramField(field, uuid, filters[field], facets[field])),
+        ...termFields.map(field => buildTermsField(field, uuid, filters[field], facets[field])),
+        ...rangeFields.map(field => buildRangeField(field, uuid, filters[field], facets[field])),
     ]
 
     const postFilter = buildFilter(fields)

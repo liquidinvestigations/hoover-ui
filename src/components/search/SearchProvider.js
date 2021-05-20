@@ -163,6 +163,7 @@ export function SearchProvider({ children, serverQuery }) {
     useEffect(async () => {
         if (query.collections?.length) {
             setAggregationsError(null)
+            setMissingAggregations(null)
             setAggregationsLoading(
                 Object.entries(aggregationFields).reduce((acc, [field]) => {
                     acc[field] = true
@@ -185,6 +186,7 @@ export function SearchProvider({ children, serverQuery }) {
 
         } else {
             setAggregations(null)
+            setMissingAggregations(null)
         }
     }, [JSON.stringify({
         ...query,
@@ -193,6 +195,18 @@ export function SearchProvider({ children, serverQuery }) {
         size: null,
         order: null,
     }), forcedRefresh])
+
+    const [missingAggregations, setMissingAggregations] = useState()
+    const loadMissing = field => {
+        searchAPI({
+            type: 'aggregations',
+            fieldList: [field],
+            missing: true,
+            ...query,
+        }).then(results => {
+            setMissingAggregations(aggregations => ({...(aggregations || {}), ...results.aggregations}))
+        }).catch(() => {})
+    }
 
     const prevQueryRef = useRef()
     useEffect(() => {
@@ -338,7 +352,7 @@ export function SearchProvider({ children, serverQuery }) {
             results, aggregations, aggregationsError,
             collectionsCount, resultsLoading, aggregationsLoading,
             previewNextDoc, previewPreviousDoc, selectedDocData,
-            clearResults, addTagToRefreshQueue
+            clearResults, addTagToRefreshQueue, missingAggregations, loadMissing
         }}>
             {children}
             <Snackbar
