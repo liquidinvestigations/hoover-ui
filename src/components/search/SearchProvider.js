@@ -197,7 +197,7 @@ export function SearchProvider({ children, serverQuery }) {
     }), forcedRefresh])
 
     const [missingAggregations, setMissingAggregations] = useState()
-    const loadMissing = field => {
+    const loadMissing = useCallback(field => {
         searchAPI({
             type: 'aggregations',
             fieldList: [field],
@@ -206,7 +206,7 @@ export function SearchProvider({ children, serverQuery }) {
         }).then(results => {
             setMissingAggregations(aggregations => ({...(aggregations || {}), ...results.aggregations}))
         }).catch(() => {})
-    }
+    }, [query])
 
     const prevQueryRef = useRef()
     useEffect(() => {
