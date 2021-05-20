@@ -141,7 +141,7 @@ function Expandable({ title, loading, summary, children, greyed, defaultOpen, op
                 )}
             </Grid>
         </ListItem>
-    ), [title, greyed, defaultOpen, highlight, openState, summary])
+    ), [title, greyed, defaultOpen, highlight, openState, summary, loading])
 
     return (
         <>

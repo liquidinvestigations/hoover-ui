@@ -45,7 +45,7 @@ export function SearchProvider({ children, serverQuery }) {
     const search = useCallback(params => {
         const newQuery = buildSearchQuerystring({ ...query, q: searchText, ...params })
         router.push(
-            { pathname, search: newQuery, hash: hashState ? qs.stringify(rollupParams(hashState)) : undefined },
+            { pathname, search: newQuery, hash: window.location.hash.substring(1) },
             undefined,
             { shallow: true },
         )
@@ -125,13 +125,13 @@ export function SearchProvider({ children, serverQuery }) {
             return acc
         }, [])
 
-    async function* asyncSearchGenerator() {
+    async function* asyncSearchGenerator(skipField) {
         let i = 0
         while (i < aggregationGroups.length) {
             try {
                 yield searchAPI({
                     type: 'aggregations',
-                    fieldList: aggregationGroups[i].fieldList,
+                    fieldList: aggregationGroups[i].fieldList.filter(field => field !== skipField),
                     ...query,
                 })
             } catch (error) {
@@ -160,25 +160,50 @@ export function SearchProvider({ children, serverQuery }) {
         }, {})
     )
 
+    const prevAggregationsQueryRef = useRef()
     useEffect(async () => {
+        const { filters } = query
+        const { filters: prevFilters } = prevAggregationsQueryRef.current || {}
+
         if (query.collections?.length) {
             setAggregationsError(null)
-            setMissingAggregations(null)
+
+            const changedFilterField = Object.entries(aggregationFields).reduce((acc, [field]) => {
+                if (prevAggregationsQueryRef.current &&
+                    JSON.stringify(filters?.[field]) !== JSON.stringify(prevFilters?.[field]) &&
+                    filters?.[field]?.interval === prevFilters?.[field]?.interval
+                ) {
+                    return field
+                }
+                return acc
+            }, undefined)
+
+            setMissingAggregations(aggregations => ({
+                ...Object.fromEntries(
+                    Object.entries(aggregations || {})
+                        .filter(([key]) => key === `${changedFilterField}-missing`)
+                )
+            }))
+
             setAggregationsLoading(
                 Object.entries(aggregationFields).reduce((acc, [field]) => {
-                    acc[field] = true
+                    if (field !== changedFilterField) {
+                        acc[field] = true
+                    }
                     return acc
                 }, {})
             )
 
             let i = 0
-            for await (let results of asyncSearchGenerator()) {
+            for await (let results of asyncSearchGenerator(changedFilterField)) {
                 setAggregations(aggregations => ({ ...(aggregations || {}), ...results.aggregations }))
                 setCollectionsCount(results.count_by_index)
                 setAggregationsLoading(loading => ({
                     ...loading,
                     ...aggregationGroups[i++].fieldList.reduce((acc, field) => {
-                        acc[field] = false
+                        if (field !== changedFilterField) {
+                            acc[field] = false
+                        }
                         return acc
                     }, {}),
                 }))
@@ -188,6 +213,7 @@ export function SearchProvider({ children, serverQuery }) {
             setAggregations(null)
             setMissingAggregations(null)
         }
+        prevAggregationsQueryRef.current = query
     }, [JSON.stringify({
         ...query,
         facets: null,
@@ -208,10 +234,10 @@ export function SearchProvider({ children, serverQuery }) {
         }).catch(() => {})
     }, [query])
 
-    const prevQueryRef = useRef()
+    const prevFacetsQueryRef = useRef()
     useEffect(() => {
         const { facets, page, size, order, ...queryRest } = query
-        const { facets: prevFacets, page: prevPage, size: prevSize, order: prevOrder, ...prevQueryRest } = prevQueryRef.current || {}
+        const { facets: prevFacets, page: prevPage, size: prevSize, order: prevOrder, ...prevQueryRest } = prevFacetsQueryRef.current || {}
 
         if (JSON.stringify(queryRest) === JSON.stringify(prevQueryRest)) {
             const loading = state => Object.entries({
@@ -242,7 +268,7 @@ export function SearchProvider({ children, serverQuery }) {
                 }
             })
         }
-        prevQueryRef.current = query
+        prevFacetsQueryRef.current = query
     }, [JSON.stringify({
         ...query,
         page: null,
