@@ -7,7 +7,7 @@ const searchFields = {
 }
 
 it('builds a default query', () => {
-    const query = buildSearchQuery({}, 'aggregations', '*', searchFields, 'testuser')
+    const query = buildSearchQuery({}, 'aggregations', '*', false, searchFields, 'testuser')
     expect(query).toMatchSnapshot()
 })
 
@@ -18,7 +18,7 @@ it('builds a query with a filetype filter', () => {
                 include: ['email', 'pdf']
             }
         }
-    }, 'aggregations', '*', searchFields, 'testuser')
+    }, 'aggregations', '*', false, searchFields, 'testuser')
 
     expect(query.post_filter).toMatchObject({
         bool: {
@@ -61,7 +61,7 @@ it('builds a query with a date histogram by years filter', () => {
                 }
             }
         }
-    }, 'aggregations', '*', searchFields, 'testuser')
+    }, 'aggregations', '*', false, searchFields, 'testuser')
 
     const yearFilter = {
         bool: {
@@ -123,7 +123,7 @@ it('builds a query with multiple fields filtered', () => {
                 include: ['gmail.com']
             },
         },
-    }, 'aggregations', '*', searchFields, 'testuser')
+    }, 'aggregations', '*', false, searchFields, 'testuser')
 
     expect(query.post_filter).toMatchObject({
         bool: {

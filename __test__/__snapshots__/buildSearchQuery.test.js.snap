@@ -22,23 +22,6 @@ Object {
         "bool": Object {},
       },
     },
-    "attachments-missing": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "attachments-missing",
-          },
-        },
-        "values": Object {
-          "missing": Object {
-            "field": "attachments",
-          },
-        },
-      },
-      "filter": Object {
-        "bool": Object {},
-      },
-    },
     "content-type": Object {
       "aggs": Object {
         "count": Object {
@@ -50,23 +33,6 @@ Object {
           "terms": Object {
             "field": "content-type",
             "size": 44,
-          },
-        },
-      },
-      "filter": Object {
-        "bool": Object {},
-      },
-    },
-    "content-type-missing": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "content-type-missing",
-          },
-        },
-        "values": Object {
-          "missing": Object {
-            "field": "content-type",
           },
         },
       },
@@ -134,40 +100,6 @@ Object {
         "bool": Object {},
       },
     },
-    "date-created-missing": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "date-created-missing",
-          },
-        },
-        "values": Object {
-          "missing": Object {
-            "field": "date-created",
-          },
-        },
-      },
-      "filter": Object {
-        "bool": Object {},
-      },
-    },
-    "date-missing": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "date-missing",
-          },
-        },
-        "values": Object {
-          "missing": Object {
-            "field": "date",
-          },
-        },
-      },
-      "filter": Object {
-        "bool": Object {},
-      },
-    },
     "email-domains": Object {
       "aggs": Object {
         "count": Object {
@@ -179,23 +111,6 @@ Object {
           "terms": Object {
             "field": "email-domains",
             "size": 44,
-          },
-        },
-      },
-      "filter": Object {
-        "bool": Object {},
-      },
-    },
-    "email-domains-missing": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "email-domains-missing",
-          },
-        },
-        "values": Object {
-          "missing": Object {
-            "field": "email-domains",
           },
         },
       },
@@ -221,23 +136,6 @@ Object {
         "bool": Object {},
       },
     },
-    "filetype-missing": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "filetype-missing",
-          },
-        },
-        "values": Object {
-          "missing": Object {
-            "field": "filetype",
-          },
-        },
-      },
-      "filter": Object {
-        "bool": Object {},
-      },
-    },
     "from.keyword": Object {
       "aggs": Object {
         "count": Object {
@@ -249,23 +147,6 @@ Object {
           "terms": Object {
             "field": "from.keyword",
             "size": 44,
-          },
-        },
-      },
-      "filter": Object {
-        "bool": Object {},
-      },
-    },
-    "from.keyword-missing": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "from.keyword-missing",
-          },
-        },
-        "values": Object {
-          "missing": Object {
-            "field": "from.keyword",
           },
         },
       },
@@ -291,23 +172,6 @@ Object {
         "bool": Object {},
       },
     },
-    "lang-missing": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "lang-missing",
-          },
-        },
-        "values": Object {
-          "missing": Object {
-            "field": "lang",
-          },
-        },
-      },
-      "filter": Object {
-        "bool": Object {},
-      },
-    },
     "ocr": Object {
       "aggs": Object {
         "count": Object {
@@ -319,23 +183,6 @@ Object {
           "terms": Object {
             "field": "ocr",
             "size": 44,
-          },
-        },
-      },
-      "filter": Object {
-        "bool": Object {},
-      },
-    },
-    "ocr-missing": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "ocr-missing",
-          },
-        },
-        "values": Object {
-          "missing": Object {
-            "field": "ocr",
           },
         },
       },
@@ -361,23 +208,6 @@ Object {
         "bool": Object {},
       },
     },
-    "path-parts-missing": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "path-parts-missing",
-          },
-        },
-        "values": Object {
-          "missing": Object {
-            "field": "path-parts",
-          },
-        },
-      },
-      "filter": Object {
-        "bool": Object {},
-      },
-    },
     "pgp": Object {
       "aggs": Object {
         "count": Object {
@@ -396,23 +226,6 @@ Object {
         "bool": Object {},
       },
     },
-    "pgp-missing": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "pgp-missing",
-          },
-        },
-        "values": Object {
-          "missing": Object {
-            "field": "pgp",
-          },
-        },
-      },
-      "filter": Object {
-        "bool": Object {},
-      },
-    },
     "priv-tags": Object {
       "aggs": Object {
         "count": Object {
@@ -424,23 +237,6 @@ Object {
           "terms": Object {
             "field": "priv-tags.testuser",
             "size": 44,
-          },
-        },
-      },
-      "filter": Object {
-        "bool": Object {},
-      },
-    },
-    "priv-tags-missing": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "priv-tags-missing",
-          },
-        },
-        "values": Object {
-          "missing": Object {
-            "field": "priv-tags.testuser",
           },
         },
       },
@@ -501,23 +297,6 @@ Object {
         "bool": Object {},
       },
     },
-    "size-missing": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "size-missing",
-          },
-        },
-        "values": Object {
-          "missing": Object {
-            "field": "size",
-          },
-        },
-      },
-      "filter": Object {
-        "bool": Object {},
-      },
-    },
     "tags": Object {
       "aggs": Object {
         "count": Object {
@@ -536,23 +315,6 @@ Object {
         "bool": Object {},
       },
     },
-    "tags-missing": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "tags-missing",
-          },
-        },
-        "values": Object {
-          "missing": Object {
-            "field": "tags",
-          },
-        },
-      },
-      "filter": Object {
-        "bool": Object {},
-      },
-    },
     "to.keyword": Object {
       "aggs": Object {
         "count": Object {
@@ -564,23 +326,6 @@ Object {
           "terms": Object {
             "field": "to.keyword",
             "size": 44,
-          },
-        },
-      },
-      "filter": Object {
-        "bool": Object {},
-      },
-    },
-    "to.keyword-missing": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "to.keyword-missing",
-          },
-        },
-        "values": Object {
-          "missing": Object {
-            "field": "to.keyword",
           },
         },
       },
@@ -639,23 +384,6 @@ Object {
                 "key": "1000000-*",
               },
             ],
-          },
-        },
-      },
-      "filter": Object {
-        "bool": Object {},
-      },
-    },
-    "word-count-missing": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
-            "field": "word-count-missing",
-          },
-        },
-        "values": Object {
-          "missing": Object {
-            "field": "word-count",
           },
         },
       },
