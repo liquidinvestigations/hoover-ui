@@ -3,6 +3,8 @@ import AbortController from 'abort-controller'
 const ongoingRequests = {}
 const retryCount = {}
 
+const timeout = ms => new Promise(resolve => setTimeout(resolve, ms))
+
 export const search = async params => {
     const { type, fieldList, cancel } = params
     const requestKey = `${type}-${Array.isArray(fieldList) ? fieldList.join('-') : fieldList}`
@@ -36,6 +38,7 @@ export const search = async params => {
     let res = await makeRequest()
 
     while (!res.ok && retryCount[requestKey] < process.env.MAX_SEARCH_RETRIES) {
+        await timeout(process.env.SEARCH_RETRY_DELAY)
         retryCount[requestKey] += 1
         res = await makeRequest()
     }
