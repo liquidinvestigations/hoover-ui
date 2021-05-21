@@ -125,13 +125,13 @@ export function SearchProvider({ children, serverQuery }) {
             return acc
         }, [])
 
-    async function* asyncSearchGenerator(skipField) {
+    async function* asyncSearchGenerator() {
         let i = 0
         while (i < aggregationGroups.length) {
             try {
                 yield searchAPI({
                     type: 'aggregations',
-                    fieldList: aggregationGroups[i].fieldList.filter(field => field !== skipField),
+                    fieldList: aggregationGroups[i].fieldList,
                     ...query,
                 })
             } catch (error) {
@@ -167,43 +167,22 @@ export function SearchProvider({ children, serverQuery }) {
 
         if (query.collections?.length) {
             setAggregationsError(null)
-
-            const changedFilterField = Object.entries(aggregationFields).reduce((acc, [field]) => {
-                if (prevAggregationsQueryRef.current &&
-                    JSON.stringify(filters?.[field]) !== JSON.stringify(prevFilters?.[field]) &&
-                    filters?.[field]?.interval === prevFilters?.[field]?.interval
-                ) {
-                    return field
-                }
-                return acc
-            }, undefined)
-
-            setMissingAggregations(aggregations => ({
-                ...Object.fromEntries(
-                    Object.entries(aggregations || {})
-                        .filter(([key]) => key === `${changedFilterField}-missing`)
-                )
-            }))
-
+            setMissingAggregations(null)
             setAggregationsLoading(
                 Object.entries(aggregationFields).reduce((acc, [field]) => {
-                    if (field !== changedFilterField) {
-                        acc[field] = true
-                    }
+                    acc[field] = true
                     return acc
                 }, {})
             )
 
             let i = 0
-            for await (let results of asyncSearchGenerator(changedFilterField)) {
+            for await (let results of asyncSearchGenerator()) {
                 setAggregations(aggregations => ({ ...(aggregations || {}), ...results.aggregations }))
                 setCollectionsCount(results.count_by_index)
                 setAggregationsLoading(loading => ({
                     ...loading,
                     ...aggregationGroups[i++].fieldList.reduce((acc, field) => {
-                        if (field !== changedFilterField) {
-                            acc[field] = false
-                        }
+                        acc[field] = false
                         return acc
                     }, {}),
                 }))
