@@ -45,7 +45,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function AggregationFilter({ field, queryFilter, queryFacets, aggregations, missing, loading, onChange,
+function AggregationFilter({ field, queryFilter, queryFacets, aggregations, loading, missing, missingLoading, onChange,
                                triState, bucketLabel, bucketSubLabel, bucketValue }) {
 
     const classes = useStyles()
@@ -204,7 +204,7 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, miss
                             <Typography variant="caption" className={classes.empty}>
                                 {formatThousands(missing?.values.doc_count)}
                             </Typography>
-                        ) : (
+                        ) : missingLoading && (
                             <CircularProgress
                                 size={18}
                                 thickness={5}

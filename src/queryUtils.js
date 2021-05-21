@@ -44,7 +44,7 @@ export const unwindParams = query => Object.fromEntries(Object.entries(query).ma
 export const buildSearchQuerystring = (params) => (
     qs.stringify(rollupParams({
         ...defaultSearchParams, ...params,
-        collections: params?.collections?.join('+'),
+        collections: params?.collections?.join?.('+'),
     }))
 )
 

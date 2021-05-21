@@ -222,16 +222,27 @@ export function SearchProvider({ children, serverQuery }) {
         order: null,
     }), forcedRefresh])
 
+    const [missingLoading, setMissingLoading] = useState(!!query.collections?.length)
     const [missingAggregations, setMissingAggregations] = useState()
     const loadMissing = useCallback(field => {
-        searchAPI({
-            type: 'aggregations',
-            fieldList: [field],
-            missing: true,
-            ...query,
-        }).then(results => {
-            setMissingAggregations(aggregations => ({...(aggregations || {}), ...results.aggregations}))
-        }).catch(() => {})
+        if (query.collections?.length) {
+            setMissingLoading(true)
+
+            searchAPI({
+                type: 'aggregations',
+                fieldList: [field],
+                missing: true,
+                ...query,
+            }).then(results => {
+                setMissingLoading(false)
+                setMissingAggregations(aggregations => ({...(aggregations || {}), ...results.aggregations}))
+            }).catch(() => {
+                setMissingLoading(false)
+                setMissingAggregations(aggregations => ({...(aggregations || {}), [field]: undefined}))
+            })
+        } else {
+            setMissingAggregations(null)
+        }
     }, [query])
 
     const prevFacetsQueryRef = useRef()
@@ -377,8 +388,9 @@ export function SearchProvider({ children, serverQuery }) {
             query, error, search, searchText, setSearchText,
             results, aggregations, aggregationsError,
             collectionsCount, resultsLoading, aggregationsLoading,
+            missingAggregations, loadMissing, missingLoading,
             previewNextDoc, previewPreviousDoc, selectedDocData,
-            clearResults, addTagToRefreshQueue, missingAggregations, loadMissing
+            clearResults, addTagToRefreshQueue
         }}>
             {children}
             <Snackbar
