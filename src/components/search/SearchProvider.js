@@ -229,7 +229,7 @@ export function SearchProvider({ children, serverQuery }) {
         const { facets, page, size, order, ...queryRest } = query
         const { facets: prevFacets, page: prevPage, size: prevSize, order: prevOrder, ...prevQueryRest } = prevFacetsQueryRef.current || {}
 
-        if (JSON.stringify(queryRest) === JSON.stringify(prevQueryRest)) {
+        if (JSON.stringify(queryRest) === JSON.stringify(prevQueryRest) && JSON.stringify(facets) !== JSON.stringify(prevFacets)) {
             const loading = state => Object.entries({
                 ...(facets || {}),
                 ...(prevFacets || {}),
