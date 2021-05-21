@@ -3,13 +3,20 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const withTM = require('next-transpile-modules')(['pdfjs-dist'])
 const withPlugins = require('next-compose-plugins')
 
-const { API_URL, REWRITE_API, AGGREGATIONS_SPLIT = 1, MAX_SEARCH_RETRIES = 1 } = process.env
+const {
+    API_URL,
+    REWRITE_API,
+    AGGREGATIONS_SPLIT = 1,
+    MAX_SEARCH_RETRIES = 1,
+    SEARCH_RETRY_DELAY = 3000,
+} = process.env
 
 module.exports = withPlugins([ withTM ],
     {
         env: {
             AGGREGATIONS_SPLIT,
             MAX_SEARCH_RETRIES,
+            SEARCH_RETRY_DELAY,
         },
         cssModules: false,
         webpack(config, options) {

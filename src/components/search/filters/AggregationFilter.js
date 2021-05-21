@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import {
     Button,
     Checkbox,
+    CircularProgress,
     Divider,
     Grid,
     List,
@@ -199,10 +200,16 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, miss
 
                 <ListItemText
                     primary={
-                        !!missing?.values.doc_count && (
+                        !!missing?.values ? (
                             <Typography variant="caption" className={classes.empty}>
                                 {formatThousands(missing?.values.doc_count)}
                             </Typography>
+                        ) : (
+                            <CircularProgress
+                                size={18}
+                                thickness={5}
+                                className={classes.loading}
+                            />
                         )
                     }
                     disableTypography
