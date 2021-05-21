@@ -130,9 +130,10 @@ export function SearchProvider({ children, serverQuery }) {
         while (i < aggregationGroups.length) {
             try {
                 yield searchAPI({
+                    ...query,
+                    q: query.q || '*',
                     type: 'aggregations',
                     fieldList: aggregationGroups[i].fieldList,
-                    ...query,
                 })
             } catch (error) {
                 if (error.name !== 'AbortError') {
@@ -160,11 +161,7 @@ export function SearchProvider({ children, serverQuery }) {
         }, {})
     )
 
-    const prevAggregationsQueryRef = useRef()
     useEffect(async () => {
-        const { filters } = query
-        const { filters: prevFilters } = prevAggregationsQueryRef.current || {}
-
         if (query.collections?.length) {
             setAggregationsError(null)
             setMissingAggregations(null)
@@ -192,7 +189,6 @@ export function SearchProvider({ children, serverQuery }) {
             setAggregations(null)
             setMissingAggregations(null)
         }
-        prevAggregationsQueryRef.current = query
     }, [JSON.stringify({
         ...query,
         facets: null,
@@ -208,10 +204,11 @@ export function SearchProvider({ children, serverQuery }) {
             setMissingLoading(true)
 
             searchAPI({
+                ...query,
+                q: query.q || '*',
                 type: 'aggregations',
                 fieldList: [field],
                 missing: true,
-                ...query,
             }).then(results => {
                 setMissingLoading(false)
                 setMissingAggregations(aggregations => ({...(aggregations || {}), ...results.aggregations}))
@@ -244,9 +241,10 @@ export function SearchProvider({ children, serverQuery }) {
             setAggregationsLoading(loading(true))
 
             searchAPI({
+                ...query,
+                q: query.q || '*',
                 type: 'aggregations',
                 fieldList: Object.entries(loading(true)).map(([key]) => key),
-                ...query,
             }).then(results => {
                 setAggregations(aggregations => ({...(aggregations || {}), ...results.aggregations}))
                 setAggregationsLoading(loading(false))
