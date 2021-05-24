@@ -23,7 +23,7 @@ function Filters({ categories, wideFilters, drawerToolbar, drawerWidth, drawerPi
                      drawerOpenCategory, onDrawerOpen, expandedFilters, onFilterExpand }) {
 
     const classes = useStyles()
-    const { query, search, aggregations, aggregationsError, aggregationsLoading, missingAggregations } = useSearch()
+    const { query, search, aggregations, aggregationsError, aggregationsLoading, missingAggregations, missingLoading } = useSearch()
 
     const triggerSearch = params => {
         search({ ...params, page: 1 })
@@ -122,10 +122,11 @@ function Filters({ categories, wideFilters, drawerToolbar, drawerWidth, drawerPi
                             queryFilter={query.filters?.[field]}
                             queryFacets={query.facets?.[field]}
                             aggregations={aggregations?.[field]}
+                            loading={aggregationsLoading[field]}
                             missing={missingAggregations?.[`${field}-missing`]}
+                            missingLoading={missingLoading}
                             open={expandedFilters[category] === field}
                             onToggle={filters.length > 1 && expandedFilters[category] !== field ? onToggle : null}
-                            loading={aggregationsLoading[field]}
                             onChange={handleChange}
                             {...filterTypeProps}
                         />

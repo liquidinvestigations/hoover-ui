@@ -7,7 +7,7 @@ import { useSearch } from '../SearchProvider'
 import { formatThousands } from '../../../utils'
 import { aggregationFields } from '../../../constants/aggregationFields'
 
-function TermsAggregationFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations, missing, loading, ...rest }) {
+function TermsAggregationFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations, loading, missing, missingLoading, ...rest }) {
 
     const highlight = !!(queryFilter?.include?.length || queryFilter?.exclude?.length || queryFilter?.missing)
 
@@ -51,8 +51,9 @@ function TermsAggregationFilter({ title, field, open, onToggle, queryFilter, que
                 queryFilter={queryFilter}
                 queryFacets={queryFacets}
                 aggregations={aggregations}
-                missing={missing}
                 loading={loading}
+                missing={missing}
+                missingLoading={missingLoading}
                 triState
                 {...rest}
             />

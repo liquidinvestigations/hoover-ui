@@ -125,14 +125,15 @@ export function SearchProvider({ children, serverQuery }) {
             return acc
         }, [])
 
-    async function* asyncSearchGenerator(skipField) {
+    async function* asyncSearchGenerator() {
         let i = 0
         while (i < aggregationGroups.length) {
             try {
                 yield searchAPI({
-                    type: 'aggregations',
-                    fieldList: aggregationGroups[i].fieldList.filter(field => field !== skipField),
                     ...query,
+                    q: query.q || '*',
+                    type: 'aggregations',
+                    fieldList: aggregationGroups[i].fieldList,
                 })
             } catch (error) {
                 if (error.name !== 'AbortError') {
@@ -160,50 +161,25 @@ export function SearchProvider({ children, serverQuery }) {
         }, {})
     )
 
-    const prevAggregationsQueryRef = useRef()
     useEffect(async () => {
-        const { filters } = query
-        const { filters: prevFilters } = prevAggregationsQueryRef.current || {}
-
         if (query.collections?.length) {
             setAggregationsError(null)
-
-            const changedFilterField = Object.entries(aggregationFields).reduce((acc, [field]) => {
-                if (prevAggregationsQueryRef.current &&
-                    JSON.stringify(filters?.[field]) !== JSON.stringify(prevFilters?.[field]) &&
-                    filters?.[field]?.interval === prevFilters?.[field]?.interval
-                ) {
-                    return field
-                }
-                return acc
-            }, undefined)
-
-            setMissingAggregations(aggregations => ({
-                ...Object.fromEntries(
-                    Object.entries(aggregations || {})
-                        .filter(([key]) => key === `${changedFilterField}-missing`)
-                )
-            }))
-
+            setMissingAggregations(null)
             setAggregationsLoading(
                 Object.entries(aggregationFields).reduce((acc, [field]) => {
-                    if (field !== changedFilterField) {
-                        acc[field] = true
-                    }
+                    acc[field] = true
                     return acc
                 }, {})
             )
 
             let i = 0
-            for await (let results of asyncSearchGenerator(changedFilterField)) {
+            for await (let results of asyncSearchGenerator()) {
                 setAggregations(aggregations => ({ ...(aggregations || {}), ...results.aggregations }))
                 setCollectionsCount(results.count_by_index)
                 setAggregationsLoading(loading => ({
                     ...loading,
                     ...aggregationGroups[i++].fieldList.reduce((acc, field) => {
-                        if (field !== changedFilterField) {
-                            acc[field] = false
-                        }
+                        acc[field] = false
                         return acc
                     }, {}),
                 }))
@@ -213,7 +189,6 @@ export function SearchProvider({ children, serverQuery }) {
             setAggregations(null)
             setMissingAggregations(null)
         }
-        prevAggregationsQueryRef.current = query
     }, [JSON.stringify({
         ...query,
         facets: null,
@@ -222,16 +197,28 @@ export function SearchProvider({ children, serverQuery }) {
         order: null,
     }), forcedRefresh])
 
+    const [missingLoading, setMissingLoading] = useState(!!query.collections?.length)
     const [missingAggregations, setMissingAggregations] = useState()
     const loadMissing = useCallback(field => {
-        searchAPI({
-            type: 'aggregations',
-            fieldList: [field],
-            missing: true,
-            ...query,
-        }).then(results => {
-            setMissingAggregations(aggregations => ({...(aggregations || {}), ...results.aggregations}))
-        }).catch(() => {})
+        if (query.collections?.length) {
+            setMissingLoading(true)
+
+            searchAPI({
+                ...query,
+                q: query.q || '*',
+                type: 'aggregations',
+                fieldList: [field],
+                missing: true,
+            }).then(results => {
+                setMissingLoading(false)
+                setMissingAggregations(aggregations => ({...(aggregations || {}), ...results.aggregations}))
+            }).catch(() => {
+                setMissingLoading(false)
+                setMissingAggregations(aggregations => ({...(aggregations || {}), [field]: undefined}))
+            })
+        } else {
+            setMissingAggregations(null)
+        }
     }, [query])
 
     const prevFacetsQueryRef = useRef()
@@ -239,7 +226,7 @@ export function SearchProvider({ children, serverQuery }) {
         const { facets, page, size, order, ...queryRest } = query
         const { facets: prevFacets, page: prevPage, size: prevSize, order: prevOrder, ...prevQueryRest } = prevFacetsQueryRef.current || {}
 
-        if (JSON.stringify(queryRest) === JSON.stringify(prevQueryRest)) {
+        if (JSON.stringify(queryRest) === JSON.stringify(prevQueryRest) && JSON.stringify(facets) !== JSON.stringify(prevFacets)) {
             const loading = state => Object.entries({
                 ...(facets || {}),
                 ...(prevFacets || {}),
@@ -254,9 +241,10 @@ export function SearchProvider({ children, serverQuery }) {
             setAggregationsLoading(loading(true))
 
             searchAPI({
+                ...query,
+                q: query.q || '*',
                 type: 'aggregations',
                 fieldList: Object.entries(loading(true)).map(([key]) => key),
-                ...query,
             }).then(results => {
                 setAggregations(aggregations => ({...(aggregations || {}), ...results.aggregations}))
                 setAggregationsLoading(loading(false))
@@ -377,8 +365,9 @@ export function SearchProvider({ children, serverQuery }) {
             query, error, search, searchText, setSearchText,
             results, aggregations, aggregationsError,
             collectionsCount, resultsLoading, aggregationsLoading,
+            missingAggregations, loadMissing, missingLoading,
             previewNextDoc, previewPreviousDoc, selectedDocData,
-            clearResults, addTagToRefreshQueue, missingAggregations, loadMissing
+            clearResults, addTagToRefreshQueue
         }}>
             {children}
             <Snackbar

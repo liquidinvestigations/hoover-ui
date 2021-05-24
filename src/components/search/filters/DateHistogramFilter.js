@@ -25,7 +25,7 @@ export const formatsValue = {
     hour: "yyyy-MM-dd'T'HH",
 }
 
-function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations, missing, loading, onChange }) {
+function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations, loading, missing, missingLoading, onChange }) {
     const interval = queryFilter?.interval || DEFAULT_INTERVAL
 
     const onRangeChange = useCallback(range => {
@@ -106,8 +106,9 @@ function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryF
                 queryFilter={queryFilter?.intervals}
                 queryFacets={queryFacets}
                 aggregations={aggregations}
-                missing={missing}
                 loading={loading}
+                missing={missing}
+                missingLoading={missingLoading}
                 onChange={onSelectionChange}
                 bucketLabel={formatLabel}
                 bucketSubLabel={interval === 'week' ? formatWeekStart : null}
