@@ -2,12 +2,12 @@ import React from 'react'
 import qs from 'qs'
 import { mergeWith } from 'lodash'
 import { Menu, MenuItem } from '@material-ui/core'
-import NestedMenuItem from 'material-ui-nested-menu-item'
 import { useDocument } from './DocumentProvider'
 import { useSearch } from '../search/SearchProvider'
 import { useHashState } from '../HashStateProvider'
 import { buildSearchQuerystring, createSearchParams, createSearchUrl, rollupParams } from '../../queryUtils'
 import { aggregationFields } from '../../constants/aggregationFields'
+const NestedMenuItem = require(`material-ui-nested-menu-item${process.env.NODE_ENV === 'test' ? '/dist-web' : ''}`)
 
 function customizer(objValue, srcValue) {
     if (Array.isArray(objValue)) {
