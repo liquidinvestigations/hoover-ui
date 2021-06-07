@@ -3,8 +3,6 @@ import { stringify } from 'qs'
 import memoize from 'lodash/memoize'
 import buildSearchQuery from './buildSearchQuery'
 
-const { API_URL } = process.env
-
 const prefix = '/api/v1/'
 
 const buildUrl = (...paths) => {
@@ -19,7 +17,7 @@ const buildUrl = (...paths) => {
 }
 
 const fetchJson = async (url, opts = {}) => {
-    const res = await fetch((typeof window === 'undefined' ? API_URL : '') + url, {
+    const res = await fetch((typeof window === 'undefined' ? process.env.API_URL : '') + url, {
         ...opts,
         timeout: 100000,
         headers: {

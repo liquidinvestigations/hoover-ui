@@ -1,5 +1,5 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render as tlRender } from '@testing-library/react'
 import theme from '../src/theme'
 import { MuiPickersUtilsProvider } from '@material-ui/pickers'
 import LuxonUtils from '@date-io/luxon'
@@ -33,7 +33,5 @@ const AppProviders = ({ children }) => (
     </ThemeProvider>
 )
 
-jest.mock('next/router', () => require('next-router-mock'))
-
-export const customRender = (ui, options = {}) =>
-    render(ui, { wrapper: AppProviders, ...options })
+export const render = (ui, options = {}) =>
+    tlRender(ui, { wrapper: AppProviders, ...options })
