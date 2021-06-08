@@ -18,6 +18,9 @@ module.exports = withPlugins([ withTM ],
             MAX_SEARCH_RETRIES,
             SEARCH_RETRY_DELAY,
         },
+        serverRuntimeConfig: {
+            API_URL,
+        },
         cssModules: false,
         webpack(config, options) {
             config.plugins.push(
