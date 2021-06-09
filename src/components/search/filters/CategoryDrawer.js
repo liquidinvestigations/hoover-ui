@@ -148,7 +148,7 @@ export default function CategoryDrawer({ category, title, icon, children, wideFi
                         }} disableReactTree>
                             <div style={!pinned ? position : undefined} className={classes.root}>
                                 <Slide direction="right" in={open}>
-                                    <div className={cn(classes.inner, { [classes.unpinned]: !pinned })}>
+                                    <div className={cn(classes.inner, { [classes.unpinned]: !pinned })} data-test="filters">
                                         {toolbar}
                                         {children}
                                     </div>

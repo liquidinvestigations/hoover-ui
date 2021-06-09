@@ -1,4 +1,4 @@
-import buildSearchQuery from '../src/backend/buildSearchQuery'
+import buildSearchQuery from '../../src/backend/buildSearchQuery'
 
 const searchFields = {
     all: [],
