@@ -6,3 +6,4 @@
 /.npmrc
 /.coverage
 /.env.local
+/__test__/__e2e__/report.html
