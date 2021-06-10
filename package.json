@@ -70,10 +70,10 @@
     "jest-transform-stub": "^2.0.0",
     "lodash-webpack-plugin": "^0.11.6",
     "next-transpile-modules": "^6.3.0",
-    "puppeteer": "^10.0.0",
     "react-test-renderer": "^17.0.2",
     "tree-kill": "^1.2.2",
     "url-loader": "^4.1.1",
+    "webdriverio": "^7.7.3",
     "webpack": "4.46.0",
     "worker-loader": "^3.0.8"
   }

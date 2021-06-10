@@ -164,7 +164,6 @@ function ResultItem({ hit, url, index }) {
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
-            data-test="result"
         >
             <CardHeader
                 classes={cardHeaderClasses}

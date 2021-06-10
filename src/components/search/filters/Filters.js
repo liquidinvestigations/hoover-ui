@@ -61,6 +61,7 @@ function Filters({ categories, wideFilters, drawerToolbar, drawerWidth, drawerPi
         return (
             <CategoryDrawer
                 key={category}
+                label={label}
                 title={
                     <>
                         {label}

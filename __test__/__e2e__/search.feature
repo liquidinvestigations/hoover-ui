@@ -1,7 +1,7 @@
 Feature: Search page
 
   Scenario: Search for PDFs containing word "test"
-    When I click testdata bucket
+    When I click testdata collection
     When I click File Types category
     When I click File type filter
     When I click pdf bucket
