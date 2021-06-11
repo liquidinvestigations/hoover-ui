@@ -233,6 +233,7 @@ export default function Search({ collections }) {
                                 className={cn(classes.filters, {
                                     [classes.wideFilters]: state === 'entering' || state === 'entered'
                                 })}
+                                data-test="categories"
                             >
                                 <Toolbar variant="dense" className={classes.drawerToolbar} disableGutters>
                                     <Tooltip title={wideFilters ? 'Collapse' : 'Expand'}>
