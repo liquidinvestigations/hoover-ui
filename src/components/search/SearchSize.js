@@ -28,7 +28,15 @@ function SearchSize ({ page, size }) {
                 <Typography variant="caption" className={classes.label}>Hits / page</Typography>
             </Grid>
             <Grid item>
-                <Select autoWidth disableUnderline value={size} onChange={handleSizeChange}>
+                <Select
+                    autoWidth
+                    disableUnderline
+                    value={size}
+                    onChange={handleSizeChange}
+                    MenuProps={{
+                        'data-test': 'size-menu'
+                    }}
+                >
                     {SIZE_OPTIONS.map(option => (
                         <MenuItem key={option} value={option}>{option}</MenuItem>
                     ))}
