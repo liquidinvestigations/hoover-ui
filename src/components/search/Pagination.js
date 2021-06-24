@@ -94,6 +94,7 @@ function Pagination({ maxCount }) {
                         <IconButton
                             onClick={handlePrev}
                             disabled={!hasPrev}
+                            data-test="prev-results-page"
                         >
                             {reactIcons.chevronLeft}
                         </IconButton>
@@ -119,6 +120,7 @@ function Pagination({ maxCount }) {
                         <IconButton
                             onClick={handleNext}
                             disabled={!hasNext}
+                            data-test="next-results-page"
                         >
                             {reactIcons.chevronRight}
                         </IconButton>
