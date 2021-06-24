@@ -41,6 +41,7 @@ export default function Pagination({ field }) {
                 tabIndex="-1"
                 onClick={handlePrev}
                 disabled={aggregationsLoading[field] || !hasPrev}
+                data-test="prev-page"
             >
                 {reactIcons.chevronLeft}
             </IconButton>
@@ -49,6 +50,7 @@ export default function Pagination({ field }) {
                 size="small"
                 onClick={handleNext}
                 disabled={aggregationsLoading[field] || !hasNext}
+                data-test="next-page"
             >
                 {reactIcons.chevronRight}
             </IconButton>
