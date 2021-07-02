@@ -6,6 +6,7 @@ import Expandable from '../Expandable'
 import Loading from '../Loading'
 import BatchResults from './BatchResults'
 import CollectionsFilter from './filters/CollectionsFilter'
+import { reactIcons } from "../../constants/icons";
 import { createSearchUrl } from '../../queryUtils'
 import { batch } from '../../backend/api'
 
@@ -140,6 +141,7 @@ export default function BatchSearch({ collections, limits }) {
                             <Button
                                 variant="contained"
                                 color="primary"
+                                startIcon={reactIcons.batchSearch}
                                 disabled={resultsLoading}
                                 onClick={handleSearch}
                             >
