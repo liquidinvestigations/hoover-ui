@@ -28,6 +28,7 @@ export default function SortingMenu() {
                 color="primary"
                 style={{ flex: 'none', boxShadow: 'none' }}
                 onClick={handleSortingMenuClick}
+                data-test="sort-button"
             >
                 {reactIcons.sort}
             </Fab>
@@ -37,6 +38,7 @@ export default function SortingMenu() {
                 keepMounted
                 open={Boolean(anchorEl)}
                 onClose={handleSortingMenuClose}
+                data-test="sort-menu"
             >
                 {sortOptions.map(([field, name]) => (
                     <MenuItem

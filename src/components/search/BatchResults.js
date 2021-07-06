@@ -53,7 +53,7 @@ export default function BatchResults({ loading, results, batchSize, offset, term
             {results &&
                 <ul className={classes.results}>
                     {results.sort(resultsCompareFn).map(({ term, count, url, error }, index) =>
-                        <li key={index} className={cn({ [classes.noHits]: count === 0 })}>
+                        <li key={index} className={cn({ [classes.noHits]: count === 0 })} data-test="result">
                             <Typography>
                                 <a href={url} target="_blank" className={classes.resultLink}>
                                     {error ? <span className={cn(classes.result, classes.error)}>error</span> :
