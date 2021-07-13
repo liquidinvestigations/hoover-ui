@@ -1,10 +1,10 @@
 import React from 'react'
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core'
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core'
 import { formatTitleCase } from '../../utils'
 
 export default function TaskTable({ tasks }) {
     return (
-        <TableContainer component={Paper}>
+        <TableContainer>
             <Table>
                 <TableHead>
                     <TableRow>

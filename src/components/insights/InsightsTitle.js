@@ -1,6 +1,5 @@
 import React, { cloneElement } from 'react'
-import cn from 'classnames'
-import { Grid, IconButton, ListItem, Typography } from '@material-ui/core'
+import { Grid, ListItem, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { reactIcons } from '../../constants/icons'
 
@@ -21,14 +20,14 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function InsightsTitle({ name, open, onToggle }) {
+export default function InsightsTitle({ name, open, onClick }) {
     const classes = useStyles()
 
     return (
         <ListItem
             button
             dense
-            onClick={onToggle}
+            onClick={onClick}
         >
             <Grid container
                   className={classes.collectionTitle}
@@ -41,16 +40,12 @@ export default function InsightsTitle({ name, open, onToggle }) {
                         {name}
                     </Typography>
                 </Grid>
-                <Grid item>
-                    <IconButton
-                        size="small"
-                        className={cn(classes.expand, { [classes.expandOpen]: open })}
-                        aria-expanded={open}
-                        aria-label="Show histogram"
-                    >
-                        {cloneElement(reactIcons.chevronDown, { color: 'action' })}
-                    </IconButton>
-                </Grid>
+
+                {open && (
+                    <Grid item className={classes.open} >
+                        {cloneElement(reactIcons.chevronRight, { color: 'action'})}
+                    </Grid>
+                )}
             </Grid>
         </ListItem>
     )
