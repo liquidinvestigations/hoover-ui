@@ -115,6 +115,8 @@ export function SearchProvider({ children, serverQuery }) {
         }
     })])
 
+    const [resultsViewType, setResultsViewType] = useState('list')
+
     const aggregationGroups = Object.entries(aggregationFields)
         .reduce((acc, [key]) => {
             if (acc?.[acc.length - 1]?.fieldList?.length < maxAggregationsBatchSize) {
@@ -367,7 +369,8 @@ export function SearchProvider({ children, serverQuery }) {
             collectionsCount, resultsLoading, aggregationsLoading,
             missingAggregations, loadMissing, missingLoading,
             previewNextDoc, previewPreviousDoc, selectedDocData,
-            clearResults, addTagToRefreshQueue
+            clearResults, addTagToRefreshQueue,
+            resultsViewType, setResultsViewType
         }}>
             {children}
             <Snackbar

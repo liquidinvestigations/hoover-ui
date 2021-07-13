@@ -1,17 +1,54 @@
-import React, { memo } from 'react'
+import React, { memo, useState } from 'react'
 import ReactPlaceholder from 'react-placeholder'
+import { Fab, Grid } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
 import Pagination from './Pagination'
-import ResultItem from './ResultItem'
+import ResultsList from './ResultsList'
+import ResultsTable from './ResultsTable'
 import { useSearch } from './SearchProvider'
-import { documentViewUrl } from '../../utils'
+import { reactIcons } from '../../constants/icons'
+
+const useStyles = makeStyles(theme => ({
+    viewTypeIcon: {
+        flex: 'none',
+        boxShadow: 'none',
+        marginLeft: theme.spacing(2),
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(2),
+    }
+}))
 
 function Results({ maxCount }) {
-    const { query, results, resultsLoading } = useSearch()
-    const start = 1 + (query.page - 1) * query.size
+    const classes = useStyles()
+    const { query, results, resultsLoading, resultsViewType, setResultsViewType } = useSearch()
 
     return (
         <>
             <Pagination maxCount={maxCount} />
+            <Grid container>
+                <Grid item container justify="flex-end">
+                    <Grid item>
+                        <Fab
+                            size="small"
+                            color={resultsViewType === 'list' ? 'secondary' : 'primary'}
+                            className={classes.viewTypeIcon}
+                            onClick={() => setResultsViewType('list')}
+                        >
+                            {reactIcons.listView}
+                        </Fab>
+                    </Grid>
+                    <Grid item>
+                        <Fab
+                            size="small"
+                            color={resultsViewType === 'table' ? 'secondary' : 'primary'}
+                            className={classes.viewTypeIcon}
+                            onClick={() => setResultsViewType('table')}
+                        >
+                            {reactIcons.tableView}
+                        </Fab>
+                    </Grid>
+                </Grid>
+            </Grid>
             <ReactPlaceholder
                 showLoadingAnimation
                 ready={!resultsLoading}
@@ -21,14 +58,9 @@ function Results({ maxCount }) {
                 {!!results && !query.collections?.length &&
                     <i>no collections selected</i>
                 }
-                {results?.hits.hits.map((hit, i) =>
-                    <ResultItem
-                        key={hit._url}
-                        hit={hit}
-                        url={documentViewUrl(hit)}
-                        index={start + i}
-                    />
-                )}
+
+                {resultsViewType === 'list' ? <ResultsList /> : <ResultsTable />}
+
                 {!!results?.hits.hits.length &&
                     <Pagination maxCount={maxCount} />
                 }
