@@ -21,7 +21,6 @@ const PARAMS_MAP = {
     b: 'tab',
     a: 'subTab',
     g: 'previewPage',
-    n: 'insights',
 }
 
 const LEGACY_PARAMS = {
