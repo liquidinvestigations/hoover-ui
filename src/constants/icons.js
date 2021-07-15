@@ -39,6 +39,7 @@ import {
     LocalOfferOutlined,
     Lock,
     LockOpen,
+    MoreVert,
     PinDrop,
     Print,
     Room,
@@ -119,6 +120,7 @@ export const reactIcons = {
     headersTab:                 <AccountTreeOutlined />,
     tableView:                  <List />,
     listView:                   <ViewStream />,
+    more:                       <MoreVert />,
 
     typeFolder:                 <SvgIcon component={ FolderIcon } />,
     typeArchive:                <SvgIcon component={ ArchiveIcon } />,

@@ -12,6 +12,7 @@ import { search as searchAPI } from '../../api'
 import { tags as tagsAPI } from '../../backend/api'
 import { TAGS_REFRESH_DELAYS } from '../../constants/general'
 import { reactIcons } from '../../constants/icons'
+import { availableColumns } from '../../constants/availableColumns'
 
 const useStyles = makeStyles((theme) => ({
     close: {
@@ -116,6 +117,9 @@ export function SearchProvider({ children, serverQuery }) {
     })])
 
     const [resultsViewType, setResultsViewType] = useState('list')
+    const [resultsColumns, setResultsColumns] = useState(
+        Object.entries(availableColumns).filter(([,{ hidden }]) => !hidden)
+    )
 
     const aggregationGroups = Object.entries(aggregationFields)
         .reduce((acc, [key]) => {
@@ -370,7 +374,8 @@ export function SearchProvider({ children, serverQuery }) {
             missingAggregations, loadMissing, missingLoading,
             previewNextDoc, previewPreviousDoc, selectedDocData,
             clearResults, addTagToRefreshQueue,
-            resultsViewType, setResultsViewType
+            resultsViewType, setResultsViewType,
+            resultsColumns, setResultsColumns
         }}>
             {children}
             <Snackbar

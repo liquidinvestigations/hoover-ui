@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
 
 function Results({ maxCount }) {
     const classes = useStyles()
-    const { query, results, resultsLoading, resultsViewType, setResultsViewType } = useSearch()
+    const { query, results, resultsViewType, setResultsViewType } = useSearch()
 
     return (
         <>
@@ -49,22 +49,14 @@ function Results({ maxCount }) {
                     </Grid>
                 </Grid>
             </Grid>
-            <ReactPlaceholder
-                showLoadingAnimation
-                ready={!resultsLoading}
-                type="text"
-                rows={10}
-            >
-                {!!results && !query.collections?.length &&
-                    <i>no collections selected</i>
-                }
+            {!!results && !query.collections?.length ?
+                <i>no collections selected</i> :
+                resultsViewType === 'list' ? <ResultsList /> : <ResultsTable />
+            }
 
-                {resultsViewType === 'list' ? <ResultsList /> : <ResultsTable />}
-
-                {!!results?.hits.hits.length &&
-                    <Pagination maxCount={maxCount} />
-                }
-            </ReactPlaceholder>
+            {!!results?.hits.hits.length &&
+                <Pagination maxCount={maxCount} />
+            }
         </>
     )
 }

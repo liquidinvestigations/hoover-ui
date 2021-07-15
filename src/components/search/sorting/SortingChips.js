@@ -6,6 +6,7 @@ import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import { useSearch } from '../SearchProvider'
 import { SORTABLE_FIELDS } from '../../../constants/general'
 import { reactIcons } from '../../../constants/icons'
+import { titleCase } from '../../../utils'
 
 const useStyles = makeStyles(theme => ({
     icon: {
@@ -76,7 +77,7 @@ function SortingChips() {
                                         {...provided.dragHandleProps}
                                         size="small"
                                         icon={reactIcons.arrowUp}
-                                        label={SORTABLE_FIELDS[field]}
+                                        label={SORTABLE_FIELDS[field] || titleCase(field)}
                                         onClick={handleClick(field)}
                                         onDelete={handleDelete(field)}
                                         classes={{

@@ -1,12 +1,19 @@
 import React, { cloneElement, useEffect, useRef } from 'react'
 import cn from 'classnames'
-import { IconButton, TableCell, TableRow } from '@material-ui/core'
+import { IconButton, TableCell, TableRow, Tooltip } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { useSearch } from './SearchProvider'
 import { useHashState } from '../HashStateProvider'
 import { createDownloadUrl } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
-import { documentViewUrl, getPreviewParams, getTypeIcon, humanFileSize, truncatePath } from '../../utils'
+import {
+    documentViewUrl,
+    formatDateTime,
+    getPreviewParams,
+    getTypeIcon,
+    humanFileSize,
+    truncatePath
+} from '../../utils'
 
 const useStyles = makeStyles(theme => ({
     selected: {
@@ -33,7 +40,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function ResultsTableRow({ hit, index }) {
     const classes = useStyles()
-    const { query } = useSearch()
+    const { query, resultsColumns } = useSearch()
     const start = 1 + (query.page - 1) * query.size
 
     const nodeRef = useRef()
@@ -55,6 +62,50 @@ export default function ResultsTableRow({ hit, index }) {
         }
     }, [isPreview])
 
+    const getPath = path => {
+        let pathParts = path.split('.'), pathPart, result = hit
+        while (pathPart = pathParts.shift()) {
+            result = result[pathPart]
+        }
+        return result
+    }
+
+    const formatField = (path, format) => {
+        const field = getPath(path)
+
+        if (!field) {
+            return null
+        }
+
+        switch (format) {
+            case 'string':
+                return field
+            case 'boolean':
+                return field ? 'yes' : 'no'
+            case 'truncate':
+                return truncatePath(fields.path)
+            case 'date':
+                return formatDateTime(field)
+            case 'size':
+                return humanFileSize(field)
+            case 'icon':
+                return (
+                    <Tooltip placement="top" title={field}>
+                        <span>
+                            {cloneElement(reactIcons[getTypeIcon(field)], { className: classes.infoIcon })}
+                        </span>
+                    </Tooltip>
+                )
+            case 'array':
+                return field.map(el => (
+                    <>
+                        {el}
+                        <br />
+                    </>
+                ))
+        }
+    }
+
     return (
         <TableRow
             ref={nodeRef}
@@ -64,33 +115,26 @@ export default function ResultsTableRow({ hit, index }) {
             <TableCell>
                 {start + index}
             </TableCell>
+            {resultsColumns.map(([field, { align, path, format }]) => (
+                    <TableCell key={field} align={align}>
+                        {formatField(path, format)}
+                    </TableCell>
+            ))}
             <TableCell>
-                {cloneElement(reactIcons[getTypeIcon(fields.filetype)], { className: classes.infoIcon })}
-                {fields.filename}
-            </TableCell>
-            <TableCell>
-                {collection}
-            </TableCell>
-            <TableCell>
-                {truncatePath(fields.path)}
-            </TableCell>
-            <TableCell align="right">
-                {fields['word-count']}
-            </TableCell>
-            <TableCell align="right">
-                {humanFileSize(fields.size)}
-            </TableCell>
-            <TableCell>
-                <IconButton size="small" style={{ marginRight: 15 }}>
-                    <a href={url} target="_blank" className={classes.buttonLink}>
-                        {cloneElement(reactIcons.openNewTab, { className: classes.actionIcon })}
-                    </a>
-                </IconButton>
-                <IconButton size="small">
-                    <a href={downloadUrl} className={classes.buttonLink}>
-                        {cloneElement(reactIcons.downloadOutlined, { className: classes.actionIcon })}
-                    </a>
-                </IconButton>
+                <Tooltip title="Open in new tab">
+                    <IconButton size="small" style={{ marginRight: 15 }}>
+                        <a href={url} target="_blank" className={classes.buttonLink}>
+                            {cloneElement(reactIcons.openNewTab, { className: classes.actionIcon })}
+                        </a>
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title="Download original file">
+                    <IconButton size="small">
+                        <a href={downloadUrl} className={classes.buttonLink}>
+                            {cloneElement(reactIcons.downloadOutlined, { className: classes.actionIcon })}
+                        </a>
+                    </IconButton>
+                </Tooltip>
             </TableCell>
         </TableRow>
     )
