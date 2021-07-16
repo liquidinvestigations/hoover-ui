@@ -9,7 +9,7 @@ import { reactIcons } from '../../constants/icons'
 import {
     documentViewUrl,
     formatDateTime,
-    getPreviewParams,
+    getPreviewParams, getTagIcon,
     getTypeIcon,
     humanFileSize,
     truncatePath
@@ -36,6 +36,11 @@ const useStyles = makeStyles(theme => ({
     buttonLink: {
         lineHeight: 0,
     },
+    tagIcon: {
+        fontSize: 16,
+        verticalAlign: 'middle',
+        marginRight: theme.spacing(0.5),
+    }
 }))
 
 export default function ResultsTableRow({ hit, index }) {
@@ -62,43 +67,52 @@ export default function ResultsTableRow({ hit, index }) {
         }
     }, [isPreview])
 
-    const getPath = path => {
-        let pathParts = path.split('.'), pathPart, result = hit
+    const getValue = path => {
+        let pathParts = path.split('.'), pathPart, value = hit
         while (pathPart = pathParts.shift()) {
-            result = result[pathPart]
+            value = value[pathPart]
         }
-        return result
+        return value
     }
 
-    const formatField = (path, format) => {
-        const field = getPath(path)
+    const formatField = (field, path, format) => {
+        const value = getValue(path)
 
-        if (!field) {
+        if (!value) {
             return null
         }
 
         switch (format) {
             case 'string':
-                return field
+                return value
             case 'boolean':
-                return field ? 'yes' : 'no'
+                return value ? 'yes' : 'no'
             case 'truncate':
                 return truncatePath(fields.path)
             case 'date':
-                return formatDateTime(field)
+                return formatDateTime(value)
             case 'size':
-                return humanFileSize(field)
+                return humanFileSize(value)
             case 'icon':
                 return (
-                    <Tooltip placement="top" title={field}>
+                    <Tooltip placement="top" title={value}>
                         <span>
-                            {cloneElement(reactIcons[getTypeIcon(field)], { className: classes.infoIcon })}
+                            {cloneElement(reactIcons[getTypeIcon(value)], { className: classes.infoIcon })}
                         </span>
                     </Tooltip>
                 )
             case 'array':
-                return field.map(el => (
+                return value.map(el => (
                     <>
+                        {el}
+                        <br />
+                    </>
+                ))
+            case 'tags':
+                const icon = tag => getTagIcon(tag, field === 'tags')
+                return value.map(el => (
+                    <>
+                        {icon(el) && cloneElement(icon(el), { className: classes.tagIcon })}
                         {el}
                         <br />
                     </>
@@ -117,7 +131,7 @@ export default function ResultsTableRow({ hit, index }) {
             </TableCell>
             {resultsColumns.map(([field, { align, path, format }]) => (
                     <TableCell key={field} align={align}>
-                        {formatField(path, format)}
+                        {formatField(field, path, format)}
                     </TableCell>
             ))}
             <TableCell>

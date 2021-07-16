@@ -39,6 +39,22 @@ export const availableColumns = {
         format: 'truncate',
         path: '_source.path',
     },
+    tags: {
+        label: 'Public tags',
+        align: 'left',
+        sortable: false,
+        hidden: true,
+        format: 'tags',
+        path: '_source.tags',
+    },
+    'private-tags': {
+        label: 'Private tags',
+        align: 'left',
+        sortable: false,
+        hidden: true,
+        format: 'tags',
+        path: '_source.private-tags',
+    },
     'word-count': {
         label: 'Words',
         align: 'right',
