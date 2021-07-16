@@ -66,7 +66,7 @@ export default function ResultsTable() {
             if (direction) {
                 newOrder[index] = [field]
             } else {
-                newOrder[index] = [field, 'desc']
+                newOrder.splice(index, 1)
             }
         } else {
             newOrder.push([field, 'desc'])
