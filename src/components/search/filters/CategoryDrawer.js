@@ -75,7 +75,7 @@ export default function CategoryDrawer({ category, title, icon, children, wideFi
         const position = portalRef.current.getBoundingClientRect()
 
         setPosition({
-            top: position.top + 'px',
+            top: position.top + portalRef.current.parentElement.scrollTop + 'px',
             left: position.left + 'px',
             width,
         })
