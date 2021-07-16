@@ -10,7 +10,7 @@ import { titleCase } from '../../../utils'
 
 const useStyles = makeStyles(theme => ({
     icon: {
-        transition: 'transform .5s ease-in-out',
+        transition: 'transform .2s ease-in-out',
     },
     iconDown: {
         transform: 'rotate(180deg)',

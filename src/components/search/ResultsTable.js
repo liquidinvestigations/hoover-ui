@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
         fontSize: 20,
         verticalAlign: 'middle',
         marginLeft: theme.spacing(1),
-        transition: 'transform .5s ease-in-out',
+        transition: 'transform .2s ease-in-out',
     },
     iconDown: {
         transform: 'rotate(180deg)',

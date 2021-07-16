@@ -9,10 +9,11 @@ import { reactIcons } from '../../constants/icons'
 import {
     documentViewUrl,
     formatDateTime,
-    getPreviewParams, getTagIcon,
+    getPreviewParams,
+    getTagIcon,
     getTypeIcon,
     humanFileSize,
-    truncatePath
+    shortenName,
 } from '../../utils'
 
 const useStyles = makeStyles(theme => ({
@@ -84,11 +85,9 @@ export default function ResultsTableRow({ hit, index }) {
 
         switch (format) {
             case 'string':
-                return value
+                return shortenName(value, 60)
             case 'boolean':
                 return value ? 'yes' : 'no'
-            case 'truncate':
-                return truncatePath(fields.path)
             case 'date':
                 return formatDateTime(value)
             case 'size':
@@ -102,21 +101,31 @@ export default function ResultsTableRow({ hit, index }) {
                     </Tooltip>
                 )
             case 'array':
-                return value.map(el => (
+                return (
                     <>
-                        {el}
-                        <br />
+                        {value.slice(0, 7).map(el => (
+                            <>
+                                {shortenName(el)}
+                                <br />
+                            </>
+                        ))}
+                        {value.length > 7 && '...'}
                     </>
-                ))
+                )
             case 'tags':
                 const icon = tag => getTagIcon(tag, field === 'tags')
-                return value.map(el => (
+                return (
                     <>
-                        {icon(el) && cloneElement(icon(el), { className: classes.tagIcon })}
-                        {el}
-                        <br />
+                        {value.slice(0, 7).map(el => (
+                            <>
+                                {icon(el) && cloneElement(icon(el), { className: classes.tagIcon })}
+                                {shortenName(el)}
+                                <br />
+                            </>
+                        ))}
+                        {value.length > 7 && '...'}
                     </>
-                ))
+                )
         }
     }
 

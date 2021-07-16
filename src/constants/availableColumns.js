@@ -23,20 +23,12 @@ export const availableColumns = {
         format: 'string',
         path: '_collection',
     },
-    _score: {
-        label: 'Relevance',
-        align: 'right',
-        sortable: true,
-        hidden: true,
-        format: 'string',
-        path: '_score',
-    },
     path: {
         label: 'Path',
         align: 'left',
         sortable: true,
         hidden: true,
-        format: 'truncate',
+        format: 'string',
         path: '_source.path',
     },
     tags: {
@@ -122,7 +114,7 @@ export const availableColumns = {
     ocr: {
         label: 'OCR',
         align: 'center',
-        sortable: false,
+        sortable: true,
         hidden: true,
         format: 'boolean',
         path: '_source.ocr',
@@ -130,7 +122,7 @@ export const availableColumns = {
     pgp: {
         label: 'Encrypted',
         align: 'center',
-        sortable: false,
+        sortable: true,
         hidden: true,
         format: 'boolean',
         path: '_source.pgp',

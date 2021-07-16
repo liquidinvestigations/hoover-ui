@@ -30,7 +30,7 @@ function Results({ maxCount }) {
                     <Grid item>
                         <Fab
                             size="small"
-                            color={resultsViewType === 'list' ? 'secondary' : 'primary'}
+                            color={resultsViewType === 'list' ? 'primary' : 'default'}
                             className={classes.viewTypeIcon}
                             onClick={() => setResultsViewType('list')}
                         >
@@ -40,7 +40,7 @@ function Results({ maxCount }) {
                     <Grid item>
                         <Fab
                             size="small"
-                            color={resultsViewType === 'table' ? 'secondary' : 'primary'}
+                            color={resultsViewType === 'table' ? 'primary' : 'default'}
                             className={classes.viewTypeIcon}
                             onClick={() => setResultsViewType('table')}
                         >
