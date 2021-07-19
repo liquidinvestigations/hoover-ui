@@ -1,11 +1,22 @@
 import React from 'react'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core'
 import { formatTitleCase } from '../../utils'
+import { makeStyles } from '@material-ui/core/styles'
+
+const useStyles = makeStyles(theme => ({
+    table: {
+        '& th': {
+            fontWeight: 'bold',
+        }
+    }
+}))
 
 export default function TaskErrorsTable({ errors }) {
+    const classes = useStyles()
+
     return (
         <TableContainer>
-            <Table>
+            <Table className={classes.table}>
                 <TableHead>
                     <TableRow>
                         <TableCell>Func</TableCell>
@@ -16,7 +27,7 @@ export default function TaskErrorsTable({ errors }) {
                 <TableBody>
                     {errors.map(({ func, error_type, count }) => (
                         <TableRow key={func}>
-                            <TableCell component="th" scope="row">
+                            <TableCell>
                                 {formatTitleCase(func)}
                             </TableCell>
                             <TableCell align="right">{error_type}</TableCell>

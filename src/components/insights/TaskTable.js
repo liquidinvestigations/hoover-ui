@@ -1,11 +1,22 @@
 import React from 'react'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
 import { formatTitleCase } from '../../utils'
 
+const useStyles = makeStyles(theme => ({
+    table: {
+        '& th': {
+            fontWeight: 'bold',
+        }
+    }
+}))
+
 export default function TaskTable({ tasks }) {
+    const classes = useStyles()
+
     return (
         <TableContainer>
-            <Table>
+            <Table className={classes.table}>
                 <TableHead>
                     <TableRow>
                         <TableCell>Func</TableCell>
@@ -23,7 +34,7 @@ export default function TaskTable({ tasks }) {
                 <TableBody>
                     {tasks.map(([task, status]) => (
                         <TableRow key={task}>
-                            <TableCell component="th" scope="row">
+                            <TableCell>
                                 {formatTitleCase(task)}
                             </TableCell>
                             <TableCell align="right">{status.pending}</TableCell>

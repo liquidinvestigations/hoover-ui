@@ -9,6 +9,7 @@ import AggregationsTable from './AggregationsTable'
 import { useSearch } from '../search/SearchProvider'
 import { humanFileSize } from '../../utils'
 import { collectionsInsights } from '../../backend/api'
+import Histogram from './Histogram'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -108,8 +109,8 @@ export default function Insights({ collections }) {
 
                         <Grid item xs={12}>
                             <Paper>
-                                <Typography variant="h5" className={classes.sectionTitle}>Tasks</Typography>
-                                <TaskTable tasks={currentCollection.stats.task_matrix} />
+                                <Typography variant="h5" className={classes.sectionTitle}>Years</Typography>
+                                <Histogram />
                             </Paper>
                         </Grid>
 
@@ -130,6 +131,13 @@ export default function Insights({ collections }) {
                             <Paper>
                                 <Typography variant="h5" className={classes.sectionTitle}>Task errors</Typography>
                                 <TaskErrorsTable errors={currentCollection.stats.error_counts} />
+                            </Paper>
+                        </Grid>
+
+                        <Grid item xs={12}>
+                            <Paper>
+                                <Typography variant="h5" className={classes.sectionTitle}>Tasks</Typography>
+                                <TaskTable tasks={currentCollection.stats.task_matrix} />
                             </Paper>
                         </Grid>
                     </Grid>

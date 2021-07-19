@@ -4,7 +4,7 @@ import { blue, grey } from '@material-ui/core/colors'
 import { Tooltip } from '@material-ui/core'
 import { formatThousands } from '../../../utils'
 
-export default function HistogramChart({ width, height, axisHeight, data, selected, onSelect, preserveDragArea }) {
+export default function HistogramChart({ width, height, axisHeight, data, selected, onSelect, onClick, preserveDragArea }) {
     const ref = useRef()
 
     const [startDragPosition, setStartDragPosition] = useState(null)
@@ -23,7 +23,11 @@ export default function HistogramChart({ width, height, axisHeight, data, select
     }
 
     const handleBarClick = bar => event => {
-        onSelect(event, [bar])
+        if (onSelect) {
+            onSelect(event, [bar])
+        } else if (onClick) {
+            onClick(event, bar)
+        }
     }
 
     const handleMouseMove = useCallback(event => {
@@ -53,12 +57,14 @@ export default function HistogramChart({ width, height, axisHeight, data, select
     const handleMouseDown = event => {
         event.preventDefault()
 
-        const position = getChartPosition(event.clientX)
-        setStartDragPosition(position)
-        setCurrentDragPosition(position)
+        if (onSelect) {
+            const position = getChartPosition(event.clientX)
+            setStartDragPosition(position)
+            setCurrentDragPosition(position)
 
-        window.addEventListener('mouseup', handleMouseUp(position), {once: true})
-        window.addEventListener('mousemove', handleMouseMove)
+            window.addEventListener('mouseup', handleMouseUp(position), {once: true})
+            window.addEventListener('mousemove', handleMouseMove)
+        }
     }
 
     return (
