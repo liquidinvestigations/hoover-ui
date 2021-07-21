@@ -69,7 +69,7 @@ function Locations({ url: docUrl, data }) {
 
     return (
         <List component="nav" dense>
-            <ListItem dense>
+            <ListItem>
                 <Typography variant="h6">Locations</Typography>
             </ListItem>
 

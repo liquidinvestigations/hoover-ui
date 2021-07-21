@@ -5,7 +5,7 @@ import langs from 'langs'
 import { Tooltip } from '@material-ui/core'
 import { ELLIPSIS_TERM_LENGTH } from './constants/general'
 import { DateTime } from 'luxon'
-import { imageIcons, reactIcons } from './constants/icons'
+import { reactIcons } from './constants/icons'
 import { specialTags } from './constants/specialTags'
 
 const typeIconsMap = {
@@ -20,12 +20,6 @@ const typeIconsMap = {
 }
 
 export const getTypeIcon = fileType => typeIconsMap[fileType] || typeIconsMap.default
-
-export const getIconImageElement = fileType => {
-    const img = document.createElement('img')
-    img.src = (imageIcons[typeIconsMap[fileType]] || imageIcons[typeIconsMap.default])
-    return img
-}
 
 export const getTagIcon = (tag, isPublic = false, absent = false) => {
     if (specialTags[tag]) {

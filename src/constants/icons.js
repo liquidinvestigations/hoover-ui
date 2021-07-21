@@ -54,13 +54,13 @@ import {
     ZoomOut,
 } from '@material-ui/icons'
 
-import folder, { ReactComponent as FolderIcon } from '../../icons/folder-line.svg'
-import archive, { ReactComponent as ArchiveIcon } from '../../icons/file-zip-line.svg'
-import email, { ReactComponent as EmailIcon } from '../../icons/mail-line.svg'
-import pdf, { ReactComponent as PdfIcon } from '../../icons/file-pdf-line.svg'
-import doc, { ReactComponent as DocIcon } from '../../icons/file-word-line.svg'
-import xls, { ReactComponent as XlsIcon } from '../../icons/file-excel-line.svg'
-import file, { ReactComponent as FileIcon } from '../../icons/file-line.svg'
+import { ReactComponent as FolderIcon } from '../../icons/folder-line.svg'
+import { ReactComponent as ArchiveIcon } from '../../icons/file-zip-line.svg'
+import { ReactComponent as EmailIcon } from '../../icons/mail-line.svg'
+import { ReactComponent as PdfIcon } from '../../icons/file-pdf-line.svg'
+import { ReactComponent as DocIcon } from '../../icons/file-word-line.svg'
+import { ReactComponent as XlsIcon } from '../../icons/file-excel-line.svg'
+import { ReactComponent as FileIcon } from '../../icons/file-line.svg'
 
 export const reactIcons = {
     categoryCollections:        <FontAwesomeIcon icon={faBoxes} size="lg" fixedWidth />,
@@ -124,15 +124,4 @@ export const reactIcons = {
     typeXls:                    <SvgIcon component={ XlsIcon } />,
     typeEmailArchive:           <SvgIcon component={ ArchiveIcon } />,
     typeFile:                   <SvgIcon component={ FileIcon } />,
-}
-
-export const imageIcons = {
-    typeFolder:                 folder,
-    typeArchive:                archive,
-    typeEmail:                  email,
-    typePdf:                    pdf,
-    typeDoc:                    doc,
-    typeXls:                    xls,
-    typeEmailArchive:           archive,
-    typeFile:                   file,
 }
