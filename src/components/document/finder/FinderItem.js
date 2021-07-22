@@ -76,7 +76,7 @@ export default function FinderItem({ item, active, selected }) {
             className={cn(classes.item, { [classes.active]: isActive, [classes.selected]: isSelected && !isActive })}
         >
             <ListItemIcon classes={{ root: classes.iconRoot }}>
-                {reactIcons[getTypeIcon(item.filetype)]}
+                {getTypeIcon(item.filetype)}
             </ListItemIcon>
             <ListItemText classes={{ root: classes.itemRoot, primary: classes.itemText }}>
                 {filenameFor(item)}

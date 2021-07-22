@@ -9,17 +9,21 @@ import { reactIcons } from './constants/icons'
 import { specialTags } from './constants/specialTags'
 
 const typeIconsMap = {
-    folder: 'typeFolder',
     archive: 'typeArchive',
-    email: 'typeEmail',
-    pdf: 'typePdf',
-    doc: 'typeDoc',
-    xls: 'typeXls',
-    'email-archive': 'typeEmailArchive',
+    audio: 'typeAudio',
     default: 'typeFile',
+    doc: 'typeDoc',
+    email: 'typeEmail',
+    'email-archive': 'typeEmailArchive',
+    folder: 'typeFolder',
+    html: 'typeHtml',
+    image: 'typeImage',
+    pdf: 'typePdf',
+    video: 'typeVideo',
+    xls: 'typeXls',
 }
 
-export const getTypeIcon = fileType => typeIconsMap[fileType] || typeIconsMap.default
+export const getTypeIcon = fileType => reactIcons[typeIconsMap[fileType] || typeIconsMap.default]
 
 export const getTagIcon = (tag, isPublic = false, absent = false) => {
     if (specialTags[tag]) {

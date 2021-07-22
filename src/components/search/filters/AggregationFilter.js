@@ -15,7 +15,7 @@ import {
 } from '@material-ui/core'
 import Pagination from './Pagination'
 import MoreButton from './MoreButton'
-import { formatThousands, getTagIcon } from '../../../utils'
+import { formatThousands, getTagIcon, getTypeIcon } from '../../../utils'
 import { aggregationFields } from '../../../constants/aggregationFields'
 
 const useStyles = makeStyles(theme => ({
@@ -103,6 +103,7 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
         const checked = included || excluded || false
 
         let displayLabel = label, icon
+
         if ((field === 'tags' || field === 'priv-tags') && (icon = getTagIcon(bucket.key, field === 'tags', excluded))) {
             displayLabel = (
                 <>
@@ -113,6 +114,23 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
                             marginBottom: -3,
                             marginRight: 6,
                             fontSize: 17,
+                        }
+                    })}
+                    <span>
+                        {bucket.key}
+                    </span>
+                </>
+            )
+        }
+
+        if ((field === 'filetype') && (icon = getTypeIcon(bucket.key))) {
+            displayLabel = (
+                <>
+                    {!!icon && cloneElement(icon, {
+                        style: {
+                            marginRight: 6,
+                            fontSize: 17,
+                            color: '#757575',
                         }
                     })}
                     <span>
