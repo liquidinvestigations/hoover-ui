@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from 'react'
 import cn from 'classnames'
-import { ButtonBase, ListItem, ListItemText } from '@material-ui/core'
+import { ButtonBase, ListItem, ListItemIcon, ListItemText } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { useRouter } from 'next/router'
 import { useDocument } from '../DocumentProvider'
-import { getBasePath } from '../../../utils'
+import { reactIcons } from '../../../constants/icons'
+import { getBasePath, getTypeIcon } from '../../../utils'
 
 const filenameFor = item => {
     if (item.filename) {
@@ -16,6 +17,10 @@ const filenameFor = item => {
 }
 
 const useStyles = makeStyles(theme => ({
+    item: {
+        paddingLeft: theme.spacing(.5),
+        paddingRight: theme.spacing(.5),
+    },
     active: {
         backgroundColor: '#1e90ff',
         color: '#fff',
@@ -33,6 +38,12 @@ const useStyles = makeStyles(theme => ({
         fontFamily: 'monospace',
         fontSize: 12,
     },
+    iconRoot: {
+        minWidth: 26,
+        '& *': {
+            fontSize: 18,
+        }
+    }
 }))
 
 export default function FinderItem({ item, active, selected }) {
@@ -45,7 +56,7 @@ export default function FinderItem({ item, active, selected }) {
 
     useEffect(() => {
         if (ref.current && (isActive || isSelected)) {
-            ref.current.scrollIntoView({ behavior: isActive ? 'smooth' : 'auto', block: 'center' })
+            ref.current.scrollIntoView({ block: 'center' })
         }
     }, [isActive, isSelected])
 
@@ -62,8 +73,11 @@ export default function FinderItem({ item, active, selected }) {
             ref={ref}
             component={ButtonBase}
             onClick={handleClick}
-            className={cn({ [classes.active]: isActive, [classes.selected]: isSelected && !isActive })}
+            className={cn(classes.item, { [classes.active]: isActive, [classes.selected]: isSelected && !isActive })}
         >
+            <ListItemIcon classes={{ root: classes.iconRoot }}>
+                {reactIcons[getTypeIcon(item.filetype)]}
+            </ListItemIcon>
             <ListItemText classes={{ root: classes.itemRoot, primary: classes.itemText }}>
                 {filenameFor(item)}
             </ListItemText>

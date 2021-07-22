@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
+import { makeStyles } from '@material-ui/core/styles'
 import FinderColumn from './FinderColumn'
 import { useDocument } from '../DocumentProvider'
 import ErrorBoundary from '../../ErrorBoundary'
 import { doc as docAPI } from '../../../backend/api'
 import { getBasePath } from '../../../utils'
-import { makeStyles } from '@material-ui/core/styles'
 
 const parentLevels = 3
 
-const makeColumns = doc => {
+const makeColumns = (doc, pathname) => {
     const columns = []
 
     const createColumn = (item, selected) => {
@@ -16,7 +16,8 @@ const makeColumns = doc => {
             items: item.children,
             prevPage: item.children_page > 1 ? item.children_page - 1 : null,
             nextPage: item.children_has_next_page ? item.children_page + 1 : null,
-            selected,
+            pathname: pathname + item.id,
+            selected
         })
     }
 
@@ -60,10 +61,12 @@ export default function Finder() {
 
     useEffect(async () => {
         if (!loading && pathname && data) {
-            let current = data;
-            let level = 0;
+            const localData = {...data}
+            let current = localData
+            let level = 0
 
-            setActive(data)
+            setActive(current)
+            setColumns(makeColumns(current, getBasePath(pathname)))
 
             while (current.parent_id && level <= parentLevels) {
                 current.parent = await docAPI(
@@ -74,7 +77,7 @@ export default function Finder() {
                 current = current.parent
                 level++
 
-                setColumns(makeColumns(data))
+                setColumns(makeColumns(localData, getBasePath(pathname)))
             }
         }
     }, [data, pathname, loading])
@@ -82,10 +85,11 @@ export default function Finder() {
     return (
         <ErrorBoundary visible>
             <div className={classes.container}>
-                {columns.map(({ items, prevPage, nextPage, selected }, index) => (
+                {columns.map(({ items, pathname, prevPage, nextPage, selected }) => (
                     <FinderColumn
-                        key={index}
+                        key={items[0].id}
                         items={items}
+                        pathname={pathname}
                         prevPage={prevPage}
                         nextPage={nextPage}
                         active={active}
