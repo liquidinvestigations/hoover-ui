@@ -189,3 +189,12 @@ export const titleCase = string => {
 
     return sentence.map(word => word[0].toUpperCase() + word.slice(1)).join(' ')
 }
+
+export const formatTitleCase = name => {
+    const [group, func] = name.split('.')
+    return (
+        <>
+            <strong>{titleCase(group)}</strong>: {titleCase(func)}
+        </>
+    )
+}
