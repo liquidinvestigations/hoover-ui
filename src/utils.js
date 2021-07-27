@@ -184,7 +184,9 @@ export const humanFileSize = (bytes, si= true, dp= 1) => {
 }
 
 export const titleCase = string => {
-    let sentence = string.toLowerCase().split('_')
+    let sentence = string.includes('_') ? string.toLowerCase().split('_') :
+        string.includes('-') ? string.toLowerCase().split('-') : [string]
+
     return sentence.map(word => word[0].toUpperCase() + word.slice(1)).join(' ')
 }
 
