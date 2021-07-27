@@ -2,7 +2,14 @@ import React from 'react'
 import { SvgIcon } from '@material-ui/core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-import { faBoxes } from '@fortawesome/free-solid-svg-icons'
+import {
+    faLayerGroup,
+    faMapPin,
+    faAngleDoubleRight,
+    faSearch,
+    faSearchPlus,
+    faRedoAlt,
+} from '@fortawesome/free-solid-svg-icons'
 
 import {
     AccountTree,
@@ -23,7 +30,6 @@ import {
     DateRange,
     Delete,
     DeleteOutlined,
-    DoubleArrow,
     Error,
     ErrorOutline,
     Event,
@@ -40,9 +46,7 @@ import {
     Lock,
     LockOpen,
     MoreVert,
-    PinDrop,
     Print,
-    Room,
     SettingsApplicationsOutlined,
     SettingsEthernet,
     Sort,
@@ -65,8 +69,18 @@ import doc, { ReactComponent as DocIcon } from '../../icons/file-word-line.svg'
 import xls, { ReactComponent as XlsIcon } from '../../icons/file-excel-line.svg'
 import file, { ReactComponent as FileIcon } from '../../icons/file-line.svg'
 
+const FAIcon = ({ icon, style, className }) => React.createElement(FontAwesomeIcon, {
+    icon,
+    className,
+    size: 'lg',
+    style: {
+        width: '1em',
+        ...style,
+    }
+})
+
 export const reactIcons = {
-    categoryCollections:        <FontAwesomeIcon icon={faBoxes} size="lg" fixedWidth />,
+    categoryCollections:        <FAIcon icon={faLayerGroup} style={{ width: '1.25em' }} />,
 
     categoryTags:               <LocalOffer />,
     categoryDates:              <DateRange />,
@@ -86,9 +100,9 @@ export const reactIcons = {
     dropDown:                   <ArrowDropDown />,
     location:                   <Folder />,
     contentFiles:               <FolderOutlined />,
-    pinned:                     <PinDrop />,
-    unpinned:                   <Room />,
-    doubleArrow:                <DoubleArrow />,
+    pinned:                     <FAIcon icon={faMapPin} />,
+    unpinned:                   <FAIcon icon={faMapPin} />,
+    doubleArrow:                <FAIcon icon={faAngleDoubleRight} />,
     cancel:                     <Cancel />,
     delete:                     <Delete />,
     deleteOutlined:             <DeleteOutlined />,
@@ -118,6 +132,9 @@ export const reactIcons = {
     metaTab:                    <SettingsApplicationsOutlined />,
     codeTab:                    <CodeOutlined />,
     headersTab:                 <AccountTreeOutlined />,
+    search:                     <FAIcon icon={faSearch} />,
+    batchSearch:                <FAIcon icon={faSearchPlus} />,
+    refresh:                    <FAIcon icon={faRedoAlt} />,
     tableView:                  <List />,
     listView:                   <ViewStream />,
     more:                       <MoreVert />,

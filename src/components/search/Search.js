@@ -335,7 +335,13 @@ export default function Search({ collections }) {
 
                                                 <Grid item style={{ marginLeft: 20 }}>
                                                     <FormControl margin="normal">
-                                                        <Button variant="contained" color="primary" type="submit" size="large">
+                                                        <Button
+                                                            variant="contained"
+                                                            color="primary"
+                                                            type="submit"
+                                                            size="large"
+                                                            endIcon={reactIcons.search}
+                                                        >
                                                             Search
                                                         </Button>
                                                     </FormControl>

@@ -347,7 +347,7 @@ export function SearchProvider({ children, serverQuery }) {
             tagsRefreshQueue.promise.then(() => {
                 setTagsRefreshQueue(null)
                 setSnackbarMessage(
-                    <Button color="inherit" onClick={() => {
+                    <Button color="inherit" startIcon={reactIcons.refresh} onClick={() => {
                         handleSnackbarClose()
                         forceRefresh({})
                     }}>
