@@ -100,6 +100,10 @@ export const createSearchParams = (field, term) => {
                     }
             }
 
+            if (term.interval) {
+                params.filters[field].interval = term.interval
+            }
+
         } else {
             params.filters[field] = { include: [term] }
         }

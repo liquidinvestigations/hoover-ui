@@ -226,7 +226,7 @@ function Document({ onPrev, onNext }) {
     }]
 
     return (
-        <div className={classes.root}>
+        <div className={classes.root} data-test="doc-view">
             {!printMode && data.content.filetype !== 'folder' && (
                 <Toolbar variant="dense" classes={{root: classes.toolbar}}>
                     {Object.entries(headerLinks).map(([group, links]) => (
