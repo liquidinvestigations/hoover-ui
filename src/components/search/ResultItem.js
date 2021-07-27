@@ -195,7 +195,7 @@ function ResultItem({ hit, url, index }) {
                             <Grid item component="span" className={classes.infoBox}>
                                 <Tooltip placement="top" title={fields['content-type']}>
                                     <Box component="span" className={classes.infoBox}>
-                                        {cloneElement(reactIcons[getTypeIcon(fields.filetype)], { className: classes.infoIcon })}
+                                        {cloneElement(getTypeIcon(fields.filetype), { className: classes.infoIcon })}
                                     </Box>
                                 </Tooltip>
                             </Grid>

@@ -1,14 +1,25 @@
 import React from 'react'
-import { SvgIcon } from '@material-ui/core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import {
+    faAngleDoubleRight,
+    faBoxes,
+    faEnvelope,
+    faFile,
+    faFileArchive,
+    faFileAudio,
+    faFileCode,
+    faFileExcel,
+    faFileImage,
+    faFilePdf,
+    faFileVideo,
+    faFileWord,
+    faFolder,
     faLayerGroup,
     faMapPin,
-    faAngleDoubleRight,
+    faRedoAlt,
     faSearch,
     faSearchPlus,
-    faRedoAlt,
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -45,6 +56,7 @@ import {
     LocalOfferOutlined,
     Lock,
     LockOpen,
+    MoreHoriz,
     MoreVert,
     Print,
     SettingsApplicationsOutlined,
@@ -61,14 +73,6 @@ import {
     ZoomOut,
 } from '@material-ui/icons'
 
-import folder, { ReactComponent as FolderIcon } from '../../icons/folder-line.svg'
-import archive, { ReactComponent as ArchiveIcon } from '../../icons/file-zip-line.svg'
-import email, { ReactComponent as EmailIcon } from '../../icons/mail-line.svg'
-import pdf, { ReactComponent as PdfIcon } from '../../icons/file-pdf-line.svg'
-import doc, { ReactComponent as DocIcon } from '../../icons/file-word-line.svg'
-import xls, { ReactComponent as XlsIcon } from '../../icons/file-excel-line.svg'
-import file, { ReactComponent as FileIcon } from '../../icons/file-line.svg'
-
 const FAIcon = ({ icon, style, className }) => React.createElement(FontAwesomeIcon, {
     icon,
     className,
@@ -81,7 +85,6 @@ const FAIcon = ({ icon, style, className }) => React.createElement(FontAwesomeIc
 
 export const reactIcons = {
     categoryCollections:        <FAIcon icon={faLayerGroup} style={{ width: '1.25em' }} />,
-
     categoryTags:               <LocalOffer />,
     categoryDates:              <DateRange />,
     categoryType:               <Category />,
@@ -132,6 +135,7 @@ export const reactIcons = {
     metaTab:                    <SettingsApplicationsOutlined />,
     codeTab:                    <CodeOutlined />,
     headersTab:                 <AccountTreeOutlined />,
+    moreFiles:                  <MoreHoriz />,
     search:                     <FAIcon icon={faSearch} />,
     batchSearch:                <FAIcon icon={faSearchPlus} />,
     refresh:                    <FAIcon icon={faRedoAlt} />,
@@ -139,23 +143,16 @@ export const reactIcons = {
     listView:                   <ViewStream />,
     more:                       <MoreVert />,
 
-    typeFolder:                 <SvgIcon component={ FolderIcon } />,
-    typeArchive:                <SvgIcon component={ ArchiveIcon } />,
-    typeEmail:                  <SvgIcon component={ EmailIcon } />,
-    typePdf:                    <SvgIcon component={ PdfIcon } />,
-    typeDoc:                    <SvgIcon component={ DocIcon } />,
-    typeXls:                    <SvgIcon component={ XlsIcon } />,
-    typeEmailArchive:           <SvgIcon component={ ArchiveIcon } />,
-    typeFile:                   <SvgIcon component={ FileIcon } />,
-}
-
-export const imageIcons = {
-    typeFolder:                 folder,
-    typeArchive:                archive,
-    typeEmail:                  email,
-    typePdf:                    pdf,
-    typeDoc:                    doc,
-    typeXls:                    xls,
-    typeEmailArchive:           archive,
-    typeFile:                   file,
+    typeArchive:                <FAIcon icon={faFileArchive} style={{ width: '1.25em' }} />,
+    typeAudio:                  <FAIcon icon={faFileAudio} style={{ width: '1.25em' }} />,
+    typeDoc:                    <FAIcon icon={faFileWord} style={{ width: '1.25em' }} />,
+    typeEmail:                  <FAIcon icon={faEnvelope} style={{ width: '1.25em' }} />,
+    typeEmailArchive:           <FAIcon icon={faFileArchive} style={{ width: '1.25em' }} />,
+    typeFile:                   <FAIcon icon={faFile} style={{ width: '1.25em' }} />,
+    typeFolder:                 <FAIcon icon={faFolder} style={{ width: '1.25em' }} />,
+    typeHtml:                   <FAIcon icon={faFileCode} style={{ width: '1.25em' }} />,
+    typeImage:                  <FAIcon icon={faFileImage} style={{ width: '1.25em' }} />,
+    typePdf:                    <FAIcon icon={faFilePdf} style={{ width: '1.25em' }} />,
+    typeVideo:                  <FAIcon icon={faFileVideo} style={{ width: '1.25em' }} />,
+    typeXls:                    <FAIcon icon={faFileExcel} style={{ width: '1.25em' }} />,
 }
