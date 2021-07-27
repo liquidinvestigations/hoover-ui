@@ -2,6 +2,7 @@ import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import {
+    faAngleDoubleRight,
     faBoxes,
     faEnvelope,
     faFile,
@@ -14,6 +15,11 @@ import {
     faFileVideo,
     faFileWord,
     faFolder,
+    faLayerGroup,
+    faMapPin,
+    faRedoAlt,
+    faSearch,
+    faSearchPlus,
 } from '@fortawesome/free-solid-svg-icons'
 
 import {
@@ -35,7 +41,6 @@ import {
     DateRange,
     Delete,
     DeleteOutlined,
-    DoubleArrow,
     Error,
     ErrorOutline,
     Event,
@@ -46,14 +51,14 @@ import {
     FullscreenExit,
     Language,
     Launch,
+    List,
     LocalOffer,
     LocalOfferOutlined,
     Lock,
     LockOpen,
     MoreHoriz,
-    PinDrop,
+    MoreVert,
     Print,
-    Room,
     SettingsApplicationsOutlined,
     SettingsEthernet,
     Sort,
@@ -61,15 +66,25 @@ import {
     StarOutline,
     Subject, Toc,
     Translate,
+    ViewStream,
     Visibility,
     VisibilityOffOutlined,
     ZoomIn,
     ZoomOut,
 } from '@material-ui/icons'
 
-export const reactIcons = {
-    categoryCollections:        <FontAwesomeIcon icon={faBoxes} size="lg" fixedWidth />,
+const FAIcon = ({ icon, style, className }) => React.createElement(FontAwesomeIcon, {
+    icon,
+    className,
+    size: 'lg',
+    style: {
+        width: '1em',
+        ...style,
+    }
+})
 
+export const reactIcons = {
+    categoryCollections:        <FAIcon icon={faLayerGroup} style={{ width: '1.25em' }} />,
     categoryTags:               <LocalOffer />,
     categoryDates:              <DateRange />,
     categoryType:               <Category />,
@@ -88,9 +103,9 @@ export const reactIcons = {
     dropDown:                   <ArrowDropDown />,
     location:                   <Folder />,
     contentFiles:               <FolderOutlined />,
-    pinned:                     <PinDrop />,
-    unpinned:                   <Room />,
-    doubleArrow:                <DoubleArrow />,
+    pinned:                     <FAIcon icon={faMapPin} />,
+    unpinned:                   <FAIcon icon={faMapPin} />,
+    doubleArrow:                <FAIcon icon={faAngleDoubleRight} />,
     cancel:                     <Cancel />,
     delete:                     <Delete />,
     deleteOutlined:             <DeleteOutlined />,
@@ -121,17 +136,23 @@ export const reactIcons = {
     codeTab:                    <CodeOutlined />,
     headersTab:                 <AccountTreeOutlined />,
     moreFiles:                  <MoreHoriz />,
+    search:                     <FAIcon icon={faSearch} />,
+    batchSearch:                <FAIcon icon={faSearchPlus} />,
+    refresh:                    <FAIcon icon={faRedoAlt} />,
+    tableView:                  <List />,
+    listView:                   <ViewStream />,
+    more:                       <MoreVert />,
 
-    typeArchive:                <FontAwesomeIcon icon={faFileArchive} size="lg" fixedWidth />,
-    typeAudio:                  <FontAwesomeIcon icon={faFileAudio} size="lg" fixedWidth />,
-    typeDoc:                    <FontAwesomeIcon icon={faFileWord} size="lg" fixedWidth />,
-    typeEmail:                  <FontAwesomeIcon icon={faEnvelope} size="lg" fixedWidth />,
-    typeEmailArchive:           <FontAwesomeIcon icon={faFileArchive} size="lg" fixedWidth />,
-    typeFile:                   <FontAwesomeIcon icon={faFile} size="lg" fixedWidth />,
-    typeFolder:                 <FontAwesomeIcon icon={faFolder} size="lg" fixedWidth />,
-    typeHtml:                   <FontAwesomeIcon icon={faFileCode} size="lg" fixedWidth />,
-    typeImage:                  <FontAwesomeIcon icon={faFileImage} size="lg" fixedWidth />,
-    typePdf:                    <FontAwesomeIcon icon={faFilePdf} size="lg" fixedWidth />,
-    typeVideo:                  <FontAwesomeIcon icon={faFileVideo} size="lg" fixedWidth />,
-    typeXls:                    <FontAwesomeIcon icon={faFileExcel} size="lg" fixedWidth />,
+    typeArchive:                <FAIcon icon={faFileArchive} style={{ width: '1.25em' }} />,
+    typeAudio:                  <FAIcon icon={faFileAudio} style={{ width: '1.25em' }} />,
+    typeDoc:                    <FAIcon icon={faFileWord} style={{ width: '1.25em' }} />,
+    typeEmail:                  <FAIcon icon={faEnvelope} style={{ width: '1.25em' }} />,
+    typeEmailArchive:           <FAIcon icon={faFileArchive} style={{ width: '1.25em' }} />,
+    typeFile:                   <FAIcon icon={faFile} style={{ width: '1.25em' }} />,
+    typeFolder:                 <FAIcon icon={faFolder} style={{ width: '1.25em' }} />,
+    typeHtml:                   <FAIcon icon={faFileCode} style={{ width: '1.25em' }} />,
+    typeImage:                  <FAIcon icon={faFileImage} style={{ width: '1.25em' }} />,
+    typePdf:                    <FAIcon icon={faFilePdf} style={{ width: '1.25em' }} />,
+    typeVideo:                  <FAIcon icon={faFileVideo} style={{ width: '1.25em' }} />,
+    typeXls:                    <FAIcon icon={faFileExcel} style={{ width: '1.25em' }} />,
 }
