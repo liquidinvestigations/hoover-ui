@@ -9,18 +9,19 @@ import { reactIcons } from './constants/icons'
 import { specialTags } from './constants/specialTags'
 
 const typeIconsMap = {
-    archive: 'typeArchive',
-    audio: 'typeAudio',
-    default: 'typeFile',
-    doc: 'typeDoc',
-    email: 'typeEmail',
-    'email-archive': 'typeEmailArchive',
-    folder: 'typeFolder',
-    html: 'typeHtml',
-    image: 'typeImage',
-    pdf: 'typePdf',
-    video: 'typeVideo',
-    xls: 'typeXls',
+    archive:            'typeArchive',
+    audio:              'typeAudio',
+    default:            'typeFile',
+    doc:                'typeDoc',
+    email:              'typeEmail',
+    'email-archive':    'typeEmailArchive',
+    folder:             'typeFolder',
+    html:               'typeHtml',
+    image:              'typeImage',
+    pdf:                'typePdf',
+    text:               'typeText',
+    video:              'typeVideo',
+    xls:                'typeXls',
 }
 
 export const getTypeIcon = fileType => reactIcons[typeIconsMap[fileType] || typeIconsMap.default]

@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import {
     faAngleDoubleRight,
-    faBoxes,
     faEnvelope,
     faFile,
     faFileArchive,
@@ -12,6 +11,7 @@ import {
     faFileExcel,
     faFileImage,
     faFilePdf,
+    faFileAlt,
     faFileVideo,
     faFileWord,
     faFolder,
@@ -153,6 +153,7 @@ export const reactIcons = {
     typeHtml:                   <FAIcon icon={faFileCode} style={{ width: '1.25em' }} />,
     typeImage:                  <FAIcon icon={faFileImage} style={{ width: '1.25em' }} />,
     typePdf:                    <FAIcon icon={faFilePdf} style={{ width: '1.25em' }} />,
+    typeText:                   <FAIcon icon={faFileAlt} style={{ width: '1.25em' }} />,
     typeVideo:                  <FAIcon icon={faFileVideo} style={{ width: '1.25em' }} />,
     typeXls:                    <FAIcon icon={faFileExcel} style={{ width: '1.25em' }} />,
 }
