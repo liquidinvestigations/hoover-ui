@@ -1,6 +1,6 @@
 import React, { createRef, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
-import { Typography } from '@material-ui/core'
+import { Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import Loading from '../../Loading'
 import Page from './Page'
@@ -45,19 +45,41 @@ const useStyles = makeStyles(theme => ({
             }
         }
     },
+    externalLinks: {
+        margin: theme.spacing(1),
+        overflow: 'auto',
+        '& th': {
+            whiteSpace: 'nowrap',
+            fontWeight: 'bold',
+        },
+        '& td': {
+            whiteSpace: 'nowrap',
+        },
+        '& pre': {
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+        }
+    },
+    externalLinksTitle: {
+        padding: theme.spacing(2),
+    },
 }))
 
 const pageMargin = 20
 
 export default function Document({ initialPageIndex, onPageIndexChange, renderer = 'canvas' }) {
     const classes = useStyles()
-    const { doc, firstPageData, status, error, percent } = useDocument()
+    const { doc, firstPageData, status, error, percent, externalLinks } = useDocument()
     const [rotation, setRotation] = useState(0)
     const [scale, setScale] = useState(1)
     const [pagesRefs, setPagesRefs] = useState([])
 
     const viewerRef = useRef()
     const containerRef = useRef()
+
+    const goToPage = index => {
+        containerRef.current.scrollTop = pagesRefs[index].current.offsetTop
+    }
 
     useEffect(() => {
         if (doc?.numPages) {
@@ -78,7 +100,7 @@ export default function Document({ initialPageIndex, onPageIndexChange, renderer
 
     useEffect(() => {
         if (status === STATUS_COMPLETE && initialPageIndex > 0 && pagesRefs[initialPageIndex]) {
-            containerRef.current.scrollTop = pagesRefs[initialPageIndex].current.offsetTop
+            goToPage(initialPageIndex)
         }
     }, [status])
 
@@ -130,6 +152,8 @@ export default function Document({ initialPageIndex, onPageIndexChange, renderer
                                key={index}
                                ref={pagesRefs[index]}
                                doc={doc}
+                               containerRef={containerRef}
+                               pagesRefs={pagesRefs}
                                renderer={renderer}
                                pageIndex={index}
                                width={firstPageData.width}
@@ -142,6 +166,41 @@ export default function Document({ initialPageIndex, onPageIndexChange, renderer
                     })
                 }
             </div>
+
+            {!!externalLinks?.length && (
+                <Paper className={classes.externalLinks}>
+                    <div className={classes.externalLinksTitle}>
+                        <Typography variant="h5">
+                            External Links
+                        </Typography>
+                        <Typography>
+                            Take care when opening links, they may contain trackers or identifiers of the document they come from
+                        </Typography>
+                    </div>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Page</TableCell>
+                                <TableCell>URL</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {externalLinks.map(({ pageIndex, url}) => (
+                                <TableRow>
+                                    <TableCell>
+                                        <strong>#{pageIndex + 1}</strong>
+                                        &nbsp;
+                                        <a href="#" onClick={() => goToPage(pageIndex)}>Scroll to</a>
+                                    </TableCell>
+                                    <TableCell>
+                                        <pre title={url}>{url}</pre>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </Paper>
+            )}
         </div>
     )
 }
