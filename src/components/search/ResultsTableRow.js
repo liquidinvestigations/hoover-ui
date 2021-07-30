@@ -79,29 +79,25 @@ export default function ResultsTableRow({ hit, index }) {
     const formatField = (field, path, format) => {
         const value = getValue(path)
 
-        if (!value) {
-            return null
-        }
-
         switch (format) {
             case 'string':
-                return shortenName(value, 60)
+                return value ? shortenName(value, 60) : null
             case 'boolean':
                 return value ? 'yes' : 'no'
             case 'date':
-                return formatDateTime(value)
+                return value ? formatDateTime(value) : null
             case 'size':
-                return humanFileSize(value)
+                return value ? humanFileSize(value) : null
             case 'icon':
                 return (
-                    <Tooltip placement="top" title={value}>
+                    <Tooltip placement="top" title={value ? value : 'unknown'}>
                         <span>
                             {cloneElement(getTypeIcon(value), { className: classes.infoIcon })}
                         </span>
                     </Tooltip>
                 )
             case 'array':
-                return (
+                return !value ? null : (
                     <>
                         {value.slice(0, 7).map(el => (
                             <>
@@ -114,7 +110,7 @@ export default function ResultsTableRow({ hit, index }) {
                 )
             case 'tags':
                 const icon = tag => getTagIcon(tag, field === 'tags')
-                return (
+                return !value ? null : (
                     <>
                         {value.slice(0, 7).map(el => (
                             <>
