@@ -96,7 +96,7 @@ export default function ResultsTableRow({ hit, index }) {
                 return (
                     <Tooltip placement="top" title={value}>
                         <span>
-                            {cloneElement(reactIcons[getTypeIcon(value)], { className: classes.infoIcon })}
+                            {cloneElement(getTypeIcon(value), { className: classes.infoIcon })}
                         </span>
                     </Tooltip>
                 )

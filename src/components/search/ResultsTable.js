@@ -164,7 +164,7 @@ export default function ResultsTable() {
                             ))
                         }
                     >
-                        {results?.hits.hits.map((hit, i) =>
+                        {!results ? null : results.hits.hits.map((hit, i) =>
                             <ResultsTableRow
                                 key={hit._id}
                                 index={i}
