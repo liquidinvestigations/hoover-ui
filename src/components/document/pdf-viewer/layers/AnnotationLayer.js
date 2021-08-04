@@ -119,10 +119,17 @@ export default function AnnotationLayer({ page, pageIndex, containerRef, pagesRe
                 renderInteractiveForms: false,
                 viewport: viewport.clone({ dontFlip: true }),
             })
-            setExternalLinks(
-                annotations
-                    .filter(annotation => annotation.annotationType === AnnotationType.LINK && annotation.url)
-                    .map(({ url }) => ({ pageIndex, url }))
+            setExternalLinks(prevLinks => {
+                    const newLinks = annotations
+                        .filter(annotation => annotation.annotationType === AnnotationType.LINK && annotation.url)
+                        .map(({url}) => ({ pageIndex, url }))
+
+                    if (newLinks.length && !prevLinks[newLinks[0].pageIndex]) {
+                        prevLinks = {...prevLinks, [newLinks[0].pageIndex]: newLinks}
+                    }
+
+                    return prevLinks
+                }
             )
         })
     }, [rotation, scale])

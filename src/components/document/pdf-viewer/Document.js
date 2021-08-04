@@ -1,10 +1,14 @@
-import React, { createRef, useEffect, useRef, useState } from 'react'
+import React, { cloneElement, createRef, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
-import { Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core'
+import { Box, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
-import Loading from '../../Loading'
 import Page from './Page'
 import Toolbar from './Toolbar'
+import Thumbnail from './Thumbnail'
+import Loading from '../../Loading'
+import Expandable from '../../Expandable'
+import SplitPaneLayout from '../../SplitPaneLayout'
+import { reactIcons } from '../../../constants/icons'
 import { STATUS_COMPLETE, STATUS_ERROR, STATUS_LOADING, useDocument } from './DocumentProvider'
 
 const useStyles = makeStyles(theme => ({
@@ -46,23 +50,36 @@ const useStyles = makeStyles(theme => ({
         }
     },
     externalLinks: {
-        margin: theme.spacing(1),
         overflow: 'auto',
         '& th': {
             whiteSpace: 'nowrap',
             fontWeight: 'bold',
+            paddingTop: theme.spacing(1),
+            paddingBottom: theme.spacing(1),
         },
         '& td': {
             whiteSpace: 'nowrap',
+            paddingTop: theme.spacing(1),
+            paddingBottom: theme.spacing(1),
         },
         '& pre': {
             overflow: 'hidden',
             textOverflow: 'ellipsis',
+            marginTop: theme.spacing(.5),
+            marginBottom: theme.spacing(.5),
         }
     },
     externalLinksTitle: {
         padding: theme.spacing(2),
     },
+    icon: {
+        verticalAlign: 'bottom',
+        marginRight: theme.spacing(1),
+    },
+    thumbnailView: {
+        padding: '10px 30px 0',
+        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    }
 }))
 
 const pageMargin = 20
@@ -72,19 +89,25 @@ export default function Document({ initialPageIndex, onPageIndexChange, renderer
     const { doc, firstPageData, status, error, percent, externalLinks } = useDocument()
     const [rotation, setRotation] = useState(0)
     const [scale, setScale] = useState(1)
+    const [currentPageIndex, setCurrentPageIndex] = useState(initialPageIndex)
     const [pagesRefs, setPagesRefs] = useState([])
+    const [thumbnailsRefs, setThumbnailsRefs] = useState([])
 
     const viewerRef = useRef()
     const containerRef = useRef()
 
     const goToPage = index => {
+        setCurrentPageIndex(index)
         containerRef.current.scrollTop = pagesRefs[index].current.offsetTop
     }
 
     useEffect(() => {
         if (doc?.numPages) {
-            setPagesRefs(pagesRefs =>
-                Array(doc.numPages).fill().map((_, i) => pagesRefs[i] || createRef())
+            setPagesRefs(refs =>
+                Array(doc.numPages).fill().map((_, i) => refs[i] || createRef())
+            )
+            setThumbnailsRefs(refs =>
+                Array(doc.numPages).fill().map((_, i) => refs[i] || createRef())
             )
         }
     }, [doc])
@@ -113,94 +136,140 @@ export default function Document({ initialPageIndex, onPageIndexChange, renderer
                 (maxIndex, item, index, array) =>
                     item > array[maxIndex] ? index : maxIndex, 0
             )
+            setCurrentPageIndex(maxRatioPage)
             onPageIndexChange(maxRatioPage)
         }
     }
 
-    return (
-        <div ref={viewerRef} className={classes.viewer}>
-            <Toolbar
-                viewerRef={viewerRef}
-                containerRef={containerRef}
-                pagesRefs={pagesRefs}
-                initialPageIndex={initialPageIndex}
-                numPages={doc?.numPages}
-                firstPageData={firstPageData}
-                pageMargin={pageMargin}
-                scale={scale}
-                setScale={setScale}
-                fullscreenClass={classes.fullscreen}
-                fullscreenExitClass={classes.fullscreenExit}
-            />
+    const [sidePanelOpen, setSidePanelOpen] = useState(false)
+    const toggleSidePanel = () => setSidePanelOpen(open => !open)
 
-            <div className={cn(classes.container, 'pdfViewer')} ref={containerRef}>
-                {status === STATUS_LOADING && (
-                    <Loading
-                        variant={percent > 0 ? 'determinate' : 'indeterminate'}
-                        value={percent}
-                    />
-                )}
-                {status === STATUS_ERROR && (
-                    <div className={classes.error}>
-                        <Typography color="error">{error.message}</Typography>
+    return (
+        <>
+            <div ref={viewerRef} className={classes.viewer}>
+                <Toolbar
+                    viewerRef={viewerRef}
+                    containerRef={containerRef}
+                    pagesRefs={pagesRefs}
+                    initialPageIndex={initialPageIndex}
+                    numPages={doc?.numPages}
+                    firstPageData={firstPageData}
+                    pageMargin={pageMargin}
+                    scale={scale}
+                    setScale={setScale}
+                    toggleSidePanel={toggleSidePanel}
+                    fullscreenClass={classes.fullscreen}
+                    fullscreenExitClass={classes.fullscreenExit}
+                />
+
+                <SplitPaneLayout
+                    className={classes.container}
+                    left={(
+                        <div className={classes.thumbnailView}>
+                            {sidePanelOpen && status === STATUS_COMPLETE && Array(doc.numPages).fill().map((_, index) => (
+                                <Thumbnail
+                                    key={index}
+                                    ref={thumbnailsRefs[index]}
+                                    doc={doc}
+                                    pageIndex={index}
+                                    width={firstPageData.width}
+                                    height={firstPageData.height}
+                                    rotation={rotation}
+                                    selected={index === currentPageIndex}
+                                    onSelect={index => goToPage(index)}
+                                />
+                            ))}
+                            <div style={{ clear: 'left' }} />
+                        </div>
+                    )}
+                    leftSize={sidePanelOpen ? '194px' : '0'}
+                    leftStyle={{ visibility: sidePanelOpen ? 'visible' : 'hidden' }}
+                    leftResizerStyle={{ visibility: sidePanelOpen ? 'visible' : 'hidden', width: sidePanelOpen ? 11 : 10 }}
+                >
+                    <div className={cn(classes.container, 'pdfViewer')} ref={containerRef}>
+                        {status === STATUS_LOADING && (
+                            <Loading
+                                variant={percent > 0 ? 'determinate' : 'indeterminate'}
+                                value={percent}
+                            />
+                        )}
+                        {status === STATUS_ERROR && (
+                            <div className={classes.error}>
+                                <Typography color="error">{error.message}</Typography>
+                            </div>
+                        )}
+                        {status === STATUS_COMPLETE &&
+                            Array(doc.numPages).fill().map((_, index) => {
+                               return  (
+                                   <Page
+                                       key={index}
+                                       ref={pagesRefs[index]}
+                                       doc={doc}
+                                       containerRef={containerRef}
+                                       pagesRefs={pagesRefs}
+                                       renderer={renderer}
+                                       pageIndex={index}
+                                       width={firstPageData.width}
+                                       height={firstPageData.height}
+                                       rotation={rotation}
+                                       scale={scale}
+                                       onVisibilityChanged={onPageVisibilityChange}
+                                   />
+                               )
+                            })
+                        }
                     </div>
-                )}
-                {status === STATUS_COMPLETE &&
-                    Array(doc.numPages).fill().map((_, index) => {
-                       return  (
-                           <Page
-                               key={index}
-                               ref={pagesRefs[index]}
-                               doc={doc}
-                               containerRef={containerRef}
-                               pagesRefs={pagesRefs}
-                               renderer={renderer}
-                               pageIndex={index}
-                               width={firstPageData.width}
-                               height={firstPageData.height}
-                               rotation={rotation}
-                               scale={scale}
-                               onVisibilityChanged={onPageVisibilityChange}
-                           />
-                       )
-                    })
-                }
+                </SplitPaneLayout>
             </div>
 
-            {!!externalLinks?.length && (
-                <Paper className={classes.externalLinks}>
-                    <div className={classes.externalLinksTitle}>
-                        <Typography variant="h5">
-                            External Links
-                        </Typography>
-                        <Typography>
-                            Take care when opening links, they may contain trackers or identifiers of the document they come from
-                        </Typography>
-                    </div>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Page</TableCell>
-                                <TableCell>URL</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {externalLinks.map(({ pageIndex, url}) => (
-                                <TableRow>
-                                    <TableCell>
-                                        <strong>#{pageIndex + 1}</strong>
-                                        &nbsp;
-                                        <a href="#" onClick={() => goToPage(pageIndex)}>Scroll to</a>
-                                    </TableCell>
-                                    <TableCell>
-                                        <pre title={url}>{url}</pre>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </Paper>
+            {!!Object.entries(externalLinks).length && (
+                <Box>
+                    <Expandable
+                        resizable
+                        defaultOpen
+                        highlight={false}
+                        fullHeight={false}
+                        title={
+                            <>
+                                {cloneElement(reactIcons.link, { className: classes.icon })}
+                                External links
+                            </>
+                        }
+                    >
+                        <div className={classes.externalLinks}>
+                            <div className={classes.externalLinksTitle}>
+                                <Typography>
+                                    Take care when opening links, they may contain trackers or identifiers of the document they come from
+                                </Typography>
+                            </div>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Page</TableCell>
+                                        <TableCell>URL</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {Object.entries(externalLinks)
+                                        .reduce((acc, [,indices]) => [...acc, ...indices], [])
+                                        .map(({ pageIndex, url }, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell>
+                                                    <strong>#{pageIndex + 1}</strong>
+                                                    &nbsp;
+                                                    <a href="#" onClick={() => goToPage(pageIndex)}>Scroll to</a>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <pre title={url}>{url}</pre>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    </Expandable>
+                </Box>
             )}
-        </div>
+        </>
     )
 }

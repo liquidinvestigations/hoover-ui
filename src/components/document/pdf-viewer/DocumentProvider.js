@@ -24,7 +24,7 @@ export default function DocumentProvider({ url, cMaps, cMapsPacked, withCredenti
     const [error, setError] = useState(null)
     const [percent, setPercent] = useState(0)
     const [status, setStatus] = useState(STATUS_LOADING)
-    const [externalLinks, setExternalLinks] = useState([])
+    const [externalLinks, setExternalLinks] = useState({})
 
     useEffect(() => {
         setStatus(STATUS_LOADING)

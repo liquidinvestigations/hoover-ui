@@ -50,8 +50,8 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPages,
-                    firstPageData, pageMargin, scale, setScale, fullscreenClass, fullscreenExitClass}) {
+function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPages, firstPageData, pageMargin,
+                     scale, setScale, toggleSidePanel, fullscreenClass, fullscreenExitClass}) {
     const classes = useStyles()
     const pageInputRef = useRef()
 
@@ -116,6 +116,18 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
             <MuiToolbar variant="dense" classes={{root: classes.toolbar}}>
                 <Grid container justify="space-between">
                     <Grid item>
+                        <Tooltip title="Side panel" PopperProps={popperProps}>
+                            <span>
+                                <IconButton
+                                    size="small"
+                                    onClick={toggleSidePanel}
+                                    className={classes.toolbarIcon}
+                                    style={{ marginRight: 50 }}
+                                >
+                                    {reactIcons.viewerSidePanel}
+                                </IconButton>
+                            </span>
+                        </Tooltip>
                         <Tooltip title="Previous page" PopperProps={popperProps}>
                             <span>
                                 <IconButton
