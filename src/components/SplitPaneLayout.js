@@ -41,7 +41,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function SplitPaneLayout({ left, children, right, onLeftChange, onMiddleChange, leftSize, leftStyle, leftResizerStyle, className,
+function SplitPaneLayout({ left, children, right, onLeftChange, onMiddleChange, leftSize, leftMinSize, leftStyle, leftResizerStyle, className,
                              defaultSizeLeft = '20%', defaultSizeMiddle = '60%', container = true }) {
 
     const classes = useStyles()
@@ -53,6 +53,7 @@ function SplitPaneLayout({ left, children, right, onLeftChange, onMiddleChange, 
                     key="left"
                     split="vertical"
                     size={leftSize}
+                    minSize={leftMinSize}
                     pane1Style={leftStyle}
                     resizerStyle={leftResizerStyle}
                     defaultSize={defaultSizeLeft}

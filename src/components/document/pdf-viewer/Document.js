@@ -3,8 +3,9 @@ import cn from 'classnames'
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import Page from './Page'
-import Toolbar from './Toolbar'
+import SideToolbar from './SideToolbar'
 import Thumbnail from './Thumbnail'
+import Toolbar from './Toolbar'
 import Loading from '../../Loading'
 import Expandable from '../../Expandable'
 import SplitPaneLayout from '../../SplitPaneLayout'
@@ -75,6 +76,13 @@ const useStyles = makeStyles(theme => ({
     icon: {
         verticalAlign: 'bottom',
         marginRight: theme.spacing(1),
+    },
+    sidebar: {
+        height: '100%',
+    },
+    sidebarContent: {
+        overflowY: 'auto',
+        height: 'calc(100% - 48px)',
     },
     thumbnailView: {
         padding: '10px 30px 0',
@@ -165,25 +173,33 @@ export default function Document({ initialPageIndex, onPageIndexChange, renderer
                 <SplitPaneLayout
                     className={classes.container}
                     left={(
-                        <div className={classes.thumbnailView}>
-                            {sidePanelOpen && status === STATUS_COMPLETE && Array(doc.numPages).fill().map((_, index) => (
-                                <Thumbnail
-                                    key={index}
-                                    ref={thumbnailsRefs[index]}
-                                    doc={doc}
-                                    pageIndex={index}
-                                    width={firstPageData.width}
-                                    height={firstPageData.height}
-                                    rotation={rotation}
-                                    selected={index === currentPageIndex}
-                                    onSelect={index => goToPage(index)}
-                                />
-                            ))}
-                            <div style={{ clear: 'left' }} />
+                        <div className={classes.sidebar}>
+                            <SideToolbar
+                                viewerRef={viewerRef}
+                            />
+                            <div className={classes.sidebarContent}>
+                                <div className={classes.thumbnailView}>
+                                    {sidePanelOpen && status === STATUS_COMPLETE && Array(doc.numPages).fill().map((_, index) => (
+                                        <Thumbnail
+                                            key={index}
+                                            ref={thumbnailsRefs[index]}
+                                            doc={doc}
+                                            pageIndex={index}
+                                            width={firstPageData.width}
+                                            height={firstPageData.height}
+                                            rotation={rotation}
+                                            selected={index === currentPageIndex}
+                                            onSelect={index => goToPage(index)}
+                                        />
+                                    ))}
+                                    <div style={{ clear: 'left' }} />
+                                </div>
+                            </div>
                         </div>
                     )}
                     leftSize={sidePanelOpen ? '194px' : '0'}
-                    leftStyle={{ visibility: sidePanelOpen ? 'visible' : 'hidden' }}
+                    leftMinSize={194}
+                    leftStyle={{ visibility: sidePanelOpen ? 'visible' : 'hidden', overflowY: 'hidden' }}
                     leftResizerStyle={{ visibility: sidePanelOpen ? 'visible' : 'hidden', width: sidePanelOpen ? 11 : 10 }}
                 >
                     <div className={cn(classes.container, 'pdfViewer')} ref={containerRef}>

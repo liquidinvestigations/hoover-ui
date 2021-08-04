@@ -26,6 +26,7 @@ import {
     AccountTree,
     AccountTreeOutlined,
     AlternateEmail,
+    Apps,
     ArrowDownward,
     ArrowDropDown,
     ArrowUpward,
@@ -147,6 +148,7 @@ export const reactIcons = {
     more:                       <MoreVert />,
     viewerSidePanel:            <ChromeReaderMode />,
     link:                       <Link />,
+    thumbnails:                 <Apps />,
 
     typeArchive:                <FAIcon icon={faFileArchive} style={{ width: '1.25em' }} />,
     typeAudio:                  <FAIcon icon={faFileAudio} style={{ width: '1.25em' }} />,
