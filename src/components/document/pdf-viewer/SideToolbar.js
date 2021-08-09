@@ -14,11 +14,11 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function SideToolbar({ viewerRef }) {
+export default function SideToolbar({ viewerRef, currentTab, onTabSwitch }) {
     const classes = useStyles()
 
     const openTab = tab => () => {
-
+        onTabSwitch(tab)
     }
 
     const popperProps = {
@@ -42,12 +42,12 @@ export default function SideToolbar({ viewerRef }) {
                     </Tooltip>
                 </Grid>
                 <Grid item>
-                    <Tooltip title="Table of contents" PopperProps={popperProps}>
+                    <Tooltip title="Bookmarks" PopperProps={popperProps}>
                             <span>
                                 <IconButton
                                     size="small"
                                     className={classes.toolbarIcon}
-                                    onClick={openTab('toc')}
+                                    onClick={openTab('bookmarks')}
                                 >
                                     {reactIcons.contentTab}
                                 </IconButton>

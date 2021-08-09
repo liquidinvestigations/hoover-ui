@@ -1,7 +1,8 @@
-import React, { cloneElement, createRef, useEffect, useRef, useState } from 'react'
+import React, { cloneElement, createRef, useCallback, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
+import BookmarksView from './BookmarksView'
 import Page from './Page'
 import SideToolbar from './SideToolbar'
 import Thumbnail from './Thumbnail'
@@ -11,6 +12,7 @@ import Expandable from '../../Expandable'
 import SplitPaneLayout from '../../SplitPaneLayout'
 import { reactIcons } from '../../../constants/icons'
 import { STATUS_COMPLETE, STATUS_ERROR, STATUS_LOADING, useDocument } from './DocumentProvider'
+import ThumbnailsView from './ThumbnailsView'
 
 const useStyles = makeStyles(theme => ({
     error: {
@@ -84,10 +86,6 @@ const useStyles = makeStyles(theme => ({
         overflowY: 'auto',
         height: 'calc(100% - 48px)',
     },
-    thumbnailView: {
-        padding: '10px 30px 0',
-        backgroundColor: 'rgba(0, 0, 0, 0.1)',
-    }
 }))
 
 const pageMargin = 20
@@ -103,11 +101,12 @@ export default function Document({ initialPageIndex, onPageIndexChange, renderer
 
     const viewerRef = useRef()
     const containerRef = useRef()
+    const sidebarRef = useRef()
 
-    const goToPage = index => {
+    const goToPage = useCallback(index => {
         setCurrentPageIndex(index)
         containerRef.current.scrollTop = pagesRefs[index].current.offsetTop
-    }
+    }, [containerRef, pagesRefs])
 
     useEffect(() => {
         if (doc?.numPages) {
@@ -152,6 +151,11 @@ export default function Document({ initialPageIndex, onPageIndexChange, renderer
     const [sidePanelOpen, setSidePanelOpen] = useState(false)
     const toggleSidePanel = () => setSidePanelOpen(open => !open)
 
+    const [sidebarTab, setSidebarTab] = useState('thumbnails')
+    const handleSidebarTabSwitch = tab => setSidebarTab(tab)
+
+    const [expandedBookmarks, setExpandedBookmarks] = useState([])
+
     return (
         <>
             <div ref={viewerRef} className={classes.viewer}>
@@ -176,24 +180,26 @@ export default function Document({ initialPageIndex, onPageIndexChange, renderer
                         <div className={classes.sidebar}>
                             <SideToolbar
                                 viewerRef={viewerRef}
+                                currentTab={sidebarTab}
+                                onTabSwitch={handleSidebarTabSwitch}
                             />
-                            <div className={classes.sidebarContent}>
-                                <div className={classes.thumbnailView}>
-                                    {sidePanelOpen && status === STATUS_COMPLETE && Array(doc.numPages).fill().map((_, index) => (
-                                        <Thumbnail
-                                            key={index}
-                                            ref={thumbnailsRefs[index]}
-                                            doc={doc}
-                                            pageIndex={index}
-                                            width={firstPageData.width}
-                                            height={firstPageData.height}
-                                            rotation={rotation}
-                                            selected={index === currentPageIndex}
-                                            onSelect={index => goToPage(index)}
-                                        />
-                                    ))}
-                                    <div style={{ clear: 'left' }} />
-                                </div>
+                            <div ref={sidebarRef} className={classes.sidebarContent}>
+                                {sidebarTab === 'thumbnails' && sidePanelOpen && status === STATUS_COMPLETE && (
+                                    <ThumbnailsView
+                                        containerRef={sidebarRef}
+                                        thumbnailsRefs={thumbnailsRefs}
+                                        rotation={rotation}
+                                        currentPageIndex={currentPageIndex}
+                                        onSelect={goToPage}
+                                    />
+                                )}
+                                {sidebarTab === 'bookmarks' && sidePanelOpen && status === STATUS_COMPLETE && (
+                                    <BookmarksView
+                                        expanded={expandedBookmarks}
+                                        onSetExpanded={setExpandedBookmarks}
+                                        onSelect={goToPage}
+                                    />
+                                )}
                             </div>
                         </div>
                     )}

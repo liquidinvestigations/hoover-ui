@@ -2,6 +2,7 @@ import React, { forwardRef, useEffect, useState } from 'react'
 import cn from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
 import ThumbnailLayer from './layers/ThumbnailLayer'
+import { useDocument } from './DocumentProvider'
 
 const thumbnailWidth = 100
 const thumbnailHeight = 150
@@ -24,11 +25,15 @@ const useStyles = makeStyles(theme => ({
     selected: {}
 }))
 
-export default forwardRef(({ doc, pageIndex, width, height, rotation, selected, onSelect }, thumbnailRef) => {
+export default forwardRef(({ containerRef, pageIndex, rotation, selected, onSelect }, thumbnailRef) => {
     const classes = useStyles()
+    const { doc, firstPageData } = useDocument()
+    const [ shouldScroll, setShouldScroll ] = useState(true)
     const [pageData, setPageData] = useState({
         page: null,
-        width, height, rotation
+        width: firstPageData.width,
+        height: firstPageData.height,
+        rotation,
     })
 
     const [visible, setVisible] = useState(false)
@@ -68,10 +73,16 @@ export default forwardRef(({ doc, pageIndex, width, height, rotation, selected, 
     }, [])
 
     useEffect(() => {
-        if (selected) {
-            thumbnailRef.current.scrollIntoView({ block: 'center' })
+        if (selected && shouldScroll) {
+            containerRef.current.scrollTop = thumbnailRef.current.offsetTop - 48
+            setShouldScroll(false)
         }
     }, [selected])
+
+    const handleClick = () => {
+        setShouldScroll(false)
+        onSelect(pageIndex)
+    }
 
     const { page, width: pageWidth, height: pageHeight } = pageData
 
@@ -79,7 +90,7 @@ export default forwardRef(({ doc, pageIndex, width, height, rotation, selected, 
         <div
             ref={thumbnailRef}
             className={classes.thumbnail}
-            onClick={() => onSelect(pageIndex)}
+            onClick={handleClick}
         >
             <div className={cn(classes.thumbnailSelection, { [classes.selected]: selected })}>
                 {visible && page && (
