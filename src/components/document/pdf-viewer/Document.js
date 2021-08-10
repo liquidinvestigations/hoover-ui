@@ -2,17 +2,17 @@ import React, { cloneElement, createRef, useCallback, useEffect, useRef, useStat
 import cn from 'classnames'
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
+import AttachmentsView from './AttachmentsView'
 import BookmarksView from './BookmarksView'
 import Page from './Page'
 import SideToolbar from './SideToolbar'
-import Thumbnail from './Thumbnail'
+import ThumbnailsView from './ThumbnailsView'
 import Toolbar from './Toolbar'
 import Loading from '../../Loading'
 import Expandable from '../../Expandable'
 import SplitPaneLayout from '../../SplitPaneLayout'
 import { reactIcons } from '../../../constants/icons'
 import { STATUS_COMPLETE, STATUS_ERROR, STATUS_LOADING, useDocument } from './DocumentProvider'
-import ThumbnailsView from './ThumbnailsView'
 
 const useStyles = makeStyles(theme => ({
     error: {
@@ -199,6 +199,9 @@ export default function Document({ initialPageIndex, onPageIndexChange, renderer
                                         onSetExpanded={setExpandedBookmarks}
                                         onSelect={goToPage}
                                     />
+                                )}
+                                {sidebarTab === 'attachments' && sidePanelOpen && status === STATUS_COMPLETE && (
+                                    <AttachmentsView />
                                 )}
                             </div>
                         </div>
