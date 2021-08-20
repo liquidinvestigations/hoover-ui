@@ -43,8 +43,8 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function Categories({ collections, drawerRef, drawerWidth, setDrawerWidth,
-                                       drawerPinned, setDrawerPinned, drawerOpenCategory, setDrawerOpenCategory }) {
+export default function Categories({ collections, openCategory, setOpenCategory,
+                                       drawerRef, drawerWidth, setDrawerWidth, drawerPinned, setDrawerPinned }) {
     const classes = useStyles()
     const { aggregations, query, search, collectionsCount } = useSearch()
     const [wideFilters, setWideFilters] = useState(true)
@@ -106,8 +106,8 @@ export default function Categories({ collections, drawerRef, drawerWidth, setDra
                     className={classes.drawerToolbarButton}
                     onClick={() => setDrawerPinned(pinned => {
                         if (!pinned) {
-                            setDrawerOpenCategory(category => {
-                                setTimeout(() => setDrawerOpenCategory(category), duration.leavingScreen)
+                            setOpenCategory(category => {
+                                setTimeout(() => setOpenCategory(category), duration.leavingScreen)
                                 return null
                             })
                         }
@@ -150,8 +150,8 @@ export default function Categories({ collections, drawerRef, drawerWidth, setDra
                         pinned={drawerPinned}
                         toolbar={drawerToolbar}
                         category="collections"
-                        open={drawerOpenCategory === 'collections'}
-                        onOpen={setDrawerOpenCategory}
+                        open={openCategory === 'collections'}
+                        onOpen={setOpenCategory}
                     >
                         <Expandable
                             title={`Collections (${query.collections?.length || 0})`}
@@ -170,8 +170,8 @@ export default function Categories({ collections, drawerRef, drawerWidth, setDra
                     <Filters
                         wideFilters={wideFilters}
                         categories={filtersCategories}
-                        drawerOpenCategory={drawerOpenCategory}
-                        onDrawerOpen={setDrawerOpenCategory}
+                        openCategory={openCategory}
+                        onDrawerOpen={setOpenCategory}
                         expandedFilters={expandedFilters}
                         onFilterExpand={setExpandedFilters}
                         drawerWidth={drawerWidth}

@@ -55,7 +55,7 @@ export default function Search({ collections }) {
         if (url === '/') {
             clearInput()
             clearResults()
-            setDrawerOpenCategory('collections')
+            setOpenCategory('collections')
         }
     }
     useEffect(() => {
@@ -99,7 +99,7 @@ export default function Search({ collections }) {
     const drawerRef = useRef()
     const [drawerWidth, setDrawerWidth] = useState()
     const [drawerPinned, setDrawerPinned] = useState(true)
-    const [drawerOpenCategory, setDrawerOpenCategory] = useState('collections')
+    const [openCategory, setOpenCategory] = useState('collections')
 
     return (
         <DocumentProvider
@@ -111,13 +111,13 @@ export default function Search({ collections }) {
                 <Grid container>
                     <Categories
                         collections={collections}
+                        openCategory={openCategory}
+                        setOpenCategory={setOpenCategory}
                         drawerRef={drawerRef}
                         drawerWidth={drawerWidth}
                         setDrawerWidth={setDrawerWidth}
                         drawerPinned={drawerPinned}
                         setDrawerPinned={setDrawerPinned}
-                        drawerOpenCategory={drawerOpenCategory}
-                        setDrawerOpenCategory={setDrawerOpenCategory}
                     />
 
                     <Grid item style={{ flex: 1 }}>

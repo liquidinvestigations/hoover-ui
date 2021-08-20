@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
 const formatLang = bucket => getLanguageName(bucket.key)
 
 function Filters({ categories, wideFilters, drawerToolbar, drawerWidth, drawerPinned, drawerPortalRef,
-                     drawerOpenCategory, onDrawerOpen, expandedFilters, onFilterExpand }) {
+                     openCategory, onDrawerOpen, expandedFilters, onFilterExpand }) {
 
     const classes = useStyles()
     const { query, search, aggregations, aggregationsError, aggregationsLoading, missingAggregations, missingLoading } = useSearch()
@@ -82,7 +82,7 @@ function Filters({ categories, wideFilters, drawerToolbar, drawerWidth, drawerPi
                 pinned={drawerPinned}
                 toolbar={drawerToolbar}
                 category={category}
-                open={drawerOpenCategory === category}
+                open={openCategory === category}
                 onOpen={onDrawerOpen}
             >
                 {filters.map(({ field, type, buckets, filterLabel }) => {
