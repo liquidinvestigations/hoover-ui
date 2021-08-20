@@ -17,6 +17,7 @@ import Pagination from './Pagination'
 import MoreButton from './MoreButton'
 import { formatThousands, getTagIcon, getTypeIcon } from '../../../utils'
 import { aggregationFields } from '../../../constants/aggregationFields'
+import Highlighter from 'react-highlight-words'
 
 const useStyles = makeStyles(theme => ({
     checkbox: {
@@ -46,7 +47,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 function AggregationFilter({ field, queryFilter, queryFacets, aggregations, loading, missing, missingLoading, onChange,
-                               triState, bucketLabel, bucketSubLabel, bucketValue }) {
+                               triState, bucketLabel, bucketSubLabel, bucketValue, search }) {
 
     const classes = useStyles()
     const aggregation = aggregations?.values
@@ -102,7 +103,17 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
         const excluded = queryFilter?.exclude?.includes(value)
         const checked = included || excluded || false
 
-        let displayLabel = label, icon
+        if (!label.includes(search)) {
+            return false
+        }
+
+        let displayLabel = !search.length ? label : (
+            <Highlighter
+                searchWords={[search]}
+                autoEscape={true}
+                textToHighlight={label}
+            />
+        ), icon
 
         if ((field === 'tags' || field === 'priv-tags') && (icon = getTagIcon(bucket.key, field === 'tags', excluded))) {
             displayLabel = (
@@ -117,7 +128,13 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
                         }
                     })}
                     <span>
-                        {bucket.key}
+                        {!search.length ? bucket.key : (
+                            <Highlighter
+                                searchWords={[search]}
+                                autoEscape={true}
+                                textToHighlight={bucket.key}
+                            />
+                        )}
                     </span>
                 </>
             )
@@ -134,7 +151,13 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
                         }
                     })}
                     <span>
-                        {bucket.key}
+                        {!search.length ? bucket.key : (
+                            <Highlighter
+                                searchWords={[search]}
+                                autoEscape={true}
+                                textToHighlight={bucket.key}
+                            />
+                        )}
                     </span>
                 </>
             )

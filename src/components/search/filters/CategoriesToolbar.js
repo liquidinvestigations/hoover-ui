@@ -5,9 +5,6 @@ import { makeStyles } from '@material-ui/core/styles'
 import { reactIcons } from '../../../constants/icons'
 
 const useStyles = makeStyles(theme => ({
-    expanded: {
-        transform: 'rotate(180deg)',
-    },
     toolbar: {
         backgroundColor: theme.palette.grey[100],
         borderBottomColor: theme.palette.grey[400],
@@ -23,9 +20,12 @@ const useStyles = makeStyles(theme => ({
             duration: theme.transitions.duration.shortest,
         }),
     },
+    expanded: {
+        transform: 'rotate(180deg)',
+    },
 }))
 
-export default function CategoryToolbar({ collapsed, onCollapseToggle }) {
+export default function CategoriesToolbar({ collapsed, onCollapseToggle }) {
     const classes = useStyles()
     const handleCollapse = () => onCollapseToggle(toggle => !toggle)
 
