@@ -1,29 +1,23 @@
-import React, { cloneElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import cn from 'classnames'
+import React, { cloneElement, useEffect, useMemo, useRef, useState } from 'react'
 import Router from 'next/router'
 import Link from 'next/link'
-import { Transition } from 'react-transition-group'
-import { duration, makeStyles } from '@material-ui/core/styles'
-import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Toolbar, Tooltip, Typography } from '@material-ui/core'
-import Expandable from '../Expandable'
-import SplitPaneLayout from '../SplitPaneLayout'
+import { makeStyles } from '@material-ui/core/styles'
+import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Typography } from '@material-ui/core'
 import { useProgressIndicator } from '../ProgressIndicator'
 import { useSearch } from './SearchProvider'
 import HotKeys from './HotKeys'
-import FiltersChips from './filters/FiltersChips'
-import QueryChips from './QueryChips'
-import Histogram from './filters/Histogram'
 import SearchResults from './Results'
-import Filters from './filters/Filters'
-import CollectionsFilter from './filters/CollectionsFilter'
+import QueryChips from './QueryChips'
+import Categories from './filters/Categories'
+import FiltersChips from './filters/FiltersChips'
+import Histogram from './filters/Histogram'
 import { DEFAULT_MAX_RESULTS, SEARCH_GUIDE } from '../../constants/general'
 import SortingChips from './sorting/SortingChips'
 import SortingMenu from './sorting/SortingMenu'
 import { DocumentProvider } from '../document/DocumentProvider'
+import SplitPaneLayout from '../SplitPaneLayout'
 import Document from '../document/Document'
-import CategoryDrawer from './filters/CategoryDrawer'
 import { reactIcons } from '../../constants/icons'
-import { aggregationCategories, aggregationFields } from '../../constants/aggregationFields'
 
 const useStyles = makeStyles(theme => ({
     error: {
@@ -44,44 +38,13 @@ const useStyles = makeStyles(theme => ({
         marginTop: theme.spacing(2),
         justifyContent: 'flex-end',
     },
-    drawerToolbar: {
-        backgroundColor: theme.palette.grey[100],
-        borderBottomColor: theme.palette.grey[400],
-        borderBottomWidth: 1,
-        borderBottomStyle: 'solid',
-    },
-    drawerToolbarButton: {
-        marginLeft: 'auto',
-        marginRight: 11,
-    },
-    drawerToolbarIcon: {
-        transition: theme.transitions.create('transform', {
-            duration: theme.transitions.duration.shortest,
-        }),
-    },
-    filters: {
-        width: 55,
-        borderRight: '1px solid rgba(0, 0, 0, 0.2)',
-        transition: theme.transitions.create('width', {
-            duration: theme.transitions.duration.shortest,
-        }),
-    },
-    wideFilters: {
-        width: 210,
-    },
-    expanded: {
-        transform: 'rotate(180deg)',
-    },
-    unPinned: {
-        transform: 'translateY(-3px) rotate(45deg) scale(0.85)',
-    },
 }))
 
 export default function Search({ collections }) {
     const classes = useStyles()
     const inputRef = useRef()
-    const { query, aggregations, error, search, searchText, setSearchText, resultsLoading,
-        clearResults, collectionsCount, selectedDocData, previewNextDoc, previewPreviousDoc } = useSearch()
+    const { query, error, search, searchText, setSearchText, resultsLoading,
+        clearResults, selectedDocData, previewNextDoc, previewPreviousDoc } = useSearch()
 
     const clearInput = () => {
         setSearchText('')
@@ -118,53 +81,6 @@ export default function Search({ collections }) {
         [collections, query]
     )
 
-    const [wideFilters, setWideFilters] = useState(true)
-    const [drawerPinned, setDrawerPinned] = useState(true)
-
-    const handleCollectionsChange = useCallback(value => {
-        search({ collections: value, page: 1 })
-    }, [collections, search])
-
-    const filtersCategories = useMemo(() => Object.entries(aggregationCategories).reduce((acc, [category, { label, icon, filters }]) => {
-        acc[category] = {
-            label,
-            icon,
-            filters: filters.map(field => ({ field, ...aggregationFields[field] })),
-        }
-        return acc
-    }, {}), [aggregationCategories, aggregationFields])
-
-    const [drawerOpenCategory, setDrawerOpenCategory] = useState('collections')
-    const [expandedFilters, setExpandedFilters] = useState(
-        Object.entries(filtersCategories).reduce((acc, [category, { filters }]) => {
-            if (!acc[category]) {
-                filters.some(({ field }) => {
-                    const queryFilter = query.filters?.[field]
-                    if (!!queryFilter?.include?.length || !!queryFilter?.exclude?.length || !!queryFilter?.missing ||
-                        !!(queryFilter?.from || queryFilter?.to || queryFilter?.intervals)) {
-                        acc[category] = field
-                        return true
-                    }
-                })
-            }
-
-            if (!acc[category]) {
-                filters.some(({ field }) => {
-                    if (!!aggregations?.[field]?.values.buckets.length) {
-                        acc[category] = field
-                        return true
-                    }
-                })
-            }
-
-            if (!acc[category]) {
-                acc[category] = filters[0].field
-            }
-
-            return acc
-        }, {})
-    )
-
     const handleSubmit = event => {
         event.preventDefault()
         search({ page: 1 })
@@ -182,38 +98,8 @@ export default function Search({ collections }) {
 
     const drawerRef = useRef()
     const [drawerWidth, setDrawerWidth] = useState()
-
-    useEffect(() => {
-        if (drawerRef.current && !drawerRef.current.className) {
-            setDrawerWidth(drawerRef.current.getBoundingClientRect().width)
-        }
-    }, [drawerRef.current])
-
-    const drawerToolbar = (
-        <Toolbar variant="dense" className={classes.drawerToolbar} disableGutters>
-            <Tooltip title={drawerPinned ? 'Unpin' : 'Pin'}>
-                <IconButton
-                    size="small"
-                    className={classes.drawerToolbarButton}
-                    onClick={() => setDrawerPinned(pinned => {
-                        if (!pinned) {
-                            setDrawerOpenCategory(category => {
-                                setTimeout(() => setDrawerOpenCategory(category), duration.leavingScreen)
-                                return null
-                            })
-                        }
-                        return !pinned
-                    })}
-                >
-                    {drawerPinned ? (
-                        cloneElement(reactIcons.pinned, { className: classes.drawerToolbarIcon})
-                    ) : (
-                        cloneElement(reactIcons.unpinned, { className: cn(classes.drawerToolbarIcon, classes.unPinned)})
-                    )}
-                </IconButton>
-            </Tooltip>
-        </Toolbar>
-    )
+    const [drawerPinned, setDrawerPinned] = useState(true)
+    const [drawerOpenCategory, setDrawerOpenCategory] = useState('collections')
 
     return (
         <DocumentProvider
@@ -223,75 +109,16 @@ export default function Search({ collections }) {
         >
             <HotKeys inputRef={inputRef}>
                 <Grid container>
-                    <Transition in={wideFilters} timeout={{
-                        enter: duration.enteringScreen,
-                        exit: duration.leavingScreen,
-                    }}>
-                        {state => (
-                            <Grid
-                                item
-                                className={cn(classes.filters, {
-                                    [classes.wideFilters]: state === 'entering' || state === 'entered'
-                                })}
-                                data-test="categories"
-                            >
-                                <Toolbar variant="dense" className={classes.drawerToolbar} disableGutters>
-                                    <Tooltip title={wideFilters ? 'Collapse' : 'Expand'}>
-                                        <IconButton
-                                            size="small"
-                                            className={classes.drawerToolbarButton}
-                                            onClick={() => setWideFilters(toggle => !toggle)}
-                                        >
-                                            {cloneElement(reactIcons.doubleArrow, {
-                                                className: cn(classes.drawerToolbarIcon, { [classes.expanded]: wideFilters })
-                                            })}
-                                        </IconButton>
-                                    </Tooltip>
-                                </Toolbar>
-
-                                <CategoryDrawer
-                                    key="collections"
-                                    title="Collections"
-                                    icon="categoryCollections"
-                                    highlight={false}
-                                    portalRef={drawerRef}
-                                    width={drawerWidth}
-                                    wideFilters={wideFilters}
-                                    pinned={drawerPinned}
-                                    toolbar={drawerToolbar}
-                                    category="collections"
-                                    open={drawerOpenCategory === 'collections'}
-                                    onOpen={setDrawerOpenCategory}
-                                >
-                                    <Expandable
-                                        title={`Collections (${query.collections?.length || 0})`}
-                                        open={true}
-                                        highlight={false}
-                                    >
-                                        <CollectionsFilter
-                                            collections={collections}
-                                            selected={query.collections || []}
-                                            changeSelection={handleCollectionsChange}
-                                            counts={collectionsCount}
-                                        />
-                                    </Expandable>
-                                </CategoryDrawer>
-
-                                <Filters
-                                    wideFilters={wideFilters}
-                                    categories={filtersCategories}
-                                    drawerOpenCategory={drawerOpenCategory}
-                                    onDrawerOpen={setDrawerOpenCategory}
-                                    expandedFilters={expandedFilters}
-                                    onFilterExpand={setExpandedFilters}
-                                    drawerWidth={drawerWidth}
-                                    drawerPinned={drawerPinned}
-                                    drawerToolbar={drawerToolbar}
-                                    drawerPortalRef={drawerRef}
-                                />
-                            </Grid>
-                        )}
-                    </Transition>
+                    <Categories
+                        collections={collections}
+                        drawerRef={drawerRef}
+                        drawerWidth={drawerWidth}
+                        setDrawerWidth={setDrawerWidth}
+                        drawerPinned={drawerPinned}
+                        setDrawerPinned={setDrawerPinned}
+                        drawerOpenCategory={drawerOpenCategory}
+                        setDrawerOpenCategory={setDrawerOpenCategory}
+                    />
 
                     <Grid item style={{ flex: 1 }}>
                         <SplitPaneLayout
