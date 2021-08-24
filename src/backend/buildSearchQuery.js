@@ -57,8 +57,26 @@ const buildSortQuery = order => order?.reverse().map(([field, direction = 'asc']
     {[field]: {order: direction, missing: '_last'}}
 ) || []
 
-const buildTermsField = (field, uuid, terms, page = 1, size = DEFAULT_FACET_SIZE) => {
+const buildTermsField = (field, uuid, terms, page = 1, all = false, size = DEFAULT_FACET_SIZE) => {
     const fieldKey = expandPrivate(field, uuid)
+
+    const aggregation = all ? {
+        composite: {
+            size: page * size,
+            sources: [{
+                document: {
+                    terms: {
+                        field: fieldKey,
+                    }
+                }
+            }]
+        }
+    } : {
+        terms: {
+            field: fieldKey,
+            size: page * size,
+        }
+    }
 
     let filterClause = null
     if (terms?.include?.length) {
@@ -90,12 +108,7 @@ const buildTermsField = (field, uuid, terms, page = 1, size = DEFAULT_FACET_SIZE
     return {
         field,
         originalField: field,
-        aggregation: {
-            terms: {
-                field: fieldKey,
-                size: page * size,
-            }
-        },
+        aggregation,
         filterClause,
         filterExclude,
         filterMissing,
@@ -347,6 +360,7 @@ const buildSearchQuery = (
         collections = [],
         facets = {},
         filters = {},
+        allBuckets = {},
     } = {},
     type = 'results',
     fieldList = '*',
@@ -368,7 +382,7 @@ const buildSearchQuery = (
         ...rangeFields.map(field => buildMissingField(field, uuid)),
     ] : [
         ...dateFields.map(field => buildHistogramField(field, uuid, filters[field], facets[field])),
-        ...termFields.map(field => buildTermsField(field, uuid, filters[field], facets[field])),
+        ...termFields.map(field => buildTermsField(field, uuid, filters[field], facets[field], allBuckets[field])),
         ...rangeFields.map(field => buildRangeField(field, uuid, filters[field], facets[field])),
     ]
 

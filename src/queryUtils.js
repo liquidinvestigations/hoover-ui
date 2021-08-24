@@ -21,6 +21,7 @@ const PARAMS_MAP = {
     b: 'tab',
     a: 'subTab',
     g: 'previewPage',
+    k: 'allBuckets',
 }
 
 const LEGACY_PARAMS = {

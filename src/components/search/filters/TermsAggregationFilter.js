@@ -7,10 +7,16 @@ import { useSearch } from '../SearchProvider'
 import { formatThousands } from '../../../utils'
 import { aggregationFields } from '../../../constants/aggregationFields'
 
-function TermsAggregationFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations, loading, missing, missingLoading, ...rest }) {
+function TermsAggregationFilter({ title, field, open, onToggle, ...rest }) {
 
+    const { query, aggregations, aggregationsLoading, missingAggregations } = useSearch()
+
+    const queryFilter = query.filters?.[field]
     const highlight = !!(queryFilter?.include?.length || queryFilter?.exclude?.length || queryFilter?.missing)
 
+    const loading = aggregationsLoading[field]
+    const aggregation = aggregations?.[field]
+    const missing = missingAggregations?.[`${field}-missing`]
     const { loadMissing } = useSearch()
     useEffect(() => {
         if (open && !missing) {
@@ -23,37 +29,31 @@ function TermsAggregationFilter({ title, field, open, onToggle, queryFilter, que
             title={title}
             loading={loading}
             highlight={highlight}
-            greyed={!aggregations?.values.buckets.length}
+            greyed={!aggregation?.values.buckets.length}
             open={open}
             onToggle={onToggle}
             resizable={false}
             summary={
-                !!aggregations?.values.buckets.length && (
+                !!aggregation?.values.buckets.length && (
                     <Typography variant="caption" display="block">
                         {
                             !aggregationFields[field].buckets &&
                             !aggregationFields[field].bucketsMax &&
-                            aggregations?.count.value > aggregations?.values.buckets.length &&
+                            aggregation?.count.value > aggregation?.values.buckets.length &&
                             '> '
                         }
                         {formatThousands(aggregationFields[field].bucketsMax ?
-                            aggregations?.values.buckets.reduce((acc, { doc_count }) => Math.max(acc, parseInt(doc_count)), 0) :
-                            aggregations?.values.buckets.reduce((acc, { doc_count }) => acc + parseInt(doc_count), 0)
+                            aggregation?.values.buckets.reduce((acc, { doc_count }) => Math.max(acc, parseInt(doc_count)), 0) :
+                            aggregation?.values.buckets.reduce((acc, { doc_count }) => acc + parseInt(doc_count), 0)
                         )} hits
                         {', '}
-                        {aggregations?.count.value} buckets
+                        {aggregation?.count.value} buckets
                     </Typography>
                 )
             }
         >
             <AggregationFilter
                 field={field}
-                queryFilter={queryFilter}
-                queryFacets={queryFacets}
-                aggregations={aggregations}
-                loading={loading}
-                missing={missing}
-                missingLoading={missingLoading}
                 triState
                 {...rest}
             />

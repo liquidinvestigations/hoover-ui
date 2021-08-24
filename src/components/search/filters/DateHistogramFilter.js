@@ -25,7 +25,13 @@ export const formatsValue = {
     hour: "yyyy-MM-dd'T'HH",
 }
 
-function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations, loading, missing, missingLoading, onChange }) {
+function DateHistogramFilter({ title, field, open, onToggle, onChange }) {
+
+    const { query, aggregations, aggregationsLoading, missingAggregations } = useSearch()
+    const queryFilter = query.filters?.[field]
+    const loading = aggregationsLoading[field]
+    const aggregation = aggregations?.[field]?.values
+    const missing = missingAggregations?.[`${field}-missing`]
     const interval = queryFilter?.interval || DEFAULT_INTERVAL
 
     const onRangeChange = useCallback(range => {
@@ -75,17 +81,17 @@ function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryF
             title={title}
             loading={loading}
             highlight={!!(queryFilter?.from || queryFilter?.to || queryFilter?.intervals)}
-            greyed={!aggregations?.values.buckets.length}
+            greyed={!aggregation?.values.buckets.length}
             open={open}
             onToggle={onToggle}
             resizable={false}
             summary={
-                !!aggregations?.values.buckets.length && (
+                !!aggregation?.values.buckets.length && (
                     <Typography variant="caption" display="block">
-                        {aggregations?.values.buckets.length >= DEFAULT_FACET_SIZE && '> '}
-                        {formatThousands(aggregations?.values.buckets.reduce((acc, { doc_count }) => acc + parseInt(doc_count), 0))} hits
+                        {aggregation?.values.buckets.length >= DEFAULT_FACET_SIZE && '> '}
+                        {formatThousands(aggregation?.values.buckets.reduce((acc, { doc_count }) => acc + parseInt(doc_count), 0))} hits
                         {', '}
-                        {aggregations?.values.buckets.length} buckets
+                        {aggregation?.values.buckets.length} buckets
                     </Typography>
                 )
             }
@@ -103,12 +109,6 @@ function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryF
 
             <AggregationFilter
                 field={field}
-                queryFilter={queryFilter?.intervals}
-                queryFacets={queryFacets}
-                aggregations={aggregations}
-                loading={loading}
-                missing={missing}
-                missingLoading={missingLoading}
                 onChange={onSelectionChange}
                 bucketLabel={formatLabel}
                 bucketSubLabel={interval === 'week' ? formatWeekStart : null}

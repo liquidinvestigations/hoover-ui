@@ -1,12 +1,13 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/router'
 import qs from 'qs'
+import stringify from 'json-stable-stringify'
 import { Button, IconButton, Snackbar } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import fixLegacyQuery from '../../fixLegacyQuery'
 import { getPreviewParams } from '../../utils'
 import { useHashState } from '../HashStateProvider'
-import { buildSearchQuerystring, rollupParams, unwindParams } from '../../queryUtils'
+import { buildSearchQuerystring, unwindParams } from '../../queryUtils'
 import { aggregationFields } from '../../constants/aggregationFields'
 import { search as searchAPI } from '../../api'
 import { tags as tagsAPI } from '../../backend/api'
@@ -58,7 +59,7 @@ export function SearchProvider({ children, serverQuery }) {
         if (hashState?.preview) {
             setSelectedDocData(hashState.preview)
         }
-    }, [JSON.stringify(hashState?.preview)])
+    }, [stringify(hashState?.preview)])
 
     const [collectionsCount, setCollectionsCount] = useState([])
 
@@ -98,8 +99,9 @@ export function SearchProvider({ children, serverQuery }) {
         } else {
             setResults(null)
         }
-    }, [JSON.stringify({
+    }, [stringify({
         ...query,
+        allBuckets: null,
         facets: null,
         filters: {
             ...query.filters || {},
@@ -195,8 +197,9 @@ export function SearchProvider({ children, serverQuery }) {
             setAggregations(null)
             setMissingAggregations(null)
         }
-    }, [JSON.stringify({
+    }, [stringify({
         ...query,
+        allBuckets: null,
         facets: null,
         page: null,
         size: null,
@@ -229,15 +232,20 @@ export function SearchProvider({ children, serverQuery }) {
 
     const prevFacetsQueryRef = useRef()
     useEffect(() => {
-        const { facets, page, size, order, ...queryRest } = query
-        const { facets: prevFacets, page: prevPage, size: prevSize, order: prevOrder, ...prevQueryRest } = prevFacetsQueryRef.current || {}
+        const { allBuckets, facets, page, size, order, ...queryRest } = query
+        const { allBuckets: prevAllBuckets, facets: prevFacets, page: prevPage, size: prevSize, order: prevOrder, ...prevQueryRest } = prevFacetsQueryRef.current || {}
 
-        if (JSON.stringify(queryRest) === JSON.stringify(prevQueryRest) && JSON.stringify(facets) !== JSON.stringify(prevFacets)) {
+        if (stringify(queryRest) === stringify(prevQueryRest) &&
+            (stringify(allBuckets) !== stringify(prevAllBuckets) ||
+                stringify(facets) !== stringify(prevFacets))) {
             const loading = state => Object.entries({
+                ...(allBuckets || {}),
+                ...(prevAllBuckets || {}),
                 ...(facets || {}),
                 ...(prevFacets || {}),
             }).reduce((acc, [field]) => {
-                if (JSON.stringify(facets?.[field]) !== JSON.stringify(prevFacets?.[field])) {
+                if (stringify(allBuckets?.[field]) !== stringify(prevAllBuckets?.[field]) ||
+                    stringify(facets?.[field]) !== stringify(prevFacets?.[field])) {
                     acc[field] = state
                 }
                 return acc
@@ -263,7 +271,7 @@ export function SearchProvider({ children, serverQuery }) {
             })
         }
         prevFacetsQueryRef.current = query
-    }, [JSON.stringify({
+    }, [stringify({
         ...query,
         page: null,
         size: null,
@@ -366,6 +374,29 @@ export function SearchProvider({ children, serverQuery }) {
         }
     }, [tagsRefreshQueue])
 
+    const [showAllBuckets, setShowAllBuckets] = useState(
+        Object.entries(aggregationFields).reduce((acc, [field]) => {
+            if (!aggregationFields[field].buckets && aggregationFields[field].type !== 'date') {
+                acc[field] = !!query.allBuckets?.[field] || false
+            }
+            return acc
+        }, {})
+    )
+    const toggleShowAllBuckets = field => () => {
+        setShowAllBuckets(showAll => {
+            const allBucketsVisible = {...showAll, [field]: !showAll[field]}
+            const allBuckets = Object.fromEntries(Object.entries(allBucketsVisible).filter(([,value]) => value))
+            const facets = {...(query.facets || {})}
+            Object.entries(allBucketsVisible).forEach(([field, value]) => {
+                if (facets[field]) {
+                    facets[field] = undefined
+                }
+            })
+            search({ allBuckets, facets })
+            return allBucketsVisible
+        })
+    }
+
     return (
         <SearchContext.Provider value={{
             query, error, search, searchText, setSearchText,
@@ -375,7 +406,8 @@ export function SearchProvider({ children, serverQuery }) {
             previewNextDoc, previewPreviousDoc, selectedDocData,
             clearResults, addTagToRefreshQueue,
             resultsViewType, setResultsViewType,
-            resultsColumns, setResultsColumns
+            resultsColumns, setResultsColumns,
+            showAllBuckets, toggleShowAllBuckets,
         }}>
             {children}
             <Snackbar

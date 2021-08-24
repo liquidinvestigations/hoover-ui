@@ -11,10 +11,13 @@ import {
     List,
     ListItem,
     ListItemText,
+    Switch,
+    Tooltip,
     Typography
 } from '@material-ui/core'
 import Pagination from './Pagination'
 import MoreButton from './MoreButton'
+import { useSearch } from '../SearchProvider'
 import { formatThousands, getTagIcon, getTypeIcon } from '../../../utils'
 import { aggregationFields } from '../../../constants/aggregationFields'
 
@@ -45,11 +48,16 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function AggregationFilter({ field, queryFilter, queryFacets, aggregations, loading, missing, missingLoading, onChange,
-                               triState, bucketLabel, bucketSubLabel, bucketValue }) {
+function AggregationFilter({ field, onChange, triState, bucketLabel, bucketSubLabel, bucketValue }) {
 
     const classes = useStyles()
-    const aggregation = aggregations?.values
+    const { query, aggregations, aggregationsLoading, missingAggregations, missingLoading, showAllBuckets, toggleShowAllBuckets } = useSearch()
+
+    const queryFilter = aggregationFields[field].type === 'date' ? query.filters?.[field]?.intervals : query.filters?.[field]
+    const queryFacets = query.facets?.[field]
+    const loading = aggregationsLoading[field]
+    const aggregation = aggregations?.[field]?.values
+    const missing = missingAggregations?.[`${field}-missing`]
 
     const handleChange = value => () => {
         const include = new Set(queryFilter?.include || [])
@@ -249,6 +257,25 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
                             )
                         }
                     </Grid>
+
+                    {!aggregationFields[field].buckets && aggregationFields[field].type !== 'date' && (
+                        <Grid item>
+                            <Tooltip title="Query aggregation buckets">
+                                <Grid component="label" container alignItems="center" spacing={1}>
+                                    <Grid item>Top</Grid>
+                                    <Grid item>
+                                        <Switch
+                                            size="small"
+                                            checked={showAllBuckets[field]}
+                                            onChange={toggleShowAllBuckets(field)}
+                                        />
+                                    </Grid>
+                                    <Grid item>All</Grid>
+                                </Grid>
+                            </Tooltip>
+                        </Grid>
+                    )}
+
                     <Grid item>
                         <Button
                             size="small"
