@@ -1,7 +1,6 @@
 import React, { cloneElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import cn from 'classnames'
 import Router from 'next/router'
-import Link from 'next/link'
 import { Transition } from 'react-transition-group'
 import { duration, makeStyles } from '@material-ui/core/styles'
 import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Toolbar, Tooltip, Typography } from '@material-ui/core'
@@ -35,6 +34,12 @@ const useStyles = makeStyles(theme => ({
     },
     clear: {
         color: theme.palette.grey.A100,
+    },
+    help: {
+        color: theme.palette.grey.A100,
+    },
+    noMaxWidth: {
+        maxWidth: 'none',
     },
     info: {
         color: theme.palette.grey.A700,
@@ -333,6 +338,25 @@ export default function Search({ collections }) {
                                                     />
                                                 </Grid>
 
+                                                <Grid item style={{ marginLeft: 20, marginBottom: 7 }}>
+                                                    <Tooltip
+                                                        interactive
+                                                        classes={{ tooltip: classes.noMaxWidth }}
+                                                        title={
+                                                            <>
+                                                                <Typography variant="body2">Enter to search, Shift+Enter for a new line.</Typography>
+                                                                <Typography variant="body2">All lines are combined into a single search.</Typography>
+                                                                <Typography variant="body2">
+                                                                    Refine your search using {' '}
+                                                                    <a href={SEARCH_GUIDE} style={{ color: 'white' }} target="_blank">this handy guide</a>.
+                                                                </Typography>
+                                                            </>
+                                                        }
+                                                    >
+                                                        {React.cloneElement(reactIcons.help, { className: classes.help })}
+                                                    </Tooltip>
+                                                </Grid>
+
                                                 <Grid item style={{ marginLeft: 20 }}>
                                                     <FormControl margin="normal">
                                                         <Button
@@ -348,25 +372,6 @@ export default function Search({ collections }) {
                                                 </Grid>
                                             </Grid>
                                         </form>
-
-                                        <Grid container justify="space-between">
-                                            <Grid item style={{ flex: 1 }}>
-                                                <Typography variant="caption" className={classes.info}>
-                                                    Enter to search, Shift+Enter for a new line.
-                                                    All lines are combined into a single search.
-                                                    Refine your search using {' '}
-                                                    <a href={SEARCH_GUIDE}>this handy guide</a>.
-                                                </Typography>
-                                            </Grid>
-
-                                            <Grid item style={{ marginLeft: 20 }}>
-                                                <Typography variant="caption">
-                                                    <Link href="/batch-search">
-                                                        <a>Batch search</a>
-                                                    </Link>
-                                                </Typography>
-                                            </Grid>
-                                        </Grid>
 
                                         <FiltersChips />
 

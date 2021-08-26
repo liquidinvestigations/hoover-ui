@@ -49,6 +49,7 @@ import {
     FolderOutlined,
     Fullscreen,
     FullscreenExit,
+    Help,
     Language,
     Launch,
     List,
@@ -142,6 +143,7 @@ export const reactIcons = {
     tableView:                  <List />,
     listView:                   <ViewStream />,
     more:                       <MoreVert />,
+    help:                       <Help />,
 
     typeArchive:                <FAIcon icon={faFileArchive} style={{ width: '1.25em' }} />,
     typeAudio:                  <FAIcon icon={faFileAudio} style={{ width: '1.25em' }} />,

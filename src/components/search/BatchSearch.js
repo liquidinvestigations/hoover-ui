@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
 import { Button, Grid, List, TextField, Typography } from '@material-ui/core'
 import Expandable from '../Expandable'
@@ -147,15 +146,6 @@ export default function BatchSearch({ collections, limits }) {
                             >
                                 Batch search
                             </Button>
-                        </Grid>
-                        <Grid item>
-                            <Link href="/">
-                                <a>
-                                    <Typography>
-                                        Back to single search
-                                    </Typography>
-                                </a>
-                            </Link>
                         </Grid>
                     </Grid>
 

@@ -16,11 +16,15 @@ function Menu() {
     }
 
     const links = () => ([{
-            name: 'search',
+            name: 'Search',
             url: '/',
             next: true,
         },{
-            name: 'insights',
+            name: 'Batch search',
+            url: '/batch-search',
+            next: true,
+        },{
+            name: 'Insights',
             url: '/insights',
             next: true,
         },{
@@ -33,18 +37,18 @@ function Menu() {
         //    next: true,
         //},
         {
-            name: 'documentation',
+            name: 'Documentation',
             url: 'https://github.com/liquidinvestigations/docs/wiki/User---Hoover',
         },{
-            name: 'login',
+            name: 'Login',
             url: whoAmI.urls.login,
             type: 'not-logged-in',
         },{
-            name: 'admin',
+            name: 'Admin',
             url: whoAmI.urls.admin,
             type: 'admin',
         },{
-            name: `logout (${whoAmI.username})`,
+            name: `Logout (${whoAmI.username})`,
             url: whoAmI.urls.logout,
             type: 'logged-in',
         }]
@@ -75,7 +79,8 @@ function Menu() {
                             variant="text"
                             component="a"
                             href={link.url}
-                            color="inherit">
+                            color="inherit"
+                        >
                             {link.name}
                         </Button>
                     );
