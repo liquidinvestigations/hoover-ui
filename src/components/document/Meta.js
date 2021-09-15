@@ -11,7 +11,7 @@ import {
 } from '@material-ui/core'
 import LinkMenu from './LinkMenu'
 import { useDocument } from './DocumentProvider'
-import { formatDateTime, getLanguageName, humanFileSize, shortenName } from '../../utils'
+import { flatten, formatDateTime, getLanguageName, humanFileSize, shortenName } from '../../utils'
 
 const useStyles = makeStyles(theme => ({
     icon: {
@@ -101,6 +101,16 @@ const Meta = () => {
         setMenuPosition(null)
     }
 
+    const renderElement = (key, value, index) => (
+        <Typography key={index} component="pre" variant="caption" className={classes.raw}>
+            <strong>{key}:</strong>
+            {' '}
+            <span className={classes.searchField} onClick={handleLinkClick(key, value.toString())}>
+                {shortenName(value.toString(), 200)}
+            </span>
+        </Typography>
+    )
+
     return (
         <>
             <List dense>
@@ -161,37 +171,21 @@ const Meta = () => {
                         ((!Array.isArray(value) && value) || (Array.isArray(value) && value.length))
                     )
                     .map(([key, value]) => {
-                        let description
-                        if (typeof value === 'object') {
-                            description = shortenName(JSON.stringify(value), 200)
+                        let elements
+                        if (Array.isArray(value)) {
+                            elements = { [key]: value }
+                        } else if (typeof value === 'object') {
+                            elements = flatten(value, [key])
                         } else if (typeof value === 'boolean') {
-                            description = value ? 'true' : 'false'
+                            elements = { [key]: value ? 'true' : 'false' }
                         } else {
-                            description = shortenName(value, 200)
+                            elements = { [key]: value }
                         }
 
-                        return (
-                            Array.isArray(value) && value.length ?
-                                value.map((element, index) =>
-                                    <Typography key={index} component="pre" variant="caption" className={classes.raw}>
-                                        <strong>{key}:</strong>{' '}
-                                        <span
-                                            className={classes.searchField}
-                                            onClick={handleLinkClick(key, element.toString())}
-                                        >
-                                            {element.toString()}
-                                        </span>
-                                    </Typography>
-                                ) :
-                                <Typography key={key} component="pre" variant="caption" className={classes.raw}>
-                                    <strong>{key}:</strong>{' '}
-                                    <span
-                                        className={classes.searchField}
-                                        onClick={handleLinkClick(key, value.toString())}
-                                    >
-                                        {description}
-                                    </span>
-                                </Typography>
+                        return Object.entries(elements).map(([key, value], index) =>
+                            Array.isArray(value) ?
+                                value.map((v, i) => renderElement(key, v, `${index}-${i}`)) :
+                                renderElement(key, value, index)
                         )
                     })
                 }

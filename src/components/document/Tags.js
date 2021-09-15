@@ -19,9 +19,10 @@ import { makeStyles } from '@material-ui/core/styles'
 import { blue } from '@material-ui/core/colors'
 import Loading from '../Loading'
 import TagTooltip from './TagTooltip'
-import { useUser } from '../UserProvider'
 import { useDocument } from './DocumentProvider'
-import { specialTags, specialTagsList } from '../../constants/specialTags'
+import { useTags } from './TagsProvider'
+import { useUser } from '../UserProvider'
+import { specialTagsList } from '../../constants/specialTags'
 import { search as searchAPI } from '../../api'
 import { reactIcons } from '../../constants/icons'
 import { getTagIcon } from '../../utils'
@@ -82,9 +83,13 @@ function Tags({ toolbarButtons }) {
     const whoAmI = useUser()
 
     const {
-        digestUrl, printMode, tags, tagsLocked, tagsLoading, tagsError,
-        handleTagAdd, handleTagDelete, handleTagLockClick, collections
+        digestUrl, printMode, collections
     } = useDocument()
+
+    const {
+        tags, tagsLocked, tagsLoading, tagsError,
+        handleTagAdd, handleTagDelete, handleTagLockClick
+    } = useTags()
 
     const [tagsAggregations, setTagsAggregations] = useState()
     const [tagsAggregationsLoading, setTagsAggregationsLoading] = useState(false)

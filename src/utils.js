@@ -197,3 +197,42 @@ export const formatTitleCase = name => {
         </>
     )
 }
+
+// $roots keeps previous parent properties as they will be added as a prefix for each prop.
+// $sep is just a preference if you want to seperate nested paths other than dot.
+export const flatten = (obj, roots = [], sep = '.') => Object
+    // find props of given object
+    .keys(obj)
+    // return an object by iterating props
+    .reduce((memo, prop) => Object.assign(
+        // create a new object
+        {},
+        // include previously returned object
+        memo,
+        Object.prototype.toString.call(obj[prop]) === '[object Object]'
+            // keep working if value is an object
+            ? flatten(obj[prop], roots.concat([prop]))
+            // include current prop and value and prefix prop with the roots
+            : {[roots.concat([prop]).join(sep)]: obj[prop]}
+    ), {})
+
+export const getFileName = url => {
+    const str = url.split('/').pop()
+    return str ? str.split('#')[0].split('?')[0] : url
+}
+
+export const downloadFile = (url, data) => {
+    const blobUrl = typeof data === 'string' ? '' : URL.createObjectURL(new Blob([data], { type: '' }))
+    const link = document.createElement('a')
+    link.style.display = 'none'
+    link.href = blobUrl || url
+    link.setAttribute('download', getFileName(url))
+
+    document.body.appendChild(link)
+    link.click()
+
+    document.body.removeChild(link)
+    if (blobUrl) {
+        URL.revokeObjectURL(blobUrl)
+    }
+}

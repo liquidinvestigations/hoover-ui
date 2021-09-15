@@ -24,6 +24,8 @@ export default function DocumentProvider({ url, cMaps, cMapsPacked, withCredenti
     const [error, setError] = useState(null)
     const [percent, setPercent] = useState(0)
     const [status, setStatus] = useState(STATUS_LOADING)
+    const [bookmarks, setBookmarks] = useState([])
+    const [externalLinks, setExternalLinks] = useState({})
 
     useEffect(() => {
         setStatus(STATUS_LOADING)
@@ -77,7 +79,11 @@ export default function DocumentProvider({ url, cMaps, cMapsPacked, withCredenti
     }, [url])
 
     return (
-        <DocumentContext.Provider value={{ doc, firstPageData, error, status, percent }}>
+        <DocumentContext.Provider value={{
+            doc, firstPageData, error, status, percent,
+            bookmarks, setBookmarks,
+            externalLinks, setExternalLinks,
+        }}>
             {children}
         </DocumentContext.Provider>
     )
