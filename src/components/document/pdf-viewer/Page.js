@@ -3,8 +3,10 @@ import CanvasLayer from './layers/CanvasLayer'
 import SVGLayer from './layers/SVGLayer'
 import TextLayer from './layers/TextLayer'
 import AnnotationLayer from './layers/AnnotationLayer'
+import Toolbar from './Toolbar'
 
-export default forwardRef(({ doc, renderer, pageIndex, width, height, rotation, scale, onVisibilityChanged }, pageRef) => {
+export default forwardRef(({ doc, containerRef, pagesRefs, renderer, pageIndex, width, height,
+                               rotation, scale, onVisibilityChanged }, pageRef) => {
     const [pageData, setPageData] = useState({
         page: null,
         width, height, rotation
@@ -94,6 +96,9 @@ export default forwardRef(({ doc, renderer, pageIndex, width, height, rotation, 
                     />
                     <AnnotationLayer
                         page={page}
+                        pageIndex={pageIndex}
+                        containerRef={containerRef}
+                        pagesRefs={pagesRefs}
                         rotation={normalizedRotation}
                         scale={scale}
                     />
