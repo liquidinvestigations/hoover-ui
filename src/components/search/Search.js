@@ -10,12 +10,13 @@ import QueryChips from './QueryChips'
 import Categories from './filters/Categories'
 import FiltersChips from './filters/FiltersChips'
 import Histogram from './filters/Histogram'
-import { DEFAULT_MAX_RESULTS, SEARCH_GUIDE } from '../../constants/general'
+import { DEFAULT_MAX_RESULTS } from '../../constants/general'
 import SortingChips from './sorting/SortingChips'
 import SortingMenu from './sorting/SortingMenu'
 import { DocumentProvider } from '../document/DocumentProvider'
 import SplitPaneLayout from '../SplitPaneLayout'
 import Document from '../document/Document'
+import { tooltips } from '../../constants/help'
 import { reactIcons } from '../../constants/icons'
 
 const useStyles = makeStyles(theme => ({
@@ -169,16 +170,7 @@ export default function Search({ collections }) {
                                                     <Tooltip
                                                         interactive
                                                         classes={{ tooltip: classes.noMaxWidth }}
-                                                        title={
-                                                            <>
-                                                                <Typography variant="body2">Enter to search, Shift+Enter for a new line.</Typography>
-                                                                <Typography variant="body2">All lines are combined into a single search.</Typography>
-                                                                <Typography variant="body2">
-                                                                    Refine your search using {' '}
-                                                                    <a href={SEARCH_GUIDE} style={{ color: 'white' }} target="_blank">this handy guide</a>.
-                                                                </Typography>
-                                                            </>
-                                                        }
+                                                        title={tooltips.search}
                                                     >
                                                         {React.cloneElement(reactIcons.help, { className: classes.help })}
                                                     </Tooltip>

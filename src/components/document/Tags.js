@@ -24,9 +24,9 @@ import { useTags } from './TagsProvider'
 import { useUser } from '../UserProvider'
 import { specialTagsList } from '../../constants/specialTags'
 import { search as searchAPI } from '../../api'
+import { tooltips } from '../../constants/help'
 import { reactIcons } from '../../constants/icons'
 import { getTagIcon } from '../../utils'
-import { SEARCH_GUIDE } from '../../constants/general'
 
 const forbiddenCharsRegex = /[^a-z0-9_!@#$%^&*()-=+:,./?]/gi
 
@@ -334,20 +334,7 @@ function Tags({ toolbarButtons }) {
                         <Tooltip
                             interactive
                             classes={{ tooltip: classes.noMaxWidth }}
-                            title={
-                                <>
-                                    <Typography variant="body2">
-                                        Tags are made of lowercase ASCII letters, digits, and symbols:{' '}
-                                        <code>_!@#$%^&*()-=+:,./?</code>.
-                                    </Typography>
-                                    <Typography variant="body2">
-                                        Changes to tags may take a minute to appear in search.
-                                    </Typography>
-                                    <Typography variant="body2">
-                                        Tags must be matched exactly when searching.
-                                    </Typography>
-                                </>
-                            }
+                            title={tooltips.tags}
                         >
                             {React.cloneElement(reactIcons.help, { className: classes.help })}
                         </Tooltip>
