@@ -1,4 +1,5 @@
 import React, { memo } from 'react'
+import Highlighter from 'react-highlight-words'
 import { makeStyles } from '@material-ui/core/styles'
 import { Checkbox, List, ListItem, ListItemText, Typography } from '@material-ui/core'
 import { formatThousands } from '../../../utils'
@@ -15,7 +16,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function CollectionsFilter({ collections, selected, changeSelection, counts }) {
+function CollectionsFilter({ collections, selected, changeSelection, counts, search }) {
     const classes = useStyles()
 
     const handleChange = name => () => {
@@ -42,7 +43,7 @@ function CollectionsFilter({ collections, selected, changeSelection, counts }) {
         <List dense disablePadding>
             {!collections?.length ? <Typography>no collections available</Typography> :
                 <>
-                    {collections.map(collection =>
+                    {collections.filter(collection => collection.name.includes(search)).map(collection =>
                         <ListItem
                             key={collection.name}
                             role={undefined}
@@ -60,7 +61,13 @@ function CollectionsFilter({ collections, selected, changeSelection, counts }) {
                             />
 
                             <ListItemText
-                                primary={collection.name}
+                                primary={!search.length ? collection.name : (
+                                    <Highlighter
+                                        searchWords={[search]}
+                                        autoEscape={true}
+                                        textToHighlight={collection.name}
+                                    />
+                                )}
                                 secondary={collection.stats.progress_str}
                                 className={classes.label}
                                 secondaryTypographyProps={{

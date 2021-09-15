@@ -1,7 +1,8 @@
 import React, { cloneElement, memo, useEffect } from 'react'
 import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
-import { Badge, Box, Chip, Grid, IconButton, Tabs, Toolbar, Tooltip, Typography } from '@material-ui/core'
+import { Badge, Box, Chip, Grid, Tabs, Typography } from '@material-ui/core'
+import { useDocument } from './DocumentProvider'
 import StyledTab from './StyledTab'
 import TabPanel from './TabPanel'
 import HTML from './HTML'
@@ -10,9 +11,10 @@ import Meta from './Meta'
 import TagTooltip from './TagTooltip'
 import SubTabs from './SubTabs'
 import Tags, { getChipColor } from './Tags'
-import { useDocument } from './DocumentProvider'
+import Toolbar from './Toolbar'
 import Loading from '../Loading'
 import { useUser } from '../UserProvider'
+import { useTags } from './TagsProvider'
 import { createOcrUrl } from '../../backend/api'
 import { specialTags } from '../../constants/specialTags'
 import { reactIcons } from '../../constants/icons'
@@ -23,19 +25,6 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-    },
-    toolbar: {
-        backgroundColor: theme.palette.grey[100],
-        borderBottomColor: theme.palette.grey[400],
-        borderBottomWidth: 1,
-        borderBottomStyle: 'solid',
-        justifyContent: 'space-between',
-    },
-    toolbarIcon: {
-        marginRight: theme.spacing(1),
-        '&:last-child': {
-            marginRight: 0,
-        }
     },
     filename: {
         padding: theme.spacing(1),
@@ -93,8 +82,9 @@ function Document({ onPrev, onNext }) {
         collection,
         digestUrl, docRawUrl,
         tab, handleTabChange,
-        tags, tagsLocked, tagsLoading, handleSpecialTagClick
     } = useDocument()
+
+    const { tags, tagsLoading, tagsLocked, handleSpecialTagClick } = useTags()
 
     useEffect(() => {
         if (printMode && !loading && !tagsLoading) {
@@ -227,27 +217,7 @@ function Document({ onPrev, onNext }) {
 
     return (
         <div className={classes.root} data-test="doc-view">
-            {!printMode && data.content.filetype !== 'folder' && (
-                <Toolbar variant="dense" classes={{root: classes.toolbar}}>
-                    {Object.entries(headerLinks).map(([group, links]) => (
-                        <Box key={group}>
-                            {links.map(({tooltip, icon, count, ...props}, index) => (
-                                <Tooltip title={tooltip} key={index}>
-                                    <IconButton
-                                        size="small"
-                                        component="a"
-                                        className={classes.toolbarIcon}
-                                        {...props}>
-                                        <Badge badgeContent={count} color="secondary">
-                                            {icon}
-                                        </Badge>
-                                    </IconButton>
-                                </Tooltip>
-                            ))}
-                        </Box>
-                    ))}
-                </Toolbar>
-            )}
+            {!printMode && data.content.filetype !== 'folder' && <Toolbar links={headerLinks} />}
 
             {printMode && (
                 <Link href={pathname}>

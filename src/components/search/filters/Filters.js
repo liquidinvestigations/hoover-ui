@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react'
+import React, { memo, useCallback, useMemo, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { CircularProgress, Typography } from '@material-ui/core'
 import TermsAggregationFilter from './TermsAggregationFilter'
@@ -6,6 +6,8 @@ import DateHistogramFilter from './DateHistogramFilter'
 import CategoryDrawer from './CategoryDrawer'
 import { useSearch } from '../SearchProvider'
 import { getLanguageName } from '../../../utils'
+import { aggregationCategories, aggregationFields } from '../../../constants/aggregationFields'
+import CategoryDrawerToolbar from './CategoryDrawerToolbar'
 
 const useStyles = makeStyles(theme => ({
     error: {
@@ -19,11 +21,48 @@ const useStyles = makeStyles(theme => ({
 
 const formatLang = bucket => getLanguageName(bucket.key)
 
-function Filters({ categories, wideFilters, drawerToolbar, drawerWidth, drawerPinned, drawerPortalRef,
-                     drawerOpenCategory, onDrawerOpen, expandedFilters, onFilterExpand }) {
-
+function Filters({ wideFilters, drawerWidth, drawerPinned, setDrawerPinned, drawerPortalRef, openCategory, setOpenCategory }) {
     const classes = useStyles()
     const { query, search, aggregations, aggregationsError, aggregationsLoading, missingAggregations, missingLoading } = useSearch()
+
+    const categories = useMemo(() => Object.entries(aggregationCategories).reduce((acc, [category, { label, icon, filters }]) => {
+        acc[category] = {
+            label,
+            icon,
+            filters: filters.map(field => ({ field, ...aggregationFields[field] })),
+        }
+        return acc
+    }, {}), [aggregationCategories, aggregationFields])
+
+    const [expandedFilters, setExpandedFilters] = useState(
+        Object.entries(categories).reduce((acc, [category, { filters }]) => {
+            if (!acc[category]) {
+                filters.some(({ field }) => {
+                    const queryFilter = query.filters?.[field]
+                    if (!!queryFilter?.include?.length || !!queryFilter?.exclude?.length || !!queryFilter?.missing ||
+                        !!(queryFilter?.from || queryFilter?.to || queryFilter?.intervals)) {
+                        acc[category] = field
+                        return true
+                    }
+                })
+            }
+
+            if (!acc[category]) {
+                filters.some(({ field }) => {
+                    if (!!aggregations?.[field]?.values.buckets.length) {
+                        acc[category] = field
+                        return true
+                    }
+                })
+            }
+
+            if (!acc[category]) {
+                acc[category] = filters[0].field
+            }
+
+            return acc
+        }, {})
+    )
 
     const triggerSearch = params => {
         search({ ...params, page: 1 })
@@ -39,6 +78,13 @@ function Filters({ categories, wideFilters, drawerToolbar, drawerWidth, drawerPi
             triggerSearch({ filters: { [key]: value, ...restFilters } })
         }
     }, [query])
+
+    const [searchBuckets, setSearchBuckets] = useState(
+        Object.fromEntries(Object.entries(categories).map(([category]) => [category, '']))
+    )
+    const handleBucketsSearch = category => value => {
+        setSearchBuckets(categories => ({...categories, [category]: value}))
+    }
 
     if (aggregationsError) {
         return <Typography color="error" className={classes.error}>{aggregationsError}</Typography>
@@ -76,14 +122,22 @@ function Filters({ categories, wideFilters, drawerToolbar, drawerWidth, drawerPi
                 icon={icon}
                 greyed={greyed}
                 highlight={highlight}
+                category={category}
+                open={openCategory === category}
+                onOpen={setOpenCategory}
                 wideFilters={wideFilters}
-                portalRef={drawerPortalRef}
                 width={drawerWidth}
                 pinned={drawerPinned}
-                toolbar={drawerToolbar}
-                category={category}
-                open={drawerOpenCategory === category}
-                onOpen={onDrawerOpen}
+                portalRef={drawerPortalRef}
+                toolbar={(
+                    <CategoryDrawerToolbar
+                        search={searchBuckets[category]}
+                        onSearch={handleBucketsSearch(category)}
+                        drawerPinned={drawerPinned}
+                        setDrawerPinned={setDrawerPinned}
+                        setOpenCategory={setOpenCategory}
+                    />
+                )}
             >
                 {filters.map(({ field, type, buckets, filterLabel }) => {
 
@@ -107,10 +161,10 @@ function Filters({ categories, wideFilters, drawerToolbar, drawerWidth, drawerPi
 
                     const onToggle = open => {
                         if (open) {
-                            onFilterExpand({ ...expandedFilters, ...{ [category]: field } })
+                            setExpandedFilters({ ...expandedFilters, ...{ [category]: field } })
                         } else {
                             const { [category]: closed, ...expanded } = expandedFilters
-                            onFilterExpand(expanded)
+                            setExpandedFilters(expanded)
                         }
                     }
 
@@ -128,6 +182,7 @@ function Filters({ categories, wideFilters, drawerToolbar, drawerWidth, drawerPi
                             open={expandedFilters[category] === field}
                             onToggle={filters.length > 1 && expandedFilters[category] !== field ? onToggle : null}
                             onChange={handleChange}
+                            search={searchBuckets[category]}
                             {...filterTypeProps}
                         />
                     )
