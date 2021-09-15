@@ -1,4 +1,5 @@
 import React, { memo } from 'react'
+import cn from 'classnames'
 import SplitPane from 'react-split-pane'
 import { makeStyles } from '@material-ui/core/styles'
 
@@ -40,17 +41,21 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function SplitPaneLayout({ left, children, right, onLeftChange, onMiddleChange,
-                             defaultSizeLeft = '20%', defaultSizeMiddle = '60%', container = true, } = {}) {
+function SplitPaneLayout({ left, children, right, onLeftChange, onMiddleChange, leftSize, leftMinSize, leftStyle, leftResizerStyle, className,
+                             defaultSizeLeft = '20%', defaultSizeMiddle = '60%', container = true }) {
 
     const classes = useStyles()
 
     return (
-        <div className={container ? classes.container : null}>
+        <div className={container ? cn(classes.container, className) : className}>
             {left ? (
                 <SplitPane
                     key="left"
                     split="vertical"
+                    size={leftSize}
+                    minSize={leftMinSize}
+                    pane1Style={leftStyle}
+                    resizerStyle={leftResizerStyle}
                     defaultSize={defaultSizeLeft}
                     allowResize
                     onChange={onLeftChange}

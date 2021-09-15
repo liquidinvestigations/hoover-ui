@@ -87,7 +87,7 @@ export default function Finder() {
             <div className={classes.container}>
                 {columns.map(({ items, pathname, prevPage, nextPage, selected }) => (
                     <FinderColumn
-                        key={items[0].id}
+                        key={pathname}
                         items={items}
                         pathname={pathname}
                         prevPage={prevPage}
