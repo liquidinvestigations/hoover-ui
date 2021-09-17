@@ -37,8 +37,8 @@ function Menu() {
         //    next: true,
         //},
         {
-            name: 'Documentation',
-            url: 'https://github.com/liquidinvestigations/docs/wiki/User---Hoover',
+            name: 'documentation',
+            url: 'https://github.com/liquidinvestigations/docs/wiki/User-Guide:-Hoover',
         },{
             name: 'Login',
             url: whoAmI.urls.login,
