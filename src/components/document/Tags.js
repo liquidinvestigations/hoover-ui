@@ -24,6 +24,7 @@ import { useTags } from './TagsProvider'
 import { useUser } from '../UserProvider'
 import { specialTagsList } from '../../constants/specialTags'
 import { search as searchAPI } from '../../api'
+import { tooltips } from '../../constants/help'
 import { reactIcons } from '../../constants/icons'
 import { getTagIcon } from '../../utils'
 
@@ -47,10 +48,11 @@ const useStyles = makeStyles(theme => ({
     buttons: {
         marginTop: theme.spacing(1),
     },
-    info: {
-        display: 'block',
-        marginTop: theme.spacing(1),
-        color: theme.palette.grey.A700,
+    help: {
+        color: theme.palette.grey.A100,
+    },
+    noMaxWidth: {
+        maxWidth: 'none',
     },
     otherTags: {
         paddingBottom: 0,
@@ -247,83 +249,97 @@ function Tags({ toolbarButtons }) {
                     ))}
                 </ButtonGroup>
 
-                <Autocomplete
-                    multiple
-                    freeSolo
-                    fullWidth
-                    disableClearable
-                    value={tagsValue}
-                    disabled={tagsLocked}
-                    options={options || []}
-                    getOptionDisabled={option => (
-                        tagsValue
-                            .filter(tag => newTagVisibility === 'public' ? tag.public : !tag.public)
-                            .map(tag => tag.tag)
-                            .includes(option.key)
-                    )}
-                    getOptionLabel={option => option.key}
-                    renderOption={option => (
-                        <span className={classes.option}>
-                            <span>{option.key}</span>
-                            <span className={classes.optionCount}>{option.doc_count}</span>
-                        </span>
-                    )}
-                    loading={tagsAggregationsLoading}
-                    renderTags={(value, getTagProps) =>
-                        value.map((chip, index) => (
-                            <TagTooltip key={index} chip={chip}>
-                                <Chip
-                                    label={ !!getTagIcon(chip.tag, chip.public) ?
-                                        <>
-                                            {cloneElement(getTagIcon(chip.tag, chip.public), {
-                                                style: {
-                                                    ...getTagIcon(chip.tag, chip.public).props.style,
-                                                    marginLeft: -8,
-                                                    marginRight: 4,
-                                                    verticalAlign: 'middle',
-                                                }
-                                            })}
-                                            <span style={{ verticalAlign: 'middle' }}>
-                                                        {chip.tag}
-                                                    </span>
-                                        </> : chip.tag
-                                    }
-                                    icon={chip.user === whoAmI.username && !specialTagsList.includes(chip.tag) ?
-                                        <Tooltip title={`make ${chip.public ? 'private' : 'public'}`}>
-                                            <IconButton
-                                                size="small"
-                                                onClick={handleTagLockClick(chip)}
-                                            >
-                                                {chip.public ? reactIcons.publicTag : reactIcons.privateTag}
-                                            </IconButton>
-                                        </Tooltip> : null
-                                    }
-                                    style={{ backgroundColor: getChipColor(chip) }}
-                                    {...getTagProps({ index })}
+                <Grid container justify="space-between">
+                    <Grid item style={{ flex: 1 }}>
+                        <Autocomplete
+                            multiple
+                            freeSolo
+                            fullWidth
+                            disableClearable
+                            value={tagsValue}
+                            disabled={tagsLocked}
+                            options={options || []}
+                            getOptionDisabled={option => (
+                                tagsValue
+                                    .filter(tag => newTagVisibility === 'public' ? tag.public : !tag.public)
+                                    .map(tag => tag.tag)
+                                    .includes(option.key)
+                            )}
+                            getOptionLabel={option => option.key}
+                            renderOption={option => (
+                                <span className={classes.option}>
+                                    <span>{option.key}</span>
+                                    <span className={classes.optionCount}>{option.doc_count}</span>
+                                </span>
+                            )}
+                            loading={tagsAggregationsLoading}
+                            renderTags={(value, getTagProps) =>
+                                value.map((chip, index) => (
+                                    <TagTooltip key={index} chip={chip}>
+                                        <Chip
+                                            label={ !!getTagIcon(chip.tag, chip.public) ?
+                                                <>
+                                                    {cloneElement(getTagIcon(chip.tag, chip.public), {
+                                                        style: {
+                                                            ...getTagIcon(chip.tag, chip.public).props.style,
+                                                            marginLeft: -8,
+                                                            marginRight: 4,
+                                                            verticalAlign: 'middle',
+                                                        }
+                                                    })}
+                                                    <span style={{ verticalAlign: 'middle' }}>
+                                                                {chip.tag}
+                                                            </span>
+                                                </> : chip.tag
+                                            }
+                                            icon={chip.user === whoAmI.username && !specialTagsList.includes(chip.tag) ?
+                                                <Tooltip title={`make ${chip.public ? 'private' : 'public'}`}>
+                                                    <IconButton
+                                                        size="small"
+                                                        onClick={handleTagLockClick(chip)}
+                                                    >
+                                                        {chip.public ? reactIcons.publicTag : reactIcons.privateTag}
+                                                    </IconButton>
+                                                </Tooltip> : null
+                                            }
+                                            style={{ backgroundColor: getChipColor(chip) }}
+                                            {...getTagProps({ index })}
+                                        />
+                                    </TagTooltip>
+                                ))
+                            }
+                            inputValue={inputValue}
+                            onInputChange={handleInputChange}
+                            renderInput={params => (
+                                <TextField
+                                    {...params}
+                                    placeholder={(tagsValue.length === 0 ? 'no tags, ' : '') + 'start typing to add'}
+                                    InputProps={{
+                                        ...params.InputProps,
+                                        endAdornment: (
+                                            <React.Fragment>
+                                                {tagsAggregationsLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                                                {params.InputProps.endAdornment}
+                                            </React.Fragment>
+                                        ),
+                                        onFocus: handleInputFocus
+                                    }}
                                 />
-                            </TagTooltip>
-                        ))
-                    }
-                    inputValue={inputValue}
-                    onInputChange={handleInputChange}
-                    renderInput={params => (
-                        <TextField
-                            {...params}
-                            placeholder={(tagsValue.length === 0 ? 'no tags, ' : '') + 'start typing to add'}
-                            InputProps={{
-                                ...params.InputProps,
-                                endAdornment: (
-                                    <React.Fragment>
-                                        {tagsAggregationsLoading ? <CircularProgress color="inherit" size={20} /> : null}
-                                        {params.InputProps.endAdornment}
-                                    </React.Fragment>
-                                ),
-                                onFocus: handleInputFocus
-                            }}
+                            )}
+                            onChange={handleChange}
                         />
-                    )}
-                    onChange={handleChange}
-                />
+                    </Grid>
+
+                    <Grid item style={{ marginLeft: 20 }}>
+                        <Tooltip
+                            interactive
+                            classes={{ tooltip: classes.noMaxWidth }}
+                            title={tooltips.tags}
+                        >
+                            {React.cloneElement(reactIcons.help, { className: classes.help })}
+                        </Tooltip>
+                    </Grid>
+                </Grid>
 
                 <Grid container className={classes.buttons} justify="flex-end">
                     <Grid item>
@@ -338,13 +354,6 @@ function Tags({ toolbarButtons }) {
                         </FormControl>
                     </Grid>
                 </Grid>
-
-                <Typography variant="caption" className={classes.info}>
-                    Tags are made of lowercase ASCII letters, digits, and symbols:{' '}
-                    <code>_!@#$%^&*()-=+:,./?</code>.<br />
-                    Changes to tags may take a minute to appear in search.<br />
-                    Tags must be matched exactly when searching.
-                </Typography>
 
                 {otherUsersTags.map(([user, tags], index) =>
                     <Box key={index} my={3} pb={0.7} className={classes.otherTags}>

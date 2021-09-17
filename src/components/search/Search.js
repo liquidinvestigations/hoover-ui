@@ -1,8 +1,7 @@
 import React, { cloneElement, useEffect, useMemo, useRef, useState } from 'react'
 import Router from 'next/router'
-import Link from 'next/link'
 import { makeStyles } from '@material-ui/core/styles'
-import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Typography } from '@material-ui/core'
+import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Tooltip, Typography } from '@material-ui/core'
 import { useProgressIndicator } from '../ProgressIndicator'
 import { useSearch } from './SearchProvider'
 import HotKeys from './HotKeys'
@@ -11,12 +10,13 @@ import QueryChips from './QueryChips'
 import Categories from './filters/Categories'
 import FiltersChips from './filters/FiltersChips'
 import Histogram from './filters/Histogram'
-import { DEFAULT_MAX_RESULTS, SEARCH_GUIDE } from '../../constants/general'
+import { DEFAULT_MAX_RESULTS } from '../../constants/general'
 import SortingChips from './sorting/SortingChips'
 import SortingMenu from './sorting/SortingMenu'
 import { DocumentProvider } from '../document/DocumentProvider'
 import SplitPaneLayout from '../SplitPaneLayout'
 import Document from '../document/Document'
+import { tooltips } from '../../constants/help'
 import { reactIcons } from '../../constants/icons'
 
 const useStyles = makeStyles(theme => ({
@@ -29,6 +29,12 @@ const useStyles = makeStyles(theme => ({
     },
     clear: {
         color: theme.palette.grey.A100,
+    },
+    help: {
+        color: theme.palette.grey.A100,
+    },
+    noMaxWidth: {
+        maxWidth: 'none',
     },
     info: {
         color: theme.palette.grey.A700,
@@ -160,6 +166,16 @@ export default function Search({ collections }) {
                                                     />
                                                 </Grid>
 
+                                                <Grid item style={{ marginLeft: 20, marginBottom: 7 }}>
+                                                    <Tooltip
+                                                        interactive
+                                                        classes={{ tooltip: classes.noMaxWidth }}
+                                                        title={tooltips.search}
+                                                    >
+                                                        {React.cloneElement(reactIcons.help, { className: classes.help })}
+                                                    </Tooltip>
+                                                </Grid>
+
                                                 <Grid item style={{ marginLeft: 20 }}>
                                                     <FormControl margin="normal">
                                                         <Button
@@ -175,25 +191,6 @@ export default function Search({ collections }) {
                                                 </Grid>
                                             </Grid>
                                         </form>
-
-                                        <Grid container justify="space-between">
-                                            <Grid item style={{ flex: 1 }}>
-                                                <Typography variant="caption" className={classes.info}>
-                                                    Enter to search, Shift+Enter for a new line.
-                                                    All lines are combined into a single search.
-                                                    Refine your search using {' '}
-                                                    <a href={SEARCH_GUIDE}>this handy guide</a>.
-                                                </Typography>
-                                            </Grid>
-
-                                            <Grid item style={{ marginLeft: 20 }}>
-                                                <Typography variant="caption">
-                                                    <Link href="/batch-search">
-                                                        <a>Batch search</a>
-                                                    </Link>
-                                                </Typography>
-                                            </Grid>
-                                        </Grid>
 
                                         <FiltersChips />
 
