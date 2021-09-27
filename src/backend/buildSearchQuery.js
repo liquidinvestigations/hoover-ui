@@ -279,7 +279,7 @@ const prepareFilter = field => {
     const filter = []
 
     if (field.filterClause) {
-        filter.push(field.filterClause)
+        filter.push(...field.filterClause)
     }
 
     if (field.filterExclude) {
