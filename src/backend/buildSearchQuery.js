@@ -394,6 +394,7 @@ const buildSearchQuery = (
         collections,
         _source: searchFields._source,
         highlight: {
+            max_analyzed_offset: 999999,
             fields: highlightFields,
         },
     }
