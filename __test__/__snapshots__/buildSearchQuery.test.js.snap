@@ -396,6 +396,7 @@ Object {
   "from": 0,
   "highlight": Object {
     "fields": Object {},
+    "max_analyzed_offset": 999999,
   },
   "post_filter": Object {
     "bool": Object {},
