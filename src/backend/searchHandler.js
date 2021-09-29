@@ -18,9 +18,15 @@ const handler = async (req, res) => {
         res.end()
 
     } catch (e) {
-        res.status(500)
-        res.json(e)
-        res.end()
+        if (e.status === 429) {
+            res.status(429)
+            res.json(e)
+            res.end()
+        } else {
+            res.status(500)
+            res.json(e)
+            res.end()
+        }
     }
 }
 
