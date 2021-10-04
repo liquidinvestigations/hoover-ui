@@ -18,7 +18,7 @@ const handler = async (req, res) => {
         res.end()
 
     } catch (e) {
-        res.status(500)
+        res.status(e.status || 500)
         res.json(e)
         res.end()
     }
