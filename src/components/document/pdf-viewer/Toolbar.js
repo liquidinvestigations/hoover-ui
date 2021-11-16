@@ -1,5 +1,6 @@
 import React, { cloneElement, memo, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
+import screenfull from 'screenfull'
 import { Grid, IconButton, Menu, MenuItem, TextField, Toolbar as MuiToolbar, Tooltip } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { zoomIn, zoomOut } from './zooming'
@@ -104,8 +105,8 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
     const onZoomOut = () => handleScaleSet(zoomOut(scale))()
     const onZoomIn = () => handleScaleSet(zoomIn(scale))()
 
-    const onFullScreen = () => viewerRef.current.requestFullscreen()
-    const onFullScreenExit = () => document.exitFullscreen()
+    const onFullScreen = () => screenfull.request(viewerRef.current)
+    const onFullScreenExit = () => screenfull.exit()
 
     const popperProps = {
         container: viewerRef.current
@@ -225,26 +226,28 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
                             </div>
                         </Tooltip>
                     </Grid>
-                    <Grid item>
-                        <Tooltip title="Full screen" PopperProps={popperProps}>
-                            <IconButton
-                                size="small"
-                                onClick={onFullScreen}
-                                className={fullscreenClass}
-                            >
-                                {reactIcons.fullscreen}
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Exit full screen" PopperProps={popperProps}>
-                            <IconButton
-                                size="small"
-                                onClick={onFullScreenExit}
-                                className={fullscreenExitClass}
-                            >
-                                {reactIcons.fullscreenExit}
-                            </IconButton>
-                        </Tooltip>
-                    </Grid>
+                    {screenfull.isEnabled && (
+                        <Grid item>
+                            <Tooltip title="Full screen" PopperProps={popperProps}>
+                                <IconButton
+                                    size="small"
+                                    onClick={onFullScreen}
+                                    className={fullscreenClass}
+                                >
+                                    {reactIcons.fullscreen}
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Exit full screen" PopperProps={popperProps}>
+                                <IconButton
+                                    size="small"
+                                    onClick={onFullScreenExit}
+                                    className={fullscreenExitClass}
+                                >
+                                    {reactIcons.fullscreenExit}
+                                </IconButton>
+                            </Tooltip>
+                        </Grid>
+                    )}
                 </Grid>
             </MuiToolbar>
 

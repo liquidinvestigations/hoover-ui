@@ -55,6 +55,7 @@
     "react-placeholder": "^4.1.0",
     "react-split-pane": "^0.1.92",
     "react-transition-group": "^4.4.1",
+    "screenfull": "^6.0.0",
     "tiff": "^4.3.0"
   },
   "devDependencies": {
