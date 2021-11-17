@@ -1,6 +1,6 @@
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const withTM = require('next-transpile-modules')(['pdfjs-dist'])
+const withTM = require('next-transpile-modules')(['pdfjs-dist', 'screenfull'])
 const withPlugins = require('next-compose-plugins')
 
 const {
