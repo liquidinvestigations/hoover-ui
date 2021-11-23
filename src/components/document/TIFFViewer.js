@@ -99,9 +99,14 @@ export default function TIFFViewer({ url }) {
 
     return (
         <div className={classes.wrapper}>
-            {loading && <Loading variant={isNaN(loading) ? 'indeterminate' : 'determinate'} value={!isNaN(loading) ? loading : null} />}
+            {loading && (
+                <Loading
+                    variant={typeof loading === 'number' ? 'determinate' : 'indeterminate'}
+                    value={typeof loading === 'number' ? loading : null}
+                />
+            )}
             {error && <Typography color="error">{error}</Typography>}
-            {pages?.map(data => <img src={data} />)}
+            {pages?.map(data => <img key={data} src={data} />)}
         </div>
     )
 }

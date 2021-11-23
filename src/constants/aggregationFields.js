@@ -39,6 +39,11 @@ export const aggregationCategories = {
         icon: 'ocr',
         filters: ['ocr']
     },
+    imageAi: {
+        label: 'Image AI',
+        icon: 'imageAi',
+        filters: ['detected-objects.object.keyword', 'image-classes.class.keyword']
+    }
 }
 
 export const aggregationFields = {
@@ -199,4 +204,14 @@ export const aggregationFields = {
         chipLabel: 'OCRed',
         type: 'term-or',
     },
+    'detected-objects.object.keyword': {
+        filterLabel: 'Detected objects',
+        chipLabel: 'Detected object',
+        type: 'term-or',
+    },
+    'image-classes.class.keyword': {
+        filterLabel: 'Image classes',
+        chipLabel: 'Image class',
+        type: 'term-or',
+    }
 }

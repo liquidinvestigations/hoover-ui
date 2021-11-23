@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import {
     faAngleDoubleRight,
+    faBrain,
     faEnvelope,
     faFile,
     faFileArchive,
@@ -151,6 +152,7 @@ export const reactIcons = {
     viewerSidePanel:            <ChromeReaderMode />,
     link:                       <Link />,
     thumbnails:                 <Apps />,
+    imageAi:                    <FAIcon icon={faBrain} style={{ width: '1.25em' }} />,
 
     typeArchive:                <FAIcon icon={faFileArchive} style={{ width: '1.25em' }} />,
     typeAudio:                  <FAIcon icon={faFileAudio} style={{ width: '1.25em' }} />,

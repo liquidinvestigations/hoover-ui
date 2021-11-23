@@ -49,12 +49,6 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
     },
     title: {
-        marginRight: theme.spacing(2),
-        display: 'block',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-    },
-    subtitle: {
         display: 'block',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
@@ -170,56 +164,62 @@ function ResultItem({ hit, url, index }) {
                 classes={cardHeaderClasses}
                 title={
                     <Grid container component="span">
-                        <Grid item className={classes.title} component="span">
-                            <Box component="span" className={classes.index}>{index}.</Box> {fields.filename}
-                        </Grid>
-
-                        <Grid container component="span">
-                            {fields.ocr && (
-                                <Grid item component="span" className={classes.infoBox}>
-                                    <Tooltip placement="top" title="OCR">
-                                        {cloneElement(reactIcons.ocr, { className: classes.infoIcon })}
-                                    </Tooltip>
-                                </Grid>
-                            )}
-
-
-                            {fields.pgp && (
-                                <Grid item component="span" className={classes.infoBox}>
-                                    <Tooltip placement="top" title="encrypted">
-                                        {cloneElement(reactIcons.pgp, { className: classes.infoIcon })}
-                                    </Tooltip>
-                                </Grid>
-                            )}
-
-                            <Grid item component="span" className={classes.infoBox}>
-                                <Tooltip placement="top" title={fields['content-type']}>
-                                    <Box component="span" className={classes.infoBox}>
-                                        {cloneElement(getTypeIcon(fields.filetype), { className: classes.infoIcon })}
-                                    </Box>
-                                </Tooltip>
+                        <Grid container item component="span">
+                            <Grid item className={classes.title} component="span">
+                                <Box component="span" className={classes.index}>{index}.</Box> {fields.filename}
                             </Grid>
 
-                            {!!fields.attachments && (
+                            <Grid container component="span">
+                                {fields.ocr && (
+                                    <Grid item component="span" className={classes.infoBox}>
+                                        <Tooltip placement="top" title="OCR">
+                                            {cloneElement(reactIcons.ocr, { className: classes.infoIcon })}
+                                        </Tooltip>
+                                    </Grid>
+                                )}
+
+
+                                {fields.pgp && (
+                                    <Grid item component="span" className={classes.infoBox}>
+                                        <Tooltip placement="top" title="encrypted">
+                                            {cloneElement(reactIcons.pgp, { className: classes.infoIcon })}
+                                        </Tooltip>
+                                    </Grid>
+                                )}
+
                                 <Grid item component="span" className={classes.infoBox}>
-                                    <Tooltip placement="top" title="has attachment(s)">
+                                    <Tooltip placement="top" title={fields['content-type']}>
                                         <Box component="span" className={classes.infoBox}>
-                                            {cloneElement(reactIcons.attachment, { className: classes.infoIcon })}
+                                            {cloneElement(getTypeIcon(fields.filetype), { className: classes.infoIcon })}
                                         </Box>
                                     </Tooltip>
                                 </Grid>
-                            )}
 
-                            <Grid item component="span" className={classes.collection}>
-                                {collection}
+                                {!!fields.attachments && (
+                                    <Grid item component="span" className={classes.infoBox}>
+                                        <Tooltip placement="top" title="has attachment(s)">
+                                            <Box component="span" className={classes.infoBox}>
+                                                {cloneElement(reactIcons.attachment, { className: classes.infoIcon })}
+                                            </Box>
+                                        </Tooltip>
+                                    </Grid>
+                                )}
+
+                                <Grid item component="span" className={classes.collection}>
+                                    {collection}
+                                </Grid>
+                            </Grid>
+
+                            <Grid item component="span" className={classes.title}>
+                                <Typography variant="body1" className={classes.title} component="span" color="textSecondary">
+                                    {truncatePath(fields.path)}
+                                </Typography>
                             </Grid>
                         </Grid>
+                        <Grid container item component="span">
+                            {}
+                        </Grid>
                     </Grid>
-                }
-                subheader={
-                    <span className={classes.subtitle}>
-                        {truncatePath(fields.path)}
-                    </span>
                 }
                 action={
                     <>
