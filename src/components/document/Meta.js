@@ -28,6 +28,9 @@ const useStyles = makeStyles(theme => ({
     searchField: {
         cursor: 'pointer',
         borderBottom: '1px dotted ' + theme.palette.grey[400],
+    },
+    score: {
+        color: theme.palette.grey[500],
     }
 }))
 
@@ -101,12 +104,45 @@ const Meta = () => {
         setMenuPosition(null)
     }
 
+    const getFieldSearchKey = (key) => {
+        switch(key) {
+            case 'detected-objects':
+                return `${key}.object.keyword`;
+            case 'image-classes':
+                return `${key}.class.keyword`;
+            default:
+                return key;
+        }
+    }
+
+    const getFieldValue = (key, value) => {
+        switch(key) {
+            case 'detected-objects':
+                return value['object'];
+            case 'image-classes':
+                return value['class'];
+            default:
+                return value.toString();
+        }
+    }
+
+    const getFieldScore = (key, value) => {
+        switch(key) {
+            case 'detected-objects':
+            case 'image-classes':
+                return <span className={classes.score}>({value.score})</span>;
+            default:
+                return null;
+        }
+    }
+
     const renderElement = (key, value, index) => (
         <Typography key={index} component="pre" variant="caption" className={classes.raw}>
             <strong>{key}:</strong>
             {' '}
-            <span className={classes.searchField} onClick={handleLinkClick(key, value.toString())}>
-                {shortenName(value.toString(), 200)}
+            <span className={classes.searchField} onClick={handleLinkClick(getFieldSearchKey(key), getFieldValue(key, value))}>
+                {shortenName(getFieldValue(key, value), 200)}
+                {getFieldScore(key, value)}
             </span>
         </Typography>
     )
