@@ -49,7 +49,11 @@ const useStyles = makeStyles(theme => ({
 
 function Preview() {
     const classes = useStyles()
-    const { data, docRawUrl } = useDocument()
+    const { data, docRawUrl, docPreviewUrl } = useDocument()
+
+    if (data.content['has-pdf-preview']) {
+        return <PDFViewer url={docPreviewUrl} />
+    }
 
     switch (data.content['content-type']) {
         case 'application/pdf':

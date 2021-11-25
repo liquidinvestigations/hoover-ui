@@ -88,8 +88,14 @@ module.exports = withPlugins([ withTM ],
             source: '/api/v1/doc/:collection/:hash/raw/:filename',
             destination: API_URL + '/api/v1/doc/:collection/:hash/raw/:filename',
         },{
+            source: '/api/v1/doc/:collection/:hash/pdf-preview',
+            destination: API_URL + '/api/v1/doc/:collection/:hash/pdf-preview',
+        },{
             source: '/api/v1/doc/:collection/:hash/ocr/:tag',
             destination: API_URL + '/api/v1/doc/:collection/:hash/ocr/:tag',
+        },{
+            source: '/api/v1/doc/:collection/:hash/thumbnail/:size(100|200|400).jpg',
+            destination: API_URL + '/api/v1/doc/:collection/:hash/thumbnail/:size.jpg',
         }] : [],
     }
 )

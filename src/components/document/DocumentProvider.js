@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useHashState } from '../HashStateProvider'
 import { TagsProvider } from './TagsProvider'
 import { collectionUrl, documentViewUrl } from '../../utils'
-import { createDownloadUrl, doc as docAPI } from '../../backend/api'
+import { createDownloadUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI } from '../../backend/api'
 
 const DocumentContext = createContext({})
 
@@ -15,6 +15,8 @@ export function DocumentProvider({ children, collection, collections, id, path, 
     const [digest, setDigest] = useState()
     const [digestUrl, setDigestUrl] = useState()
     const [docRawUrl, setDocRawUrl] = useState()
+    const [docPreviewUrl, setDocPreviewUrl] = useState()
+    const [thumbnailSrcSet, setThumbnailSrcSet] = useState()
     const [urlIsSha, setUrlIsSha] = useState(true)
 
     const [ocrData, setOcrData] = useState()
@@ -43,11 +45,15 @@ export function DocumentProvider({ children, collection, collections, id, path, 
                         setDocRawUrl(createDownloadUrl(
                             `${collectionBaseUrl}/${data.digest}`, data.content.filename
                         ))
+                        setDocPreviewUrl(createPreviewUrl(`${collectionBaseUrl}/${data.digest}`))
+                        setThumbnailSrcSet(createThumbnailSrcSet(`${collectionBaseUrl}/${data.digest}`))
                         setUrlIsSha(false)
                     }
                     if (data.id.startsWith('_directory_')) {
                         setDigest(null)
                         setDocRawUrl(null)
+                        setDocPreviewUrl(null)
+                        setThumbnailSrcSet(null)
                         setUrlIsSha(false)
                     }
                 } else {
@@ -55,6 +61,8 @@ export function DocumentProvider({ children, collection, collections, id, path, 
                     setDocRawUrl(createDownloadUrl(
                         `${collectionBaseUrl}/${data.id}`, data.content.filename
                     ))
+                    setDocPreviewUrl(createPreviewUrl(`${collectionBaseUrl}/${data.id}`))
+                    setThumbnailSrcSet(createThumbnailSrcSet(`${collectionBaseUrl}/${data.id}`))
                 }
                 setData(data)
 
@@ -107,7 +115,8 @@ export function DocumentProvider({ children, collection, collections, id, path, 
             data, pathname, loading, error,
             ocrData, fullPage, printMode,
             collection, collections, collectionBaseUrl,
-            digest, digestUrl, urlIsSha, docRawUrl,
+            digest, digestUrl, urlIsSha,
+            docRawUrl, docPreviewUrl, thumbnailSrcSet,
             tab, handleTabChange,
             subTab, handleSubTabChange,
         }}>

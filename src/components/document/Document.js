@@ -26,16 +26,20 @@ const useStyles = makeStyles(theme => ({
         flexDirection: 'column',
         height: '100%',
     },
+    header: {
+        backgroundColor: theme.palette.primary.main,
+    },
+    titleWrapper: {
+        overflow: 'hidden',
+    },
     filename: {
         padding: theme.spacing(1),
         paddingBottom: 0,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         color: theme.palette.primary.contrastText,
-        backgroundColor: theme.palette.primary.main,
     },
     subtitle: {
-        backgroundColor: theme.palette.primary.main,
         padding: theme.spacing(1),
         paddingTop: theme.spacing(0.5),
         alignItems: 'baseline',
@@ -48,6 +52,13 @@ const useStyles = makeStyles(theme => ({
     tag: {
         marginRight: theme.spacing(1),
         marginBottom: theme.spacing(1),
+    },
+    thumbnail: {
+        padding: theme.spacing(1),
+        paddingBottom: 0,
+    },
+    thumbnailImg: {
+        height: 100,
     },
     tabsRoot: {
         color: theme.palette.primary.contrastText,
@@ -69,7 +80,7 @@ const useStyles = makeStyles(theme => ({
         right: theme.spacing(2),
         color: theme.palette.primary.contrastText,
         zIndex: theme.zIndex.drawer + 2,
-    }
+    },
 }))
 
 function Document({ onPrev, onNext }) {
@@ -81,6 +92,7 @@ function Document({ onPrev, onNext }) {
         fullPage, printMode,
         collection,
         digestUrl, docRawUrl,
+        thumbnailSrcSet,
         tab, handleTabChange,
     } = useDocument()
 
@@ -225,56 +237,66 @@ function Document({ onPrev, onNext }) {
                 </Link>
             )}
 
-            <Box>
-                <Typography variant="h5" className={classes.filename}>
-                    {data.content.filename}
-                </Typography>
-            </Box>
+            <Grid container justify="space-between" wrap="nowrap" className={classes.header}>
+                <Grid item className={classes.titleWrapper}>
+                    <Box>
+                        <Typography variant="h5" className={classes.filename}>
+                            {data.content.filename}
+                        </Typography>
+                    </Box>
 
-            <Grid container className={classes.subtitle}>
-                <Grid item>
-                    <Typography variant="subtitle1" className={classes.collection}>
-                        {collection}
-                    </Typography>
+                    <Grid container className={classes.subtitle}>
+                        <Grid item>
+                            <Typography variant="subtitle1" className={classes.collection}>
+                                {collection}
+                            </Typography>
+                        </Grid>
+
+                        {tags.filter((item, pos, self) =>
+                            self.findIndex(tag => tag.tag === item.tag) === pos)
+                            .map((chip, index) => {
+                                const count = tags.filter(tag => tag.tag === chip.tag).length
+                                return (
+                                    <Grid item className={classes.tag} key={index}>
+                                        <TagTooltip chip={chip} count={count}>
+                                            <Badge badgeContent={count > 1 ? count : null} color="secondary">
+                                                <Chip
+                                                    size="small"
+                                                    label={ !!getTagIcon(chip.tag, chip.public) ?
+                                                        <>
+                                                            {cloneElement(getTagIcon(chip.tag, chip.public), {
+                                                                style: {
+                                                                    ...getTagIcon(chip.tag, chip.public).props.style,
+                                                                    marginLeft: -4,
+                                                                    marginTop: -2,
+                                                                    marginRight: 2,
+                                                                    fontSize: 18,
+                                                                    verticalAlign: 'middle',
+                                                                }
+                                                            })}
+                                                            <span style={{ verticalAlign: 'middle' }}>
+                                                                {chip.tag}
+                                                            </span>
+                                                        </> : chip.tag
+                                                    }
+                                                    style={{
+                                                        height: 20,
+                                                        backgroundColor: getChipColor(chip),
+                                                    }} />
+                                            </Badge>
+                                        </TagTooltip>
+                                    </Grid>
+                                )
+                            })
+                        }
+                    </Grid>
                 </Grid>
 
-                {tags.filter((item, pos, self) =>
-                    self.findIndex(tag => tag.tag === item.tag) === pos)
-                    .map((chip, index) => {
-                        const count = tags.filter(tag => tag.tag === chip.tag).length
-                        return (
-                            <Grid item className={classes.tag} key={index}>
-                                <TagTooltip chip={chip} count={count}>
-                                    <Badge badgeContent={count > 1 ? count : null} color="secondary">
-                                        <Chip
-                                            size="small"
-                                            label={ !!getTagIcon(chip.tag, chip.public) ?
-                                                <>
-                                                    {cloneElement(getTagIcon(chip.tag, chip.public), {
-                                                        style: {
-                                                            ...getTagIcon(chip.tag, chip.public).props.style,
-                                                            marginLeft: -4,
-                                                            marginTop: -2,
-                                                            marginRight: 2,
-                                                            fontSize: 18,
-                                                            verticalAlign: 'middle',
-                                                        }
-                                                    })}
-                                                    <span style={{ verticalAlign: 'middle' }}>
-                                                        {chip.tag}
-                                                    </span>
-                                                </> : chip.tag
-                                            }
-                                            style={{
-                                                height: 20,
-                                                backgroundColor: getChipColor(chip),
-                                            }} />
-                                    </Badge>
-                                </TagTooltip>
-                            </Grid>
-                        )
-                    })
-                }
+                <Grid item>
+                    <Box className={classes.thumbnail}>
+                        <img className={classes.thumbnailImg} srcSet={thumbnailSrcSet} />
+                    </Box>
+                </Grid>
             </Grid>
 
             {!printMode && (

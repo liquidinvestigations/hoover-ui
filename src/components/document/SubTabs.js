@@ -36,9 +36,9 @@ function SubTabs() {
         return null
     }
 
-    const hasPreview = docRawUrl && data.content['content-type'] && (
+    const hasPreview = data.content['has-pdf-preview'] || (docRawUrl && data.content['content-type'] && (
         PREVIEWABLE_MIME_TYPE_SUFFEXES.some(x => data.content['content-type'].endsWith(x))
-    )
+    ))
 
     const tabs = [{
         name: 'Extracted from file',

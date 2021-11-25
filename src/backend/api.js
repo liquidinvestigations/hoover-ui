@@ -90,4 +90,9 @@ export const collectionsInsights = () => fetchJson(buildUrl('collections'))
  URL building only
  */
 export const createDownloadUrl = (docUrl, filename) => buildUrl(docUrl, 'raw', filename)
+export const createPreviewUrl = (docUrl) => buildUrl(docUrl, 'pdf-preview')
 export const createOcrUrl = (docUrl, tag) => buildUrl(docUrl, 'ocr', tag)
+export const createThumbnailSrcSet = (docUrl) =>
+    `${buildUrl(docUrl, 'thumbnail', '100.jpg')}, `+
+    `${buildUrl(docUrl, 'thumbnail', '200.jpg')} 2x, `+
+    `${buildUrl(docUrl, 'thumbnail', '200.jpg')} 4x`
