@@ -58,7 +58,7 @@ const useStyles = makeStyles(theme => ({
         paddingBottom: 0,
     },
     thumbnailImg: {
-        height: 100,
+        height: 72,
     },
     tabsRoot: {
         color: theme.palette.primary.contrastText,
@@ -292,11 +292,13 @@ function Document({ onPrev, onNext }) {
                     </Grid>
                 </Grid>
 
-                <Grid item>
-                    <Box className={classes.thumbnail}>
-                        <img className={classes.thumbnailImg} srcSet={thumbnailSrcSet} />
-                    </Box>
-                </Grid>
+                {data.content['has-thumbnails'] && (
+                    <Grid item>
+                        <Box className={classes.thumbnail}>
+                            <img className={classes.thumbnailImg} srcSet={thumbnailSrcSet} />
+                        </Box>
+                    </Grid>
+                )}
             </Grid>
 
             {!printMode && (
