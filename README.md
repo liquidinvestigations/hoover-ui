@@ -54,6 +54,15 @@ In order to get authorized just copy `_oauth2_proxy_hoover_your.server.url` cook
 4. Copy & paste cookie value repeating steps 2-3
 
 
+#### Run npm using Docker
+
+You can use the `npm.docker.sh` script instead of the binary `npm` on your
+machine. This will run a docker image as your user and run `npm` on its
+arguments.
+
+Example usage: `./npm.docker.sh test -- -u`
+
+
 ### Run the whole stack locally
 
 You will need to meet the [hardware requirements](https://github.com/liquidinvestigations/docs/wiki/Hardware-requirements#storage) - have at least 16GB RAM free if you only want to run Hoover.
