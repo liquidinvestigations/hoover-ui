@@ -21,12 +21,12 @@ import {
     makeUnsearchable,
     truncatePath
 } from '../../utils'
-import { createDownloadUrl } from '../../backend/api'
+import {buildUrl, createDownloadUrl, createThumbnailSrcSet} from '../../backend/api'
 import { specialTags, specialTagsList } from '../../constants/specialTags'
 import { reactIcons } from '../../constants/icons'
 
 const useStyles = makeStyles(theme => ({
-    card: {
+   card: {
         cursor: 'pointer',
         position: 'relative',
         marginTop: theme.spacing(1),
@@ -47,6 +47,9 @@ const useStyles = makeStyles(theme => ({
     },
     cardHeaderContent: {
         width: '100%',
+    },
+    headerText: {
+        overflow: "hidden",
     },
     title: {
         display: 'block',
@@ -105,7 +108,15 @@ const useStyles = makeStyles(theme => ({
     },
     buttonLink: {
         lineHeight: 0,
-    }
+    },
+    thumbnail: {
+        padding: theme.spacing(1),
+        paddingBottom: 0,
+    },
+    thumbnailImg: {
+        height: 72,
+        maxWidth: 100,
+    },
 }))
 
 const timeMs = () => new Date().getTime()
@@ -163,8 +174,8 @@ function ResultItem({ hit, url, index }) {
             <CardHeader
                 classes={cardHeaderClasses}
                 title={
-                    <Grid container component="span">
-                        <Grid container item component="span">
+                    <Grid container component="span" justify="space-between" wrap="nowrap">
+                        <Grid container item component="span" className={classes.headerText}>
                             <Grid item className={classes.title} component="span">
                                 <Box component="span" className={classes.index}>{index}.</Box> {fields.filename}
                             </Grid>
@@ -216,8 +227,16 @@ function ResultItem({ hit, url, index }) {
                                 </Typography>
                             </Grid>
                         </Grid>
-                        <Grid container item component="span">
-                            {}
+
+                        <Grid item component="span">
+                            {hit._source['has-thumbnails'] && (
+                                <Box className={classes.thumbnail}>
+                                    <img
+                                        className={classes.thumbnailImg}
+                                        srcSet={createThumbnailSrcSet(`doc/${hit._collection}/${hit._id}`)}
+                                    />
+                                </Box>
+                            )}
                         </Grid>
                     </Grid>
                 }
