@@ -100,6 +100,24 @@ Object {
         "bool": Object {},
       },
     },
+    "detected-objects.object.keyword": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "detected-objects.object.keyword",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "detected-objects.object.keyword",
+            "size": 44,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
     "email-domains": Object {
       "aggs": Object {
         "count": Object {
@@ -146,6 +164,24 @@ Object {
         "values": Object {
           "terms": Object {
             "field": "from.keyword",
+            "size": 44,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "image-classes.class.keyword": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "image-classes.class.keyword",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "image-classes.class.keyword",
             "size": 44,
           },
         },
