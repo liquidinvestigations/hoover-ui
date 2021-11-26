@@ -59,6 +59,7 @@ const useStyles = makeStyles(theme => ({
     },
     thumbnailImg: {
         height: 72,
+        maxWidth: 100,
     },
     tabsRoot: {
         color: theme.palette.primary.contrastText,
