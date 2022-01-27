@@ -7,6 +7,14 @@ export const availableColumns = {
         format: 'icon',
         path: '_source.filetype',
     },
+    preview: {
+        label: 'Preview',
+        align: 'center',
+        sortable: false,
+        hidden: false,
+        format: 'thumbnail',
+        path: '_source.has-thumbnails',
+    },
     filename: {
         label: 'Filename',
         align: 'left',

@@ -92,7 +92,8 @@ export const collectionsInsights = () => fetchJson(buildUrl('collections'))
 export const createDownloadUrl = (docUrl, filename) => buildUrl(docUrl, 'raw', filename)
 export const createPreviewUrl = (docUrl) => buildUrl(docUrl, 'pdf-preview')
 export const createOcrUrl = (docUrl, tag) => buildUrl(docUrl, 'ocr', tag)
+export const createThumbnailSrc = (docUrl, size) => buildUrl(docUrl, 'thumbnail', `${size}.jpg`)
 export const createThumbnailSrcSet = (docUrl) =>
-    `${buildUrl(docUrl, 'thumbnail', '100.jpg')}, `+
-    `${buildUrl(docUrl, 'thumbnail', '200.jpg')} 2x, `+
-    `${buildUrl(docUrl, 'thumbnail', '200.jpg')} 4x`
+    `${createThumbnailSrc(docUrl, 100)}, `+
+    `${createThumbnailSrc(docUrl, 200)} 2x, `+
+    `${createThumbnailSrc(docUrl, 400)} 4x`

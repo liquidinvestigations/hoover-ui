@@ -1,4 +1,4 @@
-import React, { cloneElement, memo, useEffect, useRef } from 'react'
+import React, { cloneElement, memo, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
 import { DateTime } from 'luxon'
 import { makeStyles } from '@material-ui/core/styles'
@@ -9,9 +9,12 @@ import {
     CardHeader,
     Grid,
     IconButton,
+    Paper,
+    Popper,
     Tooltip,
     Typography
 } from '@material-ui/core'
+import Loading from '../Loading'
 import { useUser } from '../UserProvider'
 import { useHashState } from '../HashStateProvider'
 import {
@@ -21,12 +24,12 @@ import {
     makeUnsearchable,
     truncatePath
 } from '../../utils'
-import {buildUrl, createDownloadUrl, createThumbnailSrcSet} from '../../backend/api'
+import { createDownloadUrl, createThumbnailSrc, createThumbnailSrcSet } from '../../backend/api'
 import { specialTags, specialTagsList } from '../../constants/specialTags'
 import { reactIcons } from '../../constants/icons'
 
 const useStyles = makeStyles(theme => ({
-   card: {
+    card: {
         cursor: 'pointer',
         position: 'relative',
         marginTop: theme.spacing(1),
@@ -117,6 +120,15 @@ const useStyles = makeStyles(theme => ({
         height: 72,
         maxWidth: 100,
     },
+    preview: {
+        padding: theme.spacing(1),
+    },
+    previewImg: {
+        width: 400,
+    },
+    previewImgLoading: {
+        width: 1,
+    }
 }))
 
 const timeMs = () => new Date().getTime()
@@ -141,6 +153,17 @@ function ResultItem({ hit, url, index }) {
             nodeRef.current.tUp = timeMs()
             setHashState({ ...getPreviewParams(hit), tab: undefined, subTab: undefined, previewPage: undefined })
         }
+    }
+
+    const thumbRef = useRef()
+    const [showPreview, setShowPreview] = useState(false)
+    const [previewLoading, setPreviewLoading] = useState(true)
+    const handleThumbEnter = () => {
+        setShowPreview(true)
+        setPreviewLoading(true)
+    }
+    const handleThumbLeave = () => {
+        setShowPreview(false)
     }
 
     useEffect(() => {
@@ -232,9 +255,32 @@ function ResultItem({ hit, url, index }) {
                             {hit._source['has-thumbnails'] && (
                                 <Box className={classes.thumbnail}>
                                     <img
+                                        ref={thumbRef}
                                         className={classes.thumbnailImg}
                                         srcSet={createThumbnailSrcSet(`doc/${hit._collection}/${hit._id}`)}
+                                        onMouseEnter={handleThumbEnter}
+                                        onMouseLeave={handleThumbLeave}
                                     />
+                                    <Popper
+                                        anchorEl={thumbRef.current}
+                                        open={showPreview}
+                                        placement="left-start"
+                                        modifiers={{
+                                            preventOverflow: {
+                                                enabled: true,
+                                                boundariesElement: 'scrollParent',
+                                            },
+                                        }}
+                                    >
+                                        <Paper elevation={10} className={classes.preview}>
+                                            {previewLoading && <Loading />}
+                                            <img
+                                                className={previewLoading ? classes.previewImgLoading : classes.previewImg}
+                                                onLoad={() => setPreviewLoading(false)}
+                                                src={createThumbnailSrc(`doc/${hit._collection}/${hit._id}`, 400)}
+                                            />
+                                        </Paper>
+                                    </Popper>
                                 </Box>
                             )}
                         </Grid>

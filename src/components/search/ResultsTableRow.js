@@ -1,10 +1,10 @@
-import React, { cloneElement, useEffect, useRef } from 'react'
+import React, { cloneElement, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
-import { IconButton, TableCell, TableRow, Tooltip } from '@material-ui/core'
+import { IconButton, Paper, Popper, TableCell, TableRow, Tooltip } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { useSearch } from './SearchProvider'
 import { useHashState } from '../HashStateProvider'
-import { createDownloadUrl } from '../../backend/api'
+import { createDownloadUrl, createThumbnailSrc } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
 import {
     documentViewUrl,
@@ -15,6 +15,7 @@ import {
     humanFileSize,
     shortenName,
 } from '../../utils'
+import Loading from '../Loading'
 
 const useStyles = makeStyles(theme => ({
     selected: {
@@ -41,6 +42,15 @@ const useStyles = makeStyles(theme => ({
         fontSize: 16,
         verticalAlign: 'middle',
         marginRight: theme.spacing(0.5),
+    },
+    preview: {
+        padding: theme.spacing(1),
+    },
+    previewImg: {
+        width: 400,
+    },
+    previewImgLoading: {
+        width: 1,
     }
 }))
 
@@ -67,6 +77,17 @@ export default function ResultsTableRow({ hit, index }) {
             nodeRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
         }
     }, [isPreview])
+
+    const thumbRef = useRef()
+    const [showPreview, setShowPreview] = useState(false)
+    const [previewLoading, setPreviewLoading] = useState(true)
+    const handleThumbEnter = () => {
+        setShowPreview(true)
+        setPreviewLoading(true)
+    }
+    const handleThumbLeave = () => {
+        setShowPreview(false)
+    }
 
     const getValue = path => {
         let pathParts = path.split('.'), pathPart, value = hit
@@ -120,6 +141,37 @@ export default function ResultsTableRow({ hit, index }) {
                             </>
                         ))}
                         {value.length > 7 && '...'}
+                    </>
+                )
+            case 'thumbnail':
+                return !value ? null : (
+                    <>
+                        {cloneElement(reactIcons.visibility, {
+                            ref: thumbRef,
+                            className: classes.infoIcon,
+                            onMouseEnter: handleThumbEnter,
+                            onMouseLeave: handleThumbLeave,
+                        })}
+                        <Popper
+                            anchorEl={thumbRef.current}
+                            open={showPreview}
+                            placement="right-start"
+                            modifiers={{
+                                preventOverflow: {
+                                    enabled: true,
+                                    boundariesElement: 'scrollParent',
+                                },
+                            }}
+                        >
+                            <Paper elevation={10} className={classes.preview}>
+                                {previewLoading && <Loading />}
+                                <img
+                                    className={previewLoading ? classes.previewImgLoading : classes.previewImg}
+                                    onLoad={() => setPreviewLoading(false)}
+                                    src={createThumbnailSrc(`doc/${hit._collection}/${hit._id}`, 400)}
+                                />
+                            </Paper>
+                        </Popper>
                     </>
                 )
         }
