@@ -9,7 +9,7 @@ import { useHashState } from '../HashStateProvider'
 import { buildSearchQuerystring, rollupParams, unwindParams } from '../../queryUtils'
 import { aggregationFields } from '../../constants/aggregationFields'
 import { search as searchAPI } from '../../api'
-import { tags as tagsAPI } from '../../backend/api'
+import { tags as tagsAPI, asyncSearch as asyncSearchAPI } from '../../backend/api'
 import { TAGS_REFRESH_DELAYS } from '../../constants/general'
 import { reactIcons } from '../../constants/icons'
 import { availableColumns } from '../../constants/availableColumns'
@@ -131,37 +131,11 @@ export function SearchProvider({ children, serverQuery }) {
             return acc
         }, [])
 
-    function* asyncSearchGenerator(refresh) {
-        let i = 0
-        while (i < aggregationGroups.length) {
-            try {
-                yield searchAPI({
-                    ...query,
-                    q: query.q || '*',
-                    type: 'aggregations',
-                    fieldList: aggregationGroups[i].fieldList,
-                    refresh,
-                })
-            } catch (error) {
-                if (error.name !== 'AbortError') {
-                    setAggregations(null)
-                    setAggregationsError(error.message)
-                    setAggregationsLoading(
-                        Object.entries(aggregationFields).reduce((acc, [field]) => {
-                            acc[field] = false
-                            return acc
-                        }, {})
-                    )
-                }
-            }
-            i++
-        }
-    }
-
     const [forcedRefresh, forceRefresh] = useState({})
     const [prevForcedRefresh, setPrevForcedRefresh] = useState({})
     const [aggregations, setAggregations] = useState()
     const [aggregationsError, setAggregationsError] = useState()
+    const [aggregationsTasks, setAggregationsTasks] = useState({})
     const [aggregationsLoading, setAggregationsLoading] = useState(
         Object.entries(aggregationFields).reduce((acc, [field]) => {
             acc[field] = !!query.collections?.length
@@ -169,10 +143,12 @@ export function SearchProvider({ children, serverQuery }) {
         }, {})
     )
 
-    useEffect(async () => {
+    useEffect(() => {
         if (query.collections?.length) {
+            setPrevForcedRefresh(forcedRefresh)
             setAggregationsError(null)
             setMissingAggregations(null)
+            setAggregationsTasks({})
             setAggregationsLoading(
                 Object.entries(aggregationFields).reduce((acc, [field]) => {
                     acc[field] = true
@@ -180,19 +156,36 @@ export function SearchProvider({ children, serverQuery }) {
                 }, {})
             )
 
-            let i = 0
-            for await (let results of asyncSearchGenerator(prevForcedRefresh !== forcedRefresh)) {
-                setAggregations(aggregations => ({ ...(aggregations || {}), ...results.aggregations }))
-                setCollectionsCount(results.count_by_index)
-                setAggregationsLoading(loading => ({
-                    ...loading,
-                    ...aggregationGroups[i++].fieldList.reduce((acc, field) => {
-                        acc[field] = false
-                        return acc
-                    }, {}),
-                }))
-                setPrevForcedRefresh(forcedRefresh);
-            }
+            aggregationGroups.map(async (aggregationGroup, i) => {
+                try {
+                    const taskData = await searchAPI({
+                        ...query,
+                        q: query.q || '*',
+                        type: 'aggregations',
+                        fieldList: aggregationGroup.fieldList,
+                        refresh: prevForcedRefresh !== forcedRefresh,
+                        async: true
+                    })
+
+                    setAggregationsTasks(tasks => ({
+                        ...tasks,
+                        [aggregationGroup.fieldList.join()]: taskData,
+                    }))
+
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        setAggregations(null)
+                        setAggregationsError(error.message)
+                        setAggregationsTasks({})
+                        setAggregationsLoading(
+                            Object.entries(aggregationFields).reduce((acc, [field]) => {
+                                acc[field] = false
+                                return acc
+                            }, {})
+                        )
+                    }
+                }
+            })
 
         } else {
             setAggregations(null)
@@ -205,6 +198,35 @@ export function SearchProvider({ children, serverQuery }) {
         size: null,
         order: null,
     }), forcedRefresh])
+
+    useEffect(() => {
+        setAggregationsTasks(prevTasksData => {
+            Object.entries(prevTasksData).forEach(([fields, taskData]) => {
+                if (taskData.status === 'done') {
+                    setAggregations(aggregations => ({ ...(aggregations || {}), ...taskData.result.aggregations }))
+                    setCollectionsCount(taskData.result.count_by_index)
+                    setAggregationsLoading(loading => ({
+                        ...loading,
+                        ...fields.split(',').reduce((acc, field) => {
+                            acc[field] = false
+                            return acc
+                        }, {}),
+                    }))
+                } else if (!taskData.retrieving) {
+                    taskData.retrieving = true
+                    asyncSearchAPI(taskData.task_id, taskData.eta.total_sec < 45 ? true : '').then(taskResultData => {
+                        const update = () => setAggregationsTasks({ ...prevTasksData, [fields]: { ...taskResultData, retrieving: false }})
+                        if (taskResultData.status === 'done') {
+                            update()
+                        } else {
+                            setTimeout(update, 45000)
+                        }
+                    })
+                }
+            })
+            return prevTasksData
+        })
+    }, [aggregationsTasks])
 
     const [missingLoading, setMissingLoading] = useState(!!query.collections?.length)
     const [missingAggregations, setMissingAggregations] = useState()

@@ -46,8 +46,8 @@ export const whoami = headers => fetchJson(buildUrl('whoami'), { headers })
 export const limits = headers => fetchJson(buildUrl('limits'), { headers })
 export const collections = headers => fetchJson(buildUrl('collections'), { headers })
 export const searchFields = headers => fetchJson(buildUrl('search_fields'), { headers })
-export const search = async (headers, params, type, fieldList, missing, refresh, searchFields, uuid) =>
-    fetchJson(buildUrl('search', { refresh }), {
+export const search = async (headers, params, type, fieldList, missing, refresh, async, searchFields, uuid) =>
+    fetchJson(buildUrl(async ? 'async_search' : 'search', { refresh }), {
         headers,
         method: 'POST',
         body: JSON.stringify(buildSearchQuery(params, type, fieldList, missing, searchFields, uuid)),
@@ -86,6 +86,8 @@ export const batch = query => fetchJson(buildUrl('batch'), {
 })
 
 export const collectionsInsights = () => fetchJson(buildUrl('collections'))
+
+export const asyncSearch = async (uuid, wait) => fetchJson(buildUrl('async_search', uuid, { wait }))
 
 /*
  URL building only

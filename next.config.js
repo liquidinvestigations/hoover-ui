@@ -73,6 +73,9 @@ module.exports = withPlugins([ withTM ],
             source: '/api/v1/collections',
             destination: API_URL + '/api/v1/collections',
         },{
+            source: '/api/v1/async_search/:uuid',
+            destination: API_URL + '/api/v1/async_search/:uuid',
+        },{
             source: '/api/v1/doc/:collection/:hash/json',
             destination: API_URL + '/api/v1/doc/:collection/:hash/json',
         },{
