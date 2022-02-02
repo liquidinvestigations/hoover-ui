@@ -12,7 +12,7 @@ const handler = async (req, res) => {
         const headers = getAuthorizationHeaders(req)
         const whoAmI = await whoami(headers)
         const fields = await searchFields(headers)
-        const { type, fieldList, missing, refresh = false, ...params } = req.body
+        const { type, fieldList, missing, refresh = '', ...params } = req.body
         const response = await search(headers, params, type, fieldList, missing, refresh, fields.fields, whoAmI.uuid)
         res.json(response)
         res.end()
