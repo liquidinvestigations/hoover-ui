@@ -28,11 +28,11 @@ function Menu() {
             url: '/insights',
             next: true,
         },{
-            name: 'about',
+            name: 'About',
             url: 'https://github.com/liquidinvestigations/hoover-search',
         },
         //{
-        //    name: 'terms',
+        //    name: 'Terms',
         //    url: '/terms',
         //    next: true,
         //},

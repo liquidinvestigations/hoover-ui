@@ -131,7 +131,7 @@ export function SearchProvider({ children, serverQuery }) {
             return acc
         }, [])
 
-    async function* asyncSearchGenerator() {
+    function* asyncSearchGenerator(refresh) {
         let i = 0
         while (i < aggregationGroups.length) {
             try {
@@ -140,6 +140,7 @@ export function SearchProvider({ children, serverQuery }) {
                     q: query.q || '*',
                     type: 'aggregations',
                     fieldList: aggregationGroups[i].fieldList,
+                    refresh,
                 })
             } catch (error) {
                 if (error.name !== 'AbortError') {
@@ -158,6 +159,7 @@ export function SearchProvider({ children, serverQuery }) {
     }
 
     const [forcedRefresh, forceRefresh] = useState({})
+    const [prevForcedRefresh, setPrevForcedRefresh] = useState({})
     const [aggregations, setAggregations] = useState()
     const [aggregationsError, setAggregationsError] = useState()
     const [aggregationsLoading, setAggregationsLoading] = useState(
@@ -179,7 +181,7 @@ export function SearchProvider({ children, serverQuery }) {
             )
 
             let i = 0
-            for await (let results of asyncSearchGenerator()) {
+            for await (let results of asyncSearchGenerator(prevForcedRefresh !== forcedRefresh)) {
                 setAggregations(aggregations => ({ ...(aggregations || {}), ...results.aggregations }))
                 setCollectionsCount(results.count_by_index)
                 setAggregationsLoading(loading => ({
@@ -189,6 +191,7 @@ export function SearchProvider({ children, serverQuery }) {
                         return acc
                     }, {}),
                 }))
+                setPrevForcedRefresh(forcedRefresh);
             }
 
         } else {

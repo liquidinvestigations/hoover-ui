@@ -39,6 +39,9 @@ export function TagsProvider({children}) {
         if (tag) {
             deleteTag(digestUrl, tag.id).then(() => {
                 setTags([...(tags.filter(t => t.id !== tag.id))])
+                if (addTagToRefreshQueue) {
+                    addTagToRefreshQueue(digestUrl)
+                }
             }).finally(() => {
                 setTagsLocked(false)
             })
@@ -71,6 +74,9 @@ export function TagsProvider({children}) {
         setTagsLocked(true)
         deleteTag(digestUrl, tag.id).then(() => {
             setTags([...(tags.filter(t => t.id !== tag.id))])
+            if (addTagToRefreshQueue) {
+                addTagToRefreshQueue(digestUrl)
+            }
         }).catch(() => {
             setTags([...tags])
         }).finally(() => {

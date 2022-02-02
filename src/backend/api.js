@@ -46,11 +46,12 @@ export const whoami = headers => fetchJson(buildUrl('whoami'), { headers })
 export const limits = headers => fetchJson(buildUrl('limits'), { headers })
 export const collections = headers => fetchJson(buildUrl('collections'), { headers })
 export const searchFields = headers => fetchJson(buildUrl('search_fields'), { headers })
-export const search = async (headers, params, type, fieldList, missing, searchFields, uuid) => fetchJson(buildUrl('search'), {
-    headers,
-    method: 'POST',
-    body: JSON.stringify(buildSearchQuery(params, type, fieldList, missing, searchFields, uuid)),
-})
+export const search = async (headers, params, type, fieldList, missing, refresh, searchFields, uuid) =>
+    fetchJson(buildUrl('search', { refresh }), {
+        headers,
+        method: 'POST',
+        body: JSON.stringify(buildSearchQuery(params, type, fieldList, missing, searchFields, uuid)),
+    })
 
 /*
  called only by browser

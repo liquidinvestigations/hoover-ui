@@ -21,7 +21,7 @@ export default function ResultsList() {
         >
             {results.hits.hits.map((hit, i) =>
                 <ResultItem
-                    key={hit._url}
+                    key={hit._id}
                     hit={hit}
                     url={documentViewUrl(hit)}
                     index={start + i}
