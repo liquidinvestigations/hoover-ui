@@ -23,16 +23,18 @@ const formatLang = bucket => getLanguageName(bucket.key)
 
 function Filters({ wideFilters, drawerWidth, drawerPinned, setDrawerPinned, drawerPortalRef, openCategory, setOpenCategory }) {
     const classes = useStyles()
-    const { query, search, aggregations, aggregationsError, aggregationsLoading, missingAggregations, missingLoading } = useSearch()
+    const { query, search, aggregations, aggregationsTasks, aggregationsLoading, aggregationsError,
+        missingAggregations, missingLoading } = useSearch()
 
-    const categories = useMemo(() => Object.entries(aggregationCategories).reduce((acc, [category, { label, icon, filters }]) => {
-        acc[category] = {
-            label,
-            icon,
-            filters: filters.map(field => ({ field, ...aggregationFields[field] })),
-        }
-        return acc
-    }, {}), [aggregationCategories, aggregationFields])
+    const categories = useMemo(() => Object.entries(aggregationCategories)
+        .reduce((acc, [category, { label, icon, filters }]) => {
+            acc[category] = {
+                label,
+                icon,
+                filters: filters.map(field => ({ field, ...aggregationFields[field] })),
+            }
+            return acc
+        }, {}), [aggregationCategories, aggregationFields])
 
     const [expandedFilters, setExpandedFilters] = useState(
         Object.entries(categories).reduce((acc, [category, { filters }]) => {
@@ -104,6 +106,19 @@ function Filters({ wideFilters, drawerWidth, drawerPinned, setDrawerPinned, draw
 
         const loading = filters.some(({ field }) => aggregationsLoading[field])
 
+        const aggregationsLoadingTask = Object.entries(aggregationsTasks).find(([fields]) => fields.split(',').includes(filters[0].field))
+        let aggregationsLoadingProgress = 0
+        if (aggregationsLoadingTask) {
+            const taskData = aggregationsLoadingTask[1]
+            if (taskData.status === 'pending') {
+                aggregationsLoadingProgress = 25
+            } else if (taskData.status === 'done') {
+                aggregationsLoadingProgress = 100
+            } else {
+                aggregationsLoadingProgress = Math.max(25, taskData.eta.total_sec / taskData.initialEta * 100)
+            }
+        }
+
         return (
             <CategoryDrawer
                 key={category}
@@ -115,6 +130,8 @@ function Filters({ wideFilters, drawerWidth, drawerPinned, setDrawerPinned, draw
                                 size={16}
                                 thickness={4}
                                 className={classes.loading}
+                                variant={aggregationsLoadingProgress ? 'determinate' : 'indeterminate'}
+                                value={aggregationsLoadingProgress}
                             />
                         )}
                     </>
@@ -177,6 +194,7 @@ function Filters({ wideFilters, drawerWidth, drawerPinned, setDrawerPinned, draw
                             queryFacets={query.facets?.[field]}
                             aggregations={aggregations?.[field]}
                             loading={aggregationsLoading[field]}
+                            loadingProgress={aggregationsLoadingProgress}
                             missing={missingAggregations?.[`${field}-missing`]}
                             missingLoading={missingLoading}
                             open={expandedFilters[category] === field}

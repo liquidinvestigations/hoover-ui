@@ -116,6 +116,8 @@ export function SearchProvider({ children, serverQuery }) {
     })])
 
     useEffect(async () => {
+        let timeout
+
         if (resultsTask) {
             if (resultsTask.status === 'done') {
                 const results = resultsTask.result
@@ -145,12 +147,16 @@ export function SearchProvider({ children, serverQuery }) {
                     if (resultsTaskData.status === 'done') {
                         update()
                     } else {
-                        setTimeout(update, ASYNC_SEARCH_POLL_INTERVAL * 1000)
+                        timeout = setTimeout(update, ASYNC_SEARCH_POLL_INTERVAL * 1000)
                     }
                 } catch (error) {
                     handleResultsAbortError(error)
                 }
             }
+        }
+
+        return () => {
+            clearTimeout(timeout)
         }
     }, [resultsTask])
 
@@ -220,7 +226,10 @@ export function SearchProvider({ children, serverQuery }) {
 
                     setAggregationsTasks(tasks => ({
                         ...tasks,
-                        [aggregationGroup.fieldList.join()]: taskData,
+                        [aggregationGroup.fieldList.join()]: {
+                            ...taskData,
+                            initialEta: taskData.eta.total_sec
+                        },
                     }))
 
                 } catch (error) {
@@ -241,11 +250,13 @@ export function SearchProvider({ children, serverQuery }) {
     }), forcedRefresh])
 
     useEffect(() => {
+        let timeout
+
         setAggregationsTasks(prevTasksData => {
             Object.entries(prevTasksData).forEach(([fields, taskData]) => {
-                if (taskData.status === 'done') {
-                    setAggregations(aggregations => ({ ...(aggregations || {}), ...taskData.result.aggregations }))
-                    setCollectionsCount(taskData.result.count_by_index)
+                const done = resultData => {
+                    setAggregations(aggregations => ({ ...(aggregations || {}), ...resultData.aggregations }))
+                    setCollectionsCount(resultData.count_by_index)
                     setAggregationsLoading(loading => ({
                         ...loading,
                         ...fields.split(',').reduce((acc, field) => {
@@ -253,6 +264,10 @@ export function SearchProvider({ children, serverQuery }) {
                             return acc
                         }, {}),
                     }))
+                }
+
+                if (taskData.status === 'done') {
+                    done(taskData.result)
                 } else if (!taskData.retrieving) {
                     taskData.retrieving = true
                     asyncSearchAPI(taskData.task_id, taskData.eta.total_sec < ASYNC_SEARCH_POLL_INTERVAL ? true : '')
@@ -263,9 +278,9 @@ export function SearchProvider({ children, serverQuery }) {
                             })
 
                             if (taskResultData.status === 'done') {
-                                update()
+                                done(taskResultData.result)
                             } else {
-                                setTimeout(update, ASYNC_SEARCH_POLL_INTERVAL * 1000)
+                                timeout = setTimeout(update, ASYNC_SEARCH_POLL_INTERVAL * 1000)
                             }
                         })
                         .catch(error => {
@@ -275,6 +290,10 @@ export function SearchProvider({ children, serverQuery }) {
             })
             return prevTasksData
         })
+
+        return () => {
+            clearTimeout(timeout)
+        }
     }, [aggregationsTasks])
 
     const [missingLoading, setMissingLoading] = useState(!!query.collections?.length)
@@ -443,8 +462,9 @@ export function SearchProvider({ children, serverQuery }) {
     return (
         <SearchContext.Provider value={{
             query, error, search, searchText, setSearchText,
-            results, aggregations, aggregationsError,
-            collectionsCount, resultsLoading, aggregationsLoading,
+            collectionsCount,
+            results, resultsTask, resultsLoading,
+            aggregations, aggregationsTasks, aggregationsLoading, aggregationsError,
             missingAggregations, loadMissing, missingLoading,
             previewNextDoc, previewPreviousDoc, selectedDocData,
             clearResults, addTagToRefreshQueue,

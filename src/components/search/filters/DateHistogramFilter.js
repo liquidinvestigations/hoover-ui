@@ -25,7 +25,8 @@ export const formatsValue = {
     hour: "yyyy-MM-dd'T'HH",
 }
 
-function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations, loading, missing, missingLoading, onChange, search }) {
+function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations,
+                                 loading, loadingProgress, missing, missingLoading, onChange, search }) {
     const interval = queryFilter?.interval || DEFAULT_INTERVAL
 
     const onRangeChange = useCallback(range => {
@@ -74,6 +75,7 @@ function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryF
         <Expandable
             title={title}
             loading={loading}
+            loadingProgress={loadingProgress}
             highlight={!!(queryFilter?.from || queryFilter?.to || queryFilter?.intervals)}
             greyed={!aggregations?.values.buckets.length}
             open={open}

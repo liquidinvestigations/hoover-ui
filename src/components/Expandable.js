@@ -50,7 +50,7 @@ const useStyles = makeStyles(theme => ({
 
 let startY, startHeight
 
-function Expandable({ title, loading, summary, children, greyed, defaultOpen, open, onToggle,
+function Expandable({ title, loading, loadingProgress, summary, children, greyed, defaultOpen, open, onToggle,
                         resizable = false, fullHeight = true, highlight = true }) {
 
     const classes = useStyles()
@@ -113,6 +113,8 @@ function Expandable({ title, loading, summary, children, greyed, defaultOpen, op
                                 size={16}
                                 thickness={4}
                                 className={classes.loading}
+                                variant={loadingProgress ? 'determinate' : 'indeterminate'}
+                                value={loadingProgress}
                             />
                         )}
                     </Typography>
