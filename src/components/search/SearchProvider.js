@@ -66,11 +66,12 @@ export function SearchProvider({ children, serverQuery }) {
     const [results, setResults] = useState()
     const [resultsTask, setResultsTask] = useState(null)
     const [resultsLoading, setResultsLoading] = useState(!!query.q)
-    const handleResultsAbortError = error => {
+    const handleResultsError = error => {
         if (error.name !== 'AbortError') {
             setResults(null)
             setError(error.message)
             setResultsLoading(false)
+            setResultsTaskRequestCounter(0)
         }
     }
 
@@ -88,10 +89,10 @@ export function SearchProvider({ children, serverQuery }) {
                     async: true,
                 })
 
-                setResultsTask(taskData)
+                setResultsTask({ ...taskData, initialEta: taskData.eta?.total_sec })
 
             } catch(error) {
-                handleResultsAbortError(error)
+                handleResultsError(error)
             }
 
         } else {
@@ -115,12 +116,16 @@ export function SearchProvider({ children, serverQuery }) {
         }
     })])
 
+    const [resultsTaskRequestCounter, setResultsTaskRequestCounter] = useState(0)
+
     useEffect(async () => {
         let timeout
 
-        if (resultsTask) {
-            if (resultsTask.status === 'done') {
-                const results = resultsTask.result
+        const prevTaskResults = resultsTask
+
+        if (prevTaskResults) {
+            if (prevTaskResults.status === 'done') {
+                const results = prevTaskResults.result
                 setResults(results)
                 setResultsLoading(false)
                 setCollectionsCount(results.count_by_index)
@@ -138,19 +143,32 @@ export function SearchProvider({ children, serverQuery }) {
                         tab: undefined, subTab: undefined, previewPage: undefined
                     })
                 }
-            } else if (!resultsTask.retrieving) {
-                resultsTask.retrieving = true
+            } else if (!prevTaskResults.retrieving) {
+                prevTaskResults.retrieving = true
+
+                const wait = prevTaskResults.eta.total_sec < ASYNC_SEARCH_POLL_INTERVAL ? true : ''
+
+                if (wait) {
+                    setResultsTaskRequestCounter(counter => counter + 1)
+                }
+
                 try {
-                    const resultsTaskData = await asyncSearchAPI(resultsTask.task_id, resultsTask.eta.total_sec < ASYNC_SEARCH_POLL_INTERVAL ? true : '')
-                    const update = () => setResultsTask(resultsTaskData)
+                    const resultsTaskData = await asyncSearchAPI(prevTaskResults.task_id, wait)
+                    const update = () => setResultsTask({ ...prevTaskResults, ...resultsTaskData, retrieving: false } )
 
                     if (resultsTaskData.status === 'done') {
                         update()
-                    } else {
+                    } else if (Date.now() - Date.parse(resultsTaskData.date_created) < (prevTaskResults.initialEta * 2 + 60) * 1000) {
                         timeout = setTimeout(update, ASYNC_SEARCH_POLL_INTERVAL * 1000)
+                    } else {
+                        handleResultsError(new Error('Results task ETA timeout'))
                     }
                 } catch (error) {
-                    handleResultsAbortError(error)
+                    if (wait && error.name === 'TypeError' && resultsTaskRequestCounter < 3) {
+                        setResultsTask({ ...prevTaskResults, retrieving: false } )
+                    } else {
+                        handleResultsError(error)
+                    }
                 }
             }
         }
@@ -186,7 +204,7 @@ export function SearchProvider({ children, serverQuery }) {
             return acc
         }, {})
     )
-    const handleAggregationsAbortError = error => {
+    const handleAggregationsError = error => {
         if (error.name !== 'AbortError') {
             setAggregations(null)
             setAggregationsError(error.message)
@@ -194,6 +212,12 @@ export function SearchProvider({ children, serverQuery }) {
             setAggregationsLoading(
                 Object.entries(aggregationFields).reduce((acc, [field]) => {
                     acc[field] = false
+                    return acc
+                }, {})
+            )
+            setAggregationsTaskRequestCounter(
+                aggregationGroups.reduce((acc, { fieldList }) => {
+                    acc[fieldList.join()] = 0
                     return acc
                 }, {})
             )
@@ -228,12 +252,12 @@ export function SearchProvider({ children, serverQuery }) {
                         ...tasks,
                         [aggregationGroup.fieldList.join()]: {
                             ...taskData,
-                            initialEta: taskData.eta.total_sec
+                            initialEta: taskData?.eta.total_sec
                         },
                     }))
 
                 } catch (error) {
-                    handleAggregationsAbortError(error)
+                    handleAggregationsError(error)
                 }
             })
 
@@ -249,11 +273,18 @@ export function SearchProvider({ children, serverQuery }) {
         order: null,
     }), forcedRefresh])
 
+    const [aggregationsTaskRequestCounter, setAggregationsTaskRequestCounter] = useState(
+        aggregationGroups.reduce((acc, { fieldList }) => {
+            acc[fieldList.join()] = 0
+            return acc
+        }, {})
+    )
+
     useEffect(() => {
         let timeout
 
-        setAggregationsTasks(prevTasksData => {
-            Object.entries(prevTasksData).forEach(([fields, taskData]) => {
+        setAggregationsTasks(prevTasksAggregations => {
+            Object.entries(prevTasksAggregations).forEach(([fields, taskData]) => {
                 const done = resultData => {
                     setAggregations(aggregations => ({ ...(aggregations || {}), ...resultData.aggregations }))
                     setCollectionsCount(resultData.count_by_index)
@@ -270,25 +301,44 @@ export function SearchProvider({ children, serverQuery }) {
                     done(taskData.result)
                 } else if (!taskData.retrieving) {
                     taskData.retrieving = true
-                    asyncSearchAPI(taskData.task_id, taskData.eta.total_sec < ASYNC_SEARCH_POLL_INTERVAL ? true : '')
+
+                    const wait = taskData.eta.total_sec < ASYNC_SEARCH_POLL_INTERVAL ? true : ''
+
+                    if (wait) {
+                        setAggregationsTaskRequestCounter(counter => ({
+                            ...counter,
+                            [fields]: counter[fields] + 1,
+                        }))
+                    }
+
+                    asyncSearchAPI(taskData.task_id, wait)
                         .then(taskResultData => {
                             const update = () => setAggregationsTasks({
-                                ...prevTasksData,
+                                ...prevTasksAggregations,
                                 [fields]: { ...taskResultData, retrieving: false }
                             })
 
                             if (taskResultData.status === 'done') {
                                 done(taskResultData.result)
-                            } else {
+                            } else if (Date.now() - Date.parse(taskResultData.date_created) < (prevTasksAggregations.initialEta * 2 + 60) * 1000) {
                                 timeout = setTimeout(update, ASYNC_SEARCH_POLL_INTERVAL * 1000)
+                            } else {
+                                handleAggregationsError(new Error('Aggregations task ETA timeout'))
                             }
                         })
                         .catch(error => {
-                            handleAggregationsAbortError(error)
+                            if (wait && error.name === 'TypeError' && aggregationsTaskRequestCounter[fields] < 3) {
+                                setAggregationsTasks({
+                                    ...prevTasksAggregations,
+                                    [fields]: { ...prevTasksAggregations[fields], retrieving: false }
+                                })
+                            } else {
+                                handleAggregationsError(error) //TODO fix for only one aggregation hits retry limit
+                            }
                         })
                 }
             })
-            return prevTasksData
+            return prevTasksAggregations
         })
 
         return () => {
