@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { CircularProgress, Typography } from '@material-ui/core'
+import { Typography } from '@material-ui/core'
 import TermsAggregationFilter from './TermsAggregationFilter'
 import DateHistogramFilter from './DateHistogramFilter'
 import CategoryDrawer from './CategoryDrawer'
@@ -106,40 +106,27 @@ function Filters({ wideFilters, drawerWidth, drawerPinned, setDrawerPinned, draw
 
         const loading = filters.some(({ field }) => aggregationsLoading[field])
 
-        const aggregationsLoadingTask = Object.entries(aggregationsTasks).find(([fields]) => fields.split(',').includes(filters[0].field))
-        let aggregationsLoadingProgress = 0
-        if (aggregationsLoadingTask) {
-            const taskData = aggregationsLoadingTask[1]
-            if (taskData.status === 'pending') {
-                aggregationsLoadingProgress = 25
-            } else if (taskData.status === 'done') {
-                aggregationsLoadingProgress = 100
-            } else {
-                aggregationsLoadingProgress = Math.max(25, taskData.eta.total_sec / taskData.initialEta * 100)
+        const loadingTask = Object.entries(aggregationsTasks).find(([fields]) => fields.split(',').includes(filters[0].field))
+        let loadingProgress = 5
+        if (loadingTask) {
+            const taskData = loadingTask[1]
+            if (taskData.status === 'done') {
+                loadingProgress = 100
+            } else if (taskData.eta.total_sec / taskData.initialEta < 1) {
+                loadingProgress = Math.max(5, taskData.eta.total_sec / taskData.initialEta * 100)
             }
         }
 
         return (
             <CategoryDrawer
                 key={category}
-                title={
-                    <>
-                        {label}
-                        {loading && (
-                            <CircularProgress
-                                size={16}
-                                thickness={4}
-                                className={classes.loading}
-                                variant={aggregationsLoadingProgress ? 'determinate' : 'indeterminate'}
-                                value={aggregationsLoadingProgress}
-                            />
-                        )}
-                    </>
-                }
+                title={label}
                 icon={icon}
                 greyed={greyed}
                 highlight={highlight}
                 category={category}
+                loading={loading}
+                loadingProgress={loadingProgress}
                 open={openCategory === category}
                 onOpen={setOpenCategory}
                 wideFilters={wideFilters}
@@ -194,7 +181,7 @@ function Filters({ wideFilters, drawerWidth, drawerPinned, setDrawerPinned, draw
                             queryFacets={query.facets?.[field]}
                             aggregations={aggregations?.[field]}
                             loading={aggregationsLoading[field]}
-                            loadingProgress={aggregationsLoadingProgress}
+                            loadingProgress={loadingProgress}
                             missing={missingAggregations?.[`${field}-missing`]}
                             missingLoading={missingLoading}
                             open={expandedFilters[category] === field}

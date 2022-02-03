@@ -2,7 +2,15 @@ import React, { cloneElement, useEffect, useMemo, useState } from 'react'
 import cn from 'classnames'
 import { Transition } from 'react-transition-group'
 import { makeStyles, duration } from '@material-ui/core/styles'
-import { ClickAwayListener, Grid, ListItem, Portal, Slide, Typography } from '@material-ui/core'
+import {
+    ClickAwayListener,
+    Grid,
+    LinearProgress,
+    ListItem,
+    Portal,
+    Slide,
+    Typography
+} from '@material-ui/core'
 import { reactIcons } from '../../../constants/icons'
 
 const useStyles = makeStyles(theme => ({
@@ -57,6 +65,34 @@ const useStyles = makeStyles(theme => ({
     openCollapsed: {
         borderRight: `3px solid ${theme.palette.grey[700]}`,
     },
+    progress: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+    },
+    progressRoot: {
+        backgroundImage: `linear-gradient(
+            -45deg,
+            rgba(255, 255, 255, .5) 25%,
+            transparent 25%,
+            transparent 50%,
+            rgba(255, 255, 255, .5) 50%,
+            rgba(255, 255, 255, .5) 75%,
+            transparent 75%,
+            transparent
+        )`,
+        backgroundSize: '10px 10px',
+        animation: '$move 1s linear infinite',
+    },
+    '@keyframes move': {
+        '0%': {
+            backgroundPosition: '0 0',
+        },
+        '100%': {
+            backgroundPosition: '10px 10px',
+        }
+    }
 }))
 
 const hasDisabledClickAway = element => {
@@ -67,7 +103,7 @@ const hasDisabledClickAway = element => {
 }
 
 export default function CategoryDrawer({ category, title, icon, children, wideFilters, portalRef, width, pinned, toolbar,
-                                           open, onOpen, greyed = false, highlight = true }) {
+                                           loading, loadingProgress, open, onOpen, greyed = false, highlight = true }) {
     const classes = useStyles()
     const [position, setPosition] = useState({ top: 0, left: 0, width: 0 })
 
@@ -95,6 +131,15 @@ export default function CategoryDrawer({ category, title, icon, children, wideFi
             onClick={() => onOpen(category)}
             className={cn({ [classes.openCollapsed]: !wideFilters && open })}
         >
+            {loading && (
+                <LinearProgress
+                    className={classes.progress}
+                    variant={loadingProgress ? 'determinate' : 'indeterminate'}
+                    value={loadingProgress}
+                    classes={{ root: classes.progressRoot }}
+                />
+            )}
+
             <Grid
                 container
                 alignItems="baseline"
@@ -124,7 +169,7 @@ export default function CategoryDrawer({ category, title, icon, children, wideFi
                 )}
             </Grid>
         </ListItem>
-    ), [category, title, greyed, highlight, wideFilters, open, onOpen])
+    ), [category, title, greyed, highlight, wideFilters, open, onOpen, loading, loadingProgress])
 
     return (
         <>
