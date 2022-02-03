@@ -10,7 +10,7 @@ import { buildSearchQuerystring, rollupParams, unwindParams } from '../../queryU
 import { aggregationFields } from '../../constants/aggregationFields'
 import { search as searchAPI } from '../../api'
 import { tags as tagsAPI, asyncSearch as asyncSearchAPI } from '../../backend/api'
-import { TAGS_REFRESH_DELAYS } from '../../constants/general'
+import { ASYNC_SEARCH_POLL_INTERVAL, TAGS_REFRESH_DELAYS } from '../../constants/general'
 import { reactIcons } from '../../constants/icons'
 import { availableColumns } from '../../constants/availableColumns'
 
@@ -64,37 +64,36 @@ export function SearchProvider({ children, serverQuery }) {
 
     const [error, setError] = useState()
     const [results, setResults] = useState()
+    const [resultsTask, setResultsTask] = useState(null)
     const [resultsLoading, setResultsLoading] = useState(!!query.q)
-    useEffect(() => {
+    const handleResultsAbortError = error => {
+        if (error.name !== 'AbortError') {
+            setResults(null)
+            setError(error.message)
+            setResultsLoading(false)
+        }
+    }
+
+    useEffect(async () => {
         if (query.q) {
             setError(null)
+            setResultsTask(null)
             setResultsLoading(true)
 
-            searchAPI({
-                type: 'results',
-                fieldList: '*',
-                ...query,
-            }).then(results => {
-                setResults(results)
-                setResultsLoading(false)
-                setCollectionsCount(results.count_by_index)
+            try {
+                const taskData = await searchAPI({
+                    ...query,
+                    type: 'results',
+                    fieldList: '*',
+                    async: true,
+                })
 
-                if (previewOnLoad === 'first') {
-                    setPreviewOnLoad(null)
-                    setHashState({ ...getPreviewParams(results.hits.hits[0]),
-                        tab: undefined, subTab: undefined, previewPage: undefined })
-                } else if (previewOnLoad === 'last') {
-                    setPreviewOnLoad(null)
-                    setHashState({ ...getPreviewParams(results.hits.hits[results.hits.hits.length - 1]),
-                        tab: undefined, subTab: undefined, previewPage: undefined })
-                }
-            }).catch(error => {
-                if (error.name !== 'AbortError') {
-                    setResults(null)
-                    setError(error.message)
-                    setResultsLoading(false)
-                }
-            })
+                setResultsTask(taskData)
+
+            } catch(error) {
+                handleResultsAbortError(error)
+            }
+
         } else {
             setResults(null)
         }
@@ -115,6 +114,45 @@ export function SearchProvider({ children, serverQuery }) {
             },
         }
     })])
+
+    useEffect(async () => {
+        if (resultsTask) {
+            if (resultsTask.status === 'done') {
+                const results = resultsTask.result
+                setResults(results)
+                setResultsLoading(false)
+                setCollectionsCount(results.count_by_index)
+
+                if (previewOnLoad === 'first') {
+                    setPreviewOnLoad(null)
+                    setHashState({
+                        ...getPreviewParams(results.hits.hits[0]),
+                        tab: undefined, subTab: undefined, previewPage: undefined
+                    })
+                } else if (previewOnLoad === 'last') {
+                    setPreviewOnLoad(null)
+                    setHashState({
+                        ...getPreviewParams(results.hits.hits[results.hits.hits.length - 1]),
+                        tab: undefined, subTab: undefined, previewPage: undefined
+                    })
+                }
+            } else if (!resultsTask.retrieving) {
+                resultsTask.retrieving = true
+                try {
+                    const resultsTaskData = await asyncSearchAPI(resultsTask.task_id, resultsTask.eta.total_sec < ASYNC_SEARCH_POLL_INTERVAL ? true : '')
+                    const update = () => setResultsTask(resultsTaskData)
+
+                    if (resultsTaskData.status === 'done') {
+                        update()
+                    } else {
+                        setTimeout(update, ASYNC_SEARCH_POLL_INTERVAL * 1000)
+                    }
+                } catch (error) {
+                    handleResultsAbortError(error)
+                }
+            }
+        }
+    }, [resultsTask])
 
     const [resultsViewType, setResultsViewType] = useState('list')
     const [resultsColumns, setResultsColumns] = useState(
@@ -142,6 +180,19 @@ export function SearchProvider({ children, serverQuery }) {
             return acc
         }, {})
     )
+    const handleAggregationsAbortError = error => {
+        if (error.name !== 'AbortError') {
+            setAggregations(null)
+            setAggregationsError(error.message)
+            setAggregationsTasks({})
+            setAggregationsLoading(
+                Object.entries(aggregationFields).reduce((acc, [field]) => {
+                    acc[field] = false
+                    return acc
+                }, {})
+            )
+        }
+    }
 
     useEffect(() => {
         if (query.collections?.length) {
@@ -164,7 +215,7 @@ export function SearchProvider({ children, serverQuery }) {
                         type: 'aggregations',
                         fieldList: aggregationGroup.fieldList,
                         refresh: prevForcedRefresh !== forcedRefresh,
-                        async: true
+                        async: true,
                     })
 
                     setAggregationsTasks(tasks => ({
@@ -173,17 +224,7 @@ export function SearchProvider({ children, serverQuery }) {
                     }))
 
                 } catch (error) {
-                    if (error.name !== 'AbortError') {
-                        setAggregations(null)
-                        setAggregationsError(error.message)
-                        setAggregationsTasks({})
-                        setAggregationsLoading(
-                            Object.entries(aggregationFields).reduce((acc, [field]) => {
-                                acc[field] = false
-                                return acc
-                            }, {})
-                        )
-                    }
+                    handleAggregationsAbortError(error)
                 }
             })
 
@@ -214,14 +255,22 @@ export function SearchProvider({ children, serverQuery }) {
                     }))
                 } else if (!taskData.retrieving) {
                     taskData.retrieving = true
-                    asyncSearchAPI(taskData.task_id, taskData.eta.total_sec < 45 ? true : '').then(taskResultData => {
-                        const update = () => setAggregationsTasks({ ...prevTasksData, [fields]: { ...taskResultData, retrieving: false }})
-                        if (taskResultData.status === 'done') {
-                            update()
-                        } else {
-                            setTimeout(update, 45000)
-                        }
-                    })
+                    asyncSearchAPI(taskData.task_id, taskData.eta.total_sec < ASYNC_SEARCH_POLL_INTERVAL ? true : '')
+                        .then(taskResultData => {
+                            const update = () => setAggregationsTasks({
+                                ...prevTasksData,
+                                [fields]: { ...taskResultData, retrieving: false }
+                            })
+
+                            if (taskResultData.status === 'done') {
+                                update()
+                            } else {
+                                setTimeout(update, ASYNC_SEARCH_POLL_INTERVAL * 1000)
+                            }
+                        })
+                        .catch(error => {
+                            handleAggregationsAbortError(error)
+                        })
                 }
             })
             return prevTasksData
