@@ -16,39 +16,32 @@ const aggregationGroups = Object.entries(aggregationFields)
     }, [])
 
 export default function useAggregationsSearch(query, forcedRefresh, setCollectionsCount) {
+    const buildAggregationsKeysMap = value => Object.entries(aggregationFields).reduce((acc, [field]) => {
+        acc[field] = value
+        return acc
+    }, {})
+
+    const buildAggregationsGroupsMap = value => aggregationGroups.reduce((acc, { fieldList }) => {
+        acc[fieldList.join()] = value
+        return acc
+    }, {})
+
     const prevForcedRefreshRef = useRef()
     const [aggregations, setAggregations] = useState()
     const [aggregationsError, setAggregationsError] = useState()
     const [aggregationsTasks, setAggregationsTasks] = useState({})
-    const [aggregationsLoading, setAggregationsLoading] = useState(
-        Object.entries(aggregationFields).reduce((acc, [field]) => {
-            acc[field] = !!query.collections?.length
-            return acc
-        }, {})
-    )
-    const [aggregationsTaskRequestCounter, setAggregationsTaskRequestCounter] = useState(
-        aggregationGroups.reduce((acc, { fieldList }) => {
-            acc[fieldList.join()] = 0
-            return acc
-        }, {})
-    )
+    const [aggregationsLoading, setAggregationsLoading] =
+        useState(buildAggregationsKeysMap(!!query.collections?.length))
+    const [aggregationsTaskRequestCounter, setAggregationsTaskRequestCounter] =
+        useState(buildAggregationsGroupsMap(0))
+
     const handleAggregationsError = error => {
         if (error.name !== 'AbortError') {
             setAggregations(null)
             setAggregationsError(error.message)
             setAggregationsTasks({})
-            setAggregationsLoading(
-                Object.entries(aggregationFields).reduce((acc, [field]) => {
-                    acc[field] = false
-                    return acc
-                }, {})
-            )
-            setAggregationsTaskRequestCounter(
-                aggregationGroups.reduce((acc, { fieldList }) => {
-                    acc[fieldList.join()] = 0
-                    return acc
-                }, {})
-            )
+            setAggregationsLoading(buildAggregationsKeysMap(false))
+            setAggregationsTaskRequestCounter(buildAggregationsGroupsMap(0))
         }
     }
 
@@ -56,18 +49,8 @@ export default function useAggregationsSearch(query, forcedRefresh, setCollectio
         if (query.collections?.length) {
             setAggregationsError(null)
             setAggregationsTasks({})
-            setAggregationsLoading(
-                Object.entries(aggregationFields).reduce((acc, [field]) => {
-                    acc[field] = true
-                    return acc
-                }, {})
-            )
-            setAggregationsTaskRequestCounter(
-                aggregationGroups.reduce((acc, { fieldList }) => {
-                    acc[fieldList.join()] = 0
-                    return acc
-                }, {})
-            )
+            setAggregationsLoading(buildAggregationsKeysMap(true))
+            setAggregationsTaskRequestCounter(buildAggregationsGroupsMap(0))
 
             aggregationGroups.map(async (aggregationGroup, i) => {
                 try {
@@ -108,8 +91,8 @@ export default function useAggregationsSearch(query, forcedRefresh, setCollectio
     useEffect(() => {
         let timeout
 
-        setAggregationsTasks(prevTasksAggregations => {
-            Object.entries(prevTasksAggregations).forEach(([fields, taskData]) => {
+        setAggregationsTasks(prevAggregationsTasks => {
+            Object.entries(prevAggregationsTasks).forEach(([fields, taskData]) => {
                 const done = resultData => {
                     setAggregations(aggregations => ({ ...(aggregations || {}), ...resultData.aggregations }))
                     setCollectionsCount(resultData.count_by_index)
@@ -139,13 +122,13 @@ export default function useAggregationsSearch(query, forcedRefresh, setCollectio
                     asyncSearchAPI(taskData.task_id, wait)
                         .then(taskResultData => {
                             const update = () => setAggregationsTasks({
-                                ...prevTasksAggregations,
+                                ...prevAggregationsTasks,
                                 [fields]: { ...taskResultData, retrieving: false }
                             })
 
                             if (taskResultData.status === 'done') {
                                 done(taskResultData.result)
-                            } else if (Date.now() - Date.parse(taskResultData.date_created) < (prevTasksAggregations.initialEta * 2 + 60) * 1000) {
+                            } else if (Date.now() - Date.parse(taskResultData.date_created) < (prevAggregationsTasks.initialEta * 2 + 60) * 1000) {
                                 timeout = setTimeout(update, ASYNC_SEARCH_POLL_INTERVAL * 1000)
                             } else {
                                 handleAggregationsError(new Error('Aggregations task ETA timeout'))
@@ -155,22 +138,22 @@ export default function useAggregationsSearch(query, forcedRefresh, setCollectio
                             if (wait && error.name === 'TypeError') {
                                 if (aggregationsTaskRequestCounter[fields] < 3) {
                                     setAggregationsTasks({
-                                        ...prevTasksAggregations,
-                                        [fields]: { ...prevTasksAggregations[fields], retrieving: false }
+                                        ...prevAggregationsTasks,
+                                        [fields]: { ...prevAggregationsTasks[fields], retrieving: false }
                                     })
                                 } else {
                                     setAggregationsTasks({
-                                        ...prevTasksAggregations,
+                                        ...prevAggregationsTasks,
                                         [fields]: undefined
                                     })
                                 }
                             } else{
-                                handleAggregationsError(error) //TODO fix for only one aggregation hits retry limit
+                                handleAggregationsError(error)
                             }
                         })
                 }
             })
-            return prevTasksAggregations
+            return prevAggregationsTasks
         })
 
         return () => {
@@ -179,12 +162,24 @@ export default function useAggregationsSearch(query, forcedRefresh, setCollectio
     }, [aggregationsTasks])
 
     const prevFacetsQueryRef = useRef()
-    useEffect(() => {
+    const [facetsTasks, setFacetsTasks] = useState({})
+    const [facetsTasksRequestCounter, setFacetsTasksRequestCounter] = useState(buildAggregationsKeysMap(0))
+
+    const handleFacetsError = error => {
+        if (error.name !== 'AbortError') {
+            setAggregations(null)
+            setAggregationsError(error.message)
+            setAggregationsLoading(buildAggregationsKeysMap(false))
+            setFacetsTasksRequestCounter(buildAggregationsKeysMap(0))
+        }
+    }
+
+    useEffect(async () => {
         const { facets, page, size, order, ...queryRest } = query
         const { facets: prevFacets, page: prevPage, size: prevSize, order: prevOrder, ...prevQueryRest } = prevFacetsQueryRef.current || {}
 
         if (JSON.stringify(queryRest) === JSON.stringify(prevQueryRest) && JSON.stringify(facets) !== JSON.stringify(prevFacets)) {
-            const loading = state => Object.entries({
+            const changed = state => Object.entries({
                 ...(facets || {}),
                 ...(prevFacets || {}),
             }).reduce((acc, [field]) => {
@@ -195,23 +190,30 @@ export default function useAggregationsSearch(query, forcedRefresh, setCollectio
             }, {})
 
             setAggregationsError(null)
-            setAggregationsLoading(loading(true))
+            setAggregationsLoading(changed(true))
+            setFacetsTasksRequestCounter(buildAggregationsKeysMap(0))
 
-            searchAPI({
-                ...query,
-                q: query.q || '*',
-                type: 'aggregations',
-                fieldList: Object.entries(loading(true)).map(([key]) => key),
-            }).then(results => {
-                setAggregations(aggregations => ({...(aggregations || {}), ...results.aggregations}))
-                setAggregationsLoading(loading(false))
-            }).catch(error => {
-                if (error.name !== 'AbortError') {
-                    setAggregations(null)
-                    setAggregationsError(error.message)
-                    setAggregationsLoading(loading(false))
-                }
-            })
+            try {
+                const fieldList = Object.entries(changed(true)).map(([key]) => key)
+                const taskData = await searchAPI({
+                    ...query,
+                    q: query.q || '*',
+                    type: 'aggregations',
+                    fieldList,
+                    async: true,
+                })
+
+                setFacetsTasks(tasks => ({
+                    ...tasks,
+                    [fieldList.join(',')]: {
+                        ...taskData,
+                        initialEta: taskData?.eta.total_sec
+                    },
+                }))
+
+            } catch (error) {
+                handleFacetsError(error)
+            }
         }
         prevFacetsQueryRef.current = query
     }, [JSON.stringify({
@@ -220,6 +222,78 @@ export default function useAggregationsSearch(query, forcedRefresh, setCollectio
         size: null,
         order: null,
     })])
+
+    useEffect(() => {
+        let timeout
+
+        setFacetsTasks(prevFacetsTasks => {
+            Object.entries(prevFacetsTasks).forEach(([fields, taskData]) => {
+                const done = resultData => {
+                    setAggregations(aggregations => ({ ...(aggregations || {}), ...resultData.aggregations }))
+                    setAggregationsLoading(loading => ({
+                        ...loading,
+                        ...fields.split(',').reduce((acc, field) => {
+                            acc[field] = false
+                            return acc
+                        }, {}),
+                    }))
+                }
+
+                if (taskData.status === 'done') {
+                    done(taskData.result)
+                } else if (!taskData.retrieving) {
+                    taskData.retrieving = true
+
+                    const wait = taskData.eta.total_sec < ASYNC_SEARCH_POLL_INTERVAL ? true : ''
+
+                    if (wait) {
+                        setFacetsTasksRequestCounter(counter => ({
+                            ...counter,
+                            [fields]: counter[fields] + 1,
+                        }))
+                    }
+
+                    asyncSearchAPI(taskData.task_id, wait)
+                        .then(taskResultData => {
+                            const update = () => setFacetsTasks({
+                                ...prevFacetsTasks,
+                                [fields]: { ...taskResultData, retrieving: false }
+                            })
+
+                            if (taskResultData.status === 'done') {
+                                done(taskResultData.result)
+                            } else if (Date.now() - Date.parse(taskResultData.date_created) < (prevFacetsTasks.initialEta * 2 + 60) * 1000) {
+                                timeout = setTimeout(update, ASYNC_SEARCH_POLL_INTERVAL * 1000)
+                            } else {
+                                handleFacetsError(new Error('Aggregations task ETA timeout'))
+                            }
+                        })
+                        .catch(error => {
+                            if (wait && error.name === 'TypeError') {
+                                if (facetsTasksRequestCounter[fields] < 3) {
+                                    setFacetsTasks({
+                                        ...prevFacetsTasks,
+                                        [fields]: { ...prevFacetsTasks[fields], retrieving: false }
+                                    })
+                                } else {
+                                    setFacetsTasks({
+                                        ...prevFacetsTasks,
+                                        [fields]: undefined
+                                    })
+                                }
+                            } else{
+                                handleFacetsError(error)
+                            }
+                        })
+                }
+            })
+            return prevFacetsTasks
+        })
+
+        return () => {
+            clearTimeout(timeout)
+        }
+    }, [facetsTasks])
 
     return {
         aggregations, setAggregations, aggregationsTasks, aggregationsLoading, aggregationsError,
