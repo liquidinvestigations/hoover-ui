@@ -8,6 +8,7 @@ import AggregationFilter from './AggregationFilter'
 import { useSearch } from '../SearchProvider'
 import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL } from '../../../constants/general'
 import { formatThousands, getClosestInterval } from '../../../utils'
+import useMissingLoader from './useMissingLoader'
 
 export const formatsLabel = {
     year: 'y',
@@ -26,7 +27,7 @@ export const formatsValue = {
 }
 
 function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations,
-                                 loading, loadingProgress, missing, missingLoading, onChange, search }) {
+                                 loading, loadingProgress, missing, onChange, search }) {
     const interval = queryFilter?.interval || DEFAULT_INTERVAL
 
     const onRangeChange = useCallback(range => {
@@ -64,12 +65,7 @@ function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryF
         [interval]
     )
 
-    const { loadMissing } = useSearch()
-    useEffect(() => {
-        if (open && !missing) {
-            loadMissing(field)
-        }
-    }, [open, missing])
+    const { missingLoading, missingLoadingProgress } = useMissingLoader(open, missing, field)
 
     return (
         <Expandable
@@ -111,6 +107,7 @@ function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryF
                 loading={loading}
                 missing={missing}
                 missingLoading={missingLoading}
+                missingLoadingProgress={missingLoadingProgress}
                 onChange={onSelectionChange}
                 bucketLabel={formatLabel}
                 bucketSubLabel={interval === 'week' ? formatWeekStart : null}

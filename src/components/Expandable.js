@@ -1,8 +1,9 @@
 import React, { cloneElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import cn from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
-import { Collapse, Grid, IconButton, LinearProgress, ListItem, Typography } from '@material-ui/core'
+import { Collapse, Grid, IconButton, ListItem, Typography } from '@material-ui/core'
 import { reactIcons } from '../constants/icons'
+import StripedProgress from './search/StripedProgress'
 
 const useStyles = makeStyles(theme => ({
     title: {
@@ -42,34 +43,6 @@ const useStyles = makeStyles(theme => ({
         maxHeight: 'none',
         overflow: 'hidden',
     },
-    progress: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-    },
-    progressRoot: {
-        backgroundImage: `linear-gradient(
-            -45deg,
-            rgba(255, 255, 255, .5) 25%,
-            transparent 25%,
-            transparent 50%,
-            rgba(255, 255, 255, .5) 50%,
-            rgba(255, 255, 255, .5) 75%,
-            transparent 75%,
-            transparent
-        )`,
-        backgroundSize: '10px 10px',
-        animation: '$move 1s linear infinite',
-    },
-    '@keyframes move': {
-        '0%': {
-            backgroundPosition: '0 0',
-        },
-        '100%': {
-            backgroundPosition: '10px 10px',
-        }
-    }
 }))
 
 let startY, startHeight
@@ -123,14 +96,7 @@ function Expandable({ title, loading, loadingProgress, summary, children, greyed
             onClick={toggle}
             className={classes.header}
         >
-            {loading && (
-                <LinearProgress
-                    className={classes.progress}
-                    variant={loadingProgress ? 'determinate' : 'indeterminate'}
-                    value={loadingProgress}
-                    classes={{ root: classes.progressRoot }}
-                />
-            )}
+            {loading && <StripedProgress value={loadingProgress} />}
 
             <Grid container alignItems="center" justify="space-between">
                 <Grid item>

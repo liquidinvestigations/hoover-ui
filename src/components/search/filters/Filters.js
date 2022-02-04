@@ -23,8 +23,8 @@ const formatLang = bucket => getLanguageName(bucket.key)
 
 function Filters({ wideFilters, drawerWidth, drawerPinned, setDrawerPinned, drawerPortalRef, openCategory, setOpenCategory }) {
     const classes = useStyles()
-    const { query, search, aggregations, aggregationsTasks, aggregationsLoading, aggregationsError,
-        missingAggregations, missingLoading } = useSearch()
+    const { query, search, aggregations, aggregationsTasks, aggregationsLoading,
+        aggregationsError, missingAggregations } = useSearch()
 
     const categories = useMemo(() => Object.entries(aggregationCategories)
         .reduce((acc, [category, { label, icon, filters }]) => {
@@ -183,7 +183,6 @@ function Filters({ wideFilters, drawerWidth, drawerPinned, setDrawerPinned, draw
                             loading={aggregationsLoading[field]}
                             loadingProgress={loadingProgress}
                             missing={missingAggregations?.[`${field}-missing`]}
-                            missingLoading={missingLoading}
                             open={expandedFilters[category] === field}
                             onToggle={filters.length > 1 && expandedFilters[category] !== field ? onToggle : null}
                             onChange={handleChange}

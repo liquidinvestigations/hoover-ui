@@ -4,7 +4,7 @@ import { search as searchAPI } from '../../api'
 import { asyncSearch as asyncSearchAPI } from '../../backend/api'
 import { ASYNC_SEARCH_POLL_INTERVAL } from '../../constants/general'
 
-export default function useResultsSearch (query, previewOnLoad, setPreviewOnLoad, setHashState) {
+export default function useResultsSearch(query, previewOnLoad, setPreviewOnLoad, setHashState) {
     const [error, setError] = useState()
     const [results, setResults] = useState()
     const [resultsTask, setResultsTask] = useState(null)

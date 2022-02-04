@@ -5,7 +5,6 @@ import { makeStyles } from '@material-ui/core/styles'
 import {
     Button,
     Checkbox,
-    CircularProgress,
     Divider,
     Grid,
     List,
@@ -18,6 +17,7 @@ import MoreButton from './MoreButton'
 import { formatThousands, getTagIcon, getTypeIcon } from '../../../utils'
 import { aggregationFields } from '../../../constants/aggregationFields'
 import Highlighter from 'react-highlight-words'
+import StripedProgress from '../StripedProgress'
 
 const useStyles = makeStyles(theme => ({
     checkbox: {
@@ -40,13 +40,10 @@ const useStyles = makeStyles(theme => ({
     subLabel: {
         fontSize: '8.5pt',
     },
-    loading: {
-        verticalAlign: 'middle',
-        marginLeft: theme.spacing(1),
-    },
 }))
 
-function AggregationFilter({ field, queryFilter, queryFacets, aggregations, loading, missing, missingLoading, onChange,
+function AggregationFilter({ field, queryFilter, queryFacets, aggregations, loading, missing,
+                               missingLoading, missingLoadingProgress, onChange,
                                triState, bucketLabel, bucketSubLabel, bucketValue, search }) {
 
     const classes = useStyles()
@@ -245,12 +242,8 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
                             <Typography variant="caption" className={classes.empty}>
                                 {formatThousands(missing?.values.doc_count)}
                             </Typography>
-                        ) : missingLoading[field] && (
-                            <CircularProgress
-                                size={18}
-                                thickness={5}
-                                className={classes.loading}
-                            />
+                        ) : missingLoading && (
+                            <StripedProgress value={missingLoadingProgress} />
                         )
                     }
                     disableTypography

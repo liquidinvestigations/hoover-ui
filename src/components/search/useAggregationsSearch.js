@@ -15,7 +15,7 @@ const aggregationGroups = Object.entries(aggregationFields)
         return acc
     }, [])
 
-export default function useAggregationsSearch (query, forcedRefresh, setCollectionsCount) {
+export default function useAggregationsSearch(query, forcedRefresh, setCollectionsCount) {
     const prevForcedRefreshRef = useRef()
     const [aggregations, setAggregations] = useState()
     const [aggregationsError, setAggregationsError] = useState()
@@ -26,7 +26,12 @@ export default function useAggregationsSearch (query, forcedRefresh, setCollecti
             return acc
         }, {})
     )
-
+    const [aggregationsTaskRequestCounter, setAggregationsTaskRequestCounter] = useState(
+        aggregationGroups.reduce((acc, { fieldList }) => {
+            acc[fieldList.join()] = 0
+            return acc
+        }, {})
+    )
     const handleAggregationsError = error => {
         if (error.name !== 'AbortError') {
             setAggregations(null)
@@ -54,6 +59,12 @@ export default function useAggregationsSearch (query, forcedRefresh, setCollecti
             setAggregationsLoading(
                 Object.entries(aggregationFields).reduce((acc, [field]) => {
                     acc[field] = true
+                    return acc
+                }, {})
+            )
+            setAggregationsTaskRequestCounter(
+                aggregationGroups.reduce((acc, { fieldList }) => {
+                    acc[fieldList.join()] = 0
                     return acc
                 }, {})
             )
@@ -93,13 +104,6 @@ export default function useAggregationsSearch (query, forcedRefresh, setCollecti
         size: null,
         order: null,
     }), forcedRefresh])
-
-    const [aggregationsTaskRequestCounter, setAggregationsTaskRequestCounter] = useState(
-        aggregationGroups.reduce((acc, { fieldList }) => {
-            acc[fieldList.join()] = 0
-            return acc
-        }, {})
-    )
 
     useEffect(() => {
         let timeout

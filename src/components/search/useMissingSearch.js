@@ -4,12 +4,18 @@ import { search as searchAPI } from '../../api'
 import { ASYNC_SEARCH_POLL_INTERVAL } from '../../constants/general'
 import { asyncSearch as asyncSearchAPI } from '../../backend/api'
 
-export default function useMissingSearch (query) {
+export default function useMissingSearch(query) {
     const [missingAggregations, setMissingAggregations] = useState(null)
     const [missingTasks, setMissingTasks] = useState({})
     const [missingLoading, setMissingLoading] = useState(
         Object.entries(aggregationFields).reduce((acc, [field]) => {
             acc[field] = !!query.collections?.length
+            return acc
+        }, {})
+    )
+    const [missingTaskRequestCounter, setMissingTaskRequestCounter] = useState(
+        Object.entries(aggregationFields).reduce((acc, [field]) => {
+            acc[field] = 0
             return acc
         }, {})
     )
@@ -26,6 +32,7 @@ export default function useMissingSearch (query) {
 
     useEffect(() => {
         setMissingAggregations(null)
+        setMissingTasks({})
     }, [JSON.stringify({
         ...query,
         facets: null,
@@ -37,6 +44,8 @@ export default function useMissingSearch (query) {
     const loadMissing = useCallback(async field => {
         if (query.collections?.length) {
             setMissingLoading(loading => ({ ...loading, [field]: true }))
+            setMissingTasks(tasks => ({...(tasks || {}), [field]: undefined}))
+            setMissingTaskRequestCounter(counters => ({ ...counters, [field]: 0 }))
 
             try {
                 const taskData = await searchAPI({
@@ -64,18 +73,15 @@ export default function useMissingSearch (query) {
         }
     }, [query])
 
-    const [missingTaskRequestCounter, setMissingTaskRequestCounter] = useState(
-        Object.entries(aggregationFields).reduce((acc, [field]) => {
-            acc[field] = 0
-            return acc
-        }, {})
-    )
-
     useEffect(() => {
         let timeout
 
         setMissingTasks(prevTasksMissing => {
             Object.entries(prevTasksMissing).forEach(([field, taskData]) => {
+                if (!taskData) {
+                    return
+                }
+
                 const done = resultData => {
                     setMissingAggregations(aggregations => ({ ...(aggregations || {}), ...resultData.aggregations }))
                     setMissingLoading(loading => ({
