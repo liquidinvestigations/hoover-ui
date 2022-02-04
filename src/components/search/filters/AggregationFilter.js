@@ -245,7 +245,7 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
                             <Typography variant="caption" className={classes.empty}>
                                 {formatThousands(missing?.values.doc_count)}
                             </Typography>
-                        ) : missingLoading && (
+                        ) : missingLoading[field] && (
                             <CircularProgress
                                 size={18}
                                 thickness={5}
