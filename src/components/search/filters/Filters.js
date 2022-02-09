@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { CircularProgress, Typography } from '@material-ui/core'
+import { Typography } from '@material-ui/core'
 import TermsAggregationFilter from './TermsAggregationFilter'
 import DateHistogramFilter from './DateHistogramFilter'
 import CategoryDrawer from './CategoryDrawer'
@@ -23,16 +23,18 @@ const formatLang = bucket => getLanguageName(bucket.key)
 
 function Filters({ wideFilters, drawerWidth, drawerPinned, setDrawerPinned, drawerPortalRef, openCategory, setOpenCategory }) {
     const classes = useStyles()
-    const { query, search, aggregations, aggregationsError, aggregationsLoading, missingAggregations, missingLoading } = useSearch()
+    const { query, search, aggregations, aggregationsTasks, aggregationsLoading,
+        aggregationsError, missingAggregations } = useSearch()
 
-    const categories = useMemo(() => Object.entries(aggregationCategories).reduce((acc, [category, { label, icon, filters }]) => {
-        acc[category] = {
-            label,
-            icon,
-            filters: filters.map(field => ({ field, ...aggregationFields[field] })),
-        }
-        return acc
-    }, {}), [aggregationCategories, aggregationFields])
+    const categories = useMemo(() => Object.entries(aggregationCategories)
+        .reduce((acc, [category, { label, icon, filters }]) => {
+            acc[category] = {
+                label,
+                icon,
+                filters: filters.map(field => ({ field, ...aggregationFields[field] })),
+            }
+            return acc
+        }, {}), [aggregationCategories, aggregationFields])
 
     const [expandedFilters, setExpandedFilters] = useState(
         Object.entries(categories).reduce((acc, [category, { filters }]) => {
@@ -104,25 +106,27 @@ function Filters({ wideFilters, drawerWidth, drawerPinned, setDrawerPinned, draw
 
         const loading = filters.some(({ field }) => aggregationsLoading[field])
 
+        const loadingTask = Object.entries(aggregationsTasks).find(([fields]) => fields.split(',').includes(filters[0].field))
+        let loadingProgress = 5
+        if (loadingTask) {
+            const taskData = loadingTask[1]
+            if (taskData.status === 'done') {
+                loadingProgress = 100
+            } else if (taskData.eta.total_sec / taskData.initialEta < 1) {
+                loadingProgress = Math.max(5, taskData.eta.total_sec / taskData.initialEta * 100)
+            }
+        }
+
         return (
             <CategoryDrawer
                 key={category}
-                title={
-                    <>
-                        {label}
-                        {loading && (
-                            <CircularProgress
-                                size={16}
-                                thickness={4}
-                                className={classes.loading}
-                            />
-                        )}
-                    </>
-                }
+                title={label}
                 icon={icon}
                 greyed={greyed}
                 highlight={highlight}
                 category={category}
+                loading={loading}
+                loadingProgress={loadingProgress}
                 open={openCategory === category}
                 onOpen={setOpenCategory}
                 wideFilters={wideFilters}
@@ -177,8 +181,8 @@ function Filters({ wideFilters, drawerWidth, drawerPinned, setDrawerPinned, draw
                             queryFacets={query.facets?.[field]}
                             aggregations={aggregations?.[field]}
                             loading={aggregationsLoading[field]}
+                            loadingProgress={loadingProgress}
                             missing={missingAggregations?.[`${field}-missing`]}
-                            missingLoading={missingLoading}
                             open={expandedFilters[category] === field}
                             onToggle={filters.length > 1 && expandedFilters[category] !== field ? onToggle : null}
                             onChange={handleChange}

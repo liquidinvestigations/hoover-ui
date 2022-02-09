@@ -1,6 +1,5 @@
-import React, { memo, useState } from 'react'
-import ReactPlaceholder from 'react-placeholder'
-import { Fab, Grid } from '@material-ui/core'
+import React, { memo } from 'react'
+import { Box, Fab, Grid, LinearProgress, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import Pagination from './Pagination'
 import ResultsList from './ResultsList'
@@ -15,12 +14,49 @@ const useStyles = makeStyles(theme => ({
         marginLeft: theme.spacing(2),
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(2),
+    },
+    progress: {
+        height: 20,
+        borderRadius: 5,
+        marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(3),
+    },
+    progressRoot: {
+        backgroundImage: `linear-gradient(
+            -45deg,
+            rgba(255, 255, 255, .5) 25%,
+            transparent 25%,
+            transparent 50%,
+            rgba(255, 255, 255, .5) 50%,
+            rgba(255, 255, 255, .5) 75%,
+            transparent 75%,
+            transparent
+        )`,
+        backgroundSize: '50px 50px',
+        animation: '$move 2s linear infinite',
+    },
+    '@keyframes move': {
+        '0%': {
+            backgroundPosition: '0 0',
+        },
+        '100%': {
+            backgroundPosition: '50px 50px',
+        }
     }
 }))
 
 function Results({ maxCount }) {
     const classes = useStyles()
-    const { query, results, resultsViewType, setResultsViewType } = useSearch()
+    const { query, results, resultsTask, resultsLoading, resultsViewType, setResultsViewType } = useSearch()
+
+    let loadingProgress = 5
+    if (resultsTask) {
+        if (resultsTask.status === 'done') {
+            loadingProgress = 100
+        } else if (resultsTask.eta.total_sec / resultsTask.initialEta < 1) {
+            loadingProgress = Math.max(5, resultsTask.eta.total_sec / resultsTask.initialEta * 100)
+        }
+    }
 
     return (
         <>
@@ -49,6 +85,27 @@ function Results({ maxCount }) {
                     </Grid>
                 </Grid>
             </Grid>
+
+            {resultsLoading && (
+                <Box display="flex" alignItems="center">
+                    <Box width="100%" mr={1}>
+                        <LinearProgress
+                            variant="determinate"
+                            value={loadingProgress}
+                            className={classes.progress}
+                            classes={{ root: classes.progressRoot }}
+                        />
+                    </Box>
+                    <Box minWidth={35}>
+                        {resultsTask?.eta && (
+                            <Typography variant="body2" color="textSecondary">
+                                ETA:&nbsp;{resultsTask.eta.total_sec}s
+                            </Typography>
+                        )}
+                    </Box>
+                </Box>
+            )}
+
             {!!results && !query.collections?.length ?
                 <i>no collections selected</i> :
                 resultsViewType === 'list' ? <ResultsList /> : <ResultsTable />

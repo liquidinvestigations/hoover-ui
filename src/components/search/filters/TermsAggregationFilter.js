@@ -6,22 +6,20 @@ import AggregationFilter from './AggregationFilter'
 import { useSearch } from '../SearchProvider'
 import { formatThousands } from '../../../utils'
 import { aggregationFields } from '../../../constants/aggregationFields'
+import useMissingLoader from './useMissingLoader'
 
-function TermsAggregationFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations, loading, missing, missingLoading, search, ...rest }) {
+function TermsAggregationFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations,
+                                    loading, loadingProgress, missing, search, ...rest }) {
 
     const highlight = !!(queryFilter?.include?.length || queryFilter?.exclude?.length || queryFilter?.missing)
 
-    const { loadMissing } = useSearch()
-    useEffect(() => {
-        if (open && !missing) {
-            loadMissing(field)
-        }
-    }, [open, missing])
+    const { missingLoading, missingLoadingProgress } = useMissingLoader(open, missing, field)
 
     return (
         <Expandable
             title={title}
             loading={loading}
+            loadingProgress={loadingProgress}
             highlight={highlight}
             greyed={!aggregations?.values.buckets.length}
             open={open}
@@ -54,6 +52,7 @@ function TermsAggregationFilter({ title, field, open, onToggle, queryFilter, que
                 loading={loading}
                 missing={missing}
                 missingLoading={missingLoading}
+                missingLoadingProgress={missingLoadingProgress}
                 search={search}
                 triState
                 {...rest}

@@ -2,8 +2,17 @@ import React, { cloneElement, useEffect, useMemo, useState } from 'react'
 import cn from 'classnames'
 import { Transition } from 'react-transition-group'
 import { makeStyles, duration } from '@material-ui/core/styles'
-import { ClickAwayListener, Grid, ListItem, Portal, Slide, Typography } from '@material-ui/core'
+import {
+    ClickAwayListener,
+    Grid,
+    LinearProgress,
+    ListItem,
+    Portal,
+    Slide,
+    Typography
+} from '@material-ui/core'
 import { reactIcons } from '../../../constants/icons'
+import StripedProgress from '../StripedProgress'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -67,7 +76,7 @@ const hasDisabledClickAway = element => {
 }
 
 export default function CategoryDrawer({ category, title, icon, children, wideFilters, portalRef, width, pinned, toolbar,
-                                           open, onOpen, greyed = false, highlight = true }) {
+                                           loading, loadingProgress, open, onOpen, greyed = false, highlight = true }) {
     const classes = useStyles()
     const [position, setPosition] = useState({ top: 0, left: 0, width: 0 })
 
@@ -95,6 +104,8 @@ export default function CategoryDrawer({ category, title, icon, children, wideFi
             onClick={() => onOpen(category)}
             className={cn({ [classes.openCollapsed]: !wideFilters && open })}
         >
+            {loading && <StripedProgress value={loadingProgress} />}
+
             <Grid
                 container
                 alignItems="baseline"
@@ -124,7 +135,7 @@ export default function CategoryDrawer({ category, title, icon, children, wideFi
                 )}
             </Grid>
         </ListItem>
-    ), [category, title, greyed, highlight, wideFilters, open, onOpen])
+    ), [category, title, greyed, highlight, wideFilters, open, onOpen, loading, loadingProgress])
 
     return (
         <>

@@ -1,16 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import cn from 'classnames'
 import { Transition } from 'react-transition-group'
 import { Grid } from '@material-ui/core'
 import { duration, makeStyles } from '@material-ui/core/styles'
 import CategoriesToolbar from './CategoriesToolbar'
-import CategoryDrawer from './CategoryDrawer'
-import CategoryDrawerToolbar from './CategoryDrawerToolbar'
-import CollectionsFilter from './CollectionsFilter'
 import Filters from './Filters'
-import { useSearch } from '../SearchProvider'
-import Expandable from '../../Expandable'
-import { aggregationCategories, aggregationFields } from '../../../constants/aggregationFields'
 import Collections from './Collections'
 
 const useStyles = makeStyles(theme => ({
@@ -29,8 +23,6 @@ const useStyles = makeStyles(theme => ({
 export default function Categories({ collections, openCategory, setOpenCategory,
                                        drawerRef, drawerWidth, setDrawerWidth, drawerPinned, setDrawerPinned }) {
     const classes = useStyles()
-
-    const [searchBuckets, setSearchBuckets] = useState('')
     const [wideFilters, setWideFilters] = useState(true)
 
     useEffect(() => {
@@ -38,16 +30,6 @@ export default function Categories({ collections, openCategory, setOpenCategory,
             setDrawerWidth(drawerRef.current.getBoundingClientRect().width)
         }
     }, [drawerRef.current])
-
-    const drawerToolbar = (
-        <CategoryDrawerToolbar
-            search={searchBuckets}
-            onSearch={setSearchBuckets}
-            drawerPinned={drawerPinned}
-            setDrawerPinned={setDrawerPinned}
-            setOpenCategory={setOpenCategory}
-        />
-    )
 
     return (
         <Transition in={wideFilters} timeout={{
