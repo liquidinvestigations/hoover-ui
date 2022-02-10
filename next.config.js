@@ -51,6 +51,7 @@ module.exports = withPlugins([ withTM ],
         },
         distDir: 'build',
         poweredByHeader: false,
+        productionBrowserSourceMaps: true,
         // TODO on some sunny day, enable
         reactStrictMode: false,
         compress: false,

@@ -66,6 +66,8 @@ function Email() {
 
     const hash = { preview: { c: collection, i: digest }, tab: hashState.tab }
 
+    const ensureArray = value => Array.isArray(value) ? value : [value]
+
     return (
         <>
             <Table>
@@ -106,20 +108,20 @@ function Email() {
                         )
                     })}
 
-                    {data.content['message-id'] && !printMode && (
-                        <TableRow>
+                    {data.content['message-id'] && !printMode && ensureArray(data.content['message-id']).map((messageId, index) =>
+                        <TableRow key={index}>
                             <TableCell colSpan={2}>
-                                <Link href={createSearchUrl(data.content['message-id'], 'in-reply-to', collection, hash)} shallow>
+                                <Link href={createSearchUrl(messageId, 'in-reply-to', collection, hash)} shallow>
                                     <a>search e-mails replying to this one</a>
                                 </Link>
                             </TableCell>
                         </TableRow>
                     )}
 
-                    {data.content['thread-index'] && !printMode && (
-                        <TableRow>
+                    {data.content['thread-index'] && !printMode && ensureArray(data.content['thread-index']).map((threadIndex, index) =>
+                        <TableRow key={index}>
                             <TableCell colSpan={2}>
-                                <Link href={createSearchUrl(data.content['thread-index'], 'thread-index', collection, hash)} shallow>
+                                <Link href={createSearchUrl(threadIndex, 'thread-index', collection, hash)} shallow>
                                     <a>search e-mails in this thread</a>
                                 </Link>
                             </TableCell>
