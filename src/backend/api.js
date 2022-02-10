@@ -87,7 +87,12 @@ export const batch = query => fetchJson(buildUrl('batch'), {
 
 export const collectionsInsights = () => fetchJson(buildUrl('collections'))
 
-export const asyncSearch = async (uuid, wait) => fetchJson(buildUrl('async_search', uuid, { wait }))
+export const asyncSearch = (uuid, wait) => fetchJson(buildUrl('async_search', uuid, { wait }))
+
+export const logError = error => fetch('/api/save-error', {
+    method: 'POST',
+    body: JSON.stringify(error),
+})
 
 /*
  URL building only

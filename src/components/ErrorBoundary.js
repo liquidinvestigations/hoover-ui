@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Typography from '@material-ui/core/Typography'
+import { logError } from '../backend/api'
 
 export default class ErrorBoundary extends Component {
     state = { error: null }
@@ -11,6 +12,7 @@ export default class ErrorBoundary extends Component {
     componentDidCatch(error, info) {
         console.error(error, info)
         this.setState({ error, info })
+        logError({ error: error.message, info, url: window.location.href })
     }
 
     render() {
