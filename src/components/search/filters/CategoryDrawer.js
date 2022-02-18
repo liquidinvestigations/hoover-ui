@@ -4,15 +4,15 @@ import { Transition } from 'react-transition-group'
 import { makeStyles, duration } from '@material-ui/core/styles'
 import {
     ClickAwayListener,
+    Fade,
     Grid,
-    LinearProgress,
     ListItem,
     Portal,
     Slide,
     Typography
 } from '@material-ui/core'
 import { reactIcons } from '../../../constants/icons'
-import StripedProgress from '../StripedProgress'
+import ThinProgress from '../ThinProgress'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -76,7 +76,7 @@ const hasDisabledClickAway = element => {
 }
 
 export default function CategoryDrawer({ category, title, icon, children, wideFilters, portalRef, width, pinned, toolbar,
-                                           loading, loadingProgress, open, onOpen, greyed = false, highlight = true }) {
+                                           loading, loadingETA, open, onOpen, greyed = false, highlight = true }) {
     const classes = useStyles()
     const [position, setPosition] = useState({ top: 0, left: 0, width: 0 })
 
@@ -104,7 +104,11 @@ export default function CategoryDrawer({ category, title, icon, children, wideFi
             onClick={() => onOpen(category)}
             className={cn({ [classes.openCollapsed]: !wideFilters && open })}
         >
-            {loading && <StripedProgress value={loadingProgress} />}
+            <Fade in={loading} unmountOnExit>
+                <div>
+                    <ThinProgress eta={loadingETA} loading={loading} />
+                </div>
+            </Fade>
 
             <Grid
                 container
@@ -135,7 +139,7 @@ export default function CategoryDrawer({ category, title, icon, children, wideFi
                 )}
             </Grid>
         </ListItem>
-    ), [category, title, greyed, highlight, wideFilters, open, onOpen, loading, loadingProgress])
+    ), [category, title, greyed, highlight, wideFilters, open, onOpen, loading, loadingETA])
 
     return (
         <>

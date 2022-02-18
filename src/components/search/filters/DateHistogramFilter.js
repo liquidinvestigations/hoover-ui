@@ -27,7 +27,7 @@ export const formatsValue = {
 }
 
 function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations,
-                                 loading, loadingProgress, missing, onChange, search }) {
+                                 loading, loadingETA, missing, onChange, search }) {
     const interval = queryFilter?.interval || DEFAULT_INTERVAL
 
     const onRangeChange = useCallback(range => {
@@ -65,13 +65,13 @@ function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryF
         [interval]
     )
 
-    const { missingLoading, missingLoadingProgress } = useMissingLoader(open, missing, field)
+    const { missingLoading, missingLoadingETA } = useMissingLoader(open, missing, field)
 
     return (
         <Expandable
             title={title}
             loading={loading}
-            loadingProgress={loadingProgress}
+            loadingETA={loadingETA}
             highlight={!!(queryFilter?.from || queryFilter?.to || queryFilter?.intervals)}
             greyed={!aggregations?.values.buckets.length}
             open={open}
@@ -107,7 +107,7 @@ function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryF
                 loading={loading}
                 missing={missing}
                 missingLoading={missingLoading}
-                missingLoadingProgress={missingLoadingProgress}
+                missingLoadingETA={missingLoadingETA}
                 onChange={onSelectionChange}
                 bucketLabel={formatLabel}
                 bucketSubLabel={interval === 'week' ? formatWeekStart : null}

@@ -5,7 +5,9 @@ import { makeStyles } from '@material-ui/core/styles'
 import {
     Button,
     Checkbox,
+    CircularProgress,
     Divider,
+    Fade,
     Grid,
     List,
     ListItem,
@@ -17,7 +19,7 @@ import MoreButton from './MoreButton'
 import { formatThousands, getTagIcon, getTypeIcon } from '../../../utils'
 import { aggregationFields } from '../../../constants/aggregationFields'
 import Highlighter from 'react-highlight-words'
-import StripedProgress from '../StripedProgress'
+import ThinProgress from '../ThinProgress'
 
 const useStyles = makeStyles(theme => ({
     checkbox: {
@@ -40,10 +42,14 @@ const useStyles = makeStyles(theme => ({
     subLabel: {
         fontSize: '8.5pt',
     },
+    loading: {
+        verticalAlign: 'middle',
+        marginLeft: theme.spacing(1),
+    },
 }))
 
 function AggregationFilter({ field, queryFilter, queryFacets, aggregations, loading, missing,
-                               missingLoading, missingLoadingProgress, onChange,
+                               missingLoading, missingLoadingETA, onChange,
                                triState, bucketLabel, bucketSubLabel, bucketValue, search }) {
 
     const classes = useStyles()
@@ -242,8 +248,17 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
                             <Typography variant="caption" className={classes.empty}>
                                 {formatThousands(missing?.values.doc_count)}
                             </Typography>
-                        ) : missingLoading && (
-                            <StripedProgress value={missingLoadingProgress} />
+                        ) : (
+                            <Fade in={missingLoading} unmountOnExit>
+                                <div>
+                                    <ThinProgress eta={missingLoadingETA} loading={missingLoading} />
+                                    <CircularProgress
+                                        size={18}
+                                        thickness={5}
+                                        className={classes.loading}
+                                    />
+                                </div>
+                            </Fade>
                         )
                     }
                     disableTypography

@@ -10,14 +10,14 @@ export default function useMissingLoader(open, missing, field) {
     }, [open, missing])
 
     const missingTask = missingTasks[field]
-    let missingLoadingProgress = 5
+    let missingLoadingETA = Number.MAX_SAFE_INTEGER
     if (missingTask) {
         if (missingTask.status === 'done') {
-            missingLoadingProgress = 100
-        } else if (missingTask.eta.total_sec / missingTask.initialEta < 1) {
-            missingLoadingProgress = Math.max(5, missingTask.eta.total_sec / missingTask.initialEta * 100)
+            missingLoadingETA = 0
+        } else {
+            missingLoadingETA = Math.min(missingTask.initialEta, missingTask.eta.total_sec)
         }
     }
 
-    return { missingLoading: missingLoading[field], missingLoadingProgress }
+    return { missingLoading: missingLoading[field], missingLoadingETA }
 }

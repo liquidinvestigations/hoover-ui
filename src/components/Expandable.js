@@ -1,9 +1,9 @@
 import React, { cloneElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import cn from 'classnames'
 import { makeStyles } from '@material-ui/core/styles'
-import { Collapse, Grid, IconButton, ListItem, Typography } from '@material-ui/core'
+import { CircularProgress, Collapse, Fade, Grid, IconButton, ListItem, Typography } from '@material-ui/core'
 import { reactIcons } from '../constants/icons'
-import StripedProgress from './search/StripedProgress'
+import ThinProgress from './search/ThinProgress'
 
 const useStyles = makeStyles(theme => ({
     title: {
@@ -31,6 +31,10 @@ const useStyles = makeStyles(theme => ({
             backgroundColor: theme.palette.grey[200],
         }
     },
+    loading: {
+        verticalAlign: 'middle',
+        marginLeft: theme.spacing(1),
+    },
     content: {
         maxHeight: 435,
         overflow: 'auto',
@@ -47,7 +51,7 @@ const useStyles = makeStyles(theme => ({
 
 let startY, startHeight
 
-function Expandable({ title, loading, loadingProgress, summary, children, greyed, defaultOpen, open, onToggle,
+function Expandable({ title, loading, loadingETA, summary, children, greyed, defaultOpen, open, onToggle,
                         resizable = false, fullHeight = true, highlight = true }) {
 
     const classes = useStyles()
@@ -96,7 +100,11 @@ function Expandable({ title, loading, loadingProgress, summary, children, greyed
             onClick={toggle}
             className={classes.header}
         >
-            {loading && <StripedProgress value={loadingProgress} />}
+            <Fade in={loading} unmountOnExit>
+                <div>
+                    <ThinProgress eta={loadingETA} loading={loading} />
+                </div>
+            </Fade>
 
             <Grid container alignItems="center" justify="space-between">
                 <Grid item>
@@ -107,6 +115,13 @@ function Expandable({ title, loading, loadingProgress, summary, children, greyed
                         color={greyed ? 'textSecondary' : highlight ? 'secondary' : 'initial'}
                     >
                         {title}
+                        {loading && (
+                            <CircularProgress
+                                size={16}
+                                thickness={4}
+                                className={classes.loading}
+                            />
+                        )}
                     </Typography>
                 </Grid>
 

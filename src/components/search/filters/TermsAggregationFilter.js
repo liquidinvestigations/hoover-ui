@@ -9,17 +9,17 @@ import { aggregationFields } from '../../../constants/aggregationFields'
 import useMissingLoader from './useMissingLoader'
 
 function TermsAggregationFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations,
-                                    loading, loadingProgress, missing, search, ...rest }) {
+                                    loading, loadingETA, missing, search, ...rest }) {
 
     const highlight = !!(queryFilter?.include?.length || queryFilter?.exclude?.length || queryFilter?.missing)
 
-    const { missingLoading, missingLoadingProgress } = useMissingLoader(open, missing, field)
+    const { missingLoading, missingLoadingETA } = useMissingLoader(open, missing, field)
 
     return (
         <Expandable
             title={title}
             loading={loading}
-            loadingProgress={loadingProgress}
+            loadingETA={loadingETA}
             highlight={highlight}
             greyed={!aggregations?.values.buckets.length}
             open={open}
@@ -52,7 +52,7 @@ function TermsAggregationFilter({ title, field, open, onToggle, queryFilter, que
                 loading={loading}
                 missing={missing}
                 missingLoading={missingLoading}
-                missingLoadingProgress={missingLoadingProgress}
+                missingLoadingETA={missingLoadingETA}
                 search={search}
                 triState
                 {...rest}

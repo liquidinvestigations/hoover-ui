@@ -1,13 +1,13 @@
 import React, { memo, useCallback, useMemo, useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Typography } from '@material-ui/core'
-import TermsAggregationFilter from './TermsAggregationFilter'
-import DateHistogramFilter from './DateHistogramFilter'
-import CategoryDrawer from './CategoryDrawer'
-import { useSearch } from '../SearchProvider'
-import { getLanguageName } from '../../../utils'
+import { CircularProgress, Typography } from '@material-ui/core'
 import { aggregationCategories, aggregationFields } from '../../../constants/aggregationFields'
+import { getLanguageName } from '../../../utils'
+import { useSearch } from '../SearchProvider'
+import CategoryDrawer from './CategoryDrawer'
 import CategoryDrawerToolbar from './CategoryDrawerToolbar'
+import DateHistogramFilter from './DateHistogramFilter'
+import TermsAggregationFilter from './TermsAggregationFilter'
 
 const useStyles = makeStyles(theme => ({
     error: {
@@ -107,26 +107,37 @@ function Filters({ wideFilters, drawerWidth, drawerPinned, setDrawerPinned, draw
         const loading = filters.some(({ field }) => aggregationsLoading[field])
 
         const loadingTask = Object.entries(aggregationsTasks).find(([fields]) => fields.split(',').includes(filters[0].field))
-        let loadingProgress = 5
+        let loadingETA = Number.MAX_SAFE_INTEGER
         if (loadingTask) {
             const taskData = loadingTask[1]
             if (taskData.status === 'done') {
-                loadingProgress = 100
-            } else if (taskData.eta.total_sec / taskData.initialEta < 1) {
-                loadingProgress = Math.max(5, taskData.eta.total_sec / taskData.initialEta * 100)
+                loadingETA = 0
+            } else {
+                loadingETA = Math.min(taskData.initialEta, taskData.eta.total_sec)
             }
         }
 
         return (
             <CategoryDrawer
                 key={category}
-                title={label}
+                title={
+                    <>
+                        {label}
+                        {loading && (
+                            <CircularProgress
+                                size={16}
+                                thickness={4}
+                                className={classes.loading}
+                            />
+                        )}
+                    </>
+                }
                 icon={icon}
                 greyed={greyed}
                 highlight={highlight}
                 category={category}
                 loading={loading}
-                loadingProgress={loadingProgress}
+                loadingETA={loadingETA}
                 open={openCategory === category}
                 onOpen={setOpenCategory}
                 wideFilters={wideFilters}
@@ -181,7 +192,7 @@ function Filters({ wideFilters, drawerWidth, drawerPinned, setDrawerPinned, draw
                             queryFacets={query.facets?.[field]}
                             aggregations={aggregations?.[field]}
                             loading={aggregationsLoading[field]}
-                            loadingProgress={loadingProgress}
+                            loadingETA={loadingETA}
                             missing={missingAggregations?.[`${field}-missing`]}
                             open={expandedFilters[category] === field}
                             onToggle={filters.length > 1 && expandedFilters[category] !== field ? onToggle : null}

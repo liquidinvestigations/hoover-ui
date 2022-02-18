@@ -1,13 +1,13 @@
-import { makeStyles } from '@material-ui/core/styles'
-import { LinearProgress } from '@material-ui/core'
 import React from 'react'
+import { makeStyles } from '@material-ui/core/styles'
+import IntervalProgress from '../IntervalProgress'
 
 const useStyles = makeStyles(theme => ({
     progress: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
+        height: 20,
+        borderRadius: 5,
+        marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(3),
     },
     progressRoot: {
         backgroundImage: `linear-gradient(
@@ -20,28 +20,21 @@ const useStyles = makeStyles(theme => ({
             transparent 75%,
             transparent
         )`,
-        backgroundSize: '10px 10px',
-        animation: '$move 1s linear infinite',
+        backgroundSize: '50px 50px',
+        animation: '$move 2s linear infinite',
     },
     '@keyframes move': {
         '0%': {
             backgroundPosition: '0 0',
         },
         '100%': {
-            backgroundPosition: '10px 10px',
+            backgroundPosition: '50px 50px',
         }
     }
 }))
 
-export default function StripedProgress({ value }) {
+export default function ResultsProgress({ eta }) {
     const classes = useStyles()
 
-    return (
-        <LinearProgress
-            className={classes.progress}
-            variant="determinate"
-            value={value}
-            classes={{ root: classes.progressRoot }}
-        />
-    )
+    return <IntervalProgress classes={classes} eta={eta} />
 }

@@ -1,11 +1,12 @@
 import React, { memo } from 'react'
-import { Box, Fab, Grid, LinearProgress, Typography } from '@material-ui/core'
+import { Box, Fab, Fade, Grid, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import Pagination from './Pagination'
 import ResultsList from './ResultsList'
 import ResultsTable from './ResultsTable'
 import { useSearch } from './SearchProvider'
 import { reactIcons } from '../../constants/icons'
+import ResultsProgress from './ResultsProgress'
 
 const useStyles = makeStyles(theme => ({
     viewTypeIcon: {
@@ -15,46 +16,19 @@ const useStyles = makeStyles(theme => ({
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(2),
     },
-    progress: {
-        height: 20,
-        borderRadius: 5,
-        marginTop: theme.spacing(3),
-        marginBottom: theme.spacing(3),
-    },
-    progressRoot: {
-        backgroundImage: `linear-gradient(
-            -45deg,
-            rgba(255, 255, 255, .5) 25%,
-            transparent 25%,
-            transparent 50%,
-            rgba(255, 255, 255, .5) 50%,
-            rgba(255, 255, 255, .5) 75%,
-            transparent 75%,
-            transparent
-        )`,
-        backgroundSize: '50px 50px',
-        animation: '$move 2s linear infinite',
-    },
-    '@keyframes move': {
-        '0%': {
-            backgroundPosition: '0 0',
-        },
-        '100%': {
-            backgroundPosition: '50px 50px',
-        }
-    }
+
 }))
 
 function Results({ maxCount }) {
     const classes = useStyles()
     const { query, results, resultsTask, resultsLoading, resultsViewType, setResultsViewType } = useSearch()
 
-    let loadingProgress = 5
+    let loadingETA = Number.MAX_SAFE_INTEGER
     if (resultsTask) {
         if (resultsTask.status === 'done') {
-            loadingProgress = 100
+            loadingETA = 0
         } else if (resultsTask.eta.total_sec / resultsTask.initialEta < 1) {
-            loadingProgress = Math.max(5, resultsTask.eta.total_sec / resultsTask.initialEta * 100)
+            loadingETA = Math.min(resultsTask.initialEta, resultsTask.eta.total_sec)
         }
     }
 
@@ -86,15 +60,10 @@ function Results({ maxCount }) {
                 </Grid>
             </Grid>
 
-            {resultsLoading && (
+            <Fade in={resultsLoading} unmountOnExit>
                 <Box display="flex" alignItems="center">
                     <Box width="100%" mr={1}>
-                        <LinearProgress
-                            variant="determinate"
-                            value={loadingProgress}
-                            className={classes.progress}
-                            classes={{ root: classes.progressRoot }}
-                        />
+                        <ResultsProgress eta={loadingETA} />
                     </Box>
                     <Box minWidth={35}>
                         {resultsTask?.eta && (
@@ -104,7 +73,7 @@ function Results({ maxCount }) {
                         )}
                     </Box>
                 </Box>
-            )}
+            </Fade>
 
             {!!results && !query.collections?.length ?
                 <i>no collections selected</i> :
