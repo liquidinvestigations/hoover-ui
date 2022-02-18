@@ -136,6 +136,24 @@ Object {
         "bool": Object {},
       },
     },
+    "entity.keyword": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "entity.keyword",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "entity.keyword",
+            "size": 44,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
     "filetype": Object {
       "aggs": Object {
         "count": Object {

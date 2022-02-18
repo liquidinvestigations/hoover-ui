@@ -17,7 +17,15 @@ export const aggregationCategories = {
     language: {
         label: 'Language',
         icon: 'categoryLanguage',
-        filters: ['lang'],
+        filters: [
+            'lang',
+            'entity.keyword',
+            'entity-type.location.keyword',
+            'entity-type.organization.keyword',
+            'entity-type.event.keyword',
+            'entity-type.person.keyword',
+            'entity-type.money.keyword',
+        ],
     },
     email: {
         label: 'Email',
@@ -43,7 +51,7 @@ export const aggregationCategories = {
         label: 'Image AI',
         icon: 'imageAi',
         filters: ['detected-objects.object.keyword', 'image-classes.class.keyword']
-    }
+    },
 }
 
 export const aggregationFields = {
@@ -213,5 +221,35 @@ export const aggregationFields = {
         filterLabel: 'Image classes',
         chipLabel: 'Image class',
         type: 'term-or',
-    }
+    },
+    'entity.keyword': {
+        filterLabel: 'Entity',
+        chipLabel: 'Entity',
+        type: 'term-or',
+    },
+    'entity-type.location.keyword': {
+        filterLabel: 'Location entity',
+        chipLabel: 'Location entity',
+        type: 'term-or',
+    },
+    'entity-type.organization.keyword': {
+        filterLabel: 'Organization entity',
+        chipLabel: 'Organization entity',
+        type: 'term-or',
+    },
+    'entity-type.event.keyword': {
+        filterLabel: 'Event entity',
+        chipLabel: 'Event entity',
+        type: 'term-or',
+    },
+    'entity-type.person.keyword': {
+        filterLabel: 'Person entity',
+        chipLabel: 'Person entity',
+        type: 'term-or',
+    },
+    'entity-type.money.keyword': {
+        filterLabel: 'Money entity',
+        chipLabel: 'Money entity',
+        type: 'term-or',
+    },
 }
