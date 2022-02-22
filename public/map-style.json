@@ -16,7 +16,7 @@
   "sources": {
     "openmaptiles": {
       "type": "vector",
-      "url": "/api/map-data"
+      "url": "/api/rewrite-map-data"
     }
   },
   "glyphs": "/api/map/fonts/{fontstack}/{range}.pbf",
