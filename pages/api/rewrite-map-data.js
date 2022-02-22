@@ -1,10 +1,11 @@
 const fs = require('fs')
-const { HOOVER_URL, REWRITE_API } = process.env
+const { REWRITE_API } = process.env
 
 const handler = async (req, res) => {
     try {
         const data = fs.readFileSync('./src/constants/map-data-v3.json')
-        res.json(data.toString().replace('local:', REWRITE_API ? 'http://localhost:8000' : HOOVER_URL))
+        const parts = req.headers.referer.split('://')
+        res.json(data.toString().replace('local:', parts[0] + '://' + parts[1].split('/')[0] ))
         res.end()
 
     } catch (e) {
