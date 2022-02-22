@@ -28,6 +28,10 @@ function Menu() {
             url: '/insights',
             next: true,
         },{
+            name: 'Maps',
+            url: '/maps',
+            next: true,
+        },{
             name: 'About',
             url: 'https://github.com/liquidinvestigations/hoover-search',
         },

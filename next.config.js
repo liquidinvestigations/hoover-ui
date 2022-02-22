@@ -65,6 +65,12 @@ module.exports = withPlugins([ withTM ],
             permanent: true,
         }],
         rewrites: () => REWRITE_API ? [{
+            source: '/api/geo',
+            destination: API_URL + '/api/geo',
+        },{
+            source: '/api/map/:path*',
+            destination: API_URL + '/api/map/:path*',
+        },{
             source: '/api/v1/whoami',
             destination: API_URL + '/api/v1/whoami',
         },{

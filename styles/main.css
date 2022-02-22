@@ -1,5 +1,6 @@
 @import "~react-placeholder/lib/reactPlaceholder.css";
 @import "~pdfjs-dist/web/pdf_viewer.css";
+@import "~maplibre-gl/dist/maplibre-gl.css";
 @import "resizer.css";
 
 main {
