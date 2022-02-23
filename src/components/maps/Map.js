@@ -14,7 +14,13 @@ export default function Map() {
     const { results } = useGeoSearch()
 
     useEffect(() => {
-        mapLibreGL.setRTLTextPlugin('/api/map/mapbox-gl-rtl-text.js')
+        if (mapLibreGL.getRTLTextPluginStatus() === 'unavailable') {
+            mapLibreGL.setRTLTextPlugin(
+                '/api/map/mapbox-gl-rtl-text.js',
+                () => {},
+                true
+            )
+        }
         const map = new mapLibreGL.Map({
             container: 'map',
             style: '/map-style.json',
