@@ -40,7 +40,7 @@
     "lodash": "^4.17.21",
     "lucene": "^2.1.1",
     "luxon": "^1.26.0",
-    "maplibre-gl": ">=2.0.0",
+    "maplibre-gl": "2.1.7",
     "material-ui-nested-menu-item": "^1.0.2",
     "next": "10.2.2",
     "next-compose-plugins": "^2.2.1",
