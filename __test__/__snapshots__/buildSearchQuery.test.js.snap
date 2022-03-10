@@ -136,6 +136,96 @@ Object {
         "bool": Object {},
       },
     },
+    "entity-type.event.keyword": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "entity-type.event.keyword",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "entity-type.event.keyword",
+            "size": 44,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "entity-type.location.keyword": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "entity-type.location.keyword",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "entity-type.location.keyword",
+            "size": 44,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "entity-type.money.keyword": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "entity-type.money.keyword",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "entity-type.money.keyword",
+            "size": 44,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "entity-type.organization.keyword": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "entity-type.organization.keyword",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "entity-type.organization.keyword",
+            "size": 44,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "entity-type.person.keyword": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "entity-type.person.keyword",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "entity-type.person.keyword",
+            "size": 44,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
     "entity.keyword": Object {
       "aggs": Object {
         "count": Object {
