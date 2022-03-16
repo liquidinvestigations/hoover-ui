@@ -477,6 +477,42 @@ Object {
         "bool": Object {},
       },
     },
+    "translated-from": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "translated-from",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "translated-from",
+            "size": 44,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "translated-to": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "translated-to",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "translated-to",
+            "size": 44,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
     "word-count": Object {
       "aggs": Object {
         "count": Object {

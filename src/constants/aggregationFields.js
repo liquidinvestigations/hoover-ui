@@ -19,6 +19,8 @@ export const aggregationCategories = {
         icon: 'categoryLanguage',
         filters: [
             'lang',
+            'translated-from',
+            'translated-to',
             'entity.keyword',
             'entity-type.location.keyword',
             'entity-type.organization.keyword',
@@ -250,6 +252,16 @@ export const aggregationFields = {
     'entity-type.money.keyword': {
         filterLabel: 'Money entity',
         chipLabel: 'Money entity',
+        type: 'term-or',
+    },
+    'translated-from': {
+        filterLabel: 'Translated From',
+        chipLabel: 'Translated From',
+        type: 'term-or',
+    },
+    'translated-to': {
+        filterLabel: 'Translated To',
+        chipLabel: 'Translated To',
         type: 'term-or',
     },
 }
