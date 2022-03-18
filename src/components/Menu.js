@@ -32,6 +32,9 @@ function Menu() {
             url: '/maps',
             next: true,
         },{
+            name: 'Translate',
+            url: '/libre_translate',
+        },{
             name: 'About',
             url: 'https://github.com/liquidinvestigations/hoover-search',
         },
