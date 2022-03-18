@@ -137,7 +137,7 @@ export default function Insights({ collections }) {
                         <Grid item xs={12}>
                             <Paper>
                                 <Typography variant="h5" className={classes.sectionTitle}>Tasks</Typography>
-                                <TaskTable tasks={currentCollection.stats.task_matrix} />
+                                <TaskTable header={currentCollection.stats.task_matrix_header} tasks={currentCollection.stats.task_matrix} />
                             </Paper>
                         </Grid>
                     </Grid>
