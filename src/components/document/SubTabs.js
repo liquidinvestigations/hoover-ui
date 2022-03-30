@@ -49,7 +49,7 @@ function SubTabs() {
     tabs.push(
         ...ocrData.map(({tag, text}) => ({
             tag,
-            name: `OCR ${tag}`,
+            name: (tag.startsWith('translated_') ? '' : 'OCR ') + tag,
             icon: reactIcons.ocr,
             content: <Text content={text} />,
         }))
@@ -82,7 +82,7 @@ function SubTabs() {
                 )}
 
                 {tabs.map(({tag}, index) => {
-                    if (subTab === index && hasPreview){
+                    if (subTab === index && hasPreview && !tag.startsWith('translated_')){
                         if (index !== 0 && data.content['content-type'] === 'application/pdf') {
                             return <PDFViewer key={index} url={createOcrUrl(digestUrl, tag)} />
                         } else {
