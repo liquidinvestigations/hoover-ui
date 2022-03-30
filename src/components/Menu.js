@@ -15,26 +15,32 @@ function Menu() {
         return null
     }
 
-    const links = () => ([{
+    const links = () => ([
+        {
             name: 'Search',
             url: '/',
             next: true,
-        },{
+        },
+        {
             name: 'Batch search',
             url: '/batch-search',
             next: true,
-        },{
+        },
+        {
             name: 'Insights',
             url: '/insights',
             next: true,
-        },{
+        },
+        process.env.HOOVER_MAPS_ENABLED ? {
             name: 'Maps',
             url: '/maps',
             next: true,
-        },{
+        } : false,
+        process.env.HOOVER_TRANSLATION_ENABLED ? {
             name: 'Translate',
             url: '/libre_translate',
-        },{
+        } : false,
+        {
             name: 'About',
             url: 'https://github.com/liquidinvestigations/hoover-search',
         },
@@ -46,20 +52,23 @@ function Menu() {
         {
             name: 'Documentation',
             url: 'https://github.com/liquidinvestigations/docs/wiki/User-Guide:-Hoover',
-        },{
+        },
+        {
             name: 'Login',
             url: whoAmI.urls.login,
             type: 'not-logged-in',
-        },{
+        },
+        {
             name: 'Admin',
             url: whoAmI.urls.admin,
             type: 'admin',
-        },{
+        },
+        {
             name: `Logout (${whoAmI.username})`,
             url: whoAmI.urls.logout,
             type: 'logged-in',
-        }]
-            .map(link => ({ ...link, active: router.asPath === link.url }))
+        }
+        ].filter(Boolean).map(link => ({ ...link, active: router.asPath === link.url }))
     )
 
     const shouldShow = link => {

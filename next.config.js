@@ -9,6 +9,8 @@ const {
     AGGREGATIONS_SPLIT = 1,
     MAX_SEARCH_RETRIES = 1,
     SEARCH_RETRY_DELAY = 3000,
+    HOOVER_MAPS_ENABLED,
+    HOOVER_TRANSLATION_ENABLED,
 } = process.env
 
 module.exports = withPlugins([ withTM ],
@@ -17,6 +19,8 @@ module.exports = withPlugins([ withTM ],
             AGGREGATIONS_SPLIT,
             MAX_SEARCH_RETRIES,
             SEARCH_RETRY_DELAY,
+            HOOVER_MAPS_ENABLED,
+            HOOVER_TRANSLATION_ENABLED,
         },
         cssModules: false,
         webpack(config, options) {
