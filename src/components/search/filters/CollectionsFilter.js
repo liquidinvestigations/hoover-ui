@@ -14,6 +14,10 @@ const useStyles = makeStyles(theme => ({
     progress: {
         fontSize: '7.5pt',
     },
+    docCount: {
+        flex: '1 0 auto',
+        paddingLeft: 6
+    }
 }))
 
 function CollectionsFilter({ collections, selected, changeSelection, counts, search }) {
@@ -83,6 +87,7 @@ function CollectionsFilter({ collections, selected, changeSelection, counts, sea
                                         }
                                     </Typography>
                                 }
+                                className={classes.docCount}
                                 disableTypography
                                 align="right"
                             />

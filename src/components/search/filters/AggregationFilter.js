@@ -46,6 +46,10 @@ const useStyles = makeStyles(theme => ({
         verticalAlign: 'middle',
         marginLeft: theme.spacing(1),
     },
+    docCount: {
+        flex: '1 0 auto',
+        paddingLeft: 6
+    }
 }))
 
 function AggregationFilter({ field, queryFilter, queryFacets, aggregations, loading, missing,
@@ -201,6 +205,7 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
                             {formatThousands(bucket.doc_count)}
                         </Typography>
                     }
+                    className={classes.docCount}
                     disableTypography
                     align="right"
                 />

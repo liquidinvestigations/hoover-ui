@@ -357,10 +357,11 @@ const buildSearchQuery = (
 
     const query = buildQuery(q, filters, searchFields)
     const sort = buildSortQuery(order)
+    const significantFields = [...fieldList, ...Object.keys(filters)]
 
-    const dateFields = getAggregationFields('date', fieldList)
-    const termFields = getAggregationFields('term', fieldList)
-    const rangeFields = getAggregationFields('range', fieldList)
+    const dateFields = getAggregationFields('date', significantFields)
+    const termFields = getAggregationFields('term', significantFields)
+    const rangeFields = getAggregationFields('range', significantFields)
 
     const fields = missing ? [
         ...dateFields.map(field => buildMissingField(field, uuid)),
