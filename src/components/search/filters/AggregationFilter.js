@@ -193,7 +193,10 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
                 <ListItemText
                     primary={displayLabel}
                     secondary={subLabel}
-                    className={cn(classes.label, {[classes.labelWithSub]: subLabel, [classes.italic]: italic})}
+                    className={cn({[classes.labelWithSub]: subLabel, [classes.italic]: italic})}
+                    primaryTypographyProps={{
+                        className: classes.label
+                    }}
                     secondaryTypographyProps={{
                         className: classes.subLabel
                     }}
