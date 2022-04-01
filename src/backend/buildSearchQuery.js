@@ -357,7 +357,7 @@ const buildSearchQuery = (
 
     const query = buildQuery(q, filters, searchFields)
     const sort = buildSortQuery(order)
-    const significantFields = [...fieldList, ...Object.keys(filters)]
+    const significantFields = fieldList === '*' ? '*' : [...fieldList, ...Object.keys(filters)]
 
     const dateFields = getAggregationFields('date', significantFields)
     const termFields = getAggregationFields('term', significantFields)
