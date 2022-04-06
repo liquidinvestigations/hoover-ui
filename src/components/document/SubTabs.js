@@ -82,7 +82,7 @@ function SubTabs() {
                 )}
 
                 {tabs.map(({tag}, index) => {
-                    if (subTab === index && hasPreview && !tag.startsWith('translated_')){
+                    if (subTab === index && hasPreview && !tag?.startsWith('translated_')){
                         if (index !== 0 && data.content['content-type'] === 'application/pdf') {
                             return <PDFViewer key={index} url={createOcrUrl(digestUrl, tag)} />
                         } else {
