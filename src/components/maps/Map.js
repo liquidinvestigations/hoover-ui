@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react'
 import mapLibreGL from 'maplibre-gl'
-import { useGeoSearch } from './GeoSearchProvider'
 import { makeStyles } from '@material-ui/core/styles'
+import { useGeoSearch } from './GeoSearchProvider'
+import { useCoordinates } from './CoordinatesProvider'
 
 const useStyles = makeStyles(theme => ({
     map: {
@@ -12,6 +13,7 @@ const useStyles = makeStyles(theme => ({
 export default function Map() {
     const classes = useStyles()
     const { results } = useGeoSearch()
+    const { setCoordinates } = useCoordinates()
 
     useEffect(() => {
         if (mapLibreGL.getRTLTextPluginStatus() === 'unavailable') {
@@ -26,7 +28,24 @@ export default function Map() {
             style: '/map-style.json',
             hash: true
         })
+
         map.addControl(new mapLibreGL.NavigationControl())
+
+        map.on('moveend', event => {
+            const center = event.target.getCenter()
+            setCoordinates(coords => ({
+                ...coords,
+                latitude: center.lat,
+                longitude: center.lng,
+            }))
+        })
+
+        map.on('zoomend', event => {
+            setCoordinates(coords => ({
+                ...coords,
+                zoom: event.target.getZoom(),
+            }))
+        })
     }, [])
 
     return (
