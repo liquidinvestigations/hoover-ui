@@ -112,7 +112,7 @@ export default function useMissingSearch(query) {
 
                             if (taskResultData.status === 'done') {
                                 done(taskResultData.result)
-                            } else if (Date.now() - Date.parse(taskResultData.date_created) < (prevTasksMissing.initialEta * process.env.ASYNC_SEARCH_ERROR_MULTIPLIER + process.env.ASYNC_SEARCH_ERROR_SUMMATION) * 1000) {
+                            } else if (Date.now() - Date.parse(taskResultData.date_created) < (prevTasksMissing[field].initialEta * process.env.ASYNC_SEARCH_ERROR_MULTIPLIER + process.env.ASYNC_SEARCH_ERROR_SUMMATION) * 1000) {
                                 timeout = setTimeout(update, process.env.ASYNC_SEARCH_POLL_INTERVAL * 1000)
                             } else {
                                 handleMissingError(field)

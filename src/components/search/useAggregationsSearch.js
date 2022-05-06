@@ -127,7 +127,7 @@ export default function useAggregationsSearch(query, forcedRefresh, setCollectio
 
                             if (taskResultData.status === 'done') {
                                 done(taskResultData.result)
-                            } else if (Date.now() - Date.parse(taskResultData.date_created) < (prevAggregationsTasks.initialEta * 2 + 60) * 1000) {
+                            } else if (Date.now() - Date.parse(taskResultData.date_created) < (prevAggregationsTasks[fields].initialEta * process.env.ASYNC_SEARCH_ERROR_MULTIPLIER + process.env.ASYNC_SEARCH_ERROR_SUMMATION) * 1000) {
                                 timeout = setTimeout(update, process.env.ASYNC_SEARCH_POLL_INTERVAL * 1000)
                             } else {
                                 handleAggregationsError(new Error('Aggregations task ETA timeout'))
@@ -135,7 +135,7 @@ export default function useAggregationsSearch(query, forcedRefresh, setCollectio
                         })
                         .catch(error => {
                             if (wait && error.name === 'TypeError') {
-                                if (aggregationsTaskRequestCounter[fields] < 3) {
+                                if (aggregationsTaskRequestCounter[fields] < process.env.ASYNC_SEARCH_MAX_FINAL_RETRIES) {
                                     setAggregationsTasks({
                                         ...prevAggregationsTasks,
                                         [fields]: { ...prevAggregationsTasks[fields], retrieving: false }
