@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import { search as searchAPI } from '../../api'
 import { asyncSearch as asyncSearchAPI } from '../../backend/api'
 import { aggregationFields } from '../../constants/aggregationFields'
-import { ASYNC_SEARCH_POLL_INTERVAL } from '../../constants/general'
 
 const maxAggregationsBatchSize = Math.ceil(Object.entries(aggregationFields).length / process.env.AGGREGATIONS_SPLIT)
 const aggregationGroups = Object.entries(aggregationFields)
@@ -110,7 +109,7 @@ export default function useAggregationsSearch(query, forcedRefresh, setCollectio
                 } else if (!taskData.retrieving) {
                     taskData.retrieving = true
 
-                    const wait = taskData.eta.total_sec < ASYNC_SEARCH_POLL_INTERVAL ? true : ''
+                    const wait = taskData.eta.total_sec < process.env.ASYNC_SEARCH_POLL_INTERVAL ? true : ''
 
                     if (wait) {
                         setAggregationsTaskRequestCounter(counter => ({
@@ -129,7 +128,7 @@ export default function useAggregationsSearch(query, forcedRefresh, setCollectio
                             if (taskResultData.status === 'done') {
                                 done(taskResultData.result)
                             } else if (Date.now() - Date.parse(taskResultData.date_created) < (prevAggregationsTasks.initialEta * 2 + 60) * 1000) {
-                                timeout = setTimeout(update, ASYNC_SEARCH_POLL_INTERVAL * 1000)
+                                timeout = setTimeout(update, process.env.ASYNC_SEARCH_POLL_INTERVAL * 1000)
                             } else {
                                 handleAggregationsError(new Error('Aggregations task ETA timeout'))
                             }
@@ -244,7 +243,7 @@ export default function useAggregationsSearch(query, forcedRefresh, setCollectio
                 } else if (!taskData.retrieving) {
                     taskData.retrieving = true
 
-                    const wait = taskData.eta.total_sec < ASYNC_SEARCH_POLL_INTERVAL ? true : ''
+                    const wait = taskData.eta.total_sec < process.env.ASYNC_SEARCH_POLL_INTERVAL ? true : ''
 
                     if (wait) {
                         setFacetsTasksRequestCounter(counter => ({
@@ -262,15 +261,15 @@ export default function useAggregationsSearch(query, forcedRefresh, setCollectio
 
                             if (taskResultData.status === 'done') {
                                 done(taskResultData.result)
-                            } else if (Date.now() - Date.parse(taskResultData.date_created) < (prevFacetsTasks.initialEta * 2 + 60) * 1000) {
-                                timeout = setTimeout(update, ASYNC_SEARCH_POLL_INTERVAL * 1000)
+                            } else if (Date.now() - Date.parse(taskResultData.date_created) < (prevFacetsTasks.initialEta * process.env.ASYNC_SEARCH_ERROR_MULTIPLIER + process.env.ASYNC_SEARCH_ERROR_SUMMATION) * 1000) {
+                                timeout = setTimeout(update, process.env.ASYNC_SEARCH_POLL_INTERVAL * 1000)
                             } else {
                                 handleFacetsError(new Error('Aggregations task ETA timeout'))
                             }
                         })
                         .catch(error => {
                             if (wait && error.name === 'TypeError') {
-                                if (facetsTasksRequestCounter[fields] < 3) {
+                                if (facetsTasksRequestCounter[fields] < process.env.ASYNC_SEARCH_MAX_FINAL_RETRIES) {
                                     setFacetsTasks({
                                         ...prevFacetsTasks,
                                         [fields]: { ...prevFacetsTasks[fields], retrieving: false }

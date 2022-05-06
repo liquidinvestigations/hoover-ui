@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { aggregationFields } from '../../constants/aggregationFields'
 import { search as searchAPI } from '../../api'
-import { ASYNC_SEARCH_POLL_INTERVAL } from '../../constants/general'
 import { asyncSearch as asyncSearchAPI } from '../../backend/api'
 
 export default function useMissingSearch(query) {
@@ -95,7 +94,7 @@ export default function useMissingSearch(query) {
                 } else if (!taskData.retrieving) {
                     taskData.retrieving = true
 
-                    const wait = taskData.eta.total_sec < ASYNC_SEARCH_POLL_INTERVAL ? true : ''
+                    const wait = taskData.eta.total_sec < process.env.ASYNC_SEARCH_POLL_INTERVAL ? true : ''
 
                     if (wait) {
                         setMissingTaskRequestCounter(counter => ({
@@ -113,15 +112,15 @@ export default function useMissingSearch(query) {
 
                             if (taskResultData.status === 'done') {
                                 done(taskResultData.result)
-                            } else if (Date.now() - Date.parse(taskResultData.date_created) < (prevTasksMissing.initialEta * 2 + 60) * 1000) {
-                                timeout = setTimeout(update, ASYNC_SEARCH_POLL_INTERVAL * 1000)
+                            } else if (Date.now() - Date.parse(taskResultData.date_created) < (prevTasksMissing.initialEta * process.env.ASYNC_SEARCH_ERROR_MULTIPLIER + process.env.ASYNC_SEARCH_ERROR_SUMMATION) * 1000) {
+                                timeout = setTimeout(update, process.env.ASYNC_SEARCH_POLL_INTERVAL * 1000)
                             } else {
                                 handleMissingError(field)
                             }
                         })
                         .catch(error => {
                             if (wait && error.name === 'TypeError') {
-                                if (missingTaskRequestCounter[field] < 3) {
+                                if (missingTaskRequestCounter[field] < process.env.ASYNC_SEARCH_MAX_FINAL_RETRIES) {
                                     setMissingTasks({
                                         ...prevTasksMissing,
                                         [field]: { ...prevTasksMissing[field], retrieving: false }

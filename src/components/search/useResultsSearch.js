@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { getPreviewParams } from '../../utils'
 import { search as searchAPI } from '../../api'
 import { asyncSearch as asyncSearchAPI } from '../../backend/api'
-import { ASYNC_SEARCH_POLL_INTERVAL } from '../../constants/general'
 
 export default function useResultsSearch(query, previewOnLoad, setPreviewOnLoad, setHashState) {
     const [error, setError] = useState()
@@ -88,7 +87,7 @@ export default function useResultsSearch(query, previewOnLoad, setPreviewOnLoad,
             } else if (!prevTaskResults.retrieving) {
                 prevTaskResults.retrieving = true
 
-                const wait = prevTaskResults.eta.total_sec < ASYNC_SEARCH_POLL_INTERVAL ? true : ''
+                const wait = prevTaskResults.eta.total_sec < process.env.ASYNC_SEARCH_POLL_INTERVAL ? true : ''
 
                 if (wait) {
                     setResultsTaskRequestCounter(counter => counter + 1)
@@ -100,13 +99,13 @@ export default function useResultsSearch(query, previewOnLoad, setPreviewOnLoad,
 
                     if (resultsTaskData.status === 'done') {
                         update()
-                    } else if (Date.now() - Date.parse(resultsTaskData.date_created) < (prevTaskResults.initialEta * 2 + 60) * 1000) {
-                        timeout = setTimeout(update, ASYNC_SEARCH_POLL_INTERVAL * 1000)
+                    } else if (Date.now() - Date.parse(resultsTaskData.date_created) < (prevTaskResults.initialEta * process.env.ASYNC_SEARCH_ERROR_MULTIPLIER + process.env.ASYNC_SEARCH_ERROR_SUMMATION) * 1000) {
+                        timeout = setTimeout(update, process.env.ASYNC_SEARCH_POLL_INTERVAL * 1000)
                     } else {
                         handleResultsError(new Error('Results task ETA timeout'))
                     }
                 } catch (error) {
-                    if (wait && error.name === 'TypeError' && resultsTaskRequestCounter < 3) {
+                    if (wait && error.name === 'TypeError' && resultsTaskRequestCounter < process.env.ASYNC_SEARCH_MAX_FINAL_RETRIES) {
                         setResultsTask({ ...prevTaskResults, retrieving: false } )
                     } else {
                         handleResultsError(error)

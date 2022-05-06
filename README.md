@@ -83,15 +83,19 @@ The project uses the following icon libraries:
 
 - [MaterialUI Icons](https://material-ui.com/components/material-icons/)
 - [Font Awesome](https://fontawesome.com/icons?d=gallery&p=2&s=solid&m=free) (free, solid)
-- Individual icons loaded from SVG for file types: 
-![alt text](https://raw.githubusercontent.com/liquidinvestigations/hoover-ui/master/icons/file-excel-line.svg)
-![alt text](https://raw.githubusercontent.com/liquidinvestigations/hoover-ui/master/icons/file-line.svg)
-![alt text](https://raw.githubusercontent.com/liquidinvestigations/hoover-ui/master/icons/file-pdf-line.svg)
-![alt text](https://raw.githubusercontent.com/liquidinvestigations/hoover-ui/master/icons/file-word-line.svg)
-![alt text](https://raw.githubusercontent.com/liquidinvestigations/hoover-ui/master/icons/file-zip-line.svg)
-![alt text](https://raw.githubusercontent.com/liquidinvestigations/hoover-ui/master/icons/folder-line.svg)
-![alt text](https://raw.githubusercontent.com/liquidinvestigations/hoover-ui/master/icons/mail-line.svg)
-    
 
 Any additional library with icons in SVG format can be added, for example [Bootstrap Icons](https://icons.getbootstrap.com/)
 
+## Environment variables
+
+- **API_URL (required)** - URL of the backend server
+- **REWRITE_API (boolean default unset)** - controls setting up proxy to backend API (for local development)
+- **AGGREGATIONS_SPLIT (default 1)** - divider number for queuing concurrent requests to aggregations search API endpoint (1 - all requsts are concurrent, 2 - requests are divided into two concurrent packs running one after another, 3 - three packs, etc.)
+- **MAX_SEARCH_RETRIES (default 1)** - number of search retries in synchronous search mode
+- **SEARCH_RETRY_DELAY (default 3000)** - search retry delay in synchronous mode in milliseconds
+- **ASYNC_SEARCH_POLL_INTERVAL (default 45)** - interval between search requests in asynchronous mode
+- **ASYNC_SEARCH_MAX_FINAL_RETRIES (default 3)** - max numbers of requests retries when async search task is about to complete (ETA < pool interval)
+- **ASYNC_SEARCH_ERROR_MULTIPLIER (default 2)** - async task initial ETA multiplier after which search request fails
+- **ASYNC_SEARCH_ERROR_SUMMATION (default 60)** - async task initial ETA summation seconds after which search request fails
+- **HOOVER_MAPS_ENABLED (boolean default unset)** - show maps link in top menu
+- **HOOVER_TRANSLATION_ENABLED (boolean default unset)** - shows translation link in top menu
