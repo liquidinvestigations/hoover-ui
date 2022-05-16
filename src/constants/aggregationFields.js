@@ -54,6 +54,11 @@ export const aggregationCategories = {
         icon: 'imageAi',
         filters: ['detected-objects.object.keyword', 'image-classes.class.keyword']
     },
+    tables: {
+        label: 'Tables',
+        icon: 'typeXls',
+        filters: [ "is-table", "table-columns", "table-sheets", "table-row-count", "table-col-count"]
+    },
 }
 
 export const aggregationFields = {
@@ -263,5 +268,121 @@ export const aggregationFields = {
         filterLabel: 'Translated To',
         chipLabel: 'Translated To',
         type: 'term-or',
+    },
+    "is-table": {
+        filterLabel: 'Is Table',
+        chipLabel: 'Is Table',
+        type: 'term-or',
+    },
+    "table-columns": {
+        filterLabel: 'Table Column Name',
+        chipLabel: 'Table Column Name',
+        type: 'term-or',
+    },
+    "table-sheets": {
+        filterLabel: 'Table Sheet Name',
+        chipLabel: 'Table Sheet Name',
+        type: 'term-or',
+    },
+    "table-row-count": {
+        filterLabel: 'Row Count',
+        chipLabel: 'Table Row Count',
+        type: 'range-or',
+        buckets: [
+            {
+                key: '0-1',
+                label: '0',
+            },
+            {
+                key: '1-9',
+                label: '1 - 9',
+            },
+            {
+                key: '10-99',
+                label: '10 - 99',
+            },
+            {
+                key: '100-999',
+                label: '100 - 999',
+            },
+            {
+                key: '1000-9999',
+                label: '1,000 - 9,999',
+            },
+            {
+                key: '10000-99999',
+                label: '10,000 - 99,999',
+            },
+            {
+                key: '100000-999999',
+                label: '100,000 - 999,999',
+            },
+            {
+                key: '1000000-*',
+                label: '>= 1,000,000',
+            },
+        ]
+    },
+    "table-col-count": {
+        filterLabel: 'Column Count',
+        chipLabel: 'Table Column Count',
+        type: 'range-or',
+        buckets: [
+            {
+                key: '0-1',
+                label: '0',
+            },
+            {
+                key: '1-3',
+                label: '1 - 3',
+            },
+            {
+                key: '4-9',
+                label: '4 - 9',
+            },
+            {
+                key: '10-29',
+                label: '10 - 29',
+            },
+            {
+                key: '30-99',
+                label: '30 - 99',
+            },
+            {
+                key: '100-*',
+                label: '>= 100',
+            },
+        ]
+    },
+    "table-sheet-count": {
+        filterLabel: 'Sheet Count',
+        chipLabel: 'Table Sheet Count',
+        type: 'range-or',
+        buckets: [
+            {
+                key: '0-1',
+                label: '0',
+            },
+            {
+                key: '1-3',
+                label: '1 - 3',
+            },
+            {
+                key: '4-9',
+                label: '4 - 9',
+            },
+            {
+                key: '10-29',
+                label: '10 - 29',
+            },
+            {
+                key: '30-99',
+                label: '30 - 99',
+            },
+            {
+                key: '100-*',
+                label: '>= 100',
+            },
+        ]
     },
 }
