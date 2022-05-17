@@ -47,7 +47,7 @@ export const aggregationCategories = {
     ocr: {
         label: 'OCR',
         icon: 'ocr',
-        filters: ['ocr']
+        filters: ['ocr', 'ocrpdf', 'ocrimage']
     },
     imageAi: {
         label: 'Image AI',
@@ -214,9 +214,19 @@ export const aggregationFields = {
             },
         ]
     },
-    ocr: {
+    'ocr': {
         filterLabel: 'OCRed',
         chipLabel: 'OCRed',
+        type: 'term-or',
+    },
+    'ocrpdf': {
+        filterLabel: 'OCRed PDF/Office Document',
+        chipLabel: 'OCRed PDF/Office Document',
+        type: 'term-or',
+    },
+    'ocrimage': {
+        filterLabel: 'OCRed Image',
+        chipLabel: 'OCRed Image',
         type: 'term-or',
     },
     'detected-objects.object.keyword': {
