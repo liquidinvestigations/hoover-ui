@@ -298,6 +298,24 @@ Object {
         "bool": Object {},
       },
     },
+    "is-table": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "is-table",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "is-table",
+            "size": 44,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
     "lang": Object {
       "aggs": Object {
         "count": Object {
@@ -326,6 +344,42 @@ Object {
         "values": Object {
           "terms": Object {
             "field": "ocr",
+            "size": 44,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "ocrimage": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "ocrimage",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "ocrimage",
+            "size": 44,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "ocrpdf": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "ocrpdf",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "ocrpdf",
             "size": 44,
           },
         },
@@ -434,6 +488,196 @@ Object {
                 "key": "1000000000-*",
               },
             ],
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "table-col-count": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "table-col-count",
+          },
+        },
+        "values": Object {
+          "range": Object {
+            "field": "table-col-count",
+            "ranges": Array [
+              Object {
+                "from": "0",
+                "key": "0-1",
+                "to": "1",
+              },
+              Object {
+                "from": "1",
+                "key": "1-3",
+                "to": "3",
+              },
+              Object {
+                "from": "4",
+                "key": "4-9",
+                "to": "9",
+              },
+              Object {
+                "from": "10",
+                "key": "10-29",
+                "to": "29",
+              },
+              Object {
+                "from": "30",
+                "key": "30-99",
+                "to": "99",
+              },
+              Object {
+                "from": "100",
+                "key": "100-*",
+              },
+            ],
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "table-columns": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "table-columns",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "table-columns",
+            "size": 44,
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "table-row-count": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "table-row-count",
+          },
+        },
+        "values": Object {
+          "range": Object {
+            "field": "table-row-count",
+            "ranges": Array [
+              Object {
+                "from": "0",
+                "key": "0-1",
+                "to": "1",
+              },
+              Object {
+                "from": "1",
+                "key": "1-9",
+                "to": "9",
+              },
+              Object {
+                "from": "10",
+                "key": "10-99",
+                "to": "99",
+              },
+              Object {
+                "from": "100",
+                "key": "100-999",
+                "to": "999",
+              },
+              Object {
+                "from": "1000",
+                "key": "1000-9999",
+                "to": "9999",
+              },
+              Object {
+                "from": "10000",
+                "key": "10000-99999",
+                "to": "99999",
+              },
+              Object {
+                "from": "100000",
+                "key": "100000-999999",
+                "to": "999999",
+              },
+              Object {
+                "from": "1000000",
+                "key": "1000000-*",
+              },
+            ],
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "table-sheet-count": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "table-sheet-count",
+          },
+        },
+        "values": Object {
+          "range": Object {
+            "field": "table-sheet-count",
+            "ranges": Array [
+              Object {
+                "from": "0",
+                "key": "0-1",
+                "to": "1",
+              },
+              Object {
+                "from": "1",
+                "key": "1-3",
+                "to": "3",
+              },
+              Object {
+                "from": "4",
+                "key": "4-9",
+                "to": "9",
+              },
+              Object {
+                "from": "10",
+                "key": "10-29",
+                "to": "29",
+              },
+              Object {
+                "from": "30",
+                "key": "30-99",
+                "to": "99",
+              },
+              Object {
+                "from": "100",
+                "key": "100-*",
+              },
+            ],
+          },
+        },
+      },
+      "filter": Object {
+        "bool": Object {},
+      },
+    },
+    "table-sheets": Object {
+      "aggs": Object {
+        "count": Object {
+          "cardinality": Object {
+            "field": "table-sheets",
+          },
+        },
+        "values": Object {
+          "terms": Object {
+            "field": "table-sheets",
+            "size": 44,
           },
         },
       },
