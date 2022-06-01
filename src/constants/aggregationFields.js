@@ -12,7 +12,7 @@ export const aggregationCategories = {
     type: {
         label: 'File Types',
         icon: 'categoryType',
-        filters: ['content-type', 'filetype'],
+        filters: ['content-type', 'filetype', 'skipped'],
     },
     language: {
         label: 'Language',
@@ -90,6 +90,11 @@ export const aggregationFields = {
     filetype: {
         filterLabel: 'File type',
         chipLabel: 'File type',
+        type: 'term-or',
+    },
+    skipped: {
+        filterLabel: 'File processing skipped',
+        chipLabel: 'File processing skipped',
         type: 'term-or',
     },
     lang: {
