@@ -75,7 +75,11 @@ export function DocumentProvider({ children, collection, collections, id, path, 
                 if (!isNaN(subTabState)) {
                     setSubTab(subTabState)
                 } else {
-                    setSubTab(0)
+                    if (!data.content.text?.length && ocr.length) {
+                        setSubTab(1)
+                    } else {
+                        setSubTab(0)
+                    }
                 }
             }).catch(res => {
                 setError({ status: res.status, statusText: res.statusText, url: res.url })
