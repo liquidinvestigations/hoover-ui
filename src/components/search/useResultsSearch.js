@@ -95,7 +95,7 @@ export default function useResultsSearch(query, previewOnLoad, setPreviewOnLoad,
 
                 try {
                     const resultsTaskData = await asyncSearchAPI(prevTaskResults.task_id, wait)
-                    const update = () => setResultsTask({ ...prevTaskResults, ...resultsTaskData, retrieving: false } )
+                    const update = () => setResultsTask(taskResults => ({ ...taskResults, ...resultsTaskData, retrieving: false } ))
 
                     if (resultsTaskData.status === 'done') {
                         update()
@@ -106,7 +106,7 @@ export default function useResultsSearch(query, previewOnLoad, setPreviewOnLoad,
                     }
                 } catch (error) {
                     if (wait && error.name === 'TypeError' && resultsTaskRequestCounter < process.env.ASYNC_SEARCH_MAX_FINAL_RETRIES) {
-                        setResultsTask({ ...prevTaskResults, retrieving: false } )
+                        setResultsTask(taskResults => ({ ...taskResults, retrieving: false } ))
                     } else {
                         handleResultsError(error)
                     }

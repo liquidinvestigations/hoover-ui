@@ -105,10 +105,10 @@ export default function useMissingSearch(query) {
 
                     asyncSearchAPI(taskData.task_id, wait)
                         .then(taskResultData => {
-                            const update = () => setMissingTasks({
-                                ...prevTasksMissing,
-                                [field]: { ...taskResultData, retrieving: false }
-                            })
+                            const update = () => setMissingTasks(tasks => ({
+                                ...tasks,
+                                [field]: { ...tasks[field], ...taskResultData, retrieving: false }
+                            }))
 
                             if (taskResultData.status === 'done') {
                                 done(taskResultData.result)
@@ -121,15 +121,15 @@ export default function useMissingSearch(query) {
                         .catch(error => {
                             if (wait && error.name === 'TypeError') {
                                 if (missingTaskRequestCounter[field] < process.env.ASYNC_SEARCH_MAX_FINAL_RETRIES) {
-                                    setMissingTasks({
-                                        ...prevTasksMissing,
-                                        [field]: { ...prevTasksMissing[field], retrieving: false }
-                                    })
+                                    setMissingTasks(tasks => ({
+                                        ...tasks,
+                                        [field]: { ...tasks[field], retrieving: false }
+                                    }))
                                 } else {
-                                    setMissingTasks({
-                                        ...prevTasksMissing,
+                                    setMissingTasks(tasks => ({
+                                        ...tasks,
                                         [field]: undefined
-                                    })
+                                    }))
                                 }
                             } else{
                                 handleMissingError(field)

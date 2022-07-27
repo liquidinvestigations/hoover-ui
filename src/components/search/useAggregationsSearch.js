@@ -120,10 +120,10 @@ export default function useAggregationsSearch(query, forcedRefresh, setCollectio
 
                     asyncSearchAPI(taskData.task_id, wait)
                         .then(taskResultData => {
-                            const update = () => setAggregationsTasks({
-                                ...prevAggregationsTasks,
-                                [fields]: { ...taskResultData, retrieving: false }
-                            })
+                            const update = () => setAggregationsTasks(tasks => ({
+                                ...tasks,
+                                [fields]: { ...tasks[fields], ...taskResultData, retrieving: false }
+                            }))
 
                             if (taskResultData.status === 'done') {
                                 done(taskResultData.result)
@@ -136,15 +136,15 @@ export default function useAggregationsSearch(query, forcedRefresh, setCollectio
                         .catch(error => {
                             if (wait && error.name === 'TypeError') {
                                 if (aggregationsTaskRequestCounter[fields] < process.env.ASYNC_SEARCH_MAX_FINAL_RETRIES) {
-                                    setAggregationsTasks({
-                                        ...prevAggregationsTasks,
-                                        [fields]: { ...prevAggregationsTasks[fields], retrieving: false }
-                                    })
+                                    setAggregationsTasks(tasks => ({
+                                        ...tasks,
+                                        [fields]: { ...tasks[fields], retrieving: false }
+                                    }))
                                 } else {
-                                    setAggregationsTasks({
-                                        ...prevAggregationsTasks,
+                                    setAggregationsTasks(tasks => ({
+                                        ...tasks,
                                         [fields]: undefined
-                                    })
+                                    }))
                                 }
                             } else{
                                 handleAggregationsError(error)
@@ -254,10 +254,10 @@ export default function useAggregationsSearch(query, forcedRefresh, setCollectio
 
                     asyncSearchAPI(taskData.task_id, wait)
                         .then(taskResultData => {
-                            const update = () => setFacetsTasks({
-                                ...prevFacetsTasks,
-                                [fields]: { ...taskResultData, retrieving: false }
-                            })
+                            const update = () => setFacetsTasks(tasks => ({
+                                ...tasks,
+                                [fields]: { ...tasks[fields], ...taskResultData, retrieving: false }
+                            }))
 
                             if (taskResultData.status === 'done') {
                                 done(taskResultData.result)
@@ -270,15 +270,15 @@ export default function useAggregationsSearch(query, forcedRefresh, setCollectio
                         .catch(error => {
                             if (wait && error.name === 'TypeError') {
                                 if (facetsTasksRequestCounter[fields] < process.env.ASYNC_SEARCH_MAX_FINAL_RETRIES) {
-                                    setFacetsTasks({
-                                        ...prevFacetsTasks,
-                                        [fields]: { ...prevFacetsTasks[fields], retrieving: false }
-                                    })
+                                    setFacetsTasks(tasks => ({
+                                        ...tasks,
+                                        [fields]: { ...tasks[fields], retrieving: false }
+                                    }))
                                 } else {
-                                    setFacetsTasks({
-                                        ...prevFacetsTasks,
+                                    setFacetsTasks(tasks => ({
+                                        ...tasks,
                                         [fields]: undefined
-                                    })
+                                    }))
                                 }
                             } else{
                                 handleFacetsError(error)
