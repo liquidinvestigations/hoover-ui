@@ -3,7 +3,7 @@ import { search as searchAPI } from '../../api'
 import { asyncSearch as asyncSearchAPI } from '../../backend/api'
 import { aggregationFields } from '../../constants/aggregationFields'
 
-const maxAggregationsBatchSize = Math.ceil(Object.entries(aggregationFields).length / process.env.AGGREGATIONS_SPLIT)
+const maxAggregationsBatchSize = Math.ceil(Object.entries(aggregationFields).length/* / process.env.AGGREGATIONS_SPLIT */)
 const aggregationGroups = Object.entries(aggregationFields)
     .reduce((acc, [key]) => {
         if (acc?.[acc.length - 1]?.fieldList?.length < maxAggregationsBatchSize) {
