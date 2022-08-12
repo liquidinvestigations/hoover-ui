@@ -90,7 +90,7 @@ export function SearchProvider({ children, serverQuery }) {
 
     const previewNextDoc = useCallback(() => {
         if (!resultsLoading && results?.hits.hits
-            && (parseInt(query.page) - 1) * parseInt(query.size) + currentIndex < results.hits.total - 1) {
+            && (parseInt(query.page) - 1) * parseInt(query.size) + currentIndex < results.hits.total.value - 1) {
             if (currentIndex === results.hits.hits.length - 1) {
                 setPreviewOnLoad('first')
                 search({ page: parseInt(query.page) + 1 })

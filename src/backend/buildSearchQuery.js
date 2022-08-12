@@ -279,7 +279,11 @@ const prepareFilter = field => {
     const filter = []
 
     if (field.filterClause) {
-        filter.push(field.filterClause)
+        if (Array.isArray(field.filterClause)) {
+            filter.push(...field.filterClause)
+        } else {
+            filter.push(field.filterClause)
+        }
     }
 
     if (field.filterExclude) {
@@ -391,6 +395,7 @@ const buildSearchQuery = (
         collections,
         _source: searchFields._source,
         highlight: {
+            max_analyzed_offset: 999999,
             fields: highlightFields,
         },
     }

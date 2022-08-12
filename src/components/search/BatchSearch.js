@@ -63,7 +63,7 @@ export default function BatchSearch({ collections, limits }) {
                     if (item.error) {
                         result.error = true
                     } else {
-                        result.count = item.hits.total
+                        result.count = item.hits.total.value
                     }
                     return result
                 })

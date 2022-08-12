@@ -33,7 +33,7 @@ function Pagination({ maxCount }) {
     const classes = useStyles()
     const { query, search, results } = useSearch()
 
-    const total = parseInt(results?.hits.total || 0)
+    const total = parseInt(results?.hits.total.value || 0)
     const size = parseInt(query.size || 10)
     const page = parseInt(query.page || 0)
 
