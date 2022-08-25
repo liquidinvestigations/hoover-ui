@@ -145,7 +145,7 @@ function Tags({ toolbarButtons }) {
             }
         })
         return Object.entries(usersTags)
-    }, [tags])
+    }, [tags, whoAmI.username])
 
     if (tagsError) {
         return (
