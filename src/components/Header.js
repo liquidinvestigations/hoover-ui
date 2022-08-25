@@ -1,7 +1,7 @@
 import React, { memo } from 'react'
 import Link from 'next/link'
-import { makeStyles } from '@material-ui/core/styles'
-import { AppBar, Toolbar, Typography } from '@material-ui/core'
+import { makeStyles } from '@mui/styles'
+import { AppBar, Toolbar, Typography } from '@mui/material'
 import { useUser } from './UserProvider'
 import Menu from './Menu'
 

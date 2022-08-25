@@ -1,8 +1,8 @@
 import React, { cloneElement, memo, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
 import screenfull from 'screenfull'
-import { Grid, IconButton, Menu, MenuItem, TextField, Toolbar as MuiToolbar, Tooltip } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { Grid, IconButton, Menu, MenuItem, TextField, Toolbar as MuiToolbar, Tooltip } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import { zoomIn, zoomOut } from './zooming'
 import { reactIcons } from '../../../constants/icons'
 

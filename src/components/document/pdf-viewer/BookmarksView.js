@@ -1,6 +1,6 @@
 import React, { memo } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import { TreeView } from '@material-ui/lab'
+import { makeStyles } from '@mui/styles'
+import { TreeView } from '@mui/lab'
 import Bookmarks from './Bookmarks'
 import { reactIcons } from '../../../constants/icons'
 

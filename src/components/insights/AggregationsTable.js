@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactPlaceholder from 'react-placeholder'
-import { ButtonBase, List, ListItem, ListItemText, ListItemSecondaryAction, Typography } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { ButtonBase, List, ListItem, ListItemText, ListItemSecondaryAction, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import { useSearch } from '../search/SearchProvider'
 import { createSearchUrl } from '../../queryUtils'
 

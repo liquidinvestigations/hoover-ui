@@ -1,7 +1,7 @@
 import React, { memo } from 'react'
 import cn from 'classnames'
 import SplitPane from 'react-split-pane'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles(theme => ({
     left: {

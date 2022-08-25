@@ -44,7 +44,7 @@ export default function useResultsSearch(query, previewOnLoad, setPreviewOnLoad,
         ...query,
         facets: null,
         filters: {
-            ...query.filters || {},
+            ...(query.filters || {}),
             date: {
                 from: query.filters?.date?.from,
                 to: query.filters?.date?.to,

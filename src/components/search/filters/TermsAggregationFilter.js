@@ -1,6 +1,6 @@
 import React, { memo, useEffect } from 'react'
 import isEqual from 'react-fast-compare'
-import { Typography } from '@material-ui/core'
+import { Typography } from '@mui/material'
 import Expandable from '../../Expandable'
 import AggregationFilter from './AggregationFilter'
 import { useSearch } from '../SearchProvider'

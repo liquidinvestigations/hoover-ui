@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import { Button, Grid, List, TextField, Typography } from '@material-ui/core'
+import { makeStyles } from '@mui/styles'
+import { Button, Grid, List, TextField, Typography } from '@mui/material'
 import Expandable from '../Expandable'
 import Loading from '../Loading'
 import BatchResults from './BatchResults'
@@ -124,16 +124,16 @@ export default function BatchSearch({ collections, limits }) {
             <Grid item sm={6}>
                 <div className={classes.main}>
                     <TextField
+                        variant="standard"
                         label="Batch search queries (one per line)"
                         rows="4"
                         margin="normal"
-                        rowsMax={limits?.batch || Infinity}
+                        maxRows={limits?.batch || Infinity}
                         value={terms}
                         onChange={handleTermsChange}
                         multiline
                         fullWidth
-                        autoFocus
-                    />
+                        autoFocus />
 
                     <Grid container justifyContent="space-between">
                         <Grid item>
@@ -164,5 +164,5 @@ export default function BatchSearch({ collections, limits }) {
                 </div>
             </Grid>
         </Grid>
-    )
+    );
 }

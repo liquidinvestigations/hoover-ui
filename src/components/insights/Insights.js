@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Grid, List, ListItem, Paper, Typography } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { Grid, List, ListItem, Paper, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import InsightsTitle from './InsightsTitle'
 import TaskErrorsTable from './TaskErrorsTable'
 import TaskTable from './TaskTable'

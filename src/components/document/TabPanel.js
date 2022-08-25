@@ -1,6 +1,6 @@
 import React, { memo } from 'react'
-import { Box } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { Box } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles(theme => ({
     root: {

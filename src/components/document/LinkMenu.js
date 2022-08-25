@@ -1,7 +1,7 @@
 import React from 'react'
 import qs from 'qs'
 import { mergeWith } from 'lodash'
-import { Menu, MenuItem } from '@material-ui/core'
+import { Menu, MenuItem } from '@mui/material'
 import NestedMenuItem from 'material-ui-nested-menu-item'
 import { useDocument } from './DocumentProvider'
 import { useSearch } from '../search/SearchProvider'

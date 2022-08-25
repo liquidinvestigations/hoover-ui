@@ -1,7 +1,7 @@
 import React, { cloneElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import cn from 'classnames'
-import { makeStyles } from '@material-ui/core/styles'
-import { CircularProgress, Collapse, Fade, Grid, IconButton, ListItem, Typography } from '@material-ui/core'
+import { makeStyles } from '@mui/styles'
+import { CircularProgress, Collapse, Fade, Grid, IconButton, ListItem, Typography } from '@mui/material'
 import { reactIcons } from '../constants/icons'
 import ThinProgress from './search/ThinProgress'
 
@@ -72,13 +72,13 @@ function Expandable({ title, loading, loadingETA, summary, children, greyed, def
         if (!fullHeight && contentRef.current) {
             contentRef.current.style.height = contentRef.current.offsetHeight + 'px'
         }
-    }, [contentRef])
+    }, [contentRef, fullHeight])
 
     const handleMouseUp = useCallback(event => {
         event.preventDefault()
         window.removeEventListener('mouseup', handleMouseUp)
         window.removeEventListener('mousemove', handleMouseMove)
-    }, [])
+    }, [handleMouseMove])
 
     const handleMouseMove = useCallback(event => {
         event.preventDefault()
@@ -92,7 +92,7 @@ function Expandable({ title, loading, loadingETA, summary, children, greyed, def
         startHeight = contentRef.current.offsetHeight
         window.addEventListener('mouseup', handleMouseUp, {once: true})
         window.addEventListener('mousemove', handleMouseMove)
-    }, [])
+    }, [handleMouseMove, handleMouseUp])
 
     const headerBar = useMemo(() => (
         <ListItem
@@ -149,7 +149,10 @@ function Expandable({ title, loading, loadingETA, summary, children, greyed, def
                 )}
             </Grid>
         </ListItem>
-    ), [title, greyed, defaultOpen, highlight, openState, summary, loading])
+    ), [
+        title, greyed, highlight, openState, summary, loadingETA, open, toggle,
+        loading, classes.expand, classes.expandOpen, classes.header, classes.loading, classes.title,
+    ])
 
     return (
         <>

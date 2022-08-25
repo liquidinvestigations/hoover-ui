@@ -13,8 +13,8 @@ import {
     TableContainer,
     TableHead,
     TableRow
-} from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+} from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import { useSearch } from './SearchProvider'
 import ResultsTableRow from './ResultsTableRow'
 import { availableColumns } from '../../constants/availableColumns'

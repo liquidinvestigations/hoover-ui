@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState } from 'react'
-import { List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import { useDocument } from './DocumentProvider'
 import { reactIcons } from '../../../constants/icons'
 import { downloadFile } from '../../../utils'

@@ -15,7 +15,7 @@ const buildUrl = (...paths) => {
         }
     }, undefined)
     return [prefix, ...paths].join('/').replace(/\/+/g, '/')
-        + (queryObj ? `?${stringify(queryObj)}` : '')
+        + (queryObj ? `?${stringify(queryObj)}` : '');
 }
 
 const fetchJson = async (url, opts = {}) => {

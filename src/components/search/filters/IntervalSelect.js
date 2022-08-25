@@ -1,5 +1,5 @@
 import React from 'react'
-import { FormControl, FormHelperText, MenuItem, Select } from '@material-ui/core'
+import { FormControl, FormHelperText, MenuItem, Select } from '@mui/material'
 import { useSearch } from '../SearchProvider'
 import { DEFAULT_INTERVAL } from '../../../constants/general'
 
@@ -23,11 +23,8 @@ export default function IntervalSelect({ field }) {
     const interval = query.filters?.[field]?.interval || DEFAULT_INTERVAL
 
     return (
-        <FormControl size="small" fullWidth>
-            <Select
-                value={interval}
-                onChange={onIntervalChange}
-            >
+        <FormControl variant="standard" size="small" fullWidth>
+            <Select variant="standard" value={interval} onChange={onIntervalChange}>
                 <MenuItem value="year">Year</MenuItem>
                 <MenuItem value="month">Month</MenuItem>
                 <MenuItem value="week">Week</MenuItem>
@@ -36,5 +33,5 @@ export default function IntervalSelect({ field }) {
             </Select>
             <FormHelperText>Aggregation</FormHelperText>
         </FormControl>
-    )
+    );
 }

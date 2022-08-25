@@ -1,7 +1,7 @@
 import React, { cloneElement, memo, useState } from 'react'
 import cn from 'classnames'
-import { makeStyles } from '@material-ui/core/styles'
-import { Button, Collapse, Divider, Grid, IconButton, ListItem, Tooltip, Typography } from '@material-ui/core'
+import { makeStyles } from '@mui/styles'
+import { Button, Collapse, Divider, Grid, IconButton, ListItem, Tooltip, Typography } from '@mui/material'
 import { reactIcons } from '../../constants/icons'
 
 const useStyles = makeStyles(theme => ({
@@ -52,55 +52,52 @@ function Section({ title, toolbarButtons, children, defaultOpen = true, scrollX 
 
     const toggle = () => setOpen(!open)
 
-    return (
-        <>
-            <ListItem onClick={toggle} button dense className={classes.sectionHeader}>
-                <Grid container alignItems="baseline" justifyContent="space-between">
-                    <Grid item>
-                        <Typography variant="h6">
-                            {title}
-                        </Typography>
-                    </Grid>
-
-                    {toolbarButtons && toolbarButtons.map(({tooltip, label, icon, ...props}, index) => (
-                        <Grid item key={index}>
-                            <Tooltip title={tooltip}>
-                                <Button
-                                    className={classes.toolbarButton}
-                                    color="default"
-                                    size="small"
-                                    component="a"
-                                    endIcon={icon}
-                                    {...props}>
-                                    {label}
-                                </Button>
-                            </Tooltip>
-                        </Grid>
-                    ))}
-
-                    <Grid item>
-                        <IconButton
-                            className={cn(classes.expand, {
-                                [classes.expandOpen]: open,
-                            })}
-                            onClick={toggle}
-                            aria-expanded={open}
-                            aria-label="Show more"
-                        >
-                            {cloneElement(reactIcons.chevronDown, { color: 'action' })}
-                        </IconButton>
-                    </Grid>
+    return <>
+        <ListItem onClick={toggle} button dense className={classes.sectionHeader}>
+            <Grid container alignItems="baseline" justifyContent="space-between">
+                <Grid item>
+                    <Typography variant="h6">
+                        {title}
+                    </Typography>
                 </Grid>
-            </ListItem>
 
-            <Collapse in={open}>
-                <div className={cn(classes.sectionContent, { [classes.scrollX]: scrollX })}>
-                    {children}
-                </div>
-                <Divider />
-            </Collapse>
-        </>
-    )
+                {toolbarButtons && toolbarButtons.map(({tooltip, label, icon, ...props}, index) => (
+                    <Grid item key={index}>
+                        <Tooltip title={tooltip}>
+                            <Button
+                                className={classes.toolbarButton}
+                                size="small"
+                                component="a"
+                                endIcon={icon}
+                                {...props}>
+                                {label}
+                            </Button>
+                        </Tooltip>
+                    </Grid>
+                ))}
+
+                <Grid item>
+                    <IconButton
+                        className={cn(classes.expand, {
+                            [classes.expandOpen]: open,
+                        })}
+                        onClick={toggle}
+                        aria-expanded={open}
+                        aria-label="Show more"
+                        size="large">
+                        {cloneElement(reactIcons.chevronDown, { color: 'action' })}
+                    </IconButton>
+                </Grid>
+            </Grid>
+        </ListItem>
+
+        <Collapse in={open}>
+            <div className={cn(classes.sectionContent, { [classes.scrollX]: scrollX })}>
+                {children}
+            </div>
+            <Divider />
+        </Collapse>
+    </>;
 }
 
 export default memo(Section)

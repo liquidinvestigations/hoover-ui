@@ -1,6 +1,6 @@
 import React, { memo } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import { CircularProgress } from '@material-ui/core'
+import { makeStyles } from '@mui/styles'
+import { CircularProgress } from '@mui/material'
 
 const useStyles = makeStyles(theme => ({
     progress: {

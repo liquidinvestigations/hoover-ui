@@ -1,7 +1,7 @@
 import React, { memo } from 'react'
 import Highlighter from 'react-highlight-words'
-import { makeStyles } from '@material-ui/core/styles'
-import { Checkbox, List, ListItem, ListItemText, Typography } from '@material-ui/core'
+import { makeStyles } from '@mui/styles'
+import { Checkbox, List, ListItem, ListItemText, Typography } from '@mui/material'
 import { formatThousands } from '../../../utils'
 
 const useStyles = makeStyles(theme => ({

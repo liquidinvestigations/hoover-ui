@@ -1,6 +1,6 @@
 import React, { memo, useState } from 'react'
 import Link from 'next/link'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 import {
     Box,
     Divider,
@@ -8,7 +8,7 @@ import {
     ListItem,
     ListItemText,
     Typography
-} from '@material-ui/core'
+} from '@mui/material'
 import LinkMenu from './LinkMenu'
 import { useDocument } from './DocumentProvider'
 import { flatten, formatDateTime, getLanguageName, humanFileSize, shortenName } from '../../utils'

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { ButtonBase, CircularProgress, List, ListItem, ListItemIcon } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { ButtonBase, CircularProgress, List, ListItem, ListItemIcon } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import FinderItem from './FinderItem'
 import { useDocument } from '../DocumentProvider'
 import { doc as docAPI } from '../../../backend/api'

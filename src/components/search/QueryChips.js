@@ -1,8 +1,8 @@
 import React, { memo, useCallback, useEffect, useState } from 'react'
 import lucene from 'lucene'
-import { Box, Chip, FormControl, Tooltip, Typography } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
-import { blue, red } from '@material-ui/core/colors'
+import { Box, Chip, FormControl, Tooltip, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
+import { blue, red } from '@mui/material/colors'
 import { useSearch } from './SearchProvider'
 import { shortenName } from '../../utils'
 import ChipsTree from './ChipsTree'
@@ -135,7 +135,7 @@ function QueryChips() {
             <Typography variant="h6" className={classes.treeTitle}>
                 Query
             </Typography>
-            <FormControl margin="normal">
+            <FormControl variant="standard" margin="normal">
                 <ChipsTree
                     tree={parsedQuery}
                     renderChip={getChip}
@@ -144,7 +144,7 @@ function QueryChips() {
                     onExpressionDelete={handleDelete}
                 />
             </FormControl>
-        </Box> : null
+        </Box> : null;
 }
 
 export default memo(QueryChips)

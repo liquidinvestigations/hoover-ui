@@ -1,6 +1,6 @@
 import React, { cloneElement, memo } from 'react'
-import { Box, Tab, Tabs, Typography } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { Box, Tab, Tabs, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import Expandable from '../Expandable'
 import Preview, { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './Preview'
 import { useDocument } from './DocumentProvider'

@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useEffect } from 'react'
 import { DateTime } from 'luxon'
-import { ListItem, Typography } from '@material-ui/core'
+import { ListItem, Typography } from '@mui/material'
 import Expandable from '../../Expandable'
 import IntervalSelect from './IntervalSelect'
 import DateRangeFilter from './DateRangeFilter'

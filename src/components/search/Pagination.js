@@ -1,7 +1,7 @@
 import React, { memo } from 'react'
 import cn from 'classnames'
-import { Grid, IconButton, Typography } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { Grid, IconButton, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import { formatThousands } from '../../utils';
 import SearchSize from './SearchSize'
 import { useSearch } from './SearchProvider'
@@ -95,7 +95,7 @@ function Pagination({ maxCount }) {
                             onClick={handlePrev}
                             disabled={!hasPrev}
                             data-test="prev-results-page"
-                        >
+                            size="large">
                             {reactIcons.chevronLeft}
                         </IconButton>
                     </Grid>
@@ -121,14 +121,14 @@ function Pagination({ maxCount }) {
                             onClick={handleNext}
                             disabled={!hasNext}
                             data-test="next-results-page"
-                        >
+                            size="large">
                             {reactIcons.chevronRight}
                         </IconButton>
                     </Grid>
                 </Grid>
             )}
         </Grid>
-    )
+    );
 }
 
 export default memo(Pagination)

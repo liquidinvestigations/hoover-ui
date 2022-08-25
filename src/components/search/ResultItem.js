@@ -1,7 +1,7 @@
 import React, { cloneElement, memo, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
 import { DateTime } from 'luxon'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 import {
     Box,
     Card,
@@ -13,7 +13,7 @@ import {
     Popper,
     Tooltip,
     Typography
-} from '@material-ui/core'
+} from '@mui/material'
 import Loading from '../Loading'
 import { useUser } from '../UserProvider'
 import { useHashState } from '../HashStateProvider'

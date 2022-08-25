@@ -1,7 +1,7 @@
 import React from 'react'
-import { Grid, IconButton, Toolbar as MuiToolbar, Tooltip } from '@material-ui/core'
+import { Grid, IconButton, Toolbar as MuiToolbar, Tooltip } from '@mui/material'
 import { reactIcons } from '../../../constants/icons'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles(theme => ({
     toolbar: {

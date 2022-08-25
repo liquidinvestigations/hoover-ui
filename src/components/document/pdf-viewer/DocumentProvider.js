@@ -72,8 +72,8 @@ export default function DocumentProvider({ url, cMaps, cMapsPacked, withCredenti
         )
 
         return () => {
-            loadingTask.destroy()
-            worker.destroy()
+            loadingTask.destroy?.()
+            worker.destroy?.()
         }
     }, [url])
 

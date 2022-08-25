@@ -1,6 +1,6 @@
 import React from 'react'
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import { formatTitleCase } from '../../utils'
 
 const useStyles = makeStyles(theme => ({

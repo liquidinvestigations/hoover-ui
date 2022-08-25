@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useState } from 'react'
 import cn from 'classnames'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 import ThumbnailLayer from './layers/ThumbnailLayer'
 import { useDocument } from './DocumentProvider'
 

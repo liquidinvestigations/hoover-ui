@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 import FinderColumn from './FinderColumn'
 import { useDocument } from '../DocumentProvider'
 import ErrorBoundary from '../../ErrorBoundary'
