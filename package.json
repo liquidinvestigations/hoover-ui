@@ -10,7 +10,8 @@
     "prod": "cross-env NODE_ENV=production next build && next start -p 8000 -H 0.0.0.0",
     "test": "cross-env NODE_ENV=test jest",
     "test:update": "cross-env NODE_ENV=test jest -u",
-    "test:watch": "cross-env NODE_ENV=test jest --watch"
+    "test:watch": "cross-env NODE_ENV=test jest --watch",
+    "postinstall": "node postinstall-fixes.js"
   },
   "engine": {
     "node": "14.17"
