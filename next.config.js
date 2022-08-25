@@ -30,8 +30,7 @@ module.exports = withPlugins([ withTM ],
             HOOVER_MAPS_ENABLED,
             HOOVER_TRANSLATION_ENABLED,
         },
-        cssModules: false,
-        webpack(config, options) {
+        webpack(config) {
             config.plugins.push(
                 new LodashModuleReplacementPlugin(),
                 new CopyWebpackPlugin({

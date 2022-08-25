@@ -35,8 +35,8 @@ function AttachmentsView() {
     return (
         <div className={classes.container}>
             <List dense>
-                {attachments.length ? attachments.map(({ fileName, data })  => (
-                    <ListItem button onClick={handleFileDownload(fileName, data)}>
+                {attachments.length ? attachments.map(({ fileName, data }, index)  => (
+                    <ListItem key={index} button onClick={handleFileDownload(fileName, data)}>
                         <ListItemText primary={fileName} />
                         <ListItemIcon>{reactIcons.download}</ListItemIcon>
                     </ListItem>

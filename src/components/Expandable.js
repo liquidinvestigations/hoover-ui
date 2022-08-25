@@ -57,8 +57,9 @@ function Expandable({ title, loading, loadingETA, summary, children, greyed, def
     const classes = useStyles()
 
     let openState = open, setOpenState = onToggle
+
+    const [openInternalState, setOpenInternalState] = useState(defaultOpen || false)
     if (typeof open === 'undefined') {
-        const [openInternalState, setOpenInternalState] = useState(defaultOpen || false)
         openState = openInternalState
         setOpenState = setOpenInternalState
     }

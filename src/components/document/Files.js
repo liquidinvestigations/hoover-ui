@@ -62,6 +62,7 @@ function Files() {
                     <a
                         href={createDownloadUrl(`${collectionBaseUrl}/${digest}`, filename)}
                         target={fullPage ? null : '_blank'}
+                        rel="noreferrer"
                         title="Original file"
                         className={classes.link}
                     >

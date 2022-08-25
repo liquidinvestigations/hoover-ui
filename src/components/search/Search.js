@@ -69,12 +69,12 @@ export default function Search({ collections }) {
         return () => {
             Router.events.off('routeChangeStart', clearSearchResults)
         }
-    }, [])
+    }, [clearSearchResults])
 
     const { setLoading } = useProgressIndicator()
     useEffect(() => {
         setLoading(resultsLoading)
-    }, [resultsLoading])
+    }, [resultsLoading, setLoading])
 
     const maxResultsCount = useMemo(() => collections
             .filter(collection => query.collections?.includes(collection.name))

@@ -16,7 +16,7 @@ export const tooltips = {
             </Typography>
             <Typography variant="body2">
                 See more {' '}
-                <a href="https://github.com/liquidinvestigations/docs/wiki/User-Guide:-Hoover#tags" style={{ color: 'white' }} target="_blank">here</a>.
+                <a href="https://github.com/liquidinvestigations/docs/wiki/User-Guide:-Hoover#tags" style={{ color: 'white' }} target="_blank" rel="noreferrer">here</a>.
             </Typography>
         </>
     ),
@@ -26,7 +26,7 @@ export const tooltips = {
             <Typography variant="body2">All lines are combined into a single search.</Typography>
             <Typography variant="body2">
                 Refine your search using {' '}
-                <a href="https://github.com/hoover/search/wiki/Guide-to-search-terms" style={{ color: 'white' }} target="_blank">this handy guide</a>.
+                <a href="https://github.com/hoover/search/wiki/Guide-to-search-terms" style={{ color: 'white' }} target="_blank" rel="noreferrer">this handy guide</a>.
             </Typography>
         </>
     )

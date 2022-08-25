@@ -55,7 +55,7 @@ export default function BatchResults({ loading, results, batchSize, offset, term
                     {results.sort(resultsCompareFn).map(({ term, count, url, error }, index) =>
                         <li key={index} className={cn({ [classes.noHits]: count === 0 })} data-test="result">
                             <Typography>
-                                <a href={url} target="_blank" className={classes.resultLink}>
+                                <a href={url} target="_blank" rel="noreferrer" className={classes.resultLink}>
                                     {error ? <span className={cn(classes.result, classes.error)}>error</span> :
                                         <span className={classes.result}>{count} hits</span>
                                     }

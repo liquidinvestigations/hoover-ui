@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     selected: {}
 }))
 
-export default forwardRef(({ containerRef, pageIndex, rotation, selected, onSelect }, thumbnailRef) => {
+export default forwardRef(function Thumbnail({ containerRef, pageIndex, rotation, selected, onSelect }, thumbnailRef) {
     const classes = useStyles()
     const { doc, firstPageData } = useDocument()
     const [ shouldScroll, setShouldScroll ] = useState(true)

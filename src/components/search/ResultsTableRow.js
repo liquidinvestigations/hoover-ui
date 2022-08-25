@@ -194,7 +194,7 @@ export default function ResultsTableRow({ hit, index }) {
             <TableCell>
                 <Tooltip title="Open in new tab">
                     <IconButton size="small" style={{ marginRight: 15 }}>
-                        <a href={url} target="_blank" className={classes.buttonLink}>
+                        <a href={url} target="_blank" rel="noreferrer" className={classes.buttonLink}>
                             {cloneElement(reactIcons.openNewTab, { className: classes.actionIcon })}
                         </a>
                     </IconButton>

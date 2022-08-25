@@ -19,7 +19,7 @@ export default function TaskTable({header, tasks}) {
             <Table className={classes.table}>
                 <TableHead>
                     <TableRow>
-                        {header.map((head) => (<TableCell align="right">{head}</TableCell>))}
+                        {header.map((head, index) => (<TableCell key={index} align="right">{head}</TableCell>))}
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -28,7 +28,7 @@ export default function TaskTable({header, tasks}) {
                             <TableCell>
                                 {formatTitleCase(task)}
                             </TableCell>
-                            {status.map((cell) => (<TableCell align="right">{cell}</TableCell>))}
+                            {status.map((cell, index) => (<TableCell key={index} align="right">{cell}</TableCell>))}
                         </TableRow>
                     ))}
                 </TableBody>
