@@ -36,7 +36,7 @@ function Results({ maxCount }) {
         <>
             <Pagination maxCount={maxCount} />
             <Grid container>
-                <Grid item container justify="flex-end">
+                <Grid item container justifyContent="flex-end">
                     <Grid item>
                         <Fab
                             size="small"

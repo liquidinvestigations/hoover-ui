@@ -12,7 +12,8 @@
     "test:update": "cross-env NODE_ENV=test jest -u",
     "test:watch": "cross-env NODE_ENV=test jest --watch",
     "tdd": "yarn test:watch",
-    "heroku-postbuild": "next build"
+    "heroku-postbuild": "next build",
+    "postinstall": "node postinstall-fixes.js"
   },
   "engine": {
     "node": "14.17"
@@ -30,7 +31,7 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
     "@material-ui/pickers": "^3.3.10",
-    "@svgr/webpack": "^5.5.0",
+    "@svgr/webpack": "^6.3.1",
     "abort-controller": "^3.0.0",
     "canvas": "^2.7.0",
     "classnames": "^2.2.6",
@@ -42,10 +43,10 @@
     "luxon": "^1.26.0",
     "maplibre-gl": "2.1.7",
     "material-ui-nested-menu-item": "^1.0.2",
-    "next": "10.2.2",
+    "next": "^11.1.4",
     "next-compose-plugins": "^2.2.1",
     "node-fetch": "^2.6.1",
-    "pdfjs-dist": "2.9.359",
+    "pdfjs-dist": "2.15.349",
     "qs": "^6.10.1",
     "react": "^17.0.2",
     "react-beautiful-dnd": "^13.1.0",
@@ -67,10 +68,10 @@
     "jest": "^26.6.3",
     "jest-transform-stub": "^2.0.0",
     "lodash-webpack-plugin": "^0.11.6",
-    "next-transpile-modules": "^6.3.0",
+    "next-transpile-modules": "8.0.0",
     "react-test-renderer": "^17.0.2",
     "url-loader": "^4.1.1",
-    "webpack": "4.46.0",
+    "webpack": "^5.74.0",
     "worker-loader": "^3.0.8"
   }
 }

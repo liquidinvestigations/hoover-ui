@@ -197,7 +197,7 @@ function Histogram({ title, field }) {
             <ListItem onClick={toggle} button dense className={classes.histogramTitle}>
                 <Grid container
                       className={classes.histogramTitle}
-                      justify="space-between"
+                      justifyContent="space-between"
                       alignItems="center"
                       wrap="nowrap"
                 >
@@ -233,7 +233,7 @@ function Histogram({ title, field }) {
                         />
                     )}
                 </div>
-                <Grid container justify="space-between">
+                <Grid container justifyContent="space-between">
                     <Grid item>
                         <Pagination field={field} />
                     </Grid>

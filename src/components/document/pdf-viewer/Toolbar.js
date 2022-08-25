@@ -115,7 +115,7 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
     return (
         <>
             <MuiToolbar variant="dense" classes={{root: classes.toolbar}}>
-                <Grid container justify="space-between">
+                <Grid container justifyContent="space-between">
                     <Grid item>
                         <Tooltip title="Side panel" PopperProps={popperProps}>
                             <span>

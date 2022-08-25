@@ -279,7 +279,7 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
             {aggregation?.buckets.map(bucket => renderBucket(bucket)).filter(Boolean)}
 
             <ListItem dense>
-                <Grid container alignItems="center" justify="space-between">
+                <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
                         {!aggregationFields[field].buckets && (
                             aggregationFields[field].type === 'date' ?

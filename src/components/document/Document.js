@@ -238,7 +238,7 @@ function Document({ onPrev, onNext }) {
                 </Link>
             )}
 
-            <Grid container justify="space-between" wrap="nowrap" className={classes.header}>
+            <Grid container justifyContent="space-between" wrap="nowrap" className={classes.header}>
                 <Grid item className={classes.titleWrapper}>
                     <Box>
                         <Typography variant="h5" className={classes.filename}>

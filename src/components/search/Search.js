@@ -144,7 +144,7 @@ export default function Search({ collections }) {
                                 <Grid container>
                                     <Grid item sm={12}>
                                         <form onSubmit={handleSubmit}>
-                                            <Grid container justify="space-between" alignItems="flex-end">
+                                            <Grid container justifyContent="space-between" alignItems="flex-end">
                                                 <Grid item style={{ flex: 1 }}>
                                                     <TextField
                                                         inputRef={inputRef}

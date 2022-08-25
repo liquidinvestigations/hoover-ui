@@ -44,6 +44,10 @@ module.exports = withPlugins([ withTM ],
                             from: './node_modules/pdfjs-dist/web/images/annotation-*',
                             to: './static/media/annotation/[name].[ext]',
                         },
+                        {
+                            from: './node_modules/pdfjs-dist/build/pdf.worker.js',
+                            to: './static/pdf.worker.js',
+                        },
                     ],
                 }),
             );

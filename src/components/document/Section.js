@@ -55,7 +55,7 @@ function Section({ title, toolbarButtons, children, defaultOpen = true, scrollX 
     return (
         <>
             <ListItem onClick={toggle} button dense className={classes.sectionHeader}>
-                <Grid container alignItems="baseline" justify="space-between">
+                <Grid container alignItems="baseline" justifyContent="space-between">
                     <Grid item>
                         <Typography variant="h6">
                             {title}

@@ -113,7 +113,7 @@ export default function CategoryDrawer({ category, title, icon, children, wideFi
             <Grid
                 container
                 alignItems="baseline"
-                justify="space-between"
+                justifyContent="space-between"
                 wrap="nowrap"
             >
                 <Grid item className={classes.icon}>

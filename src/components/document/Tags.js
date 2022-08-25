@@ -249,7 +249,7 @@ function Tags({ toolbarButtons }) {
                     ))}
                 </ButtonGroup>
 
-                <Grid container justify="space-between">
+                <Grid container justifyContent="space-between">
                     <Grid item style={{ flex: 1 }}>
                         <Autocomplete
                             multiple
@@ -341,7 +341,7 @@ function Tags({ toolbarButtons }) {
                     </Grid>
                 </Grid>
 
-                <Grid container className={classes.buttons} justify="flex-end">
+                <Grid container className={classes.buttons} justifyContent="flex-end">
                     <Grid item>
                         <FormControl size="small" color="primary" variant="outlined">
                             <Select

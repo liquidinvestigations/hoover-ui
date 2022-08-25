@@ -70,7 +70,7 @@ function Pagination({ maxCount }) {
 
     return (
         <Grid container>
-            <Grid item container alignItems="center" justify="space-between" style={{ marginTop: '1rem' }}>
+            <Grid item container alignItems="center" justifyContent="space-between" style={{ marginTop: '1rem' }}>
                 <Grid item>
                     <Typography variant="caption">
                         {`Showing ${from} - ${to} of ${formatThousands(total)} hits. `}
@@ -89,7 +89,7 @@ function Pagination({ maxCount }) {
                 </Grid>
             </Grid>
             {total > 0 && (
-                <Grid item container justify="space-between" alignItems="center">
+                <Grid item container justifyContent="space-between" alignItems="center">
                     <Grid item>
                         <IconButton
                             onClick={handlePrev}
@@ -99,7 +99,7 @@ function Pagination({ maxCount }) {
                             {reactIcons.chevronLeft}
                         </IconButton>
                     </Grid>
-                    <Grid item container justify="space-between" style={{ flex: 1 }}>
+                    <Grid item container justifyContent="space-between" style={{ flex: 1 }}>
                         {Object.entries(pages).map(([group, items]) =>
                             <Grid item key={group}>
                                 {items.map((p, i) =>

@@ -77,7 +77,7 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange, loading }) {
             </ListItem>
 
             <ListItem>
-                <Grid container alignItems="center" justify="space-between">
+                <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
                         <Button
                             size="small"

@@ -31,7 +31,7 @@ export default function InsightsTitle({ name, open, onClick }) {
         >
             <Grid container
                   className={classes.collectionTitle}
-                  justify="space-between"
+                  justifyContent="space-between"
                   alignItems="center"
                   wrap="nowrap"
             >

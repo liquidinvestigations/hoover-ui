@@ -27,7 +27,7 @@ export default function SideToolbar({ viewerRef, currentTab, onTabSwitch }) {
 
     return (
         <MuiToolbar variant="dense" className={classes.toolbar}>
-            <Grid container justify="flex-start">
+            <Grid container justifyContent="flex-start">
                 <Grid item>
                     <Tooltip title="Thumbnails" PopperProps={popperProps}>
                             <span>

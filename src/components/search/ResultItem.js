@@ -197,7 +197,7 @@ function ResultItem({ hit, url, index }) {
             <CardHeader
                 classes={cardHeaderClasses}
                 title={
-                    <Grid container component="span" justify="space-between" wrap="nowrap">
+                    <Grid container component="span" justifyContent="space-between" wrap="nowrap">
                         <Grid container item component="span" className={classes.headerText}>
                             <Grid item className={classes.title} component="span">
                                 <Box component="span" className={classes.index}>{index}.</Box> {fields.filename}
