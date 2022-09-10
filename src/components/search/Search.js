@@ -168,7 +168,7 @@ export default function Search({ collections }) {
 
                                                 <Grid item style={{ marginLeft: 20, marginBottom: 7 }}>
                                                     <Tooltip
-                                                        interactive
+                                                        interactive="true"
                                                         classes={{ tooltip: classes.noMaxWidth }}
                                                         title={tooltips.search}
                                                     >

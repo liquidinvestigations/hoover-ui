@@ -62,6 +62,7 @@ const useStyles = makeStyles(theme => ({
         maxWidth: 100,
     },
     tabsRoot: {
+        minHeight: 65,
         color: theme.palette.primary.contrastText,
         backgroundColor: theme.palette.primary.main,
     },
@@ -309,6 +310,7 @@ function Document({ onPrev, onNext }) {
                     classes={tabsClasses}
                     variant="scrollable"
                     scrollButtons="auto"
+                    indicatorColor="secondary"
                 >
                     {tabsData.filter(tabData => tabData.visible).map((tabData, index) => (
                         <StyledTab

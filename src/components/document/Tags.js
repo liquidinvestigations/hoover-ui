@@ -330,7 +330,7 @@ function Tags({ toolbarButtons }) {
 
                 <Grid item style={{ marginLeft: 20 }}>
                     <Tooltip
-                        interactive
+                        interactive="true"
                         classes={{ tooltip: classes.noMaxWidth }}
                         title={tooltips.tags}
                     >

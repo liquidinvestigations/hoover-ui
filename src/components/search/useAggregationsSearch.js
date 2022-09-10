@@ -173,48 +173,57 @@ export default function useAggregationsSearch(query, forcedRefresh, setCollectio
         }
     }
 
-    useEffect(async () => {
-        const { facets, page, size, order, ...queryRest } = query
-        const { facets: prevFacets, page: prevPage, size: prevSize, order: prevOrder, ...prevQueryRest } = prevFacetsQueryRef.current || {}
+    useEffect(() => {
+        (async () => {
+            const { facets, page, size, order, ...queryRest } = query
+            const {
+                facets: prevFacets,
+                page: prevPage,
+                size: prevSize,
+                order: prevOrder,
+                ...prevQueryRest
+            } = prevFacetsQueryRef.current || {}
 
-        if (JSON.stringify(queryRest) === JSON.stringify(prevQueryRest) && JSON.stringify(facets) !== JSON.stringify(prevFacets)) {
-            const changed = state => Object.entries({
-                ...(facets || {}),
-                ...(prevFacets || {}),
-            }).reduce((acc, [field]) => {
-                if (JSON.stringify(facets?.[field]) !== JSON.stringify(prevFacets?.[field])) {
-                    acc[field] = state
+            if (JSON.stringify(queryRest) === JSON.stringify(prevQueryRest) && JSON.stringify(facets) !==
+                JSON.stringify(prevFacets)) {
+                const changed = state => Object.entries({
+                    ...(facets || {}),
+                    ...(prevFacets || {}),
+                }).reduce((acc, [field]) => {
+                    if (JSON.stringify(facets?.[field]) !== JSON.stringify(prevFacets?.[field])) {
+                        acc[field] = state
+                    }
+                    return acc
+                }, {})
+
+                setAggregationsError(null)
+                setAggregationsLoading(changed(true))
+                setFacetsTasksRequestCounter(buildAggregationsKeysMap(0))
+
+                try {
+                    const fieldList = Object.entries(changed(true)).map(([key]) => key)
+                    const taskData = await searchAPI({
+                        ...query,
+                        q: query.q || '*',
+                        type: 'aggregations',
+                        fieldList,
+                        async: true,
+                    })
+
+                    setFacetsTasks(tasks => ({
+                        ...tasks,
+                        [fieldList.join(',')]: {
+                            ...taskData,
+                            initialEta: taskData?.eta.total_sec
+                        },
+                    }))
+
+                } catch (error) {
+                    handleFacetsError(error)
                 }
-                return acc
-            }, {})
-
-            setAggregationsError(null)
-            setAggregationsLoading(changed(true))
-            setFacetsTasksRequestCounter(buildAggregationsKeysMap(0))
-
-            try {
-                const fieldList = Object.entries(changed(true)).map(([key]) => key)
-                const taskData = await searchAPI({
-                    ...query,
-                    q: query.q || '*',
-                    type: 'aggregations',
-                    fieldList,
-                    async: true,
-                })
-
-                setFacetsTasks(tasks => ({
-                    ...tasks,
-                    [fieldList.join(',')]: {
-                        ...taskData,
-                        initialEta: taskData?.eta.total_sec
-                    },
-                }))
-
-            } catch (error) {
-                handleFacetsError(error)
             }
-        }
-        prevFacetsQueryRef.current = query
+            prevFacetsQueryRef.current = query
+        })()
     }, [JSON.stringify({
         ...query,
         page: null,

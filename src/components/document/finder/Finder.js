@@ -59,27 +59,29 @@ export default function Finder() {
     const [active, setActive] = useState()
     const [columns, setColumns] = useState([])
 
-    useEffect(async () => {
-        if (!loading && pathname && data) {
-            const localData = {...data}
-            let current = localData
-            let level = 0
+    useEffect(() => {
+        (async () => {
+            if (!loading && pathname && data) {
+                const localData = { ...data }
+                let current = localData
+                let level = 0
 
-            setActive(current)
-            setColumns(makeColumns(current, getBasePath(pathname)))
+                setActive(current)
+                setColumns(makeColumns(current, getBasePath(pathname)))
 
-            while (current.parent_id && level <= parentLevels) {
-                current.parent = await docAPI(
-                    getBasePath(pathname) + current.parent_id,
-                    current.parent_children_page
-                )
+                while (current.parent_id && level <= parentLevels) {
+                    current.parent = await docAPI(
+                        getBasePath(pathname) + current.parent_id,
+                        current.parent_children_page
+                    )
 
-                current = current.parent
-                level++
+                    current = current.parent
+                    level++
 
-                setColumns(makeColumns(localData, getBasePath(pathname)))
+                    setColumns(makeColumns(localData, getBasePath(pathname)))
+                }
             }
-        }
+        })()
     }, [data, pathname, loading])
 
     return (

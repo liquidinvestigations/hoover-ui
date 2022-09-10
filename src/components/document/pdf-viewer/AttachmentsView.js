@@ -16,18 +16,20 @@ function AttachmentsView() {
     const { doc } = useDocument()
     const [attachments, setAttachments] = useState([])
 
-    useEffect(async () => {
-        const files = await new Promise(resolve => {
-            doc.getAttachments().then(response => {
-                resolve(!response ? [] :
-                    Object.keys(response).map(file => ({
-                        data: response[file].content,
-                        fileName: response[file].filename,
-                    }))
-                )
+    useEffect(() => {
+        (async () => {
+            const files = await new Promise(resolve => {
+                doc.getAttachments().then(response => {
+                    resolve(!response ? [] :
+                        Object.keys(response).map(file => ({
+                            data: response[file].content,
+                            fileName: response[file].filename,
+                        }))
+                    )
+                })
             })
-        })
-        setAttachments(files)
+            setAttachments(files)
+        })()
     }, [doc])
 
     const handleFileDownload = (fileName, data) => () => downloadFile(fileName, data)

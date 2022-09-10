@@ -10,10 +10,6 @@ const StyledTab = withStyles(
             '&:hover': {
                 opacity: 1,
             },
-            '&$selected': {
-                color: theme.palette.text.primary,
-                backgroundColor: theme.palette.background.default,
-            },
         },
         wrapper: {
             flexDirection: 'row',
@@ -25,7 +21,10 @@ const StyledTab = withStyles(
         labelIcon: {
             minHeight: 48,
         },
-        selected: {},
+        selected: {
+            color: theme.palette.text.primary,
+            backgroundColor: theme.palette.background.default,
+        },
     })
 )
 

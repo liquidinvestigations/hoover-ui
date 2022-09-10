@@ -156,12 +156,14 @@ export default function ResultsTableRow({ hit, index }) {
                             anchorEl={thumbRef.current}
                             open={showPreview}
                             placement="right-start"
-                            modifiers={{
-                                preventOverflow: {
-                                    enabled: true,
-                                    boundariesElement: 'scrollParent',
-                                },
-                            }}
+                            modifiers={[
+                                {
+                                    name: 'preventOverflow',
+                                    options: {
+                                        boundary: 'clippingParents',
+                                    }
+                                }
+                            ]}
                         >
                             <Paper elevation={10} className={classes.preview}>
                                 {previewLoading && <Loading />}

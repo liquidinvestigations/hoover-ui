@@ -22,12 +22,14 @@ export default function Bookmarks({ onSelect }) {
         return elements
     }
 
-    useEffect(async () => {
-        const outline = await new Promise(resolve => {
-            doc.getOutline().then(resolve)
-        })
-        const tree = await createItemsTree(outline)
-        setBookmarks(tree)
+    useEffect(() => {
+        (async () => {
+            const outline = await new Promise(resolve => {
+                doc.getOutline().then(resolve)
+            })
+            const tree = await createItemsTree(outline)
+            setBookmarks(tree)
+        })()
     }, [doc, createItemsTree, setBookmarks])
 
     const handleItemClick = index => event => {
