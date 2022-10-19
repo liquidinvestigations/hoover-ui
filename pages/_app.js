@@ -12,8 +12,10 @@ import { whoami } from '../src/backend/api'
 import UserProvider from '../src/components/UserProvider'
 import HashStateProvider from '../src/components/HashStateProvider'
 import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
+import { SharedStore } from "../src/stores/SharedStore"
+import SharedStoreProvider from "../src/components/SharedStoreProvider"
 
-export default function HooverApp({ Component, pageProps, whoAmI }) {
+export default function HooverApp({ Component, pageProps, user }) {
     useEffect(() => {
         // Remove the server-side injected CSS.
         const jssStyles = document.querySelector(`#${JSS_CSS}`);
@@ -22,17 +24,21 @@ export default function HooverApp({ Component, pageProps, whoAmI }) {
         }
     }, [])
 
+    const sharedStore = new SharedStore({ user })
+
     return (
         <ThemeProvider theme={theme}>
             <LocalizationProvider dateAdapter={AdapterLuxon}>
                 <CssBaseline />
-                <UserProvider whoAmI={whoAmI}>
-                    <HashStateProvider>
-                        <Layout>
-                            <Component {...pageProps} />
-                        </Layout>
-                    </HashStateProvider>
-                </UserProvider>
+                <SharedStoreProvider store={sharedStore}>
+                    <UserProvider whoAmI={user}>
+                        <HashStateProvider>
+                            <Layout>
+                                <Component {...pageProps} />
+                            </Layout>
+                        </HashStateProvider>
+                    </UserProvider>
+                </SharedStoreProvider>
             </LocalizationProvider>
         </ThemeProvider>
     )
@@ -42,7 +48,7 @@ HooverApp.getInitialProps = async appContext => {
     const appProps = await App.getInitialProps(appContext)
 
     const headers = appContext.ctx.req ? getAuthorizationHeaders(appContext.ctx.req) : {}
-    const whoAmI = await whoami(headers)
+    const user = await whoami(headers)
 
-    return { ...appProps, whoAmI }
+    return { ...appProps, user }
 }
