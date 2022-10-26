@@ -15,10 +15,14 @@ import Toolbar from './Toolbar'
 import Loading from '../Loading'
 import { useUser } from '../UserProvider'
 import { useTags } from './TagsProvider'
-import { createOcrUrl } from '../../backend/api'
+import { createOcrUrl, createUploadUrl } from '../../backend/api'
 import { specialTags } from '../../constants/specialTags'
 import { reactIcons } from '../../constants/icons'
 import { getTagIcon } from '../../utils'
+import Uppy from '@uppy/core'
+import Tus from '@uppy/tus'
+import { FileInput } from '@uppy/react'
+
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -88,6 +92,21 @@ const useStyles = makeStyles(theme => ({
 function Document({ onPrev, onNext }) {
     const classes = useStyles()
     const whoAmI = useUser()
+
+    const uppy = new Uppy({
+        meta: { name: '200.jpg',
+                collection: 'test3',
+                dirpk: 4,
+              },
+        restrictions: { maxNumberOfFiles: 1 },
+        autoProceed: true,
+    })
+
+    uppy.use(Tus, {
+        endpoint: 'http://localhost:8000/api/v1/upload/',
+        retryDelays: [0, 1000, 3000, 5000],
+        limit: 3,
+    })
 
     const {
         data, pathname, loading,
@@ -227,6 +246,16 @@ function Document({ onPrev, onNext }) {
         icon: reactIcons.headersTab,
         visible: !!data.content.tree,
         content: <Text content={data.content.tree} />,
+
+    },{name: 'Upload',
+       icon: reactIcons.headersTab,
+       visible: !printMode,
+       content: <FileInput
+       // assuming `props.uppy` contains an Uppy instance:
+       uppy={uppy}
+       pretty
+       inputName="files[]"
+       />
     }]
 
     return (
