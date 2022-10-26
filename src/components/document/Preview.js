@@ -1,5 +1,5 @@
 import React, { memo } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 import PDFViewer from './pdf-viewer/Dynamic'
 import TIFFViewer from './TIFFViewer'
 import { useDocument } from './DocumentProvider'

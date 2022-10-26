@@ -1,7 +1,7 @@
 import React, { memo } from 'react'
 import cn from 'classnames'
-import { Grid, IconButton, Typography } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { Grid, IconButton, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import { formatThousands } from '../../utils';
 import SearchSize from './SearchSize'
 import { useSearch } from './SearchProvider'
@@ -70,7 +70,7 @@ function Pagination({ maxCount }) {
 
     return (
         <Grid container>
-            <Grid item container alignItems="center" justify="space-between" style={{ marginTop: '1rem' }}>
+            <Grid item container alignItems="center" justifyContent="space-between" style={{ marginTop: '1rem' }}>
                 <Grid item>
                     <Typography variant="caption">
                         {`Showing ${from} - ${to} of ${formatThousands(total)} hits. `}
@@ -89,17 +89,17 @@ function Pagination({ maxCount }) {
                 </Grid>
             </Grid>
             {total > 0 && (
-                <Grid item container justify="space-between" alignItems="center">
+                <Grid item container justifyContent="space-between" alignItems="center">
                     <Grid item>
                         <IconButton
                             onClick={handlePrev}
                             disabled={!hasPrev}
                             data-test="prev-results-page"
-                        >
+                            size="large">
                             {reactIcons.chevronLeft}
                         </IconButton>
                     </Grid>
-                    <Grid item container justify="space-between" style={{ flex: 1 }}>
+                    <Grid item container justifyContent="space-between" style={{ flex: 1 }}>
                         {Object.entries(pages).map(([group, items]) =>
                             <Grid item key={group}>
                                 {items.map((p, i) =>
@@ -121,14 +121,14 @@ function Pagination({ maxCount }) {
                             onClick={handleNext}
                             disabled={!hasNext}
                             data-test="next-results-page"
-                        >
+                            size="large">
                             {reactIcons.chevronRight}
                         </IconButton>
                     </Grid>
                 </Grid>
             )}
         </Grid>
-    )
+    );
 }
 
 export default memo(Pagination)

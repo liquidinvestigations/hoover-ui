@@ -1,7 +1,7 @@
 import React, { cloneElement, memo, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
 import { DateTime } from 'luxon'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 import {
     Box,
     Card,
@@ -13,7 +13,7 @@ import {
     Popper,
     Tooltip,
     Typography
-} from '@material-ui/core'
+} from '@mui/material'
 import Loading from '../Loading'
 import { useUser } from '../UserProvider'
 import { useHashState } from '../HashStateProvider'
@@ -197,7 +197,7 @@ function ResultItem({ hit, url, index }) {
             <CardHeader
                 classes={cardHeaderClasses}
                 title={
-                    <Grid container component="span" justify="space-between" wrap="nowrap">
+                    <Grid container component="span" justifyContent="space-between" wrap="nowrap">
                         <Grid container item component="span" className={classes.headerText}>
                             <Grid item className={classes.title} component="span">
                                 <Box component="span" className={classes.index}>{index}.</Box> {fields.filename}
@@ -265,12 +265,14 @@ function ResultItem({ hit, url, index }) {
                                         anchorEl={thumbRef.current}
                                         open={showPreview}
                                         placement="left-start"
-                                        modifiers={{
-                                            preventOverflow: {
-                                                enabled: true,
-                                                boundariesElement: 'scrollParent',
-                                            },
-                                        }}
+                                        modifiers={[
+                                            {
+                                                name: 'preventOverflow',
+                                                options: {
+                                                    boundary: 'clippingParents',
+                                                }
+                                            }
+                                        ]}
                                     >
                                         <Paper elevation={10} className={classes.preview}>
                                             {previewLoading && <Loading />}
@@ -302,7 +304,7 @@ function ResultItem({ hit, url, index }) {
                             <Grid item>
                                 <Tooltip title="Open in new tab">
                                     <IconButton size="small" style={{ marginRight: 15 }}>
-                                        <a href={url} target="_blank" className={classes.buttonLink}>
+                                        <a href={url} target="_blank" rel="noreferrer" className={classes.buttonLink}>
                                             {cloneElement(reactIcons.openNewTab, { className: classes.actionIcon })}
                                         </a>
                                     </IconButton>

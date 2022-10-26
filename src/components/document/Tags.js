@@ -1,5 +1,6 @@
 import React, { cloneElement, memo, useEffect, useMemo, useState } from 'react'
 import {
+    Autocomplete,
     Box,
     Button,
     ButtonGroup,
@@ -13,10 +14,9 @@ import {
     TextField,
     Tooltip,
     Typography
-} from '@material-ui/core'
-import { Autocomplete } from '@material-ui/lab'
-import { makeStyles } from '@material-ui/core/styles'
-import { blue } from '@material-ui/core/colors'
+} from '@mui/material'
+import { makeStyles } from '@mui/styles'
+import { blue } from '@mui/material/colors'
 import Loading from '../Loading'
 import TagTooltip from './TagTooltip'
 import { useDocument } from './DocumentProvider'
@@ -145,7 +145,7 @@ function Tags({ toolbarButtons }) {
             }
         })
         return Object.entries(usersTags)
-    }, [tags])
+    }, [tags, whoAmI.username])
 
     if (tagsError) {
         return (
@@ -230,177 +230,174 @@ function Tags({ toolbarButtons }) {
         tagsAggregations?.tags?.values?.buckets :
         tagsAggregations?.['priv-tags']?.values?.buckets
 
-    return (
-        tagsLoading ? <Loading /> :
-            <>
-                <ButtonGroup className={classes.toolbarButtons}>
-                    {toolbarButtons && toolbarButtons.map(({tooltip, label, icon, ...props}, index) => (
-                        <Tooltip title={tooltip} key={index}>
-                            <Button
-                                className={classes.toolbarButton}
-                                color="default"
-                                size="small"
-                                component="a"
-                                endIcon={icon}
-                                {...props}>
-                                {label}
-                            </Button>
-                        </Tooltip>
-                    ))}
-                </ButtonGroup>
+    return tagsLoading ? <Loading /> :
+        <>
+            <ButtonGroup className={classes.toolbarButtons}>
+                {toolbarButtons && toolbarButtons.map(({tooltip, label, icon, ...props}, index) => (
+                    <Tooltip title={tooltip} key={index}>
+                        <Button
+                            className={classes.toolbarButton}
+                            size="small"
+                            component="a"
+                            endIcon={icon}
+                            {...props}>
+                            {label}
+                        </Button>
+                    </Tooltip>
+                ))}
+            </ButtonGroup>
 
-                <Grid container justify="space-between">
-                    <Grid item style={{ flex: 1 }}>
-                        <Autocomplete
-                            multiple
-                            freeSolo
-                            fullWidth
-                            disableClearable
-                            value={tagsValue}
-                            disabled={tagsLocked}
-                            options={options || []}
-                            getOptionDisabled={option => (
-                                tagsValue
-                                    .filter(tag => newTagVisibility === 'public' ? tag.public : !tag.public)
-                                    .map(tag => tag.tag)
-                                    .includes(option.key)
-                            )}
-                            getOptionLabel={option => option.key}
-                            renderOption={option => (
-                                <span className={classes.option}>
-                                    <span>{option.key}</span>
-                                    <span className={classes.optionCount}>{option.doc_count}</span>
-                                </span>
-                            )}
-                            loading={tagsAggregationsLoading}
-                            renderTags={(value, getTagProps) =>
-                                value.map((chip, index) => (
-                                    <TagTooltip key={index} chip={chip}>
-                                        <Chip
-                                            label={ !!getTagIcon(chip.tag, chip.public) ?
-                                                <>
-                                                    {cloneElement(getTagIcon(chip.tag, chip.public), {
-                                                        style: {
-                                                            ...getTagIcon(chip.tag, chip.public).props.style,
-                                                            marginLeft: -8,
-                                                            marginRight: 4,
-                                                            verticalAlign: 'middle',
-                                                        }
-                                                    })}
-                                                    <span style={{ verticalAlign: 'middle' }}>
-                                                                {chip.tag}
-                                                            </span>
-                                                </> : chip.tag
-                                            }
-                                            icon={chip.user === whoAmI.username && !specialTagsList.includes(chip.tag) ?
-                                                <Tooltip title={`make ${chip.public ? 'private' : 'public'}`}>
-                                                    <IconButton
-                                                        size="small"
-                                                        onClick={handleTagLockClick(chip)}
-                                                    >
-                                                        {chip.public ? reactIcons.publicTag : reactIcons.privateTag}
-                                                    </IconButton>
-                                                </Tooltip> : null
-                                            }
-                                            style={{ backgroundColor: getChipColor(chip) }}
-                                            {...getTagProps({ index })}
-                                        />
-                                    </TagTooltip>
-                                ))
-                            }
-                            inputValue={inputValue}
-                            onInputChange={handleInputChange}
-                            renderInput={params => (
-                                <TextField
-                                    {...params}
-                                    placeholder={(tagsValue.length === 0 ? 'no tags, ' : '') + 'start typing to add'}
-                                    InputProps={{
-                                        ...params.InputProps,
-                                        endAdornment: (
-                                            <React.Fragment>
-                                                {tagsAggregationsLoading ? <CircularProgress color="inherit" size={20} /> : null}
-                                                {params.InputProps.endAdornment}
-                                            </React.Fragment>
-                                        ),
-                                        onFocus: handleInputFocus
-                                    }}
-                                />
-                            )}
-                            onChange={handleChange}
-                        />
-                    </Grid>
-
-                    <Grid item style={{ marginLeft: 20 }}>
-                        <Tooltip
-                            interactive
-                            classes={{ tooltip: classes.noMaxWidth }}
-                            title={tooltips.tags}
-                        >
-                            {React.cloneElement(reactIcons.help, { className: classes.help })}
-                        </Tooltip>
-                    </Grid>
+            <Grid container justifyContent="space-between">
+                <Grid item style={{ flex: 1 }}>
+                    <Autocomplete
+                        multiple
+                        freeSolo
+                        fullWidth
+                        disableClearable
+                        value={tagsValue}
+                        disabled={tagsLocked}
+                        options={options || []}
+                        getOptionDisabled={option => (
+                            tagsValue
+                                .filter(tag => newTagVisibility === 'public' ? tag.public : !tag.public)
+                                .map(tag => tag.tag)
+                                .includes(option.key)
+                        )}
+                        getOptionLabel={option => option.key}
+                        renderOption={option => (
+                            <span className={classes.option}>
+                                <span>{option.key}</span>
+                                <span className={classes.optionCount}>{option.doc_count}</span>
+                            </span>
+                        )}
+                        loading={tagsAggregationsLoading}
+                        renderTags={(value, getTagProps) =>
+                            value.map((chip, index) => (
+                                <TagTooltip key={index} chip={chip}>
+                                    <Chip
+                                        label={ !!getTagIcon(chip.tag, chip.public) ?
+                                            <>
+                                                {cloneElement(getTagIcon(chip.tag, chip.public), {
+                                                    style: {
+                                                        ...getTagIcon(chip.tag, chip.public).props.style,
+                                                        marginLeft: -8,
+                                                        marginRight: 4,
+                                                        verticalAlign: 'middle',
+                                                    }
+                                                })}
+                                                <span style={{ verticalAlign: 'middle' }}>
+                                                            {chip.tag}
+                                                        </span>
+                                            </> : chip.tag
+                                        }
+                                        icon={chip.user === whoAmI.username && !specialTagsList.includes(chip.tag) ?
+                                            <Tooltip title={`make ${chip.public ? 'private' : 'public'}`}>
+                                                <IconButton
+                                                    size="small"
+                                                    onClick={handleTagLockClick(chip)}
+                                                >
+                                                    {chip.public ? reactIcons.publicTag : reactIcons.privateTag}
+                                                </IconButton>
+                                            </Tooltip> : null
+                                        }
+                                        style={{ backgroundColor: getChipColor(chip) }}
+                                        {...getTagProps({ index })}
+                                    />
+                                </TagTooltip>
+                            ))
+                        }
+                        inputValue={inputValue}
+                        onInputChange={handleInputChange}
+                        renderInput={params => (
+                            <TextField
+                                variant="standard"
+                                {...params}
+                                placeholder={(tagsValue.length === 0 ? 'no tags, ' : '') + 'start typing to add'}
+                                InputProps={{
+                                    ...params.InputProps,
+                                    endAdornment: (
+                                        <React.Fragment>
+                                            {tagsAggregationsLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                                            {params.InputProps.endAdornment}
+                                        </React.Fragment>
+                                    ),
+                                    onFocus: handleInputFocus
+                                }} />
+                        )}
+                        onChange={handleChange}
+                    />
                 </Grid>
 
-                <Grid container className={classes.buttons} justify="flex-end">
-                    <Grid item>
-                        <FormControl size="small" color="primary" variant="outlined">
-                            <Select
-                                value={newTagVisibility}
-                                onChange={handleNewTagVisibilityChange}
-                            >
-                                <MenuItem value="public">Public</MenuItem>
-                                <MenuItem value="private">Private</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid>
+                <Grid item style={{ marginLeft: 20 }}>
+                    <Tooltip
+                        interactive="true"
+                        classes={{ tooltip: classes.noMaxWidth }}
+                        title={tooltips.tags}
+                    >
+                        {React.cloneElement(reactIcons.help, { className: classes.help })}
+                    </Tooltip>
                 </Grid>
+            </Grid>
 
-                {otherUsersTags.map(([user, tags], index) =>
-                    <Box key={index} my={3} pb={0.7} className={classes.otherTags}>
-                        <Typography variant="subtitle2" className={classes.otherTagsInfo}>
-                            Public tags from <i>{user}</i>:
-                        </Typography>
+            <Grid container className={classes.buttons} justifyContent="flex-end">
+                <Grid item>
+                    <FormControl size="small" color="primary" variant="outlined">
+                        <Select
+                            variant="standard"
+                            value={newTagVisibility}
+                            onChange={handleNewTagVisibilityChange}>
+                            <MenuItem value="public">Public</MenuItem>
+                            <MenuItem value="private">Private</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Grid>
+            </Grid>
 
-                        <Grid container>
-                            {tags.map((chip, key) =>
-                                <Grid item className={classes.tag} key={key}>
-                                    <TagTooltip key={key} chip={chip}>
-                                        <Chip
-                                            label={ !!getTagIcon(chip.tag, chip.public) ?
-                                                <>
-                                                    {cloneElement(getTagIcon(chip.tag, chip.public), {
-                                                        style: {
-                                                            ...getTagIcon(chip.tag, chip.public).props.style,
-                                                            marginLeft: -8,
-                                                            marginRight: 4,
-                                                            verticalAlign: 'middle',
-                                                        }
-                                                    })}
-                                                    <span style={{ verticalAlign: 'middle' }}>
-                                                        {chip.tag}
-                                                    </span>
-                                                </> : chip.tag
-                                            }
-                                            icon={!specialTagsList.includes(chip.tag) ?
-                                                <Tooltip title={`make ${chip.public ? 'private' : 'public'}`}>
-                                                    <IconButton size="small">
-                                                        {chip.public ? reactIcons.publicTag : reactIcons.privateTag}
-                                                    </IconButton>
-                                                </Tooltip> : null
-                                            }
-                                            style={{
-                                                pointerEvents: 'none',
-                                                backgroundColor: getChipColor(chip)
-                                            }}
-                                        />
-                                    </TagTooltip>
-                                </Grid>
-                            )}
-                        </Grid>
-                    </Box>
-                )}
-            </>
-    )
+            {otherUsersTags.map(([user, tags], index) =>
+                <Box key={index} my={3} pb={0.7} className={classes.otherTags}>
+                    <Typography variant="subtitle2" className={classes.otherTagsInfo}>
+                        Public tags from <i>{user}</i>:
+                    </Typography>
+
+                    <Grid container>
+                        {tags.map((chip, key) =>
+                            <Grid item className={classes.tag} key={key}>
+                                <TagTooltip key={key} chip={chip}>
+                                    <Chip
+                                        label={ !!getTagIcon(chip.tag, chip.public) ?
+                                            <>
+                                                {cloneElement(getTagIcon(chip.tag, chip.public), {
+                                                    style: {
+                                                        ...getTagIcon(chip.tag, chip.public).props.style,
+                                                        marginLeft: -8,
+                                                        marginRight: 4,
+                                                        verticalAlign: 'middle',
+                                                    }
+                                                })}
+                                                <span style={{ verticalAlign: 'middle' }}>
+                                                    {chip.tag}
+                                                </span>
+                                            </> : chip.tag
+                                        }
+                                        icon={!specialTagsList.includes(chip.tag) ?
+                                            <Tooltip title={`make ${chip.public ? 'private' : 'public'}`}>
+                                                <IconButton size="small">
+                                                    {chip.public ? reactIcons.publicTag : reactIcons.privateTag}
+                                                </IconButton>
+                                            </Tooltip> : null
+                                        }
+                                        style={{
+                                            pointerEvents: 'none',
+                                            backgroundColor: getChipColor(chip)
+                                        }}
+                                    />
+                                </TagTooltip>
+                            </Grid>
+                        )}
+                    </Grid>
+                </Box>
+            )}
+        </>;
 }
 
 export default memo(Tags)

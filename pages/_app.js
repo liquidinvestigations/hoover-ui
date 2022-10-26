@@ -1,10 +1,10 @@
 import '../styles/main.css'
 import React, { useEffect } from 'react'
 import App from 'next/app'
-import LuxonUtils from '@date-io/luxon'
-import { ThemeProvider } from '@material-ui/core/styles'
-import { CssBaseline } from '@material-ui/core'
-import { MuiPickersUtilsProvider } from '@material-ui/pickers'
+import { ThemeProvider } from '@mui/styles'
+import { CssBaseline } from '@mui/material'
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
+import { LocalizationProvider } from '@mui/x-date-pickers'
 import { JSS_CSS } from "../src/constants/general"
 import Layout from '../src/components/Layout'
 import theme from '../src/theme'
@@ -24,7 +24,7 @@ export default function HooverApp({ Component, pageProps, whoAmI }) {
 
     return (
         <ThemeProvider theme={theme}>
-            <MuiPickersUtilsProvider utils={LuxonUtils}>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
                 <CssBaseline />
                 <UserProvider whoAmI={whoAmI}>
                     <HashStateProvider>
@@ -33,7 +33,7 @@ export default function HooverApp({ Component, pageProps, whoAmI }) {
                         </Layout>
                     </HashStateProvider>
                 </UserProvider>
-            </MuiPickersUtilsProvider>
+            </LocalizationProvider>
         </ThemeProvider>
     )
 }

@@ -1,6 +1,6 @@
 import React from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import { CircularProgress, IconButton } from '@material-ui/core'
+import { makeStyles } from '@mui/styles'
+import { CircularProgress, IconButton } from '@mui/material'
 import { useSearch } from '../SearchProvider'
 import { DEFAULT_FACET_SIZE } from '../../../constants/general'
 import { reactIcons } from '../../../constants/icons'

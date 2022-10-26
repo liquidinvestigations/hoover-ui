@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState } from 'react'
-import { List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import { useDocument } from './DocumentProvider'
 import { reactIcons } from '../../../constants/icons'
 import { downloadFile } from '../../../utils'
@@ -16,18 +16,20 @@ function AttachmentsView() {
     const { doc } = useDocument()
     const [attachments, setAttachments] = useState([])
 
-    useEffect(async () => {
-        const files = await new Promise(resolve => {
-            doc.getAttachments().then(response => {
-                resolve(!response ? [] :
-                    Object.keys(response).map(file => ({
-                        data: response[file].content,
-                        fileName: response[file].filename,
-                    }))
-                )
+    useEffect(() => {
+        (async () => {
+            const files = await new Promise(resolve => {
+                doc.getAttachments().then(response => {
+                    resolve(!response ? [] :
+                        Object.keys(response).map(file => ({
+                            data: response[file].content,
+                            fileName: response[file].filename,
+                        }))
+                    )
+                })
             })
-        })
-        setAttachments(files)
+            setAttachments(files)
+        })()
     }, [doc])
 
     const handleFileDownload = (fileName, data) => () => downloadFile(fileName, data)
@@ -35,8 +37,8 @@ function AttachmentsView() {
     return (
         <div className={classes.container}>
             <List dense>
-                {attachments.length ? attachments.map(({ fileName, data })  => (
-                    <ListItem button onClick={handleFileDownload(fileName, data)}>
+                {attachments.length ? attachments.map(({ fileName, data }, index)  => (
+                    <ListItem key={index} button onClick={handleFileDownload(fileName, data)}>
                         <ListItemText primary={fileName} />
                         <ListItemIcon>{reactIcons.download}</ListItemIcon>
                     </ListItem>

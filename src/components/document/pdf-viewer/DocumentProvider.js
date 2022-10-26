@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { getDocument, GlobalWorkerOptions, PasswordResponses, PDFWorker } from 'pdfjs-dist/build/pdf'
-import 'pdfjs-dist/build/pdf.worker'
 
 if (typeof window !== 'undefined' && 'Worker' in window) {
     GlobalWorkerOptions.workerSrc = '/_next/static/pdf.worker.js'
@@ -73,8 +72,8 @@ export default function DocumentProvider({ url, cMaps, cMapsPacked, withCredenti
         )
 
         return () => {
-            loadingTask.destroy()
-            worker.destroy()
+            loadingTask.destroy?.()
+            worker.destroy?.()
         }
     }, [url])
 

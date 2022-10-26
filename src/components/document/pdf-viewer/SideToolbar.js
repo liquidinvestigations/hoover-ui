@@ -1,7 +1,7 @@
 import React from 'react'
-import { Grid, IconButton, Toolbar as MuiToolbar, Tooltip } from '@material-ui/core'
+import { Grid, IconButton, Toolbar as MuiToolbar, Tooltip } from '@mui/material'
 import { reactIcons } from '../../../constants/icons'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles(theme => ({
     toolbar: {
@@ -27,7 +27,7 @@ export default function SideToolbar({ viewerRef, currentTab, onTabSwitch }) {
 
     return (
         <MuiToolbar variant="dense" className={classes.toolbar}>
-            <Grid container justify="flex-start">
+            <Grid container justifyContent="flex-start">
                 <Grid item>
                     <Tooltip title="Thumbnails" PopperProps={popperProps}>
                             <span>

@@ -1,9 +1,9 @@
 import React, { cloneElement, useState } from 'react'
 import cn from 'classnames'
-import { Box, ButtonBase, Menu, MenuItem } from '@material-ui/core'
+import { Box, ButtonBase, Menu, MenuItem } from '@mui/material'
 import { DEFAULT_OPERATOR } from '../../constants/general'
-import { makeStyles } from '@material-ui/core/styles'
-import { red } from '@material-ui/core/colors'
+import { makeStyles } from '@mui/styles'
+import { red } from '@mui/material/colors'
 
 const useStyles = makeStyles(theme => ({
     box: {

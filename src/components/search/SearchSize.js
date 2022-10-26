@@ -1,6 +1,6 @@
 import React, { memo } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import { Grid, MenuItem, Select, Typography } from '@material-ui/core'
+import { makeStyles } from '@mui/styles'
+import { Grid, MenuItem, Select, Typography } from '@mui/material'
 import { SIZE_OPTIONS } from '../../constants/general'
 import { useSearch } from './SearchProvider'
 
@@ -29,21 +29,21 @@ function SearchSize ({ page, size }) {
             </Grid>
             <Grid item>
                 <Select
+                    variant="standard"
                     autoWidth
                     disableUnderline
                     value={size}
                     onChange={handleSizeChange}
                     MenuProps={{
                         'data-test': 'size-menu'
-                    }}
-                >
+                    }}>
                     {SIZE_OPTIONS.map(option => (
                         <MenuItem key={option} value={option}>{option}</MenuItem>
                     ))}
                 </Select>
             </Grid>
         </Grid>
-    )
+    );
 }
 
 export default memo(SearchSize)

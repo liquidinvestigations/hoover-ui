@@ -77,7 +77,7 @@ import {
     VisibilityOffOutlined,
     ZoomIn,
     ZoomOut,
-} from '@material-ui/icons'
+} from '@mui/icons-material'
 
 const FAIcon = ({ icon, style, className }) => React.createElement(FontAwesomeIcon, {
     icon,

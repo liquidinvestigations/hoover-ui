@@ -1,6 +1,6 @@
 import React, { cloneElement } from 'react'
-import { Grid, ListItem, Typography } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { Grid, ListItem, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import { reactIcons } from '../../constants/icons'
 
 const useStyles = makeStyles(theme => ({
@@ -31,7 +31,7 @@ export default function InsightsTitle({ name, open, onClick }) {
         >
             <Grid container
                   className={classes.collectionTitle}
-                  justify="space-between"
+                  justifyContent="space-between"
                   alignItems="center"
                   wrap="nowrap"
             >

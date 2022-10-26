@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { TreeItem } from '@material-ui/lab'
+import { TreeItem } from '@mui/lab'
 import { useDocument } from './DocumentProvider'
 
 export default function Bookmarks({ onSelect }) {
@@ -8,8 +8,8 @@ export default function Bookmarks({ onSelect }) {
     const createItemsTree = async items => {
         const elements = []
         if (items?.length) {
-            for (let i = 0; i < items.length; i++) {
-                const { title, dest, items: subItems } = items[i]
+            for (const element of items) {
+                const { title, dest, items: subItems } = element
                 const index = await new Promise(resolve => {
                     doc.getDestination(dest).then(dest => {
                         const ref = dest[0]
@@ -22,13 +22,15 @@ export default function Bookmarks({ onSelect }) {
         return elements
     }
 
-    useEffect(async () => {
-        const outline = await new Promise(resolve => {
-            doc.getOutline().then(resolve)
-        })
-        const tree = await createItemsTree(outline)
-        setBookmarks(tree)
-    }, [doc])
+    useEffect(() => {
+        (async () => {
+            const outline = await new Promise(resolve => {
+                doc.getOutline().then(resolve)
+            })
+            const tree = await createItemsTree(outline)
+            setBookmarks(tree)
+        })()
+    }, [doc, createItemsTree, setBookmarks])
 
     const handleItemClick = index => event => {
         event.preventDefault()
@@ -41,7 +43,7 @@ export default function Bookmarks({ onSelect }) {
             <TreeItem key={id} nodeId={title} label={title} onLabelClick={handleItemClick(index)}>
                 {renderTree(subItems)}
             </TreeItem>
-        )), [bookmarks])
+        )), [bookmarks, handleItemClick, id])
 
     return (
         !bookmarks.length ? <TreeItem nodeId="0" label="No bookmarks" /> :

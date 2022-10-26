@@ -90,7 +90,7 @@ export function DocumentProvider({ children, collection, collections, id, path, 
             setData(null)
             setLoading(false)
         }
-    }, [collection, id, path])
+    }, [collection, collectionBaseUrl, id, path, hashState?.subTab, hashState?.tab])
 
     useEffect(() => {
         if (typeof hashState?.tab !== 'undefined') {

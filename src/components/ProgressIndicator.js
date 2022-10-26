@@ -1,6 +1,6 @@
 import React, { createContext, memo, useContext, useState } from 'react'
-import { CircularProgress, LinearProgress } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { CircularProgress, LinearProgress } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles(theme => ({
     linear: {

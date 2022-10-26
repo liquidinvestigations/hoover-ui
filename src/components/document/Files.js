@@ -1,7 +1,7 @@
 import React, { memo, useState } from 'react'
 import Link from 'next/link'
-import { Box, Table, TableBody, TableCell, TableRow } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { Box, Table, TableBody, TableCell, TableRow } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import { useDocument } from './DocumentProvider'
 import Loading from '../Loading'
 import { humanFileSize } from '../../utils'
@@ -62,6 +62,7 @@ function Files() {
                     <a
                         href={createDownloadUrl(`${collectionBaseUrl}/${digest}`, filename)}
                         target={fullPage ? null : '_blank'}
+                        rel="noreferrer"
                         title="Original file"
                         className={classes.link}
                     >

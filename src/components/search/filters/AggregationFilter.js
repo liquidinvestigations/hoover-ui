@@ -1,7 +1,7 @@
 import React, { cloneElement, memo } from 'react'
 import cn from 'classnames'
 import isEqual from 'react-fast-compare'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 import {
     Button,
     Checkbox,
@@ -13,7 +13,7 @@ import {
     ListItem,
     ListItemText,
     Typography
-} from '@material-ui/core'
+} from '@mui/material'
 import Pagination from './Pagination'
 import MoreButton from './MoreButton'
 import { formatThousands, getTagIcon, getTypeIcon } from '../../../utils'
@@ -279,7 +279,7 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
             {aggregation?.buckets.map(bucket => renderBucket(bucket)).filter(Boolean)}
 
             <ListItem dense>
-                <Grid container alignItems="center" justify="space-between">
+                <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
                         {!aggregationFields[field].buckets && (
                             aggregationFields[field].type === 'date' ?

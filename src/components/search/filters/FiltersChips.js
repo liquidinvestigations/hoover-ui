@@ -1,8 +1,8 @@
 import React, { cloneElement, useCallback, useEffect, useState } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 import lucene from 'lucene'
-import { Box, Chip, FormControl, Typography } from '@material-ui/core'
-import { blue, green, red } from '@material-ui/core/colors'
+import { Box, Chip, FormControl, Typography } from '@mui/material'
+import { blue, green, red } from '@mui/material/colors'
 import ChipsTree from '../ChipsTree'
 import { useSearch } from '../SearchProvider'
 import { aggregationFields } from '../../../constants/aggregationFields'
@@ -227,7 +227,7 @@ export default function FiltersChips() {
             <Typography variant="h6" className={classes.treeTitle}>
                 Filters
             </Typography>
-            <FormControl margin="normal">
+            <FormControl variant="standard" margin="normal">
                 <ChipsTree
                     tree={parsedFilters}
                     renderChip={getChip}
@@ -236,5 +236,5 @@ export default function FiltersChips() {
                     onExpressionDelete={handleDelete}
                 />
             </FormControl>
-        </Box> : null
+        </Box> : null;
 }

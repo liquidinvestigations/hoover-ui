@@ -1,7 +1,7 @@
 import React, { cloneElement, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
-import { IconButton, Paper, Popper, TableCell, TableRow, Tooltip } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { IconButton, Paper, Popper, TableCell, TableRow, Tooltip } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import { useSearch } from './SearchProvider'
 import { useHashState } from '../HashStateProvider'
 import { createDownloadUrl, createThumbnailSrc } from '../../backend/api'
@@ -156,12 +156,14 @@ export default function ResultsTableRow({ hit, index }) {
                             anchorEl={thumbRef.current}
                             open={showPreview}
                             placement="right-start"
-                            modifiers={{
-                                preventOverflow: {
-                                    enabled: true,
-                                    boundariesElement: 'scrollParent',
-                                },
-                            }}
+                            modifiers={[
+                                {
+                                    name: 'preventOverflow',
+                                    options: {
+                                        boundary: 'clippingParents',
+                                    }
+                                }
+                            ]}
                         >
                             <Paper elevation={10} className={classes.preview}>
                                 {previewLoading && <Loading />}
@@ -194,7 +196,7 @@ export default function ResultsTableRow({ hit, index }) {
             <TableCell>
                 <Tooltip title="Open in new tab">
                     <IconButton size="small" style={{ marginRight: 15 }}>
-                        <a href={url} target="_blank" className={classes.buttonLink}>
+                        <a href={url} target="_blank" rel="noreferrer" className={classes.buttonLink}>
                             {cloneElement(reactIcons.openNewTab, { className: classes.actionIcon })}
                         </a>
                     </IconButton>

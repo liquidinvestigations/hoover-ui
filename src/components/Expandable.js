@@ -1,7 +1,7 @@
 import React, { cloneElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import cn from 'classnames'
-import { makeStyles } from '@material-ui/core/styles'
-import { CircularProgress, Collapse, Fade, Grid, IconButton, ListItem, Typography } from '@material-ui/core'
+import { makeStyles } from '@mui/styles'
+import { CircularProgress, Collapse, Fade, Grid, IconButton, ListItem, Typography } from '@mui/material'
 import { reactIcons } from '../constants/icons'
 import ThinProgress from './search/ThinProgress'
 
@@ -57,8 +57,9 @@ function Expandable({ title, loading, loadingETA, summary, children, greyed, def
     const classes = useStyles()
 
     let openState = open, setOpenState = onToggle
+
+    const [openInternalState, setOpenInternalState] = useState(defaultOpen || false)
     if (typeof open === 'undefined') {
-        const [openInternalState, setOpenInternalState] = useState(defaultOpen || false)
         openState = openInternalState
         setOpenState = setOpenInternalState
     }
@@ -71,13 +72,7 @@ function Expandable({ title, loading, loadingETA, summary, children, greyed, def
         if (!fullHeight && contentRef.current) {
             contentRef.current.style.height = contentRef.current.offsetHeight + 'px'
         }
-    }, [contentRef])
-
-    const handleMouseUp = useCallback(event => {
-        event.preventDefault()
-        window.removeEventListener('mouseup', handleMouseUp)
-        window.removeEventListener('mousemove', handleMouseMove)
-    }, [])
+    }, [contentRef, fullHeight])
 
     const handleMouseMove = useCallback(event => {
         event.preventDefault()
@@ -85,13 +80,19 @@ function Expandable({ title, loading, loadingETA, summary, children, greyed, def
         contentRef.current.style.maxHeight = 'none'
     }, [])
 
+    const handleMouseUp = useCallback(event => {
+        event.preventDefault()
+        window.removeEventListener('mouseup', handleMouseUp)
+        window.removeEventListener('mousemove', handleMouseMove)
+    }, [handleMouseMove])
+
     const handleMouseDown = useCallback(event => {
         event.preventDefault()
         startY = event.clientY
         startHeight = contentRef.current.offsetHeight
         window.addEventListener('mouseup', handleMouseUp, {once: true})
         window.addEventListener('mousemove', handleMouseMove)
-    }, [])
+    }, [handleMouseMove, handleMouseUp])
 
     const headerBar = useMemo(() => (
         <ListItem
@@ -106,7 +107,7 @@ function Expandable({ title, loading, loadingETA, summary, children, greyed, def
                 </div>
             </Fade>
 
-            <Grid container alignItems="center" justify="space-between">
+            <Grid container alignItems="center" justifyContent="space-between">
                 <Grid item>
                     <Typography
                         variant="body2"
@@ -148,7 +149,10 @@ function Expandable({ title, loading, loadingETA, summary, children, greyed, def
                 )}
             </Grid>
         </ListItem>
-    ), [title, greyed, defaultOpen, highlight, openState, summary, loading])
+    ), [
+        title, greyed, highlight, openState, summary, loadingETA, open, toggle,
+        loading, classes.expand, classes.expandOpen, classes.header, classes.loading, classes.title,
+    ])
 
     return (
         <>

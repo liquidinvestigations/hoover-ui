@@ -1,8 +1,8 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import qs from 'qs'
-import { Button, IconButton, Snackbar } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { Button, IconButton, Snackbar } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import { tags as tagsAPI } from '../../backend/api'
 import { TAGS_REFRESH_DELAYS } from '../../constants/general'
 import { reactIcons } from '../../constants/icons'
@@ -205,13 +205,13 @@ export function SearchProvider({ children, serverQuery }) {
                         color="inherit"
                         className={classes.close}
                         onClick={handleSnackbarClose}
-                    >
+                        size="large">
                         {reactIcons.close}
                     </IconButton>
                 }
             />
         </SearchContext.Provider>
-    )
+    );
 }
 
 export const useSearch = () => useContext(SearchContext)

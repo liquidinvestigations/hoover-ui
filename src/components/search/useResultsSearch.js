@@ -17,34 +17,36 @@ export default function useResultsSearch(query, previewOnLoad, setPreviewOnLoad,
         }
     }
 
-    useEffect(async () => {
-        if (query.q) {
-            setError(null)
-            setResultsTask(null)
-            setResultsLoading(true)
+    useEffect(() => {
+        (async () => {
+            if (query.q) {
+                setError(null)
+                setResultsTask(null)
+                setResultsLoading(true)
 
-            try {
-                const taskData = await searchAPI({
-                    ...query,
-                    type: 'results',
-                    fieldList: '*',
-                    async: true,
-                })
+                try {
+                    const taskData = await searchAPI({
+                        ...query,
+                        type: 'results',
+                        fieldList: '*',
+                        async: true,
+                    })
 
-                setResultsTask({ ...taskData, initialEta: taskData.eta?.total_sec })
+                    setResultsTask({ ...taskData, initialEta: taskData.eta?.total_sec })
 
-            } catch(error) {
-                handleResultsError(error)
+                } catch(error) {
+                    handleResultsError(error)
+                }
+
+            } else {
+                setResults(null)
             }
-
-        } else {
-            setResults(null)
-        }
+        })()
     }, [JSON.stringify({
         ...query,
         facets: null,
         filters: {
-            ...query.filters || {},
+            ...(query.filters || {}),
             date: {
                 from: query.filters?.date?.from,
                 to: query.filters?.date?.to,
@@ -60,59 +62,61 @@ export default function useResultsSearch(query, previewOnLoad, setPreviewOnLoad,
 
     const [resultsTaskRequestCounter, setResultsTaskRequestCounter] = useState(0)
 
-    useEffect(async () => {
+    useEffect(() => {
         let timeout
 
-        const prevTaskResults = resultsTask
+        (async () => {
+            const prevTaskResults = resultsTask
+    
+            if (prevTaskResults) {
+                if (prevTaskResults.status === 'done') {
+                    const results = prevTaskResults.result
+                    setResults(results)
+                    setResultsLoading(false)
 
-        if (prevTaskResults) {
-            if (prevTaskResults.status === 'done') {
-                const results = prevTaskResults.result
-                setResults(results)
-                setResultsLoading(false)
-
-                if (previewOnLoad === 'first') {
-                    setPreviewOnLoad(null)
-                    setHashState({
-                        ...getPreviewParams(results.hits.hits[0]),
-                        tab: undefined, subTab: undefined, previewPage: undefined
-                    })
-                } else if (previewOnLoad === 'last') {
-                    setPreviewOnLoad(null)
-                    setHashState({
-                        ...getPreviewParams(results.hits.hits[results.hits.hits.length - 1]),
-                        tab: undefined, subTab: undefined, previewPage: undefined
-                    })
-                }
-            } else if (!prevTaskResults.retrieving) {
-                prevTaskResults.retrieving = true
-
-                const wait = prevTaskResults.eta.total_sec < process.env.ASYNC_SEARCH_POLL_INTERVAL ? true : ''
-
-                if (wait) {
-                    setResultsTaskRequestCounter(counter => counter + 1)
-                }
-
-                try {
-                    const resultsTaskData = await asyncSearchAPI(prevTaskResults.task_id, wait)
-                    const update = () => setResultsTask(taskResults => ({ ...taskResults, ...resultsTaskData, retrieving: false } ))
-
-                    if (resultsTaskData.status === 'done') {
-                        update()
-                    } else if (Date.now() - Date.parse(resultsTaskData.date_created) < (prevTaskResults.initialEta * process.env.ASYNC_SEARCH_ERROR_MULTIPLIER + process.env.ASYNC_SEARCH_ERROR_SUMMATION) * 1000) {
-                        timeout = setTimeout(update, process.env.ASYNC_SEARCH_POLL_INTERVAL * 1000)
-                    } else {
-                        handleResultsError(new Error('Results task ETA timeout'))
+                    if (previewOnLoad === 'first') {
+                        setPreviewOnLoad(null)
+                        setHashState({
+                            ...getPreviewParams(results.hits.hits[0]),
+                            tab: undefined, subTab: undefined, previewPage: undefined
+                        })
+                    } else if (previewOnLoad === 'last') {
+                        setPreviewOnLoad(null)
+                        setHashState({
+                            ...getPreviewParams(results.hits.hits[results.hits.hits.length - 1]),
+                            tab: undefined, subTab: undefined, previewPage: undefined
+                        })
                     }
-                } catch (error) {
-                    if (wait && error.name === 'TypeError' && resultsTaskRequestCounter < process.env.ASYNC_SEARCH_MAX_FINAL_RETRIES) {
-                        setResultsTask(taskResults => ({ ...taskResults, retrieving: false } ))
-                    } else {
-                        handleResultsError(error)
+                } else if (!prevTaskResults.retrieving) {
+                    prevTaskResults.retrieving = true
+
+                    const wait = prevTaskResults.eta.total_sec < process.env.ASYNC_SEARCH_POLL_INTERVAL ? true : ''
+
+                    if (wait) {
+                        setResultsTaskRequestCounter(counter => counter + 1)
+                    }
+
+                    try {
+                        const resultsTaskData = await asyncSearchAPI(prevTaskResults.task_id, wait)
+                        const update = () => setResultsTask(taskResults => ({ ...taskResults, ...resultsTaskData, retrieving: false } ))
+
+                        if (resultsTaskData.status === 'done') {
+                            update()
+                        } else if (Date.now() - Date.parse(resultsTaskData.date_created) < (prevTaskResults.initialEta * process.env.ASYNC_SEARCH_ERROR_MULTIPLIER + process.env.ASYNC_SEARCH_ERROR_SUMMATION) * 1000) {
+                            timeout = setTimeout(update, process.env.ASYNC_SEARCH_POLL_INTERVAL * 1000)
+                        } else {
+                            handleResultsError(new Error('Results task ETA timeout'))
+                        }
+                    } catch (error) {
+                        if (wait && error.name === 'TypeError' && resultsTaskRequestCounter < process.env.ASYNC_SEARCH_MAX_FINAL_RETRIES) {
+                            setResultsTask(taskResults => ({ ...taskResults, retrieving: false } ))
+                        } else {
+                            handleResultsError(error)
+                        }
                     }
                 }
             }
-        }
+        })()
 
         return () => {
             clearTimeout(timeout)

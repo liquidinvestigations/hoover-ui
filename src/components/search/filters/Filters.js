@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo, useState } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import { CircularProgress, Typography } from '@material-ui/core'
+import { makeStyles } from '@mui/styles'
+import { CircularProgress, Typography } from '@mui/material'
 import { aggregationCategories, aggregationFields } from '../../../constants/aggregationFields'
 import { getLanguageName } from '../../../utils'
 import { useSearch } from '../SearchProvider'

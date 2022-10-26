@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useState } from 'react'
 import cn from 'classnames'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 import ThumbnailLayer from './layers/ThumbnailLayer'
 import { useDocument } from './DocumentProvider'
 
@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     selected: {}
 }))
 
-export default forwardRef(({ containerRef, pageIndex, rotation, selected, onSelect }, thumbnailRef) => {
+export default forwardRef(function Thumbnail({ containerRef, pageIndex, rotation, selected, onSelect }, thumbnailRef) {
     const classes = useStyles()
     const { doc, firstPageData } = useDocument()
     const [ shouldScroll, setShouldScroll ] = useState(true)

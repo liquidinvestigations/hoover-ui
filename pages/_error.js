@@ -1,6 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 
 const statusCodes = {
     400: 'Bad Request',

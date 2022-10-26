@@ -1,6 +1,6 @@
 import React, { memo } from 'react'
 import Link from 'next/link'
-import { Button } from '@material-ui/core'
+import { Button } from '@mui/material'
 import { useRouter } from 'next/router'
 import { useUser } from './UserProvider'
 

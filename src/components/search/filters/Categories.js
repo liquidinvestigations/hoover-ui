@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import cn from 'classnames'
 import { Transition } from 'react-transition-group'
-import { Grid } from '@material-ui/core'
-import { duration, makeStyles } from '@material-ui/core/styles'
+import { Grid } from '@mui/material'
+import { duration } from '@mui/material/styles';
+import { makeStyles } from '@mui/styles'
 import CategoriesToolbar from './CategoriesToolbar'
 import Filters from './Filters'
 import Collections from './Collections'

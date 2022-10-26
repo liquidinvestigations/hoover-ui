@@ -8,3 +8,5 @@ RUN npm install
 
 ADD . /opt/hoover/ui/
 ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN npm run build

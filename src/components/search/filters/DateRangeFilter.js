@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState } from 'react'
-import { Button, Grid, List, ListItem } from '@material-ui/core'
-import { KeyboardDatePicker } from '@material-ui/pickers'
+import { Button, Grid, List, ListItem } from '@mui/material'
+import DatePicker from '@mui/lab/DatePicker'
 import { DATE_FORMAT } from '../../../constants/general'
 import { reactIcons } from '../../../constants/icons'
 
@@ -43,7 +43,7 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange, loading }) {
     return (
         <List disablePadding>
             <ListItem>
-                <KeyboardDatePicker
+                <DatePicker
                     value={from}
                     label={from ? null : emptyLabel}
                     labelFunc={labelFunc(from)}
@@ -60,7 +60,7 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange, loading }) {
             </ListItem>
 
             <ListItem>
-                <KeyboardDatePicker
+                <DatePicker
                     value={to}
                     label={to ? null : emptyLabel}
                     labelFunc={labelFunc(to)}
@@ -77,7 +77,7 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange, loading }) {
             </ListItem>
 
             <ListItem>
-                <Grid container alignItems="center" justify="space-between">
+                <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
                         <Button
                             size="small"

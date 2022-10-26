@@ -1,6 +1,6 @@
 import React, { memo } from 'react'
-import { Box, Fab, Fade, Grid, Typography } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { Box, Fab, Fade, Grid, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import Pagination from './Pagination'
 import ResultsList from './ResultsList'
 import ResultsTable from './ResultsTable'
@@ -36,7 +36,7 @@ function Results({ maxCount }) {
         <>
             <Pagination maxCount={maxCount} />
             <Grid container>
-                <Grid item container justify="flex-end">
+                <Grid item container justifyContent="flex-end">
                     <Grid item>
                         <Fab
                             size="small"

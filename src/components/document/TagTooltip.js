@@ -1,6 +1,6 @@
 import React, { memo } from 'react'
 import { DateTime } from 'luxon'
-import { Box, Tooltip } from '@material-ui/core'
+import { Box, Tooltip } from '@mui/material'
 import { useUser } from '../UserProvider'
 import { formatDateTime } from '../../utils'
 

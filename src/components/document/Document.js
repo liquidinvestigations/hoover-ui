@@ -1,7 +1,7 @@
 import React, { cloneElement, memo, useEffect } from 'react'
 import Link from 'next/link'
-import { makeStyles } from '@material-ui/core/styles'
-import { Badge, Box, Chip, Grid, Tabs, Typography } from '@material-ui/core'
+import { makeStyles } from '@mui/styles'
+import { Badge, Box, Chip, Grid, Tabs, Typography } from '@mui/material'
 import { useDocument } from './DocumentProvider'
 import StyledTab from './StyledTab'
 import TabPanel from './TabPanel'
@@ -62,6 +62,7 @@ const useStyles = makeStyles(theme => ({
         maxWidth: 100,
     },
     tabsRoot: {
+        minHeight: 65,
         color: theme.palette.primary.contrastText,
         backgroundColor: theme.palette.primary.main,
     },
@@ -238,7 +239,7 @@ function Document({ onPrev, onNext }) {
                 </Link>
             )}
 
-            <Grid container justify="space-between" wrap="nowrap" className={classes.header}>
+            <Grid container justifyContent="space-between" wrap="nowrap" className={classes.header}>
                 <Grid item className={classes.titleWrapper}>
                     <Box>
                         <Typography variant="h5" className={classes.filename}>
@@ -309,6 +310,7 @@ function Document({ onPrev, onNext }) {
                     classes={tabsClasses}
                     variant="scrollable"
                     scrollButtons="auto"
+                    indicatorColor="secondary"
                 >
                     {tabsData.filter(tabData => tabData.visible).map((tabData, index) => (
                         <StyledTab

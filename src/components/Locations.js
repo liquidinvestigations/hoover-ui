@@ -1,8 +1,8 @@
 import React, { memo, useEffect, useState } from 'react'
 import Link from 'next/link'
 import url from 'url'
-import { List, ListItem, ListItemIcon, Typography } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { List, ListItem, ListItemIcon, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import Loading from './Loading'
 import { locations as locationsAPI } from '../backend/api'
 import { reactIcons } from '../constants/icons'
@@ -36,7 +36,7 @@ function Locations({ url: docUrl, data }) {
                 setError({ status: res.status, statusText: res.statusText, url: res.url })
             })
         }
-    }, [docUrl])
+    }, [docUrl, page])
 
     const loadMore = async event => {
         event.preventDefault()

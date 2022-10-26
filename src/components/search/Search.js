@@ -1,7 +1,7 @@
 import React, { cloneElement, useEffect, useMemo, useRef, useState } from 'react'
 import Router from 'next/router'
-import { makeStyles } from '@material-ui/core/styles'
-import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Tooltip, Typography } from '@material-ui/core'
+import { makeStyles } from '@mui/styles'
+import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Tooltip, Typography } from '@mui/material'
 import { useProgressIndicator } from '../ProgressIndicator'
 import { useSearch } from './SearchProvider'
 import HotKeys from './HotKeys'
@@ -69,12 +69,12 @@ export default function Search({ collections }) {
         return () => {
             Router.events.off('routeChangeStart', clearSearchResults)
         }
-    }, [])
+    }, [clearSearchResults])
 
     const { setLoading } = useProgressIndicator()
     useEffect(() => {
         setLoading(resultsLoading)
-    }, [resultsLoading])
+    }, [resultsLoading, setLoading])
 
     const maxResultsCount = useMemo(() => collections
             .filter(collection => query.collections?.includes(collection.name))
@@ -144,9 +144,10 @@ export default function Search({ collections }) {
                                 <Grid container>
                                     <Grid item sm={12}>
                                         <form onSubmit={handleSubmit}>
-                                            <Grid container justify="space-between" alignItems="flex-end">
+                                            <Grid container justifyContent="space-between" alignItems="flex-end">
                                                 <Grid item style={{ flex: 1 }}>
                                                     <TextField
+                                                        variant="standard"
                                                         inputRef={inputRef}
                                                         label="Search"
                                                         margin="normal"
@@ -162,13 +163,12 @@ export default function Search({ collections }) {
                                                                     {cloneElement(reactIcons.cancel, { className: classes.clear })}
                                                                 </IconButton>
                                                             </InputAdornment>,
-                                                        }}
-                                                    />
+                                                        }} />
                                                 </Grid>
 
                                                 <Grid item style={{ marginLeft: 20, marginBottom: 7 }}>
                                                     <Tooltip
-                                                        interactive
+                                                        interactive="true"
                                                         classes={{ tooltip: classes.noMaxWidth }}
                                                         title={tooltips.search}
                                                     >
@@ -177,7 +177,7 @@ export default function Search({ collections }) {
                                                 </Grid>
 
                                                 <Grid item style={{ marginLeft: 20 }}>
-                                                    <FormControl margin="normal">
+                                                    <FormControl variant="standard" margin="normal">
                                                         <Button
                                                             variant="contained"
                                                             color="primary"
@@ -220,5 +220,5 @@ export default function Search({ collections }) {
                 </Grid>
             </HotKeys>
         </DocumentProvider>
-    )
+    );
 }

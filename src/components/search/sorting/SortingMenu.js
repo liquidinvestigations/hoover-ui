@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Fab, Menu, MenuItem } from '@material-ui/core'
+import { Fab, Menu, MenuItem } from '@mui/material'
 import { SORTABLE_FIELDS } from '../../../constants/general'
 import { useSearch } from '../SearchProvider'
 import { reactIcons } from '../../../constants/icons'

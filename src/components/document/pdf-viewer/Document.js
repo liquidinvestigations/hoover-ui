@@ -1,7 +1,7 @@
 import React, { cloneElement, createRef, useCallback, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
-import { Box, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { Box, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import AttachmentsView from './AttachmentsView'
 import BookmarksView from './BookmarksView'
 import Page from './Page'
@@ -132,7 +132,7 @@ export default function Document({ initialPageIndex, onPageIndexChange, renderer
         if (status === STATUS_COMPLETE && initialPageIndex > 0 && pagesRefs[initialPageIndex]) {
             goToPage(initialPageIndex)
         }
-    }, [status])
+    }, [status, goToPage, initialPageIndex, pagesRefs])
 
     const pageVisibility = Array(doc?.numPages || 0).fill().map(() => 0)
 

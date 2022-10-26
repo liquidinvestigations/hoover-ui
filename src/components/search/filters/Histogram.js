@@ -1,8 +1,8 @@
 import React, { cloneElement, memo, useCallback, useEffect, useMemo, useState } from 'react'
 import cn from 'classnames'
 import { DateTime } from 'luxon'
-import { Collapse, Grid, IconButton, ListItem, Menu, MenuItem, Typography } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { Collapse, Grid, IconButton, ListItem, Menu, MenuItem, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import Loading from '../../Loading'
 import HistogramChart from './HistogramChart'
 import IntervalSelect from './IntervalSelect'
@@ -197,7 +197,7 @@ function Histogram({ title, field }) {
             <ListItem onClick={toggle} button dense className={classes.histogramTitle}>
                 <Grid container
                       className={classes.histogramTitle}
-                      justify="space-between"
+                      justifyContent="space-between"
                       alignItems="center"
                       wrap="nowrap"
                 >
@@ -233,7 +233,7 @@ function Histogram({ title, field }) {
                         />
                     )}
                 </div>
-                <Grid container justify="space-between">
+                <Grid container justifyContent="space-between">
                     <Grid item>
                         <Pagination field={field} />
                     </Grid>

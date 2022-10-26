@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Typography from '@material-ui/core/Typography'
+import Typography from '@mui/material/Typography'
 import { logError } from '../backend/api'
 
 export default class ErrorBoundary extends Component {

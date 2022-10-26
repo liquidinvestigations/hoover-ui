@@ -1,489 +1,489 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`builds a default query 1`] = `
-Object {
-  "_source": Array [],
-  "aggs": Object {
-    "attachments": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+{
+  "_source": [],
+  "aggs": {
+    "attachments": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "attachments",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "attachments",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "content-type": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "content-type": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "content-type",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "content-type",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "date": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "date": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "date",
           },
         },
-        "values": Object {
-          "aggs": Object {
-            "bucket_truncate": Object {
-              "bucket_sort": Object {
+        "values": {
+          "aggs": {
+            "bucket_truncate": {
+              "bucket_sort": {
                 "from": 0,
                 "size": 44,
               },
             },
           },
-          "date_histogram": Object {
+          "date_histogram": {
             "field": "date",
             "interval": "year",
             "min_doc_count": 1,
-            "order": Object {
+            "order": {
               "_key": "desc",
             },
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "date-created": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "date-created": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "date-created",
           },
         },
-        "values": Object {
-          "aggs": Object {
-            "bucket_truncate": Object {
-              "bucket_sort": Object {
+        "values": {
+          "aggs": {
+            "bucket_truncate": {
+              "bucket_sort": {
                 "from": 0,
                 "size": 44,
               },
             },
           },
-          "date_histogram": Object {
+          "date_histogram": {
             "field": "date-created",
             "interval": "year",
             "min_doc_count": 1,
-            "order": Object {
+            "order": {
               "_key": "desc",
             },
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "detected-objects.object.keyword": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "detected-objects.object.keyword": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "detected-objects.object.keyword",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "detected-objects.object.keyword",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "email-domains": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "email-domains": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "email-domains",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "email-domains",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "entity-type.event.keyword": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "entity-type.event.keyword": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "entity-type.event.keyword",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "entity-type.event.keyword",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "entity-type.location.keyword": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "entity-type.location.keyword": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "entity-type.location.keyword",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "entity-type.location.keyword",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "entity-type.money.keyword": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "entity-type.money.keyword": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "entity-type.money.keyword",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "entity-type.money.keyword",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "entity-type.organization.keyword": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "entity-type.organization.keyword": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "entity-type.organization.keyword",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "entity-type.organization.keyword",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "entity-type.person.keyword": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "entity-type.person.keyword": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "entity-type.person.keyword",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "entity-type.person.keyword",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "entity.keyword": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "entity.keyword": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "entity.keyword",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "entity.keyword",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "filetype": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "filetype": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "filetype",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "filetype",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "from.keyword": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "from.keyword": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "from.keyword",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "from.keyword",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "image-classes.class.keyword": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "image-classes.class.keyword": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "image-classes.class.keyword",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "image-classes.class.keyword",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "is-table": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "is-table": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "is-table",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "is-table",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "lang": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "lang": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "lang",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "lang",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "ocr": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "ocr": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "ocr",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "ocr",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "ocrimage": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "ocrimage": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "ocrimage",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "ocrimage",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "ocrpdf": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "ocrpdf": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "ocrpdf",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "ocrpdf",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "path-parts": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "path-parts": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "path-parts",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "path-parts",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "pgp": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "pgp": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "pgp",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "pgp",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "priv-tags": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "priv-tags": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "priv-tags",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "priv-tags.testuser",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "size": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "size": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "size",
           },
         },
-        "values": Object {
-          "range": Object {
+        "values": {
+          "range": {
             "field": "size",
-            "ranges": Array [
-              Object {
+            "ranges": [
+              {
                 "from": "0",
                 "key": "0-1",
                 "to": "1",
               },
-              Object {
+              {
                 "from": "1",
                 "key": "1-1000",
                 "to": "1000",
               },
-              Object {
+              {
                 "from": "1000",
                 "key": "1000-500000",
                 "to": "500000",
               },
-              Object {
+              {
                 "from": "500000",
                 "key": "500000-1000000",
                 "to": "1000000",
               },
-              Object {
+              {
                 "from": "1000000",
                 "key": "1000000-500000000",
                 "to": "500000000",
               },
-              Object {
+              {
                 "from": "500000000",
                 "key": "500000000-1000000000",
                 "to": "1000000000",
               },
-              Object {
+              {
                 "from": "1000000000",
                 "key": "1000000000-*",
               },
@@ -491,65 +491,65 @@ Object {
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "skipped": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "skipped": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "skipped",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "skipped",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "table-col-count": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "table-col-count": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "table-col-count",
           },
         },
-        "values": Object {
-          "range": Object {
+        "values": {
+          "range": {
             "field": "table-col-count",
-            "ranges": Array [
-              Object {
+            "ranges": [
+              {
                 "from": "0",
                 "key": "0-1",
                 "to": "1",
               },
-              Object {
+              {
                 "from": "1",
                 "key": "1-3",
                 "to": "3",
               },
-              Object {
+              {
                 "from": "4",
                 "key": "4-9",
                 "to": "9",
               },
-              Object {
+              {
                 "from": "10",
                 "key": "10-29",
                 "to": "29",
               },
-              Object {
+              {
                 "from": "30",
                 "key": "30-99",
                 "to": "99",
               },
-              Object {
+              {
                 "from": "100",
                 "key": "100-*",
               },
@@ -557,75 +557,75 @@ Object {
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "table-columns": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "table-columns": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "table-columns",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "table-columns",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "table-row-count": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "table-row-count": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "table-row-count",
           },
         },
-        "values": Object {
-          "range": Object {
+        "values": {
+          "range": {
             "field": "table-row-count",
-            "ranges": Array [
-              Object {
+            "ranges": [
+              {
                 "from": "0",
                 "key": "0-1",
                 "to": "1",
               },
-              Object {
+              {
                 "from": "1",
                 "key": "1-9",
                 "to": "9",
               },
-              Object {
+              {
                 "from": "10",
                 "key": "10-99",
                 "to": "99",
               },
-              Object {
+              {
                 "from": "100",
                 "key": "100-999",
                 "to": "999",
               },
-              Object {
+              {
                 "from": "1000",
                 "key": "1000-9999",
                 "to": "9999",
               },
-              Object {
+              {
                 "from": "10000",
                 "key": "10000-99999",
                 "to": "99999",
               },
-              Object {
+              {
                 "from": "100000",
                 "key": "100000-999999",
                 "to": "999999",
               },
-              Object {
+              {
                 "from": "1000000",
                 "key": "1000000-*",
               },
@@ -633,47 +633,47 @@ Object {
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "table-sheet-count": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "table-sheet-count": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "table-sheet-count",
           },
         },
-        "values": Object {
-          "range": Object {
+        "values": {
+          "range": {
             "field": "table-sheet-count",
-            "ranges": Array [
-              Object {
+            "ranges": [
+              {
                 "from": "0",
                 "key": "0-1",
                 "to": "1",
               },
-              Object {
+              {
                 "from": "1",
                 "key": "1-3",
                 "to": "3",
               },
-              Object {
+              {
                 "from": "4",
                 "key": "4-9",
                 "to": "9",
               },
-              Object {
+              {
                 "from": "10",
                 "key": "10-29",
                 "to": "29",
               },
-              Object {
+              {
                 "from": "30",
                 "key": "30-99",
                 "to": "99",
               },
-              Object {
+              {
                 "from": "100",
                 "key": "100-*",
               },
@@ -681,147 +681,147 @@ Object {
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "table-sheets": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "table-sheets": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "table-sheets",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "table-sheets",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "tags": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "tags": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "tags",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "tags",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "to.keyword": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "to.keyword": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "to.keyword",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "to.keyword",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "translated-from": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "translated-from": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "translated-from",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "translated-from",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "translated-to": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "translated-to": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "translated-to",
           },
         },
-        "values": Object {
-          "terms": Object {
+        "values": {
+          "terms": {
             "field": "translated-to",
             "size": 44,
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
-    "word-count": Object {
-      "aggs": Object {
-        "count": Object {
-          "cardinality": Object {
+    "word-count": {
+      "aggs": {
+        "count": {
+          "cardinality": {
             "field": "word-count",
           },
         },
-        "values": Object {
-          "range": Object {
+        "values": {
+          "range": {
             "field": "word-count",
-            "ranges": Array [
-              Object {
+            "ranges": [
+              {
                 "from": "0",
                 "key": "0-1",
                 "to": "1",
               },
-              Object {
+              {
                 "from": "1",
                 "key": "1-9",
                 "to": "9",
               },
-              Object {
+              {
                 "from": "10",
                 "key": "10-99",
                 "to": "99",
               },
-              Object {
+              {
                 "from": "100",
                 "key": "100-999",
                 "to": "999",
               },
-              Object {
+              {
                 "from": "1000",
                 "key": "1000-9999",
                 "to": "9999",
               },
-              Object {
+              {
                 "from": "10000",
                 "key": "10000-99999",
                 "to": "99999",
               },
-              Object {
+              {
                 "from": "100000",
                 "key": "100000-999999",
                 "to": "999999",
               },
-              Object {
+              {
                 "from": "1000000",
                 "key": "1000000-*",
               },
@@ -829,28 +829,28 @@ Object {
           },
         },
       },
-      "filter": Object {
-        "bool": Object {},
+      "filter": {
+        "bool": {},
       },
     },
   },
-  "collections": Array [],
+  "collections": [],
   "from": 0,
-  "highlight": Object {
-    "fields": Object {},
+  "highlight": {
+    "fields": {},
   },
-  "post_filter": Object {
-    "bool": Object {},
+  "post_filter": {
+    "bool": {},
   },
-  "query": Object {
-    "query_string": Object {
+  "query": {
+    "query_string": {
       "default_operator": "AND",
-      "fields": Array [],
+      "fields": [],
       "lenient": true,
       "query": "*",
     },
   },
   "size": 0,
-  "sort": Array [],
+  "sort": [],
 }
 `;

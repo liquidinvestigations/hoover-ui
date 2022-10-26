@@ -1,6 +1,6 @@
 import React from 'react'
-import { Badge, Box, IconButton, Toolbar as MuiToolbar, Tooltip } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { Badge, Box, IconButton, Toolbar as MuiToolbar, Tooltip } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles(theme => ({
     toolbar: {
