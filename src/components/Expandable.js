@@ -74,17 +74,17 @@ function Expandable({ title, loading, loadingETA, summary, children, greyed, def
         }
     }, [contentRef, fullHeight])
 
-    const handleMouseUp = useCallback(event => {
-        event.preventDefault()
-        window.removeEventListener('mouseup', handleMouseUp)
-        window.removeEventListener('mousemove', handleMouseMove)
-    }, [handleMouseMove])
-
     const handleMouseMove = useCallback(event => {
         event.preventDefault()
         contentRef.current.style.height = startHeight + event.clientY - startY + 'px'
         contentRef.current.style.maxHeight = 'none'
     }, [])
+
+    const handleMouseUp = useCallback(event => {
+        event.preventDefault()
+        window.removeEventListener('mouseup', handleMouseUp)
+        window.removeEventListener('mousemove', handleMouseMove)
+    }, [handleMouseMove])
 
     const handleMouseDown = useCallback(event => {
         event.preventDefault()
