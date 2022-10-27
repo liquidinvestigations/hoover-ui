@@ -105,7 +105,7 @@ export default function BatchSearch({ collections, limits }) {
 
     return (
         <Grid container>
-            <Grid item sm={2}>
+            <Grid item sm={3}>
                 <List dense>
                     <Expandable
                         title="Collections"
@@ -121,7 +121,7 @@ export default function BatchSearch({ collections, limits }) {
                     </Expandable>
                 </List>
             </Grid>
-            <Grid item sm={6}>
+            <Grid item sm={5}>
                 <div className={classes.main}>
                     <TextField
                         variant="standard"
