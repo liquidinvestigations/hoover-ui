@@ -1,26 +1,26 @@
-import React, { cloneElement, memo, useEffect } from 'react';
-import Link from 'next/link';
-import { makeStyles } from '@mui/styles';
-import { Badge, Box, Button, Chip, Grid, Tabs, Typography } from '@mui/material';
-import { useDocument } from './DocumentProvider';
-import StyledTab from './StyledTab';
-import TabPanel from './TabPanel';
-import HTML from './HTML';
-import Text from './Text';
-import Meta from './Meta';
-import TagTooltip from './TagTooltip';
-import SubTabs from './SubTabs';
-import Tags, { getChipColor } from './Tags';
-import Toolbar from './Toolbar';
-import Loading from '../Loading';
-import { useUser } from '../UserProvider';
-import { useTags } from './TagsProvider';
-import { createOcrUrl, createUploadUrl } from '../../backend/api';
-import { specialTags } from '../../constants/specialTags';
-import { reactIcons } from '../../constants/icons';
-import { getTagIcon } from '../../utils';
+import React, { cloneElement, memo, useEffect } from 'react'
+import Link from 'next/link'
+import { makeStyles } from '@mui/styles'
+import { Badge, Box, Button, Chip, Grid, Tabs, Typography } from '@mui/material'
+import { useDocument } from './DocumentProvider'
+import StyledTab from './StyledTab'
+import TabPanel from './TabPanel'
+import HTML from './HTML'
+import Text from './Text'
+import Meta from './Meta'
+import TagTooltip from './TagTooltip'
+import SubTabs from './SubTabs'
+import Tags, { getChipColor } from './Tags'
+import Toolbar from './Toolbar'
+import Loading from '../Loading'
+import { useSharedStore } from "../SharedStoreProvider"
+import { useTags } from './TagsProvider'
+import { createOcrUrl, createUploadUrl } from '../../backend/api'
+import { specialTags } from '../../constants/specialTags'
+import { reactIcons } from '../../constants/icons'
+import { getTagIcon } from '../../utils'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
@@ -83,11 +83,11 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.primary.contrastText,
         zIndex: theme.zIndex.drawer + 2,
     },
-}));
+}))
 
 function Document({ onPrev, onNext }) {
-    const classes = useStyles();
-    const whoAmI = useUser();
+    const classes = useStyles()
+    const user = useSharedStore().user
 
     const {
         data,
@@ -101,35 +101,35 @@ function Document({ onPrev, onNext }) {
         thumbnailSrcSet,
         tab,
         handleTabChange,
-    } = useDocument();
+    } = useDocument()
 
-    const { tags, tagsLoading, tagsLocked, handleSpecialTagClick } = useTags();
+    const { tags, tagsLoading, tagsLocked, handleSpecialTagClick } = useTags()
 
     useEffect(() => {
         if (printMode && !loading && !tagsLoading) {
-            window.setTimeout(window.print);
+            window.setTimeout(window.print)
         }
-    }, [printMode, loading, tagsLoading]);
+    }, [printMode, loading, tagsLoading])
 
     const headerLinks = {
         actions: [],
         navigation: [],
         tags: [],
-    };
+    }
 
-    const tagsLinks = [];
+    const tagsLinks = []
 
     if (loading) {
-        return <Loading />;
+        return <Loading />
     }
 
     if (!pathname || !data || !Object.keys(data).length) {
-        return null;
+        return null
     }
 
     const ocrData = Object.keys(data.content.ocrtext || {}).map((tag, index) => {
-        return { tag: tag, text: data.content.ocrtext[tag] };
-    });
+        return { tag: tag, text: data.content.ocrtext[tag] }
+    })
 
     if (data.content.filetype !== 'folder') {
         if (!fullPage) {
@@ -138,7 +138,7 @@ function Document({ onPrev, onNext }) {
                 tooltip: 'Open in new tab',
                 icon: reactIcons.openNewTab,
                 target: '_blank',
-            });
+            })
         }
 
         headerLinks.actions.push({
@@ -146,14 +146,14 @@ function Document({ onPrev, onNext }) {
             tooltip: 'Print metadata and content',
             icon: reactIcons.print,
             target: '_blank',
-        });
+        })
 
         headerLinks.actions.push({
             href: docRawUrl,
             tooltip: 'Download original file',
             icon: reactIcons.download,
             target: fullPage ? null : '_blank',
-        });
+        })
 
         headerLinks.actions.push(
             ...ocrData.map(({ tag }) => ({
@@ -162,14 +162,14 @@ function Document({ onPrev, onNext }) {
                 icon: reactIcons.ocr,
                 target: fullPage ? null : '_blank',
             }))
-        );
+        )
 
         if (onPrev) {
             headerLinks.navigation.push({
                 icon: reactIcons.chevronLeft,
                 tooltip: 'Previous result',
                 onClick: onPrev,
-            });
+            })
         }
 
         if (onNext) {
@@ -177,7 +177,7 @@ function Document({ onPrev, onNext }) {
                 icon: reactIcons.chevronRight,
                 tooltip: 'Next result',
                 onClick: onNext,
-            });
+            })
         }
 
         Object.entries(specialTags).forEach(([tag, params]) => {
@@ -185,41 +185,41 @@ function Document({ onPrev, onNext }) {
                 (current) =>
                     current.tag === tag &&
                     current.public === params.public &&
-                    current.user === whoAmI.username
-            );
+                    current.user === user.username
+            )
             const count =
                 tags.filter(
                     (current) =>
                         current.tag === tag &&
                         current.public === params.public &&
-                        current.user !== whoAmI.username
-                )?.length || null;
+                        current.user !== user.username
+                )?.length || null
             const link = {
                 icon: present
                     ? reactIcons[params.present.icon]
                     : reactIcons[params.absent.icon],
                 label: present ? params.present.label : params.absent.label,
                 style: {
-                    color: present ? params.present.color : params.absent.color,
+                    color: present ? params.present.color : params.absent.color
                 },
                 tooltip: params.tooltip,
                 disabled: tagsLocked,
                 onClick: handleSpecialTagClick(present, tag),
                 count: present && count ? count + 1 : count,
-            };
+            }
             if (params.showInToolbar) {
-                headerLinks.tags.push(link);
+                headerLinks.tags.push(link)
             }
             if (params.showInTagsTab) {
-                tagsLinks.push(link);
+                tagsLinks.push(link)
             }
-        });
+        })
     }
 
     const tabsClasses = {
         root: classes.tabsRoot,
         indicator: classes.tabsIndicator,
-    };
+    }
 
     const tabsData = [
         {
@@ -252,12 +252,13 @@ function Document({ onPrev, onNext }) {
             icon: reactIcons.headersTab,
             visible: !!data.content.tree,
             content: <Text content={data.content.tree} />,
-        },
-    ];
+        }
+    ]
 
-    const emptyTabs = [];
+    // TODO replace with styling
+    const emptyTabs = []
     for (let i = 0; i < 10; i++) {
-        emptyTabs.push(<StyledTab disabled />);
+        emptyTabs.push(<StyledTab disabled />)
     }
 
     const uploadButton = () => {
@@ -272,8 +273,8 @@ function Document({ onPrev, onNext }) {
             >
                 {'Upload File'}
             </Button>
-        );
-    };
+        )
+    }
 
     return (
         <div className={classes.root} data-test="doc-view">
@@ -312,90 +313,58 @@ function Document({ onPrev, onNext }) {
                             </Typography>
                         </Grid>
 
-                        {tags
-                            .filter(
-                                (item, pos, self) =>
-                                    self.findIndex((tag) => tag.tag === item.tag) ===
-                                    pos
-                            )
-                            .map((chip, index) => {
-                                const count = tags.filter(
-                                    (tag) => tag.tag === chip.tag
-                                ).length;
-                                return (
-                                    <Grid item className={classes.tag} key={index}>
-                                        <TagTooltip chip={chip} count={count}>
-                                            <Badge
-                                                badgeContent={
-                                                    count > 1 ? count : null
-                                                }
-                                                color="secondary"
-                                            >
-                                                <Chip
-                                                    size="small"
-                                                    label={
-                                                        !!getTagIcon(
-                                                            chip.tag,
-                                                            chip.public
-                                                        ) ? (
+                        {tags.filter((item, pos, self) =>
+                            self.findIndex(tag => tag.tag === item.tag) === pos)
+                        .map((chip, index) => {
+                            const count = tags.filter(tag => tag.tag === chip.tag).length
+                            return (
+                                <Grid item className={classes.tag} key={index}>
+                                    <TagTooltip chip={chip} count={count}>
+                                        <Badge
+                                            badgeContent={
+                                                count > 1 ? count : null
+                                            }
+                                            color="secondary"
+                                        >
+                                            <Chip
+                                                size="small"
+                                                label={
+                                                    !!getTagIcon(chip.tag, chip.public) ? (
                                                             <>
-                                                                {cloneElement(
-                                                                    getTagIcon(
-                                                                        chip.tag,
-                                                                        chip.public
-                                                                    ),
-                                                                    {
-                                                                        style: {
-                                                                            ...getTagIcon(
-                                                                                chip.tag,
-                                                                                chip.public
-                                                                            ).props
-                                                                                .style,
-                                                                            marginLeft:
-                                                                                -4,
-                                                                            marginTop:
-                                                                                -2,
-                                                                            marginRight: 2,
-                                                                            fontSize: 18,
-                                                                            verticalAlign:
-                                                                                'middle',
-                                                                        },
+                                                                {cloneElement(getTagIcon(chip.tag, chip.public), {
+                                                                    style: {
+                                                                        ...getTagIcon(chip.tag, chip.public).props.style,
+                                                                        marginLeft: -4,
+                                                                        marginTop: -2,
+                                                                        marginRight: 2,
+                                                                        fontSize: 18,
+                                                                        verticalAlign: 'middle',
                                                                     }
-                                                                )}
-                                                                <span
-                                                                    style={{
-                                                                        verticalAlign:
-                                                                            'middle',
-                                                                    }}
-                                                                >
+                                                                })}
+                                                                <span style={{ verticalAlign: 'middle' }}>
                                                                     {chip.tag}
                                                                 </span>
                                                             </>
-                                                        ) : (
-                                                            chip.tag
                                                         )
-                                                    }
-                                                    style={{
-                                                        height: 20,
-                                                        backgroundColor:
-                                                            getChipColor(chip),
-                                                    }}
-                                                />
-                                            </Badge>
-                                        </TagTooltip>
-                                    </Grid>
-                                );
-                            })}
+                                                        : chip.tag
+                                                }
+                                                style={{
+                                                    height: 20,
+                                                    backgroundColor: getChipColor(chip),
+                                                }} />
+                                        </Badge>
+                                    </TagTooltip>
+                                </Grid>
+                            )
+                        })
+                    }
                     </Grid>
                 </Grid>
 
                 {data.content['has-thumbnails'] && (
                     <Grid item>
                         <Box className={classes.thumbnail}>
-                            <img
-                                className={classes.thumbnailImg}
-                                srcSet={thumbnailSrcSet}
-                            />
+                            <img className={classes.thumbnailImg} srcSet={thumbnailSrcSet} />
                         </Box>
                     </Grid>
                 )}
@@ -410,48 +379,48 @@ function Document({ onPrev, onNext }) {
                     scrollButtons="auto"
                     indicatorColor="secondary"
                 >
-                    {tabsData
-                        .filter((tabData) => tabData.visible)
-                        .map((tabData, index) => (
-                            <StyledTab
-                                key={index}
-                                icon={tabData.icon}
-                                label={tabData.name}
-                            />
-                        ))}
+                    {tabsData.filter(tabData => tabData.visible).map((tabData, index) => (
+                        <StyledTab
+                            key={index}
+                            icon={tabData.icon}
+                            label={tabData.name}
+                        />
+                    ))}
                     {data.content.filetype == 'folder' &&
                         !data.content.path.includes('//') &&
                         process.env.HOOVER_UPLOADS_ENABLED && [
                             ...emptyTabs,
                             uploadButton(),
-                        ]}
+                        ]
+                    }
                 </Tabs>
             )}
 
-            {tabsData
-                .filter((tabData) => tabData.visible)
-                .map((tabData, index) => (
-                    <Box
-                        key={index}
-                        className={index === tab ? classes.activeTab : null}
-                    >
-                        {printMode && (
-                            <Typography variant="h3" className={classes.printTitle}>
-                                {tabData.name}
-                            </Typography>
-                        )}
-                        <TabPanel
-                            value={tab}
-                            index={index}
-                            padding={tabData.padding}
-                            alwaysVisible={printMode}
+            {tabsData.filter(tabData => tabData.visible).map((tabData, index) => (
+                <Box
+                    key={index}
+                    className={index === tab ? classes.activeTab : null}
+                >
+                    {printMode && (
+                        <Typography
+                            variant="h3"
+                            className={classes.printTitle}
                         >
-                            {tabData.content}
-                        </TabPanel>
-                    </Box>
-                ))}
+                            {tabData.name}
+                        </Typography>
+                    )}
+                    <TabPanel
+                        value={tab}
+                        index={index}
+                        padding={tabData.padding}
+                        alwaysVisible={printMode}
+                    >
+                        {tabData.content}
+                    </TabPanel>
+                </Box>
+            ))}
         </div>
-    );
+    )
 }
 
-export default memo(Document);
+export default memo(Document)

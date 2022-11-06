@@ -5,7 +5,6 @@ export default function IntervalProgress({ classes, eta }) {
     const [initialTime, setInitialTime] = useState(Date.now())
     const [value, setValue] = useState(0)
     useEffect(() => {
-        setInitialTime(Date.now())
         setValue(5)
         const interval = setInterval(() => {
             const elapsedMs = Date.now() - initialTime
@@ -16,6 +15,10 @@ export default function IntervalProgress({ classes, eta }) {
             clearInterval(interval)
         }
     }, [eta, initialTime])
+
+    useEffect(() => {
+        setInitialTime(Date.now())
+    }, [eta])
 
     return (
         <LinearProgress

@@ -15,8 +15,8 @@ import {
     Typography
 } from '@mui/material'
 import Loading from '../Loading'
-import { useUser } from '../UserProvider'
 import { useHashState } from '../HashStateProvider'
+import { useSharedStore } from "../SharedStoreProvider"
 import {
     getPreviewParams,
     getTypeIcon,
@@ -135,7 +135,7 @@ const timeMs = () => new Date().getTime()
 
 function ResultItem({ hit, url, index }) {
     const classes = useStyles()
-    const whoAmI = useUser()
+    const user = useSharedStore().user
     const { hashState, setHashState } = useHashState()
 
     const isPreview = hit._collection === hashState.preview?.c && hit._id === hashState.preview?.i
@@ -312,7 +312,7 @@ function ResultItem({ hit, url, index }) {
                             </Grid>
 
                             {Object.entries(specialTags).map(([tag, params], index) => {
-                                const tagsField = params.public ? fields.tags : fields[`priv-tags.${whoAmI.uuid}`]
+                                const tagsField = params.public ? fields.tags : fields[`priv-tags.${user.uuid}`]
                                 if (tagsField?.includes(tag)) {
                                     return (
                                         <Grid item key={index}>
@@ -397,12 +397,12 @@ function ResultItem({ hit, url, index }) {
                             </Box>
                         )}
 
-                        {fields[`priv-tags.${whoAmI.uuid}`]?.filter(tag => !specialTagsList.includes(tag)).length > 0 && (
+                        {fields[`priv-tags.${user.uuid}`]?.filter(tag => !specialTagsList.includes(tag)).length > 0 && (
                             <Box>
                                 <Typography variant="caption">
                                     <strong>Private tags:</strong>{' '}
                                     {
-                                        fields[`priv-tags.${whoAmI.uuid}`]
+                                        fields[`priv-tags.${user.uuid}`]
                                         .filter(tag => !specialTagsList.includes(tag))
                                         .join(', ')
                                     }

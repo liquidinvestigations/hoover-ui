@@ -1,11 +1,11 @@
 import React, { memo } from 'react'
 import { DateTime } from 'luxon'
 import { Box, Tooltip } from '@mui/material'
-import { useUser } from '../UserProvider'
+import { useSharedStore } from "../SharedStoreProvider"
 import { formatDateTime } from '../../utils'
 
 function TagTooltip({ chip, count, children }) {
-    const whoAmI = useUser()
+    const user = useSharedStore().user
 
     return (
         <Tooltip
@@ -31,7 +31,7 @@ function TagTooltip({ chip, count, children }) {
                         }
                     </Box>
                     <Box>
-                        {chip.user === whoAmI.username ?
+                        {chip.user === user.username ?
                             <>Tagged by you</> :
                             <>Tagged by user <i>{chip.user}</i></>
                         }

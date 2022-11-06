@@ -9,7 +9,6 @@ import { JSS_CSS } from "../src/constants/general"
 import Layout from '../src/components/Layout'
 import theme from '../src/theme'
 import { whoami } from '../src/backend/api'
-import UserProvider from '../src/components/UserProvider'
 import HashStateProvider from '../src/components/HashStateProvider'
 import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
 import { SharedStore } from "../src/stores/SharedStore"
@@ -31,13 +30,11 @@ export default function HooverApp({ Component, pageProps, user }) {
             <LocalizationProvider dateAdapter={AdapterLuxon}>
                 <CssBaseline />
                 <SharedStoreProvider store={sharedStore}>
-                    <UserProvider whoAmI={user}>
-                        <HashStateProvider>
-                            <Layout>
-                                <Component {...pageProps} />
-                            </Layout>
-                        </HashStateProvider>
-                    </UserProvider>
+                    <HashStateProvider>
+                        <Layout>
+                            <Component {...pageProps} />
+                        </Layout>
+                    </HashStateProvider>
                 </SharedStoreProvider>
             </LocalizationProvider>
         </ThemeProvider>
