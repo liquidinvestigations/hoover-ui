@@ -21,7 +21,7 @@ import Loading from '../Loading'
 import TagTooltip from './TagTooltip'
 import { useDocument } from './DocumentProvider'
 import { useTags } from './TagsProvider'
-import { useUser } from '../UserProvider'
+import { useSharedStore } from "../SharedStoreProvider"
 import { specialTagsList } from '../../constants/specialTags'
 import { search as searchAPI } from '../../api'
 import { tooltips } from '../../constants/help'
@@ -80,7 +80,7 @@ export const getChipColor = chip => chip.public ? blue[200] : undefined
 
 function Tags({ toolbarButtons }) {
     const classes = useStyles()
-    const whoAmI = useUser()
+    const user = useSharedStore().user
 
     const {
         digestUrl, printMode, collections
@@ -137,7 +137,7 @@ function Tags({ toolbarButtons }) {
     const otherUsersTags = useMemo(() => {
         const usersTags = {}
         tags.forEach(tag => {
-            if (tag.user !== whoAmI.username) {
+            if (tag.user !== user.username) {
                 if (!usersTags[tag.user]) {
                     usersTags[tag.user] = []
                 }
@@ -145,7 +145,7 @@ function Tags({ toolbarButtons }) {
             }
         })
         return Object.entries(usersTags)
-    }, [tags, whoAmI.username])
+    }, [tags, user])
 
     if (tagsError) {
         return (
@@ -224,7 +224,7 @@ function Tags({ toolbarButtons }) {
         }
     }
 
-    const tagsValue = tags.filter(tag => tag.user === whoAmI.username)
+    const tagsValue = tags.filter(tag => tag.user === user.username)
 
     const options = newTagVisibility === 'public' ?
         tagsAggregations?.tags?.values?.buckets :
@@ -290,7 +290,7 @@ function Tags({ toolbarButtons }) {
                                                         </span>
                                             </> : chip.tag
                                         }
-                                        icon={chip.user === whoAmI.username && !specialTagsList.includes(chip.tag) ?
+                                        icon={chip.user === user.username && !specialTagsList.includes(chip.tag) ?
                                             <Tooltip title={`make ${chip.public ? 'private' : 'public'}`}>
                                                 <IconButton
                                                     size="small"

@@ -2,7 +2,7 @@ import React, { memo } from 'react'
 import Link from 'next/link'
 import { makeStyles } from '@mui/styles'
 import { AppBar, Toolbar, Typography } from '@mui/material'
-import { useUser } from './UserProvider'
+import { useSharedStore } from "./SharedStoreProvider"
 import Menu from './Menu'
 
 const useStyles = makeStyles(theme => ({
@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
 
 function Header() {
     const classes = useStyles()
-    const whoAmI = useUser()
+    const user = useSharedStore().user
 
     return (
         <div className={classes.root}>
@@ -32,11 +32,11 @@ function Header() {
                         className={classes.flex}
                     >
                         <Link href="/">
-                            <a className={classes.noLink}>{whoAmI.title}</a>
+                            <a className={classes.noLink}>{user.title}</a>
                         </Link>
                         {' ⟶ '}
-                        <a href={whoAmI.liquid.url} className={classes.noLink}>
-                            {whoAmI.liquid.title}
+                        <a href={user.liquid.url} className={classes.noLink}>
+                            {user.liquid.title}
                         </a>
                     </Typography>
                     <Menu />

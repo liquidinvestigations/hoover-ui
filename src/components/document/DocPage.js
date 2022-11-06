@@ -9,7 +9,7 @@ import Finder from './finder/Finder'
 import Locations from '../Locations'
 import SplitPaneLayout from '../SplitPaneLayout'
 import HotKeysWithHelp from '../HotKeysWithHelp'
-import { useUser } from '../UserProvider'
+import { useSharedStore } from "../SharedStoreProvider"
 import Error from '../../../pages/_error'
 import { copyMetadata, shortenName } from '../../utils'
 
@@ -47,7 +47,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function DocPage() {
     const classes = useStyles()
-    const whoAmI = useUser()
+    const user = useSharedStore().user
 
     const {
         data, loading, error, printMode,
@@ -141,17 +141,18 @@ export default function DocPage() {
     return (
         <>
             <Head>
-                <title>Hoover {data && `- ${data?.content.filename}`}</title>
-                {whoAmI.urls.hypothesis_embed && (
+                <title>{`Hoover ${data && `- ${data.content.filename}`}`}</title>
+                {user.urls.hypothesis_embed && (
                     <>
-                        <script async src={whoAmI.urls.hypothesis_embed} />
+                        <script async src={user.urls.hypothesis_embed} />
                         <script dangerouslySetInnerHTML={{
-                            __html: 'window.hypothesisConfig = function() {'+
-                                'return {'+
-                                'showHighlights: true,'+
-                                "appType: 'bookmarklet'"+
-                                '}'+
-                                '}'
+                            __html:
+`window.hypothesisConfig = function() {
+    return {
+        showHighlights: true,
+        appType: 'bookmarklet'
+    }
+}`
                         }}>
                         </script>
                     </>

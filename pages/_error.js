@@ -82,7 +82,7 @@ function Error({ statusCode, title, message }) {
         <div className={classes.error}>
             <Head>
                 <title>
-                    {statusCode}: {headTitle}
+                    {`${statusCode}: ${headTitle}`}
                 </title>
             </Head>
             <div>

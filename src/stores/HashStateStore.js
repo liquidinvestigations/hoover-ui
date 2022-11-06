@@ -9,7 +9,7 @@ export class HashStateStore {
         makeAutoObservable(this)
 
         reaction(
-            () => window?.location.hash,
+            () => typeof window !== "undefined" && window.location.hash,
             (hash => {
                 this.state = unwindParams(qs.parse(hash.substring(1)))
             })

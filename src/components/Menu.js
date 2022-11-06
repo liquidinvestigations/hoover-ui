@@ -2,11 +2,11 @@ import React, { memo } from 'react'
 import Link from 'next/link'
 import { Button } from '@mui/material'
 import { useRouter } from 'next/router'
-import { useUser } from './UserProvider'
+import { useSharedStore } from "./SharedStoreProvider"
 
 function Menu() {
     const router = useRouter()
-    const whoAmI = useUser()
+    const user = useSharedStore().user
 
     const { query } = router
     const printMode = query.print && query.print !== 'false'
@@ -60,17 +60,17 @@ function Menu() {
         },
         {
             name: 'Login',
-            url: whoAmI.urls.login,
+            url: user.urls.login,
             type: 'not-logged-in',
         },
         {
             name: 'Admin',
-            url: whoAmI.urls.admin,
+            url: user.urls.admin,
             type: 'admin',
         },
         {
-            name: `Logout (${whoAmI.username})`,
-            url: whoAmI.urls.logout,
+            name: `Logout (${user.username})`,
+            url: user.urls.logout,
             type: 'logged-in',
         }
         ].filter(Boolean).map(link => ({ ...link, active: router.asPath === link.url }))
@@ -78,13 +78,13 @@ function Menu() {
 
     const shouldShow = link => {
         if (link.type === 'admin') {
-            return whoAmI.admin;
+            return user.admin;
         }
         if (link.type === 'logged-in') {
-            return whoAmI.username;
+            return user.username;
         }
         if (link.type === 'not-logged-in') {
-            return !whoAmI.username;
+            return !user.username;
         }
         return true;
     }
