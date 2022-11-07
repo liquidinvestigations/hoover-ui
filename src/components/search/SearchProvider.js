@@ -10,10 +10,10 @@ import { availableColumns } from '../../constants/availableColumns'
 import fixLegacyQuery from '../../fixLegacyQuery'
 import { buildSearchQuerystring, unwindParams } from '../../queryUtils'
 import { getPreviewParams } from '../../utils'
-import { useHashState } from '../HashStateProvider'
 import useResultsSearch from './useResultsSearch'
 import useAggregationsSearch from './useAggregationsSearch'
 import useMissingSearch from './useMissingSearch'
+import { useSharedStore } from "../SharedStoreProvider"
 
 const useStyles = makeStyles((theme) => ({
     close: {
@@ -28,7 +28,7 @@ export function SearchProvider({ children, serverQuery }) {
     const router = useRouter()
     const { pathname } = router
 
-    const { hashState, setHashState } = useHashState()
+    const { hashState, setHashState } = useSharedStore().hashStore
 
     const queryString = typeof window === 'undefined' ? serverQuery : window.location.href.split('?')[1]?.split('#')[0]
     const query = useMemo(() => {

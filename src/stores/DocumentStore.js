@@ -1,4 +1,4 @@
-import { autorun, makeAutoObservable, reaction } from "mobx"
+import { autorun, makeAutoObservable, reaction, runInAction } from "mobx"
 import { collectionUrl, documentViewUrl } from "../utils"
 import { createDownloadUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI } from "../backend/api"
 
@@ -36,18 +36,17 @@ export class DocumentStore {
     hashStore
 
     constructor (hashStore) {
+        makeAutoObservable(this)
+
         this.hashStore = hashStore
 
         const hashState = this.hashStore.hashState
-
-        makeAutoObservable(this)
-
-        autorun(() => {
-            if (hashState.preview) {
+        if (hashState.preview) {
+            runInAction(() => {
                 this.setDocument(hashState.preview.c, hashState.preview.i)
                 this.loadDocument()
-            }
-        })
+            })
+        }
 
         reaction(
             () => this.pathname,
@@ -55,19 +54,19 @@ export class DocumentStore {
         )
 
         reaction(
-            () => ({ collection: hashState.preview?.c, id: hashState.preview?.i }),
-            (({ collection, id }) => {
-                collection && id && this.setDocument(collection, id)
-            })
+            () => this.hashStore.hashState?.preview?.c && this.hashStore.hashState?.preview?.i,
+            () => {
+                this.setDocument(this.hashStore.hashState.preview.c, this.hashStore.hashState.preview.i)
+            }
         )
 
         reaction(
-            () => hashState.tab,
+            () => this.hashStore.hashState.tab,
             (tab => tab && (this.tab = parseInt(tab)))
         )
 
         reaction(
-            () => hashState.subTab,
+            () => this.hashStore.hashState.subTab,
             (subTab => subTab && (this.subTab = parseInt(subTab)))
         )
     }
@@ -92,10 +91,14 @@ export class DocumentStore {
         docAPI(this.pathname)
             .then(this.parseDocumentData)
             .catch(res => {
-                this.error = { status: res.status, statusText: res.statusText, url: res.url }
+                runInAction(() => {
+                    this.error = { status: res.status, statusText: res.statusText, url: res.url }
+                })
             })
             .finally(() => {
-                this.loading = false
+                runInAction(() => {
+                    this.loading = false
+                })
             })
     }
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Document from './Document'
 import DocumentProvider from './DocumentProvider'
-import { useHashState } from '../../HashStateProvider'
+import { useSharedStore } from "../../SharedStoreProvider"
 
 function debounce (fn, wait) {
     let t
@@ -17,7 +17,7 @@ export default function Viewer({
     cMapPacked = true,
     withCredentials = true,
 }) {
-    const { hashState, setHashState } = useHashState()
+    const { hashState, setHashState } = useSharedStore().hashStore
     const [pageIndex, setPageIndex] = useState(0)
 
     useEffect(() => {
