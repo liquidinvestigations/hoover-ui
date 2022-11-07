@@ -1,4 +1,4 @@
-import React, { cloneElement, useCallback, useEffect, useState } from 'react'
+import { cloneElement, useCallback, useEffect, useState } from 'react'
 import { makeStyles } from '@mui/styles'
 import lucene from 'lucene'
 import { Box, Chip, FormControl, Typography } from '@mui/material'
@@ -9,7 +9,7 @@ import { aggregationFields } from '../../../constants/aggregationFields'
 import { clearQuotedParam } from '../../../queryUtils'
 import { getTagIcon, shortenName } from '../../../utils'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     treeTitle: {
         marginTop: theme.spacing(1),
     },
@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
 
         '&:last-child': {
             marginBottom: 0,
-        }
+        },
     },
 
     negationChip: {
@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
 
     dateBucketChip: {
         backgroundColor: blue[100],
-    }
+    },
 }))
 
 const deleteFilterNode = (filters, node) => {
@@ -54,7 +54,6 @@ const deleteFilterNode = (filters, node) => {
         if (node.boost === 1 && filters[node.field].intervals?.missing) {
             filters[node.field].intervals.missing = undefined
         }
-
     } else if (node.term) {
         let index
         const filter = filters[node.field]
@@ -86,7 +85,7 @@ const deleteFilterOperands = (filters, node) => {
 export default function FiltersChips() {
     const classes = useStyles()
     const { query, search } = useSearch()
-    const [ parsedFilters, setParsedFilters ] = useState()
+    const [parsedFilters, setParsedFilters] = useState()
 
     useEffect(() => {
         if (query.filters) {
@@ -104,7 +103,7 @@ export default function FiltersChips() {
                 } else if (values.intervals?.missing === 'true') {
                     intervalsArray.push(`(${key}:-"N/A"^1)`)
                 }
-                values.intervals?.include?.forEach(value => {
+                values.intervals?.include?.forEach((value) => {
                     intervalsArray.push(`${key}:${value}`)
                 })
                 if (filter) {
@@ -122,7 +121,7 @@ export default function FiltersChips() {
                 if (values.missing === 'true') {
                     includeArray.push(`(${key}:"N/A"^1)`)
                 }
-                values.include?.forEach(value => {
+                values.include?.forEach((value) => {
                     includeArray.push(`${key}:"${clearQuotedParam(value)}"`)
                 })
                 if (includeArray.length) {
@@ -137,7 +136,7 @@ export default function FiltersChips() {
                 if (values.missing === 'false') {
                     excludeArray.push(`(${key}:-"N/A"^1)`)
                 }
-                values.exclude?.forEach(value => {
+                values.exclude?.forEach((value) => {
                     excludeArray.push(`(${key}:-"${clearQuotedParam(value)}")`)
                 })
                 if (excludeArray.length) {
@@ -159,11 +158,14 @@ export default function FiltersChips() {
         }
     }, [query])
 
-    const handleDelete = useCallback(node => {
-        search({ filters: deleteFilterOperands({ ...query.filters }, node) })
-    }, [search])
+    const handleDelete = useCallback(
+        (node) => {
+            search({ filters: deleteFilterOperands({ ...query.filters }, node) })
+        },
+        [search]
+    )
 
-    const getChip = useCallback(q => {
+    const getChip = useCallback((q) => {
         let className = classes.chip
         if (q.prefix === '-' || q.prefix === '!') {
             className += ' ' + classes.negationChip
@@ -175,16 +177,15 @@ export default function FiltersChips() {
             className += ' ' + classes.dateChip
             label = (
                 <span>
-                    <strong>{name}:</strong>{' '}
-                    {q.term_min} to {q.term_max}
+                    <strong>{name}:</strong> {q.term_min} to {q.term_max}
                 </span>
             )
         } else {
             let term = q.term
 
             let buckets
-            if (buckets = aggregationFields[q.field]?.buckets) {
-                const bucket = buckets.find(bucket => bucket.key === term)
+            if ((buckets = aggregationFields[q.field]?.buckets)) {
+                const bucket = buckets.find((bucket) => bucket.key === term)
                 term = bucket ? bucket.label || bucket.key : term
             }
 
@@ -197,32 +198,26 @@ export default function FiltersChips() {
                                 ...icon.props.style,
                                 fontSize: 18,
                                 verticalAlign: 'middle',
-                            }
-                        })} {term}
+                            },
+                        })}{' '}
+                        {term}
                     </>
                 )
             }
 
             label = (
                 <span>
-                    <strong>{name}:</strong>{' '}
-                    {q.boost === 1 ? <i>{term}</i> : shortenName(term)}
+                    <strong>{name}:</strong> {q.boost === 1 ? <i>{term}</i> : shortenName(term)}
                 </span>
             )
         }
 
-        return (
-            <Chip
-                label={label}
-                className={className}
-            />
-        )
+        return <Chip label={label} className={className} />
     }, [])
 
-    const renderMenu = useCallback(isExpression =>
-        `delete selected ${isExpression ? 'expression' : 'filter'}`, [])
+    const renderMenu = useCallback((isExpression) => `delete selected ${isExpression ? 'expression' : 'filter'}`, [])
 
-    return query && parsedFilters ?
+    return query && parsedFilters ? (
         <Box>
             <Typography variant="h6" className={classes.treeTitle}>
                 Filters
@@ -236,5 +231,6 @@ export default function FiltersChips() {
                     onExpressionDelete={handleDelete}
                 />
             </FormControl>
-        </Box> : null;
+        </Box>
+    ) : null
 }

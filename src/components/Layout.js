@@ -1,4 +1,3 @@
-import React from 'react'
 import Head from 'next/head'
 import ProgressIndicator, { ProgressIndicatorProvider } from './ProgressIndicator'
 import { Header } from './Header'
@@ -10,21 +9,13 @@ export default function Layout({ children }) {
             <Head>
                 <title>Hoover</title>
                 <meta charSet="utf-8" />
-                <meta
-                    name="viewport"
-                    content={
-                        'user-scalable=0, initial-scale=1, ' +
-                        'minimum-scale=1, width=device-width, height=device-height'
-                    }
-                />
+                <meta name="viewport" content={'user-scalable=0, initial-scale=1, ' + 'minimum-scale=1, width=device-width, height=device-height'} />
             </Head>
 
             <ProgressIndicatorProvider>
                 <ProgressIndicator type="linear" />
                 <Header />
-                <ErrorBoundary>
-                    {children}
-                </ErrorBoundary>
+                <ErrorBoundary>{children}</ErrorBoundary>
             </ProgressIndicatorProvider>
         </>
     )

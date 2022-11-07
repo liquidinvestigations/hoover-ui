@@ -1,12 +1,12 @@
 import { makeStyles } from '@mui/styles'
-import { useCoordinates } from "./CoordinatesProvider"
+import { useCoordinates } from './CoordinatesProvider'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     link: {
-        position: "absolute",
+        position: 'absolute',
         top: 100,
-        left: 10
-    }
+        left: 10,
+    },
 }))
 
 export default function GoogleMapsLink() {

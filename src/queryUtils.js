@@ -32,23 +32,27 @@ const LEGACY_PARAMS = {
     e: 'email-domains',
 }
 
-export const rollupParams = query => Object.fromEntries(Object.entries(query).map(([field, value]) => {
-    const key = Object.keys(PARAMS_MAP).find(key => PARAMS_MAP[key] === field)
-    return key ? [key, value] : [field, value]
-}))
+export const rollupParams = (query) =>
+    Object.fromEntries(
+        Object.entries(query).map(([field, value]) => {
+            const key = Object.keys(PARAMS_MAP).find((key) => PARAMS_MAP[key] === field)
+            return key ? [key, value] : [field, value]
+        })
+    )
 
-export const unwindParams = query => Object.fromEntries(Object.entries(query).map(([field, value]) =>
-    LEGACY_PARAMS[field] ? [LEGACY_PARAMS[field], value] : [field, value])
-)
+export const unwindParams = (query) =>
+    Object.fromEntries(Object.entries(query).map(([field, value]) => (LEGACY_PARAMS[field] ? [LEGACY_PARAMS[field], value] : [field, value])))
 
-export const buildSearchQuerystring = (params) => (
-    qs.stringify(rollupParams({
-        ...defaultSearchParams, ...params,
-        collections: params?.collections?.join?.('+'),
-    }))
-)
+export const buildSearchQuerystring = (params) =>
+    qs.stringify(
+        rollupParams({
+            ...defaultSearchParams,
+            ...params,
+            collections: params?.collections?.join?.('+'),
+        })
+    )
 
-export const clearQuotedParam = param => param.replace(/#/g, ' ').replace(/"/g, '')
+export const clearQuotedParam = (param) => param.replace(/#/g, ' ').replace(/"/g, '')
 
 export const createSearchParams = (field, term) => {
     const params = {}
@@ -80,15 +84,15 @@ export const createSearchParams = (field, term) => {
                     const dateTime = DateTime.fromISO(week)
                     params.filters[field] = {
                         from: DateTime.fromObject({
-                                weekYear: dateTime.weekYear,
-                                weekNumber: dateTime.weekNumber,
-                                weekday: 1
-                            }).toISODate(),
+                            weekYear: dateTime.weekYear,
+                            weekNumber: dateTime.weekNumber,
+                            weekday: 1,
+                        }).toISODate(),
                         to: DateTime.fromObject({
-                                weekYear: dateTime.weekYear,
-                                weekNumber: dateTime.weekNumber,
-                                weekday: 7
-                            }).toISODate(),
+                            weekYear: dateTime.weekYear,
+                            weekNumber: dateTime.weekNumber,
+                            weekday: 7,
+                        }).toISODate(),
                     }
                     break
 
@@ -103,11 +107,9 @@ export const createSearchParams = (field, term) => {
             if (term.interval) {
                 params.filters[field].interval = term.interval
             }
-
         } else {
             params.filters[field] = { include: [term] }
         }
-
     } else if (field) {
         params.q = `${field}:"${clearQuotedParam(term)}"`
     } else {

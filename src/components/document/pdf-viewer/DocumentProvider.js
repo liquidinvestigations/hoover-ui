@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { getDocument, GlobalWorkerOptions, PasswordResponses, PDFWorker } from 'pdfjs-dist/build/pdf'
 
 if (typeof window !== 'undefined' && 'Worker' in window) {
@@ -18,7 +18,7 @@ export default function DocumentProvider({ url, cMaps, cMapsPacked, withCredenti
     const [firstPageData, setFirstPageData] = useState({
         width: 0,
         height: 0,
-        scale: 1
+        scale: 1,
     })
     const [error, setError] = useState(null)
     const [percent, setPercent] = useState(0)
@@ -48,24 +48,24 @@ export default function DocumentProvider({ url, cMaps, cMapsPacked, withCredenti
                     break
             }
         }
-        loadingTask.onProgress = progress => {
-            progress.total > 0 ?
-                setPercent(Math.min(100, 100 * progress.loaded / progress.total)) :
-                setPercent(100)
+        loadingTask.onProgress = (progress) => {
+            progress.total > 0 ? setPercent(Math.min(100, (100 * progress.loaded) / progress.total)) : setPercent(100)
         }
         loadingTask.promise.then(
-            doc => {
+            (doc) => {
                 setDoc(doc)
-                doc.getPage(1).then(page => {
+                doc.getPage(1).then((page) => {
                     const { width, height, scale } = page.getViewport({ scale: 1 })
 
                     setFirstPageData({
-                        width, height, scale
+                        width,
+                        height,
+                        scale,
                     })
                     setStatus(STATUS_COMPLETE)
                 })
             },
-            err => {
+            (err) => {
                 setError(err)
                 setStatus(STATUS_ERROR)
             }
@@ -78,11 +78,18 @@ export default function DocumentProvider({ url, cMaps, cMapsPacked, withCredenti
     }, [url])
 
     return (
-        <DocumentContext.Provider value={{
-            doc, firstPageData, error, status, percent,
-            bookmarks, setBookmarks,
-            externalLinks, setExternalLinks,
-        }}>
+        <DocumentContext.Provider
+            value={{
+                doc,
+                firstPageData,
+                error,
+                status,
+                percent,
+                bookmarks,
+                setBookmarks,
+                externalLinks,
+                setExternalLinks,
+            }}>
             {children}
         </DocumentContext.Provider>
     )

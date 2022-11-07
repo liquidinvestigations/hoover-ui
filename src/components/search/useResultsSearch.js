@@ -8,7 +8,7 @@ export default function useResultsSearch(query, previewOnLoad, setPreviewOnLoad,
     const [results, setResults] = useState()
     const [resultsTask, setResultsTask] = useState(null)
     const [resultsLoading, setResultsLoading] = useState(!!query.q)
-    const handleResultsError = error => {
+    const handleResultsError = (error) => {
         if (error.name !== 'AbortError') {
             setResults(null)
             setError(error.message)
@@ -18,7 +18,7 @@ export default function useResultsSearch(query, previewOnLoad, setPreviewOnLoad,
     }
 
     useEffect(() => {
-        (async () => {
+        ;(async () => {
             if (query.q) {
                 setError(null)
                 setResultsTask(null)
@@ -33,41 +33,41 @@ export default function useResultsSearch(query, previewOnLoad, setPreviewOnLoad,
                     })
 
                     setResultsTask({ ...taskData, initialEta: taskData.eta?.total_sec })
-
-                } catch(error) {
+                } catch (error) {
                     handleResultsError(error)
                 }
-
             } else {
                 setResults(null)
             }
         })()
-    }, [JSON.stringify({
-        ...query,
-        facets: null,
-        filters: {
-            ...(query.filters || {}),
-            date: {
-                from: query.filters?.date?.from,
-                to: query.filters?.date?.to,
-                intervals: query.filters?.date?.intervals,
+    }, [
+        JSON.stringify({
+            ...query,
+            facets: null,
+            filters: {
+                ...(query.filters || {}),
+                date: {
+                    from: query.filters?.date?.from,
+                    to: query.filters?.date?.to,
+                    intervals: query.filters?.date?.intervals,
+                },
+                ['date-created']: {
+                    from: query.filters?.['date-created']?.from,
+                    to: query.filters?.['date-created']?.to,
+                    intervals: query.filters?.['date-created']?.intervals,
+                },
             },
-            ['date-created']: {
-                from: query.filters?.['date-created']?.from,
-                to: query.filters?.['date-created']?.to,
-                intervals: query.filters?.['date-created']?.intervals,
-            },
-        }
-    })])
+        }),
+    ])
 
     const [resultsTaskRequestCounter, setResultsTaskRequestCounter] = useState(0)
 
     useEffect(() => {
         let timeout
 
-        (async () => {
+        ;(async () => {
             const prevTaskResults = resultsTask
-    
+
             if (prevTaskResults) {
                 if (prevTaskResults.status === 'done') {
                     const results = prevTaskResults.result
@@ -78,13 +78,17 @@ export default function useResultsSearch(query, previewOnLoad, setPreviewOnLoad,
                         setPreviewOnLoad(null)
                         setHashState({
                             ...getPreviewParams(results.hits.hits[0]),
-                            tab: undefined, subTab: undefined, previewPage: undefined
+                            tab: undefined,
+                            subTab: undefined,
+                            previewPage: undefined,
                         })
                     } else if (previewOnLoad === 'last') {
                         setPreviewOnLoad(null)
                         setHashState({
                             ...getPreviewParams(results.hits.hits[results.hits.hits.length - 1]),
-                            tab: undefined, subTab: undefined, previewPage: undefined
+                            tab: undefined,
+                            subTab: undefined,
+                            previewPage: undefined,
                         })
                     }
                 } else if (!prevTaskResults.retrieving) {
@@ -93,23 +97,26 @@ export default function useResultsSearch(query, previewOnLoad, setPreviewOnLoad,
                     const wait = prevTaskResults.eta.total_sec < process.env.ASYNC_SEARCH_POLL_INTERVAL ? true : ''
 
                     if (wait) {
-                        setResultsTaskRequestCounter(counter => counter + 1)
+                        setResultsTaskRequestCounter((counter) => counter + 1)
                     }
 
                     try {
                         const resultsTaskData = await asyncSearchAPI(prevTaskResults.task_id, wait)
-                        const update = () => setResultsTask(taskResults => ({ ...taskResults, ...resultsTaskData, retrieving: false } ))
+                        const update = () => setResultsTask((taskResults) => ({ ...taskResults, ...resultsTaskData, retrieving: false }))
 
                         if (resultsTaskData.status === 'done') {
                             update()
-                        } else if (Date.now() - Date.parse(resultsTaskData.date_created) < (prevTaskResults.initialEta * process.env.ASYNC_SEARCH_ERROR_MULTIPLIER + process.env.ASYNC_SEARCH_ERROR_SUMMATION) * 1000) {
+                        } else if (
+                            Date.now() - Date.parse(resultsTaskData.date_created) <
+                            (prevTaskResults.initialEta * process.env.ASYNC_SEARCH_ERROR_MULTIPLIER + process.env.ASYNC_SEARCH_ERROR_SUMMATION) * 1000
+                        ) {
                             timeout = setTimeout(update, process.env.ASYNC_SEARCH_POLL_INTERVAL * 1000)
                         } else {
                             handleResultsError(new Error('Results task ETA timeout'))
                         }
                     } catch (error) {
                         if (wait && error.name === 'TypeError' && resultsTaskRequestCounter < process.env.ASYNC_SEARCH_MAX_FINAL_RETRIES) {
-                            setResultsTask(taskResults => ({ ...taskResults, retrieving: false } ))
+                            setResultsTask((taskResults) => ({ ...taskResults, retrieving: false }))
                         } else {
                             handleResultsError(error)
                         }
@@ -124,6 +131,10 @@ export default function useResultsSearch(query, previewOnLoad, setPreviewOnLoad,
     }, [resultsTask])
 
     return {
-        results, setResults, resultsTask, resultsLoading, error,
+        results,
+        setResults,
+        resultsTask,
+        resultsLoading,
+        error,
     }
 }

@@ -1,4 +1,3 @@
-import React from 'react'
 import qs from 'qs'
 import { mergeWith } from 'lodash'
 import { Menu, MenuItem } from '@mui/material'
@@ -6,11 +5,11 @@ import { NestedMenuItem } from 'mui-nested-menu'
 import { useSearch } from '../search/SearchProvider'
 import { buildSearchQuerystring, createSearchParams, createSearchUrl, rollupParams } from '../../queryUtils'
 import { aggregationFields } from '../../constants/aggregationFields'
-import { useSharedStore } from "../SharedStoreProvider"
+import { useSharedStore } from '../SharedStoreProvider'
 
 function customizer(objValue, srcValue) {
     if (Array.isArray(objValue)) {
-        return objValue.concat(srcValue);
+        return objValue.concat(srcValue)
     }
 }
 
@@ -53,78 +52,49 @@ export default function LinkMenu({ link, anchorPosition, onClose }) {
         }
     }
 
-    const handleNewSearch = term => () => {
+    const handleNewSearch = (term) => () => {
         onClose()
         const newTerm = term || link.term
         window.open(createSearchUrl(newTerm, link.field, getCollections(), hash))
     }
 
     return (
-        <Menu
-            open={!!anchorPosition}
-            onClose={onClose}
-            anchorReference="anchorPosition"
-            anchorPosition={anchorPosition}
-        >
-            {search && (
-                aggregationFields[link?.field]?.type === 'date' ?
-                    <NestedMenuItem
-                        label="restrict current search to this"
-                        parentMenuOpen={Boolean(anchorPosition)}
-                    >
-                        {formats.map(format =>
-                            <MenuItem
-                                key={format}
-                                onClick={handleAddSearch(false, { term: link.term, format })}
-                            >
+        <Menu open={!!anchorPosition} onClose={onClose} anchorReference="anchorPosition" anchorPosition={anchorPosition}>
+            {search &&
+                (aggregationFields[link?.field]?.type === 'date' ? (
+                    <NestedMenuItem label="restrict current search to this" parentMenuOpen={Boolean(anchorPosition)}>
+                        {formats.map((format) => (
+                            <MenuItem key={format} onClick={handleAddSearch(false, { term: link.term, format })}>
                                 {format}
                             </MenuItem>
-                        )}
+                        ))}
                     </NestedMenuItem>
-                    :
-                    <MenuItem onClick={handleAddSearch(false)}>
-                        add this field to current search
-                    </MenuItem>
-            )}
-            {search && (
-                aggregationFields[link?.field]?.type === 'date' ?
-                    <NestedMenuItem
-                        label="restrict current search to this (open in a new tab)"
-                        parentMenuOpen={Boolean(anchorPosition)}
-                    >
-                        {formats.map(format =>
-                            <MenuItem
-                                key={format}
-                                onClick={handleAddSearch(true, { term: link.term, format })}
-                            >
+                ) : (
+                    <MenuItem onClick={handleAddSearch(false)}>add this field to current search</MenuItem>
+                ))}
+            {search &&
+                (aggregationFields[link?.field]?.type === 'date' ? (
+                    <NestedMenuItem label="restrict current search to this (open in a new tab)" parentMenuOpen={Boolean(anchorPosition)}>
+                        {formats.map((format) => (
+                            <MenuItem key={format} onClick={handleAddSearch(true, { term: link.term, format })}>
                                 {format}
                             </MenuItem>
-                        )}
+                        ))}
                     </NestedMenuItem>
-                    :
-                    <MenuItem onClick={handleAddSearch(true)}>
-                        add this field to current search (open in new tab)
-                    </MenuItem>
-            )}
-            {aggregationFields[link?.field]?.type === 'date' ?
-                <NestedMenuItem
-                    label="open a new search for this"
-                    parentMenuOpen={Boolean(anchorPosition)}
-                >
-                    {formats.map(format =>
-                        <MenuItem
-                            key={format}
-                            onClick={handleNewSearch({ term: link.term, format })}
-                        >
+                ) : (
+                    <MenuItem onClick={handleAddSearch(true)}>add this field to current search (open in new tab)</MenuItem>
+                ))}
+            {aggregationFields[link?.field]?.type === 'date' ? (
+                <NestedMenuItem label="open a new search for this" parentMenuOpen={Boolean(anchorPosition)}>
+                    {formats.map((format) => (
+                        <MenuItem key={format} onClick={handleNewSearch({ term: link.term, format })}>
                             {format}
                         </MenuItem>
-                    )}
+                    ))}
                 </NestedMenuItem>
-                :
-                <MenuItem onClick={handleNewSearch()}>
-                    open a new search for this term
-                </MenuItem>
-            }
+            ) : (
+                <MenuItem onClick={handleNewSearch()}>open a new search for this term</MenuItem>
+            )}
         </Menu>
     )
 }

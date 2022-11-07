@@ -18,72 +18,76 @@ export default function useMissingSearch(query) {
             return acc
         }, {})
     )
-    const handleMissingError = field => {
+    const handleMissingError = (field) => {
         setMissingLoading(
             Object.entries(aggregationFields).reduce((acc, [field]) => {
                 acc[field] = false
                 return acc
             }, {})
         )
-        setMissingAggregations(aggregations => ({...(aggregations || {}), [field]: undefined}))
-        setMissingTasks(tasks => ({...(tasks || {}), [field]: undefined}))
+        setMissingAggregations((aggregations) => ({ ...(aggregations || {}), [field]: undefined }))
+        setMissingTasks((tasks) => ({ ...(tasks || {}), [field]: undefined }))
     }
 
     useEffect(() => {
         setMissingAggregations(null)
         setMissingTasks({})
-    }, [JSON.stringify({
-        ...query,
-        facets: null,
-        page: null,
-        size: null,
-        order: null,
-    })])
+    }, [
+        JSON.stringify({
+            ...query,
+            facets: null,
+            page: null,
+            size: null,
+            order: null,
+        }),
+    ])
 
-    const loadMissing = useCallback(async field => {
-        if (query.collections?.length) {
-            setMissingLoading(loading => ({ ...loading, [field]: true }))
-            setMissingTasks(tasks => ({...(tasks || {}), [field]: undefined}))
-            setMissingTaskRequestCounter(counters => ({ ...counters, [field]: 0 }))
+    const loadMissing = useCallback(
+        async (field) => {
+            if (query.collections?.length) {
+                setMissingLoading((loading) => ({ ...loading, [field]: true }))
+                setMissingTasks((tasks) => ({ ...(tasks || {}), [field]: undefined }))
+                setMissingTaskRequestCounter((counters) => ({ ...counters, [field]: 0 }))
 
-            try {
-                const taskData = await searchAPI({
-                    ...query,
-                    q: query.q || '*',
-                    type: 'aggregations',
-                    fieldList: [field],
-                    missing: true,
-                    async: true,
-                })
+                try {
+                    const taskData = await searchAPI({
+                        ...query,
+                        q: query.q || '*',
+                        type: 'aggregations',
+                        fieldList: [field],
+                        missing: true,
+                        async: true,
+                    })
 
-                setMissingTasks(tasks => ({
-                    ...(tasks || {}),
-                    [field]: {
-                        ...taskData,
-                        initialEta: taskData?.eta.total_sec
-                    }
-                }))
+                    setMissingTasks((tasks) => ({
+                        ...(tasks || {}),
+                        [field]: {
+                            ...taskData,
+                            initialEta: taskData?.eta.total_sec,
+                        },
+                    }))
+                } catch (error) {
+                    handleMissingError(field)
+                }
+            } else {
+                setMissingAggregations(null)
             }
-            catch(error) {
-                handleMissingError(field)
-            }
-        } else {
-            setMissingAggregations(null)
-        }
-    }, [query])
+        },
+        [query]
+    )
 
     useEffect(() => {
         let timeout
 
-        setMissingTasks(prevTasksMissing => {
+        setMissingTasks((prevTasksMissing) => {
             Object.entries(prevTasksMissing).forEach(([field, taskData]) => {
                 if (!taskData) {
                     return
                 }
 
-                const done = resultData => {
-                    setMissingAggregations(aggregations => ({ ...(aggregations || {}), ...resultData.aggregations }))
-                    setMissingLoading(loading => ({
+                const done = (resultData) => {
+                    setMissingAggregations((aggregations) => ({ ...(aggregations || {}), ...resultData.aggregations }))
+                    setMissingLoading((loading) => ({
                         ...loading,
                         [field]: false,
                     }))
@@ -97,41 +101,47 @@ export default function useMissingSearch(query) {
                     const wait = taskData.eta.total_sec < process.env.ASYNC_SEARCH_POLL_INTERVAL ? true : ''
 
                     if (wait) {
-                        setMissingTaskRequestCounter(counter => ({
+                        setMissingTaskRequestCounter((counter) => ({
                             ...counter,
                             [field]: counter[field] + 1,
                         }))
                     }
 
                     asyncSearchAPI(taskData.task_id, wait)
-                        .then(taskResultData => {
-                            const update = () => setMissingTasks(tasks => ({
-                                ...tasks,
-                                [field]: { ...tasks[field], ...taskResultData, retrieving: false }
-                            }))
+                        .then((taskResultData) => {
+                            const update = () =>
+                                setMissingTasks((tasks) => ({
+                                    ...tasks,
+                                    [field]: { ...tasks[field], ...taskResultData, retrieving: false },
+                                }))
 
                             if (taskResultData.status === 'done') {
                                 done(taskResultData.result)
-                            } else if (Date.now() - Date.parse(taskResultData.date_created) < (prevTasksMissing[field].initialEta * process.env.ASYNC_SEARCH_ERROR_MULTIPLIER + process.env.ASYNC_SEARCH_ERROR_SUMMATION) * 1000) {
+                            } else if (
+                                Date.now() - Date.parse(taskResultData.date_created) <
+                                (prevTasksMissing[field].initialEta * process.env.ASYNC_SEARCH_ERROR_MULTIPLIER +
+                                    process.env.ASYNC_SEARCH_ERROR_SUMMATION) *
+                                    1000
+                            ) {
                                 timeout = setTimeout(update, process.env.ASYNC_SEARCH_POLL_INTERVAL * 1000)
                             } else {
                                 handleMissingError(field)
                             }
                         })
-                        .catch(error => {
+                        .catch((error) => {
                             if (wait && error.name === 'TypeError') {
                                 if (missingTaskRequestCounter[field] < process.env.ASYNC_SEARCH_MAX_FINAL_RETRIES) {
-                                    setMissingTasks(tasks => ({
+                                    setMissingTasks((tasks) => ({
                                         ...tasks,
-                                        [field]: { ...tasks[field], retrieving: false }
+                                        [field]: { ...tasks[field], retrieving: false },
                                     }))
                                 } else {
-                                    setMissingTasks(tasks => ({
+                                    setMissingTasks((tasks) => ({
                                         ...tasks,
-                                        [field]: undefined
+                                        [field]: undefined,
                                     }))
                                 }
-                            } else{
+                            } else {
                                 handleMissingError(field)
                             }
                         })
@@ -146,6 +156,10 @@ export default function useMissingSearch(query) {
     }, [missingTasks])
 
     return {
-        missingAggregations, setMissingAggregations, missingTasks, missingLoading, loadMissing,
+        missingAggregations,
+        setMissingAggregations,
+        missingTasks,
+        missingLoading,
+        loadMissing,
     }
 }

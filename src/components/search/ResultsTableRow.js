@@ -1,29 +1,21 @@
-import React, { cloneElement, useEffect, useRef, useState } from 'react'
+import { cloneElement, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
 import { IconButton, Paper, Popper, TableCell, TableRow, Tooltip } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { useSearch } from './SearchProvider'
-import { useSharedStore } from "../SharedStoreProvider"
+import { useSharedStore } from '../SharedStoreProvider'
 import { createDownloadUrl, createThumbnailSrc } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
-import {
-    documentViewUrl,
-    formatDateTime,
-    getPreviewParams,
-    getTagIcon,
-    getTypeIcon,
-    humanFileSize,
-    shortenName,
-} from '../../utils'
+import { documentViewUrl, formatDateTime, getPreviewParams, getTagIcon, getTypeIcon, humanFileSize, shortenName } from '../../utils'
 import Loading from '../Loading'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     selected: {
         boxShadow: `inset 0 0 0 2px ${theme.palette.secondary.main}`,
 
         '& td': {
             borderBottomColor: theme.palette.secondary.main,
-        }
+        },
     },
     infoIcon: {
         fontSize: 20,
@@ -51,7 +43,7 @@ const useStyles = makeStyles(theme => ({
     },
     previewImgLoading: {
         width: 1,
-    }
+    },
 }))
 
 export default function ResultsTableRow({ hit, index }) {
@@ -89,9 +81,11 @@ export default function ResultsTableRow({ hit, index }) {
         setShowPreview(false)
     }
 
-    const getValue = path => {
-        let pathParts = path.split('.'), pathPart, value = hit
-        while (pathPart = pathParts.shift()) {
+    const getValue = (path) => {
+        let pathParts = path.split('.'),
+            pathPart,
+            value = hit
+        while ((pathPart = pathParts.shift())) {
             value = value[pathPart]
         }
         return value
@@ -112,15 +106,13 @@ export default function ResultsTableRow({ hit, index }) {
             case 'icon':
                 return (
                     <Tooltip placement="top" title={value ? value : 'unknown'}>
-                        <span>
-                            {cloneElement(getTypeIcon(value), { className: classes.infoIcon })}
-                        </span>
+                        <span>{cloneElement(getTypeIcon(value), { className: classes.infoIcon })}</span>
                     </Tooltip>
                 )
             case 'array':
                 return !value ? null : (
                     <>
-                        {value.slice(0, 7).map(el => (
+                        {value.slice(0, 7).map((el) => (
                             <>
                                 {shortenName(el)}
                                 <br />
@@ -130,10 +122,10 @@ export default function ResultsTableRow({ hit, index }) {
                     </>
                 )
             case 'tags':
-                const icon = tag => getTagIcon(tag, field === 'tags')
+                const icon = (tag) => getTagIcon(tag, field === 'tags')
                 return !value ? null : (
                     <>
-                        {value.slice(0, 7).map(el => (
+                        {value.slice(0, 7).map((el) => (
                             <>
                                 {icon(el) && cloneElement(icon(el), { className: classes.tagIcon })}
                                 {shortenName(el)}
@@ -161,10 +153,9 @@ export default function ResultsTableRow({ hit, index }) {
                                     name: 'preventOverflow',
                                     options: {
                                         boundary: 'clippingParents',
-                                    }
-                                }
-                            ]}
-                        >
+                                    },
+                                },
+                            ]}>
                             <Paper elevation={10} className={classes.preview}>
                                 {previewLoading && <Loading />}
                                 <img
@@ -180,18 +171,12 @@ export default function ResultsTableRow({ hit, index }) {
     }
 
     return (
-        <TableRow
-            ref={nodeRef}
-            onClick={handleResultClick}
-            className={cn({ [classes.selected]: isPreview })}
-        >
-            <TableCell>
-                {start + index}
-            </TableCell>
+        <TableRow ref={nodeRef} onClick={handleResultClick} className={cn({ [classes.selected]: isPreview })}>
+            <TableCell>{start + index}</TableCell>
             {resultsColumns.map(([field, { align, path, format }]) => (
-                    <TableCell key={field} align={align}>
-                        {formatField(field, path, format)}
-                    </TableCell>
+                <TableCell key={field} align={align}>
+                    {formatField(field, path, format)}
+                </TableCell>
             ))}
             <TableCell>
                 <Tooltip title="Open in new tab">

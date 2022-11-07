@@ -10,8 +10,7 @@ const theme = createTheme({
     },
     typography: {
         fontFamily: "'Open Sans', sans-serif",
-        fontFamilyMono:
-            'SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+        fontFamilyMono: 'SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
     },
 })
 

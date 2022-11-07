@@ -1,12 +1,12 @@
-import React, { memo } from 'react'
+import { memo } from 'react'
 import { makeStyles } from '@mui/styles'
 import { CircularProgress } from '@mui/material'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     progress: {
         padding: '1rem',
         textAlign: 'center',
-    }
+    },
 }))
 
 function Loading(props) {

@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useState } from 'react'
+import { forwardRef, useEffect, useState } from 'react'
 import cn from 'classnames'
 import { makeStyles } from '@mui/styles'
 import ThumbnailLayer from './layers/ThumbnailLayer'
@@ -7,7 +7,7 @@ import { useDocument } from './DocumentProvider'
 const thumbnailWidth = 100
 const thumbnailHeight = 150
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     thumbnail: {
         float: 'left',
         margin: '0 10px 5px',
@@ -22,13 +22,13 @@ const useStyles = makeStyles(theme => ({
             backgroundClip: 'padding-box',
         },
     },
-    selected: {}
+    selected: {},
 }))
 
 export default forwardRef(function Thumbnail({ containerRef, pageIndex, rotation, selected, onSelect }, thumbnailRef) {
     const classes = useStyles()
     const { doc, firstPageData } = useDocument()
-    const [ shouldScroll, setShouldScroll ] = useState(true)
+    const [shouldScroll, setShouldScroll] = useState(true)
     const [pageData, setPageData] = useState({
         page: null,
         width: firstPageData.width,
@@ -39,19 +39,22 @@ export default forwardRef(function Thumbnail({ containerRef, pageIndex, rotation
     const [visible, setVisible] = useState(false)
 
     const getPageData = () => {
-        doc.getPage(pageIndex + 1).then(page => {
+        doc.getPage(pageIndex + 1).then((page) => {
             const { width, height, rotation } = page.getViewport({ scale: 1 })
 
             setPageData({
-                page, width, height, rotation
+                page,
+                width,
+                height,
+                rotation,
             })
         })
     }
 
     useEffect(() => {
         const observer = new IntersectionObserver(
-            entries => {
-                entries.forEach(entry => {
+            (entries) => {
+                entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         if (pageData.page === null) {
                             getPageData()
@@ -61,7 +64,9 @@ export default forwardRef(function Thumbnail({ containerRef, pageIndex, rotation
                 })
             },
             {
-                threshold: Array(10).fill().map((_, i) => i / 10)
+                threshold: Array(10)
+                    .fill()
+                    .map((_, i) => i / 10),
             }
         )
         const ref = thumbnailRef.current
@@ -87,11 +92,7 @@ export default forwardRef(function Thumbnail({ containerRef, pageIndex, rotation
     const { page, width: pageWidth, height: pageHeight } = pageData
 
     return (
-        <div
-            ref={thumbnailRef}
-            className={classes.thumbnail}
-            onClick={handleClick}
-        >
+        <div ref={thumbnailRef} className={classes.thumbnail} onClick={handleClick}>
             <div className={cn(classes.thumbnailSelection, { [classes.selected]: selected })}>
                 {visible && page && (
                     <ThumbnailLayer

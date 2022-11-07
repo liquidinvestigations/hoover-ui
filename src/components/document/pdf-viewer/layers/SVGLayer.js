@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { SVGGraphics } from 'pdfjs-dist/build/pdf'
 
 export default function SVGLayer({ page, width, height, rotation, scale }) {
@@ -18,10 +18,10 @@ export default function SVGLayer({ page, width, height, rotation, scale }) {
         const container = containerRef.current
         const viewport = page.getViewport({ rotation, scale })
 
-        page.getOperatorList().then(operatorList => {
+        page.getOperatorList().then((operatorList) => {
             clear()
             const graphic = new SVGGraphics(page.commonObjs, page.objs)
-            graphic.getSVG(operatorList, viewport).then(svg => {
+            graphic.getSVG(operatorList, viewport).then((svg) => {
                 svg.style.height = height
                 svg.style.width = width
 
@@ -30,7 +30,5 @@ export default function SVGLayer({ page, width, height, rotation, scale }) {
         })
     }, [rotation, scale])
 
-    return (
-        <div ref={containerRef} className="svgLayer" />
-    )
+    return <div ref={containerRef} className="svgLayer" />
 }

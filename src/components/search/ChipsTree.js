@@ -1,11 +1,11 @@
-import React, { cloneElement, useState } from 'react'
+import { cloneElement, useState } from 'react'
 import cn from 'classnames'
 import { Box, ButtonBase, Menu, MenuItem } from '@mui/material'
 import { DEFAULT_OPERATOR } from '../../constants/general'
 import { makeStyles } from '@mui/styles'
 import { red } from '@mui/material/colors'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     box: {
         display: 'flex',
         flexDirection: 'row',
@@ -55,7 +55,7 @@ function ChipsTree({ tree, renderChip, renderMenu, onChipDelete, onExpressionDel
     const [isExpression, setExpression] = useState(false)
     const [selectedChip, setSelectedChip] = useState(null)
 
-    const handleChipClick = (chip, parentOperator) => event => {
+    const handleChipClick = (chip, parentOperator) => (event) => {
         setSelectedChip(chip)
         setExpression(!!parentOperator)
         setAnchorPosition({ left: event.clientX, top: event.clientY })
@@ -79,10 +79,7 @@ function ChipsTree({ tree, renderChip, renderMenu, onChipDelete, onExpressionDel
             return (
                 <Box className={cn(classes.box, className)}>
                     {chip}
-                    <ButtonBase
-                        className={cn(classes.operator, classes.NOT)}
-                        onClick={handleChipClick(queryNode, 'NOT')}
-                    >
+                    <ButtonBase className={cn(classes.operator, classes.NOT)} onClick={handleChipClick(queryNode, 'NOT')}>
                         NOT
                     </ButtonBase>
                 </Box>
@@ -92,7 +89,9 @@ function ChipsTree({ tree, renderChip, renderMenu, onChipDelete, onExpressionDel
     }
 
     const build = (q, parentOperator) => {
-        let operator, leftNegation = q.start === 'NOT', rightNegation = false
+        let operator,
+            leftNegation = q.start === 'NOT',
+            rightNegation = false
 
         switch (q.operator) {
             case '<implicit>':
@@ -113,7 +112,7 @@ function ChipsTree({ tree, renderChip, renderMenu, onChipDelete, onExpressionDel
             case 'AND':
             case 'OR':
                 operator = q.operator
-                break;
+                break
         }
 
         if (q.field) {
@@ -121,52 +120,39 @@ function ChipsTree({ tree, renderChip, renderMenu, onChipDelete, onExpressionDel
             const chip = getNotBox(negation, q, renderChip(q), classes.notChip)
 
             return cloneElement(chip, {
-                onClick: handleChipClick(q)
+                onClick: handleChipClick(q),
             })
-
         } else if (parentOperator && parentOperator === operator) {
-
-            return (
-                q.left && q.right ?
-                    <>
-                        {build(q.left, operator)}
-                        {getNotBox(rightNegation, q.right, build(q.right, operator))}
-                    </> :
-                    q.left ? build(q.left, operator) : null
-            )
+            return q.left && q.right ? (
+                <>
+                    {build(q.left, operator)}
+                    {getNotBox(rightNegation, q.right, build(q.right, operator))}
+                </>
+            ) : q.left ? (
+                build(q.left, operator)
+            ) : null
         } else {
-
-            return (
-                q.left && q.right ?
-                    <Box className={classes.box}>
-                        <Box className={classes.chips}>
-                            {getNotBox(leftNegation, q.left, build(q.left, operator))}
-                            {getNotBox(rightNegation, q.right, build(q.right, operator))}
-                        </Box>
-                        <ButtonBase
-                            className={classes.operator + ' ' + classes[operator]}
-                            onClick={handleChipClick(q, operator)}
-                        >
-                            {operator}
-                        </ButtonBase>
-                    </Box> :
-                    q.left ? getNotBox(leftNegation, q.left, build(q.left, operator)) : null
-            )
+            return q.left && q.right ? (
+                <Box className={classes.box}>
+                    <Box className={classes.chips}>
+                        {getNotBox(leftNegation, q.left, build(q.left, operator))}
+                        {getNotBox(rightNegation, q.right, build(q.right, operator))}
+                    </Box>
+                    <ButtonBase className={classes.operator + ' ' + classes[operator]} onClick={handleChipClick(q, operator)}>
+                        {operator}
+                    </ButtonBase>
+                </Box>
+            ) : q.left ? (
+                getNotBox(leftNegation, q.left, build(q.left, operator))
+            ) : null
         }
     }
 
     return (
         <>
             {build(tree)}
-            <Menu
-                open={!!anchorPosition}
-                onClose={handleChipMenuClose}
-                anchorReference="anchorPosition"
-                anchorPosition={anchorPosition}
-            >
-                <MenuItem onClick={handleDelete}>
-                    {renderMenu(isExpression)}
-                </MenuItem>
+            <Menu open={!!anchorPosition} onClose={handleChipMenuClose} anchorReference="anchorPosition" anchorPosition={anchorPosition}>
+                <MenuItem onClick={handleDelete}>{renderMenu(isExpression)}</MenuItem>
             </Menu>
         </>
     )

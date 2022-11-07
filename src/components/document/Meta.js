@@ -1,20 +1,13 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { makeStyles } from '@mui/styles'
-import {
-    Box,
-    Divider,
-    List,
-    ListItem,
-    ListItemText,
-    Typography
-} from '@mui/material'
-import { observer } from "mobx-react-lite"
+import { Box, Divider, List, ListItem, ListItemText, Typography } from '@mui/material'
+import { observer } from 'mobx-react-lite'
 import LinkMenu from './LinkMenu'
 import { flatten, formatDateTime, getLanguageName, humanFileSize, shortenName } from '../../utils'
-import { useSharedStore } from "../SharedStoreProvider"
+import { useSharedStore } from '../SharedStoreProvider'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     icon: {
         transform: 'rotate(-90deg)',
     },
@@ -32,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     },
     score: {
         color: theme.palette.grey[500],
-    }
+    },
 }))
 
 const tableFields = {
@@ -45,47 +38,47 @@ const tableFields = {
     },
     filetype: {
         label: 'Type',
-        visible: content => !!content.filetype,
+        visible: (content) => !!content.filetype,
     },
     md5: {
         label: 'MD5',
-        visible: content => content.filetype !== 'folder' && content.md5,
+        visible: (content) => content.filetype !== 'folder' && content.md5,
     },
     sha1: {
         label: 'SHA1',
-        visible: content => content.filetype !== 'folder' && content.sha1,
+        visible: (content) => content.filetype !== 'folder' && content.sha1,
     },
     lang: {
         label: 'Language',
         format: getLanguageName,
-        visible: content => !!content.lang,
+        visible: (content) => !!content.lang,
     },
     date: {
         label: 'Modified',
         format: formatDateTime,
-        visible: content => !!content.date,
+        visible: (content) => !!content.date,
     },
     'date-created': {
         label: 'Created',
         format: formatDateTime,
-        visible: content => !!content['date-created'],
+        visible: (content) => !!content['date-created'],
     },
     pgp: {
         label: 'PGP',
         format: () => 'true',
         searchTerm: () => 'true',
-        visible: content => !!content.pgp,
+        visible: (content) => !!content.pgp,
     },
     'word-count': {
         label: 'Word count',
-        searchTerm: term => term.toString(),
-        visible: content => !!content['word-count'],
+        searchTerm: (term) => term.toString(),
+        visible: (content) => !!content['word-count'],
     },
     size: {
         label: 'Size',
         format: humanFileSize,
-        searchTerm: term => term.toString(),
-        visible: content => !!content.size,
+        searchTerm: (term) => term.toString(),
+        visible: (content) => !!content.size,
     },
 }
 
@@ -96,7 +89,7 @@ export const Meta = observer(() => {
     const [menuPosition, setMenuPosition] = useState(null)
     const [currentLink, setCurrentLink] = useState(null)
 
-    const handleLinkClick = (field, term) => event => {
+    const handleLinkClick = (field, term) => (event) => {
         setCurrentLink({ field, term })
         setMenuPosition({ left: event.clientX, top: event.clientY })
     }
@@ -106,41 +99,40 @@ export const Meta = observer(() => {
     }
 
     const getFieldSearchKey = (key) => {
-        switch(key) {
+        switch (key) {
             case 'detected-objects':
-                return `${key}.object.keyword`;
+                return `${key}.object.keyword`
             case 'image-classes':
-                return `${key}.class.keyword`;
+                return `${key}.class.keyword`
             default:
-                return key;
+                return key
         }
     }
 
     const getFieldValue = (key, value) => {
-        switch(key) {
+        switch (key) {
             case 'detected-objects':
-                return value['object'];
+                return value['object']
             case 'image-classes':
-                return value['class'];
+                return value['class']
             default:
-                return value.toString();
+                return value.toString()
         }
     }
 
     const getFieldScore = (key, value) => {
-        switch(key) {
+        switch (key) {
             case 'detected-objects':
             case 'image-classes':
-                return <span className={classes.score}>({value.score})</span>;
+                return <span className={classes.score}>({value.score})</span>
             default:
-                return null;
+                return null
         }
     }
 
     const renderElement = (key, value, index) => (
         <Typography key={index} component="pre" variant="caption" className={classes.raw}>
-            <strong>{key}:</strong>
-            {' '}
+            <strong>{key}:</strong>{' '}
             <span className={classes.searchField} onClick={handleLinkClick(getFieldSearchKey(key), getFieldValue(key, value))}>
                 {shortenName(getFieldValue(key, value), 200)}
                 {getFieldScore(key, value)}
@@ -152,10 +144,7 @@ export const Meta = observer(() => {
         <>
             <List dense>
                 <ListItem disableGutters>
-                    <ListItemText
-                        primary="Collection"
-                        secondary={collection}
-                    />
+                    <ListItemText primary="Collection" secondary={collection} />
                 </ListItem>
 
                 {!!data.digest && (
@@ -172,40 +161,37 @@ export const Meta = observer(() => {
                 )}
 
                 {Object.entries(tableFields)
-                    .filter(([,config]) => !config.visible || config.visible(data.content) !== false)
+                    .filter(([, config]) => !config.visible || config.visible(data.content) !== false)
                     .map(([field, config]) => {
+                        const display = config.format ? config.format(data.content[field]) : data.content[field]
+                        const searchKey = config.searchKey || field
+                        const searchTerm = config.searchTerm ? config.searchTerm(data.content[field]) : data.content[field]
 
-                    const display = config.format ? config.format(data.content[field]) : data.content[field]
-                    const searchKey = config.searchKey || field
-                    const searchTerm = config.searchTerm ? config.searchTerm(data.content[field]) : data.content[field]
-
-                    return (
-                        <ListItem key={field} disableGutters>
-                            <ListItemText
-                                primary={config.label}
-                                secondary={
-                                    <>
-                                        <span
-                                            className={classes.searchField}
-                                            onClick={handleLinkClick(searchKey, searchTerm)}
-                                        >
-                                            {display}
-                                        </span>
-                                    </>
-                                }
-                            />
-                        </ListItem>
-                    )
-                })}
+                        return (
+                            <ListItem key={field} disableGutters>
+                                <ListItemText
+                                    primary={config.label}
+                                    secondary={
+                                        <>
+                                            <span className={classes.searchField} onClick={handleLinkClick(searchKey, searchTerm)}>
+                                                {display}
+                                            </span>
+                                        </>
+                                    }
+                                />
+                            </ListItem>
+                        )
+                    })}
             </List>
 
             <Divider />
 
             <Box>
                 {Object.entries(data.content)
-                    .filter(([key, value]) =>
-                        !['text', 'ocrtext', 'path-text', 'path-parts'].includes(key) &&
-                        ((!Array.isArray(value) && value) || (Array.isArray(value) && value.length))
+                    .filter(
+                        ([key, value]) =>
+                            !['text', 'ocrtext', 'path-text', 'path-parts'].includes(key) &&
+                            ((!Array.isArray(value) && value) || (Array.isArray(value) && value.length))
                     )
                     .map(([key, value]) => {
                         let elements
@@ -220,19 +206,12 @@ export const Meta = observer(() => {
                         }
 
                         return Object.entries(elements).map(([key, value], index) =>
-                            Array.isArray(value) ?
-                                value.map((v, i) => renderElement(key, v, `${index}-${i}`)) :
-                                renderElement(key, value, index)
+                            Array.isArray(value) ? value.map((v, i) => renderElement(key, v, `${index}-${i}`)) : renderElement(key, value, index)
                         )
-                    })
-                }
+                    })}
             </Box>
 
-            <LinkMenu
-                link={currentLink}
-                anchorPosition={menuPosition}
-                onClose={handleLinkMenuClose}
-            />
+            <LinkMenu link={currentLink} anchorPosition={menuPosition} onClose={handleLinkMenuClose} />
         </>
     )
 })

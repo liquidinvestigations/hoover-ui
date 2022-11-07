@@ -1,8 +1,7 @@
-import React from 'react'
 import { makeStyles } from '@mui/styles'
 import IntervalProgress from '../IntervalProgress'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     progress: {
         height: 20,
         borderRadius: 5,
@@ -29,8 +28,8 @@ const useStyles = makeStyles(theme => ({
         },
         '100%': {
             backgroundPosition: '50px 50px',
-        }
-    }
+        },
+    },
 }))
 
 export default function ResultsProgress({ eta }) {

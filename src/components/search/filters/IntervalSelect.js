@@ -1,4 +1,3 @@
-import React from 'react'
 import { FormControl, FormHelperText, MenuItem, Select } from '@mui/material'
 import { useSearch } from '../SearchProvider'
 import { DEFAULT_INTERVAL } from '../../../constants/general'
@@ -6,7 +5,7 @@ import { DEFAULT_INTERVAL } from '../../../constants/general'
 export default function IntervalSelect({ field }) {
     const { query, search } = useSearch()
 
-    const onIntervalChange = event => {
+    const onIntervalChange = (event) => {
         const { [field]: prevFilter, ...restFilters } = query.filters || {}
         const { [field]: prevFacet, ...restFacets } = query.facets || {}
 
@@ -14,9 +13,9 @@ export default function IntervalSelect({ field }) {
         const newFilter = { interval: event.target.value, ...rest }
 
         if (event.target.value !== DEFAULT_INTERVAL) {
-            search({filters: {[field]: newFilter, ...restFilters}, facets: {...restFacets}, page: 1})
+            search({ filters: { [field]: newFilter, ...restFilters }, facets: { ...restFacets }, page: 1 })
         } else {
-            search({filters: {...restFilters}, facets: {...restFacets}, page: 1})
+            search({ filters: { ...restFilters }, facets: { ...restFacets }, page: 1 })
         }
     }
 
@@ -33,5 +32,5 @@ export default function IntervalSelect({ field }) {
             </Select>
             <FormHelperText>Aggregation</FormHelperText>
         </FormControl>
-    );
+    )
 }

@@ -1,6 +1,6 @@
-import { makeAutoObservable } from "mobx"
-import { HashStateStore } from "./HashStateStore"
-import { DocumentStore } from "./DocumentStore"
+import { makeAutoObservable } from 'mobx'
+import { HashStateStore } from './HashStateStore'
+import { DocumentStore } from './DocumentStore'
 
 export class SharedStore {
     user = null
@@ -19,7 +19,7 @@ export class SharedStore {
 
     documentStore = null
 
-    constructor ({ user }) {
+    constructor({ user }) {
         this.user = user
         this.hashStore = new HashStateStore()
         this.documentStore = new DocumentStore(this.hashStore)

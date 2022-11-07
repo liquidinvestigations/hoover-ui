@@ -1,19 +1,8 @@
-import React, { cloneElement, memo } from 'react'
+import { cloneElement, memo } from 'react'
 import cn from 'classnames'
 import isEqual from 'react-fast-compare'
 import { makeStyles } from '@mui/styles'
-import {
-    Button,
-    Checkbox,
-    CircularProgress,
-    Divider,
-    Fade,
-    Grid,
-    List,
-    ListItem,
-    ListItemText,
-    Typography
-} from '@mui/material'
+import { Button, Checkbox, CircularProgress, Divider, Fade, Grid, List, ListItem, ListItemText, Typography } from '@mui/material'
 import Pagination from './Pagination'
 import MoreButton from './MoreButton'
 import { formatThousands, getTagIcon, getTypeIcon } from '../../../utils'
@@ -21,7 +10,7 @@ import { aggregationFields } from '../../../constants/aggregationFields'
 import Highlighter from 'react-highlight-words'
 import ThinProgress from '../ThinProgress'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     checkbox: {
         padding: 5,
     },
@@ -37,7 +26,7 @@ const useStyles = makeStyles(theme => ({
         fontStyle: 'italic',
     },
     empty: {
-        color: theme.palette.grey[500]
+        color: theme.palette.grey[500],
     },
     subLabel: {
         fontSize: '8.5pt',
@@ -48,18 +37,30 @@ const useStyles = makeStyles(theme => ({
     },
     docCount: {
         flex: '1 0 auto',
-        paddingLeft: 6
-    }
+        paddingLeft: 6,
+    },
 }))
 
-function AggregationFilter({ field, queryFilter, queryFacets, aggregations, loading, missing,
-                               missingLoading, missingLoadingETA, onChange,
-                               triState, bucketLabel, bucketSubLabel, bucketValue, search }) {
-
+function AggregationFilter({
+    field,
+    queryFilter,
+    queryFacets,
+    aggregations,
+    loading,
+    missing,
+    missingLoading,
+    missingLoadingETA,
+    onChange,
+    triState,
+    bucketLabel,
+    bucketSubLabel,
+    bucketValue,
+    search,
+}) {
     const classes = useStyles()
     const aggregation = aggregations?.values
 
-    const handleChange = value => () => {
+    const handleChange = (value) => () => {
         const include = new Set(queryFilter?.include || [])
         const exclude = new Set(queryFilter?.exclude || [])
 
@@ -85,17 +86,17 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
         if (queryFilter?.missing === 'true') {
             onChange(field, {
                 ...queryFilter,
-                missing: 'false'
+                missing: 'false',
             })
         } else if (queryFilter?.missing === 'false') {
             onChange(field, {
                 ...queryFilter,
-                missing: undefined
+                missing: undefined,
             })
         } else {
             onChange(field, {
                 ...queryFilter,
-                missing: 'true'
+                missing: 'true',
             })
         }
     }
@@ -114,70 +115,45 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
             return false
         }
 
-        let displayLabel = !search.length ? label : (
-            <Highlighter
-                searchWords={[search]}
-                autoEscape={true}
-                textToHighlight={label}
-            />
-        ), icon
+        let displayLabel = !search.length ? label : <Highlighter searchWords={[search]} autoEscape={true} textToHighlight={label} />,
+            icon
 
         if ((field === 'tags' || field === 'priv-tags') && (icon = getTagIcon(bucket.key, field === 'tags', excluded))) {
             displayLabel = (
                 <>
-                    {!!icon && cloneElement(icon, {
-                        style: {
-                            ...icon.props.style,
-                            marginTop: 3,
-                            marginBottom: -3,
-                            marginRight: 6,
-                            fontSize: 17,
-                        }
-                    })}
-                    <span>
-                        {!search.length ? bucket.key : (
-                            <Highlighter
-                                searchWords={[search]}
-                                autoEscape={true}
-                                textToHighlight={bucket.key}
-                            />
-                        )}
-                    </span>
+                    {!!icon &&
+                        cloneElement(icon, {
+                            style: {
+                                ...icon.props.style,
+                                marginTop: 3,
+                                marginBottom: -3,
+                                marginRight: 6,
+                                fontSize: 17,
+                            },
+                        })}
+                    <span>{!search.length ? bucket.key : <Highlighter searchWords={[search]} autoEscape={true} textToHighlight={bucket.key} />}</span>
                 </>
             )
         }
 
-        if ((field === 'filetype') && (icon = getTypeIcon(bucket.key))) {
+        if (field === 'filetype' && (icon = getTypeIcon(bucket.key))) {
             displayLabel = (
                 <>
-                    {!!icon && cloneElement(icon, {
-                        style: {
-                            marginRight: 6,
-                            fontSize: 17,
-                            color: '#757575',
-                        }
-                    })}
-                    <span>
-                        {!search.length ? bucket.key : (
-                            <Highlighter
-                                searchWords={[search]}
-                                autoEscape={true}
-                                textToHighlight={bucket.key}
-                            />
-                        )}
-                    </span>
+                    {!!icon &&
+                        cloneElement(icon, {
+                            style: {
+                                marginRight: 6,
+                                fontSize: 17,
+                                color: '#757575',
+                            },
+                        })}
+                    <span>{!search.length ? bucket.key : <Highlighter searchWords={[search]} autoEscape={true} textToHighlight={bucket.key} />}</span>
                 </>
             )
         }
 
         return (
-            <ListItem
-                key={bucket.key}
-                role={undefined}
-                dense
-                button
-                onClick={handler(value)}
-            >
+            <ListItem key={bucket.key} role={undefined} dense button onClick={handler(value)}>
                 <Checkbox
                     size="small"
                     tabIndex={-1}
@@ -193,21 +169,17 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
                 <ListItemText
                     primary={displayLabel}
                     secondary={subLabel}
-                    className={cn({[classes.labelWithSub]: subLabel, [classes.italic]: italic})}
+                    className={cn({ [classes.labelWithSub]: subLabel, [classes.italic]: italic })}
                     primaryTypographyProps={{
-                        className: classes.label
+                        className: classes.label,
                     }}
                     secondaryTypographyProps={{
-                        className: classes.subLabel
+                        className: classes.subLabel,
                     }}
                 />
 
                 <ListItemText
-                    primary={
-                        <Typography variant="caption">
-                            {formatThousands(bucket.doc_count)}
-                        </Typography>
-                    }
+                    primary={<Typography variant="caption">{formatThousands(bucket.doc_count)}</Typography>}
                     className={classes.docCount}
                     disableTypography
                     align="right"
@@ -216,21 +188,11 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
         )
     }
 
-    const disableReset = loading || (
-        !queryFilter?.include?.length &&
-        !queryFilter?.exclude?.length &&
-        !queryFilter?.missing &&
-        !queryFacets
-    )
+    const disableReset = loading || (!queryFilter?.include?.length && !queryFilter?.exclude?.length && !queryFilter?.missing && !queryFacets)
 
     return (
         <List dense disablePadding>
-            <ListItem
-                role={undefined}
-                dense
-                button
-                onClick={handleMissingChange}
-            >
+            <ListItem role={undefined} dense button onClick={handleMissingChange}>
                 <Checkbox
                     size="small"
                     tabIndex={-1}
@@ -246,7 +208,7 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
                     primary="N/A"
                     className={cn(classes.label, classes.italic, classes.empty)}
                     secondaryTypographyProps={{
-                        className: classes.subLabel
+                        className: classes.subLabel,
                     }}
                 />
 
@@ -260,11 +222,7 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
                             <Fade in={missingLoading} unmountOnExit>
                                 <div>
                                     <ThinProgress eta={missingLoadingETA} loading={missingLoading} />
-                                    <CircularProgress
-                                        size={18}
-                                        thickness={5}
-                                        className={classes.loading}
-                                    />
+                                    <CircularProgress size={18} thickness={5} className={classes.loading} />
                                 </div>
                             </Fade>
                         )
@@ -276,24 +234,16 @@ function AggregationFilter({ field, queryFilter, queryFacets, aggregations, load
 
             <Divider />
 
-            {aggregation?.buckets.map(bucket => renderBucket(bucket)).filter(Boolean)}
+            {aggregation?.buckets.map((bucket) => renderBucket(bucket)).filter(Boolean)}
 
             <ListItem dense>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
-                        {!aggregationFields[field].buckets && (
-                            aggregationFields[field].type === 'date' ?
-                                <Pagination field={field} /> :
-                                <MoreButton field={field} />
-                            )
-                        }
+                        {!aggregationFields[field].buckets &&
+                            (aggregationFields[field].type === 'date' ? <Pagination field={field} /> : <MoreButton field={field} />)}
                     </Grid>
                     <Grid item>
-                        <Button
-                            size="small"
-                            variant="text"
-                            disabled={disableReset}
-                            onClick={handleReset}>
+                        <Button size="small" variant="text" disabled={disableReset} onClick={handleReset}>
                             Reset
                         </Button>
                     </Grid>

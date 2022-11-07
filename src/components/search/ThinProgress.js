@@ -1,8 +1,7 @@
-import React from 'react'
 import { makeStyles } from '@mui/styles'
 import IntervalProgress from '../IntervalProgress'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
     progress: {
         position: 'absolute',
         top: 0,

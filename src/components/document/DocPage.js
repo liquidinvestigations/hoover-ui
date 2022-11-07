@@ -1,4 +1,3 @@
-import React from 'react'
 import Head from 'next/head'
 import { Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
@@ -8,12 +7,12 @@ import Finder from './finder/Finder'
 import Locations from '../Locations'
 import SplitPaneLayout from '../SplitPaneLayout'
 import HotKeysWithHelp from '../HotKeysWithHelp'
-import { useSharedStore } from "../SharedStoreProvider"
+import { useSharedStore } from '../SharedStoreProvider'
 import Error from '../../../pages/_error'
 import { copyMetadata, shortenName } from '../../utils'
-import { TagsProvider } from "./TagsProvider"
+import { TagsProvider } from './TagsProvider'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     splitPane: {
         overflow: 'hidden',
         position: 'relative',
@@ -28,7 +27,7 @@ const useStyles = makeStyles(theme => ({
 
         '@media (min-width: 600px)': {
             height: 'calc(100vh - 104px)',
-        }
+        },
     },
     horizontalSplitPane: {
         overflowX: 'hidden',
@@ -50,9 +49,7 @@ export default function DocPage() {
     const {
         user,
         printMode,
-        documentStore: {
-            data, loading, error, digest, digestUrl, urlIsSha
-        }
+        documentStore: { data, loading, error, digest, digestUrl, urlIsSha },
     } = useSharedStore()
 
     if (error) {
@@ -71,16 +68,17 @@ export default function DocPage() {
 
     const infoPane = (
         <TagsProvider>
-            {!digest ? <Document /> :
+            {!digest ? (
+                <Document />
+            ) : (
                 <SplitPaneLayout
                     container={false}
                     left={loading ? null : <Locations data={data} url={digestUrl} />}
                     defaultSizeLeft="25%"
-                    defaultSizeMiddle="70%"
-                >
+                    defaultSizeMiddle="70%">
                     <Document />
                 </SplitPaneLayout>
-            }
+            )}
         </TagsProvider>
     )
 
@@ -93,28 +91,20 @@ export default function DocPage() {
             </TagsProvider>
         )
     } else {
-        content = urlIsSha ?
+        content = urlIsSha ? (
             <>
                 {data && (
                     <Typography variant="subtitle2" className={classes.title}>
-                        Document <b>{data?.id}</b>
-                        {' '}
-                        filename: <b>{shortenName(data?.content.filename, 50)}</b>
-                        {' '}
-                        - please pick a location to see the Finder
+                        Document <b>{data?.id}</b> filename: <b>{shortenName(data?.content.filename, 50)}</b> - please pick a location to see the Finder
                     </Typography>
                 )}
-                <div className={classes.splitPane}>
-                    {infoPane}
-                </div>
+                <div className={classes.splitPane}>{infoPane}</div>
             </>
-            :
+        ) : (
             <>
                 {data && (
                     <Typography variant="subtitle2" className={classes.title}>
-                        {!!digest ? 'File' : 'Directory'}
-                        {' '}
-                        <b>{data.content.path}</b>
+                        {!!digest ? 'File' : 'Directory'} <b>{data.content.path}</b>
                     </Typography>
                 )}
                 <div className={classes.splitPane}>
@@ -122,13 +112,13 @@ export default function DocPage() {
                         split="horizontal"
                         defaultSize="30%"
                         pane1ClassName={classes.horizontalSplitPane}
-                        pane2ClassName={classes.horizontalSplitPane}
-                    >
+                        pane2ClassName={classes.horizontalSplitPane}>
                         <Finder />
                         {infoPane}
                     </SplitPane>
                 </div>
             </>
+        )
     }
 
     const keys = {
@@ -150,23 +140,20 @@ export default function DocPage() {
                 {user.urls.hypothesis_embed && (
                     <>
                         <script async src={user.urls.hypothesis_embed} />
-                        <script dangerouslySetInnerHTML={{
-                            __html:
-`window.hypothesisConfig = function() {
+                        <script
+                            dangerouslySetInnerHTML={{
+                                __html: `window.hypothesisConfig = function() {
     return {
         showHighlights: true,
         appType: 'bookmarklet'
     }
-}`
-                        }}>
-                        </script>
+}`,
+                            }}></script>
                     </>
                 )}
             </Head>
             <HotKeysWithHelp keys={keys}>
-                <div tabIndex="-1">
-                    {content}
-                </div>
+                <div tabIndex="-1">{content}</div>
             </HotKeysWithHelp>
         </>
     )

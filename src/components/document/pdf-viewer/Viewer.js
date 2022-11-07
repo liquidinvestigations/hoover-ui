@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Document from './Document'
 import DocumentProvider from './DocumentProvider'
-import { useSharedStore } from "../../SharedStoreProvider"
+import { useSharedStore } from '../../SharedStoreProvider'
 
-function debounce (fn, wait) {
+function debounce(fn, wait) {
     let t
     return function () {
         clearTimeout(t)
@@ -11,12 +11,7 @@ function debounce (fn, wait) {
     }
 }
 
-export default function Viewer({
-    url,
-    cMapUrl = '/build/static/cmaps',
-    cMapPacked = true,
-    withCredentials = true,
-}) {
+export default function Viewer({ url, cMapUrl = '/build/static/cmaps', cMapPacked = true, withCredentials = true }) {
     const { hashState, setHashState } = useSharedStore().hashStore
     const [pageIndex, setPageIndex] = useState(0)
 
@@ -29,7 +24,7 @@ export default function Viewer({
         }
     }, [hashState?.previewPage])
 
-    const onPageIndexChange = debounce(index => {
+    const onPageIndexChange = debounce((index) => {
         if (index > 0) {
             setHashState({ previewPage: index + 1 }, false)
         } else {
@@ -38,16 +33,8 @@ export default function Viewer({
     }, 300)
 
     return (
-        <DocumentProvider
-            url={url}
-            cMapUrl={cMapUrl}
-            cMapPacked={cMapPacked}
-            withCredentials={withCredentials}
-        >
-            <Document
-                initialPageIndex={pageIndex}
-                onPageIndexChange={onPageIndexChange}
-            />
+        <DocumentProvider url={url} cMapUrl={cMapUrl} cMapPacked={cMapPacked} withCredentials={withCredentials}>
+            <Document initialPageIndex={pageIndex} onPageIndexChange={onPageIndexChange} />
         </DocumentProvider>
     )
 }

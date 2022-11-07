@@ -1,8 +1,8 @@
-import React, { createContext, memo, useContext, useState } from 'react'
+import { createContext, memo, useContext, useState } from 'react'
 import { CircularProgress, LinearProgress } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     linear: {
         position: 'fixed',
         top: 0,
@@ -18,7 +18,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const getIndicator = type => {
+const getIndicator = (type) => {
     if (type === 'circular') {
         return <CircularProgress color="secondary" size={20} />
     } else {
@@ -32,21 +32,13 @@ function ProgressIndicator({ type }) {
     const classes = useStyles()
     const { loading } = useProgressIndicator()
 
-    return (
-        <div className={classes[type]}>
-            {loading && getIndicator(type)}
-        </div>
-    )
+    return <div className={classes[type]}>{loading && getIndicator(type)}</div>
 }
 
 export function ProgressIndicatorProvider({ children }) {
     const [loading, setLoading] = useState(false)
 
-    return (
-        <ProgressIndicatorContext.Provider value={{ loading, setLoading }}>
-            {children}
-        </ProgressIndicatorContext.Provider>
-    )
+    return <ProgressIndicatorContext.Provider value={{ loading, setLoading }}>{children}</ProgressIndicatorContext.Provider>
 }
 
 export const useProgressIndicator = () => useContext(ProgressIndicatorContext)

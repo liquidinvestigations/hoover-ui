@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { Button, Grid, List, ListItem } from '@mui/material'
 import DatePicker from '@mui/lab/DatePicker'
 import { DATE_FORMAT } from '../../../constants/general'
@@ -16,8 +16,8 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange, loading }) {
     const [from, setFrom] = useState(defaultFrom)
     const [to, setTo] = useState(defaultTo)
 
-    const handleFromChange = date => setFrom(date?.toFormat(DATE_FORMAT))
-    const handleToChange = date => setTo(date?.toFormat(DATE_FORMAT))
+    const handleFromChange = (date) => setFrom(date?.toFormat(DATE_FORMAT))
+    const handleToChange = (date) => setTo(date?.toFormat(DATE_FORMAT))
 
     const handleApply = () => onChange({ from, to })
     const handleReset = () => {
@@ -28,7 +28,7 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange, loading }) {
 
     const unedited = defaultFrom === from && defaultTo === to
 
-    const labelFunc = field => (date, invalidLabel) => {
+    const labelFunc = (field) => (date, invalidLabel) => {
         if (!field) {
             return ''
         }
@@ -79,18 +79,12 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange, loading }) {
             <ListItem>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
-                        <Button
-                            size="small"
-                            onClick={handleReset}
-                            disabled={loading || (!from && !to)}>
+                        <Button size="small" onClick={handleReset} disabled={loading || (!from && !to)}>
                             Reset
                         </Button>
                     </Grid>
                     <Grid item>
-                        <Button
-                            size="small"
-                            onClick={handleApply}
-                            disabled={loading || !from || !to || unedited}>
+                        <Button size="small" onClick={handleApply} disabled={loading || !from || !to || unedited}>
                             Apply
                         </Button>
                     </Grid>

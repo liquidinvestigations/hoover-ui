@@ -66,4 +66,6 @@ export const specialTags = {
 }
 
 export const specialTagsList = Object.entries(specialTags).map(([tag]) => tag)
-export const publicTagsList = Object.entries(specialTags).filter(([, tag]) => tag.public).map(([tag]) => tag)
+export const publicTagsList = Object.entries(specialTags)
+    .filter(([, tag]) => tag.public)
+    .map(([tag]) => tag)

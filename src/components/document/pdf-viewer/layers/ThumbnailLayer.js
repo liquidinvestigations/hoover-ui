@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { makeStyles } from '@mui/styles'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     thumbnailImage: {
         opacity: 0.8,
         border: '1px solid rgba(0, 0, 0, 0)',
@@ -9,13 +9,13 @@ const useStyles = makeStyles(theme => ({
         backgroundColor: '#fff',
         backgroundClip: 'content-box',
         boxSizing: 'border-box',
-    }
+    },
 }))
 
 export default function ThumbnailLayer({ page, pageWidth, pageHeight, rotation, thumbnailWidth, thumbnailHeight }) {
     const classes = useStyles()
     const renderTask = useRef()
-    const [src, setSrc] = React.useState('')
+    const [src, setSrc] = useState('')
 
     const cancelTask = () => {
         if (renderTask.current) {
@@ -33,10 +33,10 @@ export default function ThumbnailLayer({ page, pageWidth, pageHeight, rotation, 
         const h = w / (pageWidth / pageHeight)
         const scale = w / pageWidth
 
-        canvas.height = h;
-        canvas.width = w;
-        canvas.style.height = `${h}px`;
-        canvas.style.width = `${w}px`;
+        canvas.height = h
+        canvas.width = w
+        canvas.style.height = `${h}px`
+        canvas.style.width = `${w}px`
 
         const viewport = page.getViewport({ rotation, scale })
         renderTask.current = page.render({ canvasContext, viewport })
@@ -48,15 +48,11 @@ export default function ThumbnailLayer({ page, pageWidth, pageHeight, rotation, 
         return cancelTask
     }, [rotation])
 
-    return src ?
-        <img
-            src={src}
-            className={classes.thumbnailImage}
-            width={`${thumbnailWidth}px`}
-            height={`${thumbnailHeight}px`}
-        />
-        :
+    return src ? (
+        <img src={src} className={classes.thumbnailImage} width={`${thumbnailWidth}px`} height={`${thumbnailHeight}px`} />
+    ) : (
         <div className={classes.thumbnailImage} style={{ width: thumbnailWidth, height: thumbnailHeight }}>
             <span className="loadingIcon" />
         </div>
+    )
 }

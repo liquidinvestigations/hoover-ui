@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { renderTextLayer } from 'pdfjs-dist/build/pdf'
 
 export default function TextLayer({ page, rotation, scale }) {
@@ -27,7 +27,7 @@ export default function TextLayer({ page, rotation, scale }) {
         const container = containerRef.current
         const viewport = page.getViewport({ rotation, scale })
 
-        page.getTextContent().then(textContent => {
+        page.getTextContent().then((textContent) => {
             clear()
             renderTask.current = renderTextLayer({
                 container,
@@ -45,7 +45,5 @@ export default function TextLayer({ page, rotation, scale }) {
         return cancelTask
     }, [rotation, scale])
 
-    return (
-        <div ref={containerRef} className="textLayer" />
-    )
+    return <div ref={containerRef} className="textLayer" />
 }

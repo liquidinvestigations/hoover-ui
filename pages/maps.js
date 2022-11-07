@@ -1,8 +1,7 @@
-import React from 'react'
 import Map from '../src/components/maps/Map'
-import { CoordinatesProvider } from "../src/components/maps/CoordinatesProvider"
+import { CoordinatesProvider } from '../src/components/maps/CoordinatesProvider'
 import { GeoSearchProvider } from '../src/components/maps/GeoSearchProvider'
-import GoogleMapsLink from "../src/components/maps/GoogleMapsLink"
+import GoogleMapsLink from '../src/components/maps/GoogleMapsLink'
 
 export default function Maps() {
     return (

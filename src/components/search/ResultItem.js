@@ -1,34 +1,17 @@
-import React, { cloneElement, useEffect, useRef, useState } from 'react'
+import { cloneElement, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
 import { DateTime } from 'luxon'
 import { makeStyles } from '@mui/styles'
-import { observer } from "mobx-react-lite"
-import {
-    Box,
-    Card,
-    CardContent,
-    CardHeader,
-    Grid,
-    IconButton,
-    Paper,
-    Popper,
-    Tooltip,
-    Typography
-} from '@mui/material'
+import { observer } from 'mobx-react-lite'
+import { Box, Card, CardContent, CardHeader, Grid, IconButton, Paper, Popper, Tooltip, Typography } from '@mui/material'
 import Loading from '../Loading'
-import { useSharedStore } from "../SharedStoreProvider"
-import {
-    getPreviewParams,
-    getTypeIcon,
-    humanFileSize,
-    makeUnsearchable,
-    truncatePath
-} from '../../utils'
+import { useSharedStore } from '../SharedStoreProvider'
+import { getPreviewParams, getTypeIcon, humanFileSize, makeUnsearchable, truncatePath } from '../../utils'
 import { createDownloadUrl, createThumbnailSrc, createThumbnailSrcSet } from '../../backend/api'
 import { specialTags, specialTagsList } from '../../constants/specialTags'
 import { reactIcons } from '../../constants/icons'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     card: {
         cursor: 'pointer',
         position: 'relative',
@@ -52,7 +35,7 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
     },
     headerText: {
-        overflow: "hidden",
+        overflow: 'hidden',
     },
     title: {
         display: 'block',
@@ -128,12 +111,12 @@ const useStyles = makeStyles(theme => ({
     },
     previewImgLoading: {
         width: 1,
-    }
+    },
 }))
 
 const timeMs = () => new Date().getTime()
 
-export const ResultItem = observer(({ hit, url, index }) =>  {
+export const ResultItem = observer(({ hit, url, index }) => {
     const classes = useStyles()
     const {
         user,
@@ -184,7 +167,7 @@ export const ResultItem = observer(({ hit, url, index }) =>  {
         content: classes.cardHeaderContent,
     }
     const cardContentClasses = {
-        root: classes.cardContentRoot
+        root: classes.cardContentRoot,
     }
 
     return (
@@ -194,15 +177,17 @@ export const ResultItem = observer(({ hit, url, index }) =>  {
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
-            data-test="result"
-        >
+            data-test="result">
             <CardHeader
                 classes={cardHeaderClasses}
                 title={
                     <Grid container component="span" justifyContent="space-between" wrap="nowrap">
                         <Grid container item component="span" className={classes.headerText}>
                             <Grid item className={classes.title} component="span">
-                                <Box component="span" className={classes.index}>{index}.</Box> {fields.filename}
+                                <Box component="span" className={classes.index}>
+                                    {index}.
+                                </Box>{' '}
+                                {fields.filename}
                             </Grid>
 
                             <Grid container component="span">
@@ -213,7 +198,6 @@ export const ResultItem = observer(({ hit, url, index }) =>  {
                                         </Tooltip>
                                     </Grid>
                                 )}
-
 
                                 {fields.pgp && (
                                     <Grid item component="span" className={classes.infoBox}>
@@ -272,10 +256,9 @@ export const ResultItem = observer(({ hit, url, index }) =>  {
                                                 name: 'preventOverflow',
                                                 options: {
                                                     boundary: 'clippingParents',
-                                                }
-                                            }
-                                        ]}
-                                    >
+                                                },
+                                            },
+                                        ]}>
                                         <Paper elevation={10} className={classes.preview}>
                                             {previewLoading && <Loading />}
                                             <img
@@ -321,7 +304,7 @@ export const ResultItem = observer(({ hit, url, index }) =>  {
                                             <Tooltip placement="top" title={tag}>
                                                 {cloneElement(reactIcons[params.present.icon], {
                                                     className: classes.actionIcon,
-                                                    style: { color: params.present.color }
+                                                    style: { color: params.present.color },
                                                 })}
                                             </Tooltip>
                                         </Grid>
@@ -337,17 +320,14 @@ export const ResultItem = observer(({ hit, url, index }) =>  {
                     <Grid item md={4}>
                         {!!fields['word-count'] && (
                             <Box>
-                                <Typography variant="caption">
-                                    {fields['word-count']} words
-                                </Typography>
+                                <Typography variant="caption">{fields['word-count']} words</Typography>
                             </Box>
                         )}
 
                         {!!fields.size && (
                             <Box>
                                 <Typography variant="caption">
-                                    <strong>Size:</strong>{' '}
-                                    {humanFileSize(fields.size)}
+                                    <strong>Size:</strong> {humanFileSize(fields.size)}
                                 </Typography>
                             </Box>
                         )}
@@ -356,8 +336,7 @@ export const ResultItem = observer(({ hit, url, index }) =>  {
                             <Box>
                                 <Typography variant="caption">
                                     <strong>{fields.filetype === 'email' ? 'Date' : 'Modified'}:</strong>{' '}
-                                    {DateTime.fromISO(fields.date, { locale: 'en-US' })
-                                        .toLocaleString(DateTime.DATE_FULL)}
+                                    {DateTime.fromISO(fields.date, { locale: 'en-US' }).toLocaleString(DateTime.DATE_FULL)}
                                 </Typography>
                             </Box>
                         )}
@@ -365,8 +344,7 @@ export const ResultItem = observer(({ hit, url, index }) =>  {
                         {fields.filetype === 'email' && fields.from && (
                             <Box>
                                 <Typography variant="caption" className={classes.textField}>
-                                    <strong>From:</strong>{' '}
-                                    {fields.from}
+                                    <strong>From:</strong> {fields.from}
                                 </Typography>
                             </Box>
                         )}
@@ -374,8 +352,7 @@ export const ResultItem = observer(({ hit, url, index }) =>  {
                         {fields.filetype === 'email' && fields.subject && (
                             <Box>
                                 <Typography variant="caption">
-                                    <strong>Subject:</strong>{' '}
-                                    {fields.subject}
+                                    <strong>Subject:</strong> {fields.subject}
                                 </Typography>
                             </Box>
                         )}
@@ -384,53 +361,49 @@ export const ResultItem = observer(({ hit, url, index }) =>  {
                             <Box>
                                 <Typography variant="caption">
                                     <strong>Created:</strong>{' '}
-                                    {DateTime.fromISO(fields['date-created'], { locale: 'en-US' })
-                                        .toLocaleString(DateTime.DATE_FULL)}
+                                    {DateTime.fromISO(fields['date-created'], { locale: 'en-US' }).toLocaleString(DateTime.DATE_FULL)}
                                 </Typography>
                             </Box>
                         )}
 
-                        {fields.tags?.filter(tag => !specialTagsList.includes(tag)).length > 0 && (
+                        {fields.tags?.filter((tag) => !specialTagsList.includes(tag)).length > 0 && (
                             <Box>
                                 <Typography variant="caption">
-                                    <strong>Public tags:</strong>{' '}
-                                    {fields.tags.filter(tag => !specialTagsList.includes(tag)).join(', ')}
+                                    <strong>Public tags:</strong> {fields.tags.filter((tag) => !specialTagsList.includes(tag)).join(', ')}
                                 </Typography>
                             </Box>
                         )}
 
-                        {fields[`priv-tags.${user.uuid}`]?.filter(tag => !specialTagsList.includes(tag)).length > 0 && (
+                        {fields[`priv-tags.${user.uuid}`]?.filter((tag) => !specialTagsList.includes(tag)).length > 0 && (
                             <Box>
                                 <Typography variant="caption">
                                     <strong>Private tags:</strong>{' '}
-                                    {
-                                        fields[`priv-tags.${user.uuid}`]
-                                        .filter(tag => !specialTagsList.includes(tag))
-                                        .join(', ')
-                                    }
+                                    {fields[`priv-tags.${user.uuid}`].filter((tag) => !specialTagsList.includes(tag)).join(', ')}
                                 </Typography>
                             </Box>
                         )}
                     </Grid>
                     <Grid item md={8} className={classes.text}>
-                        {Object.entries(highlights).map(([key, highlight]) =>
+                        {Object.entries(highlights).map(([key, highlight]) => (
                             <Grid container key={key} spacing={1} wrap="nowrap">
-                                {key !== 'text' &&
+                                {key !== 'text' && (
                                     <Grid item>
                                         <span className={classes.key}>{`${key}:`}</span>
                                     </Grid>
-                                }
+                                )}
                                 <Grid item container direction="column">
-                                    {[...highlight].map((item, index) =>
-                                        <Grid item key={index}
-                                              dangerouslySetInnerHTML={{
-                                                  __html: unsearchable ? makeUnsearchable(item) : item,
-                                              }}
+                                    {[...highlight].map((item, index) => (
+                                        <Grid
+                                            item
+                                            key={index}
+                                            dangerouslySetInnerHTML={{
+                                                __html: unsearchable ? makeUnsearchable(item) : item,
+                                            }}
                                         />
-                                    )}
+                                    ))}
                                 </Grid>
                             </Grid>
-                        )}
+                        ))}
                     </Grid>{' '}
                 </Grid>
             </CardContent>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { observer } from "mobx-react-lite"
+import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
 import { Box, Table, TableBody, TableCell, TableRow } from '@mui/material'
 import { makeStyles } from '@mui/styles'
@@ -7,9 +7,9 @@ import Loading from '../Loading'
 import { humanFileSize } from '../../utils'
 import { reactIcons } from '../../constants/icons'
 import { createDownloadUrl, doc as docAPI } from '../../backend/api'
-import { useSharedStore } from "../SharedStoreProvider"
+import { useSharedStore } from '../SharedStoreProvider'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     box: {
         overflowX: 'auto',
     },
@@ -30,7 +30,7 @@ export const Files = observer(() => {
     const classes = useStyles()
     const {
         fullPage,
-        documentStore: { data, collectionBaseUrl, pathname }
+        documentStore: { data, collectionBaseUrl, pathname },
     } = useSharedStore()
 
     const [files, setFiles] = useState(data.children)
@@ -38,7 +38,7 @@ export const Files = observer(() => {
     const [currentHasNextPage, setCurrentHasNextPage] = useState(data.children_has_next_page)
     const [isFetchingChildrenPage, setFetchingChildrenPage] = useState(false)
 
-    const loadMore = async event => {
+    const loadMore = async (event) => {
         event.preventDefault()
         setFetchingChildrenPage(true)
         const nextDoc = await docAPI(pathname, currentPage + 1)
@@ -53,9 +53,7 @@ export const Files = observer(() => {
             <TableCell className={classes.cell}>
                 {id ? (
                     <Link href={`${collectionBaseUrl}/${file || id}`}>
-                        <a>
-                            {filename}
-                        </a>
+                        <a>{filename}</a>
                     </Link>
                 ) : (
                     <span>{filename}</span>
@@ -68,8 +66,7 @@ export const Files = observer(() => {
                         target={fullPage ? null : '_blank'}
                         rel="noreferrer"
                         title="Original file"
-                        className={classes.link}
-                    >
+                        className={classes.link}>
                         {reactIcons.download}
                     </a>
                 )}
@@ -87,11 +84,13 @@ export const Files = observer(() => {
                     {currentHasNextPage && (
                         <TableRow>
                             <TableCell colSpan={4} className={classes.more}>
-                                {isFetchingChildrenPage ?
-                                    <Loading/>
-                                    :
-                                    <a href="#" onClick={loadMore}>load more...</a>
-                                }
+                                {isFetchingChildrenPage ? (
+                                    <Loading />
+                                ) : (
+                                    <a href="#" onClick={loadMore}>
+                                        load more...
+                                    </a>
+                                )}
                             </TableCell>
                         </TableRow>
                     )}

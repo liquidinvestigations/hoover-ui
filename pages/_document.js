@@ -1,4 +1,4 @@
-import React from 'react'
+import { Children } from 'react'
 import Document, { Head, Html, Main, NextScript } from 'next/document'
 import { ServerStyleSheets } from '@mui/styles'
 import { resetServerContext } from 'react-beautiful-dnd'
@@ -23,14 +23,14 @@ class HooverDocument extends Document {
             ...initialProps,
             // Styles fragment is rendered after the app and page rendering finish.
             styles: [
-                ...React.Children.toArray(initialProps.styles),
+                ...Children.toArray(initialProps.styles),
                 <style
                     id={JSS_CSS}
                     key={JSS_CSS}
                     dangerouslySetInnerHTML={{
-                        __html: removeCommentsAndSpacing(sheets.toString())
+                        __html: removeCommentsAndSpacing(sheets.toString()),
                     }}
-                />
+                />,
             ],
         }
     }
