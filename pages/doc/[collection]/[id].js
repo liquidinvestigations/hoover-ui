@@ -1,7 +1,6 @@
-import React from 'react'
 import { useRouter } from 'next/router'
 import DocPage from '../../../src/components/document/DocPage'
-import { useSharedStore } from "../../../src/components/SharedStoreProvider"
+import { useSharedStore } from '../../../src/components/SharedStoreProvider'
 import getAuthorizationHeaders from '../../../src/backend/getAuthorizationHeaders'
 import { collections as collectionsAPI } from '../../../src/backend/api'
 
@@ -22,5 +21,5 @@ export async function getServerSideProps({ req }) {
     const headers = getAuthorizationHeaders(req)
     const collections = await collectionsAPI(headers)
 
-    return { props: { collections }}
+    return { props: { collections } }
 }

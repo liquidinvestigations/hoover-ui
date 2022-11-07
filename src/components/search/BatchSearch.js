@@ -1,15 +1,15 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { makeStyles } from '@mui/styles'
 import { Button, Grid, List, TextField, Typography } from '@mui/material'
 import Expandable from '../Expandable'
 import Loading from '../Loading'
 import BatchResults from './BatchResults'
 import CollectionsFilter from './filters/CollectionsFilter'
-import { reactIcons } from "../../constants/icons";
+import { reactIcons } from '../../constants/icons'
 import { createSearchUrl } from '../../queryUtils'
 import { batch } from '../../backend/api'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     main: {
         paddingLeft: theme.spacing(3),
         paddingRight: theme.spacing(3),
@@ -19,20 +19,20 @@ const useStyles = makeStyles(theme => ({
         fontSize: '14px',
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
-    }
+    },
 }))
 
 export default function BatchSearch({ collections, limits }) {
     const classes = useStyles()
 
-    const [selectedCollections, setSelectedCollections] = useState(collections?.map(c => c.name))
-    const handleSelectedCollectionsChange = collections => {
+    const [selectedCollections, setSelectedCollections] = useState(collections?.map((c) => c.name))
+    const handleSelectedCollectionsChange = (collections) => {
         setSelectedCollections(collections)
         search(collections)
     }
 
     const [terms, setTerms] = useState()
-    const handleTermsChange = event => {
+    const handleTermsChange = (event) => {
         setTerms(event.target.value)
     }
 
@@ -52,23 +52,24 @@ export default function BatchSearch({ collections, limits }) {
         batch({
             query_strings: termsPage,
             collections,
-        }).then(response => {
-            if (response.status === 'error') {
-                setError(response.message)
-            } else {
-                const responseResults = response.responses.map(item => {
-                    const result = {
-                        term: item._query_string,
-                        url: createSearchUrl(item._query_string, undefined, collections)
-                    }
-                    if (item.error) {
-                        result.error = true
-                    } else {
-                        result.count = item.hits.total
-                    }
-                    return result
-                })
-                searchResults.push(...responseResults)
+        })
+            .then((response) => {
+                if (response.status === 'error') {
+                    setError(response.message)
+                } else {
+                    const responseResults = response.responses.map((item) => {
+                        const result = {
+                            term: item._query_string,
+                            url: createSearchUrl(item._query_string, undefined, collections),
+                        }
+                        if (item.error) {
+                            result.error = true
+                        } else {
+                            result.count = item.hits.total
+                        }
+                        return result
+                    })
+                    searchResults.push(...responseResults)
 
                 const nextOffset = offset + limits.batch
                 if (nextOffset >= allTerms.length) {
@@ -108,11 +109,7 @@ export default function BatchSearch({ collections, limits }) {
         <Grid container>
             <Grid item sm={3}>
                 <List dense>
-                    <Expandable
-                        title="Collections"
-                        defaultOpen
-                        highlight={false}
-                    >
+                    <Expandable title="Collections" defaultOpen highlight={false}>
                         <CollectionsFilter
                             collections={collections}
                             selected={selectedCollections}
@@ -134,7 +131,8 @@ export default function BatchSearch({ collections, limits }) {
                         onChange={handleTermsChange}
                         multiline
                         fullWidth
-                        autoFocus />
+                        autoFocus
+                    />
 
                     <Grid container justifyContent="space-between">
                         <Grid item>
@@ -143,16 +141,18 @@ export default function BatchSearch({ collections, limits }) {
                                 color="primary"
                                 startIcon={reactIcons.batchSearch}
                                 disabled={resultsLoading}
-                                onClick={handleSearch}
-                            >
+                                onClick={handleSearch}>
                                 Batch search
                             </Button>
                         </Grid>
                     </Grid>
 
                     <Typography className={classes.rateLimit}>
-                        {'rate limit: '}{limits.batch * limits.requests.limit}
-                        {' terms every '}{limits.requests.interval}{' seconds'}
+                        {'rate limit: '}
+                        {limits.batch * limits.requests.limit}
+                        {' terms every '}
+                        {limits.requests.interval}
+                        {' seconds'}
                     </Typography>
 
                     <BatchResults
@@ -165,5 +165,5 @@ export default function BatchSearch({ collections, limits }) {
                 </div>
             </Grid>
         </Grid>
-    );
+    )
 }

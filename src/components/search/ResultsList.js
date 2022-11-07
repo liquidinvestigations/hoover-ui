@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactPlaceholder from 'react-placeholder'
 import { useSearch } from './SearchProvider'
 import { ResultItem } from './ResultItem'
@@ -13,20 +12,10 @@ export default function ResultsList() {
     }
 
     return (
-        <ReactPlaceholder
-            showLoadingAnimation
-            ready={!resultsLoading}
-            type="text"
-            rows={10}
-        >
-            {results.hits.hits.map((hit, i) =>
-                <ResultItem
-                    key={hit._id + i}
-                    hit={hit}
-                    url={documentViewUrl(hit)}
-                    index={start + i}
-                />
-            )}
+        <ReactPlaceholder showLoadingAnimation ready={!resultsLoading} type="text" rows={10}>
+            {results.hits.hits.map((hit, i) => (
+                <ResultItem key={hit._id + i} hit={hit} url={documentViewUrl(hit)} index={start + i} />
+            ))}
         </ReactPlaceholder>
     )
 }

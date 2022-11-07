@@ -1,1 +1,3 @@
-export default function Terms() { return <p>terms!</p> }
+export default function Terms() {
+    return <p>terms!</p>
+}

@@ -3,9 +3,9 @@ import AbortController from 'abort-controller'
 const ongoingRequests = {}
 const retryCount = {}
 
-const timeout = ms => new Promise(resolve => setTimeout(resolve, ms))
+const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
-export const search = async params => {
+export const search = async (params) => {
     const { type, fieldList, cancel } = params
     const requestKey = `${type}-${Array.isArray(fieldList) ? fieldList.join('-') : fieldList}`
 
@@ -24,16 +24,17 @@ export const search = async params => {
 
     retryCount[requestKey] = 0
 
-    const makeRequest = async () => await fetch('/api/search', {
-        signal,
-        method: 'POST',
-        body: JSON.stringify(params),
-        credentials: 'same-origin',
-        headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-        },
-    })
+    const makeRequest = async () =>
+        fetch('/api/search', {
+            signal,
+            method: 'POST',
+            body: JSON.stringify(params),
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+        })
 
     let res = await makeRequest()
 

@@ -1,7 +1,7 @@
 import { Box } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         height: '100%',
     },
@@ -16,12 +16,7 @@ export const TabPanel = ({ children, value, index, padding = 2, alwaysVisible = 
     const classes = useStyles()
 
     return (
-        <div
-            role="tabpanel"
-            hidden={!alwaysVisible && value !== index}
-            className={classes.root}
-            {...other}
-        >
+        <div role="tabpanel" hidden={!alwaysVisible && value !== index} className={classes.root} {...other}>
             {(alwaysVisible || value === index) && (
                 <Box p={padding} className={classes.tab}>
                     {children}

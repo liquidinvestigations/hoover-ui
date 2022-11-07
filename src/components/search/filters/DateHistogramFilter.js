@@ -1,11 +1,10 @@
-import React, { memo, useCallback, useEffect } from 'react'
+import { memo, useCallback, useEffect } from 'react'
 import { DateTime } from 'luxon'
 import { ListItem, Typography } from '@mui/material'
 import Expandable from '../../Expandable'
 import IntervalSelect from './IntervalSelect'
 import DateRangeFilter from './DateRangeFilter'
 import AggregationFilter from './AggregationFilter'
-import { useSearch } from '../SearchProvider'
 import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL } from '../../../constants/general'
 import { formatThousands, getClosestInterval } from '../../../utils'
 import useMissingLoader from './useMissingLoader'
@@ -15,7 +14,7 @@ export const formatsLabel = {
     month: 'MMMM y',
     week: "y, 'Week' W",
     day: 'd MMMM y',
-    hour: "d MMM y, h a",
+    hour: 'd MMM y, h a',
 }
 
 export const formatsValue = {
@@ -26,44 +25,38 @@ export const formatsValue = {
     hour: "yyyy-MM-dd'T'HH",
 }
 
-function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations,
-                                 loading, loadingETA, missing, onChange, search }) {
+function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations, loading, loadingETA, missing, onChange, search }) {
     const interval = queryFilter?.interval || DEFAULT_INTERVAL
 
-    const onRangeChange = useCallback(range => {
-        const { from, to, interval, intervals, ...rest } = queryFilter || {}
-        if (range?.from && range?.to) {
-            onChange(field, {...range, interval: getClosestInterval({...range, interval}), ...rest}, true)
-        } else {
-            onChange(field, rest, true)
-        }
-    }, [field, queryFilter, onChange])
-
-    const onSelectionChange = useCallback((field, newIntervals, resetPage) => {
-        const { intervals, missing, ...rest } = queryFilter || {}
-        if (newIntervals.include?.length || newIntervals.missing) {
-            onChange(field, { intervals: newIntervals, ...rest }, resetPage)
-        } else {
-            onChange(field, rest, resetPage)
-        }
-    }, [field, queryFilter, onChange])
-
-    const formatLabel = useCallback(
-        bucket => DateTime.fromISO(bucket.key_as_string).toFormat(formatsLabel[interval]),
-        [interval]
+    const onRangeChange = useCallback(
+        (range) => {
+            const { from, to, interval, intervals, ...rest } = queryFilter || {}
+            if (range?.from && range?.to) {
+                onChange(field, { ...range, interval: getClosestInterval({ ...range, interval }), ...rest }, true)
+            } else {
+                onChange(field, rest, true)
+            }
+        },
+        [field, queryFilter, onChange]
     )
 
-    const formatWeekStart = useCallback(bucket => DateTime
-        .fromISO(bucket.key_as_string)
-        .toFormat("('starting' d MMMM)")
-    , [])
-
-    const formatValue = useCallback(
-        bucket => DateTime
-            .fromISO(bucket.key_as_string, { setZone: true })
-            .toFormat(formatsValue[interval]),
-        [interval]
+    const onSelectionChange = useCallback(
+        (field, newIntervals, resetPage) => {
+            const { intervals, missing, ...rest } = queryFilter || {}
+            if (newIntervals.include?.length || newIntervals.missing) {
+                onChange(field, { intervals: newIntervals, ...rest }, resetPage)
+            } else {
+                onChange(field, rest, resetPage)
+            }
+        },
+        [field, queryFilter, onChange]
     )
+
+    const formatLabel = useCallback((bucket) => DateTime.fromISO(bucket.key_as_string).toFormat(formatsLabel[interval]), [interval])
+
+    const formatWeekStart = useCallback((bucket) => DateTime.fromISO(bucket.key_as_string).toFormat("('starting' d MMMM)"), [])
+
+    const formatValue = useCallback((bucket) => DateTime.fromISO(bucket.key_as_string, { setZone: true }).toFormat(formatsValue[interval]), [interval])
 
     const { missingLoading, missingLoadingETA } = useMissingLoader(open, missing, field)
 
@@ -86,14 +79,8 @@ function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryF
                         {aggregations?.values.buckets.length} buckets
                     </Typography>
                 )
-            }
-        >
-            <DateRangeFilter
-                defaultFrom={queryFilter?.from}
-                defaultTo={queryFilter?.to}
-                onChange={onRangeChange}
-                loading={loading}
-            />
+            }>
+            <DateRangeFilter defaultFrom={queryFilter?.from} defaultTo={queryFilter?.to} onChange={onRangeChange} loading={loading} />
 
             <ListItem>
                 <IntervalSelect field={field} />

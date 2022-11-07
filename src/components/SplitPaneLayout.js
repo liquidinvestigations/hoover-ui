@@ -1,9 +1,9 @@
-import React, { memo } from 'react'
+import { memo } from 'react'
 import cn from 'classnames'
 import SplitPane from 'react-split-pane'
 import { makeStyles } from '@mui/styles'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     left: {
         overflowX: 'hidden',
         overflowY: 'auto',
@@ -37,13 +37,25 @@ const useStyles = makeStyles(theme => ({
 
         '@media (min-width: 600px)': {
             height: 'calc(100vh - 64px)',
-        }
+        },
     },
 }))
 
-function SplitPaneLayout({ left, children, right, onLeftChange, onMiddleChange, leftSize, leftMinSize, leftStyle, leftResizerStyle, className,
-                             defaultSizeLeft = '20%', defaultSizeMiddle = '60%', container = true }) {
-
+function SplitPaneLayout({
+    left,
+    children,
+    right,
+    onLeftChange,
+    onMiddleChange,
+    leftSize,
+    leftMinSize,
+    leftStyle,
+    leftResizerStyle,
+    className,
+    defaultSizeLeft = '20%',
+    defaultSizeMiddle = '60%',
+    container = true,
+}) {
     const classes = useStyles()
 
     return (
@@ -60,8 +72,7 @@ function SplitPaneLayout({ left, children, right, onLeftChange, onMiddleChange, 
                     allowResize
                     onChange={onLeftChange}
                     pane1ClassName={classes.left}
-                    pane2ClassName={right ? null : classes.middle}
-                >
+                    pane2ClassName={right ? null : classes.middle}>
                     {left}
                     {right ? (
                         <SplitPane
@@ -70,28 +81,28 @@ function SplitPaneLayout({ left, children, right, onLeftChange, onMiddleChange, 
                             allowResize
                             onChange={onMiddleChange}
                             pane1ClassName={classes.middle}
-                            pane2ClassName={classes.right}
-                        >
+                            pane2ClassName={classes.right}>
                             {children}
                             {right}
                         </SplitPane>
-                    ) : (children)}
+                    ) : (
+                        children
+                    )}
+                </SplitPane>
+            ) : right ? (
+                <SplitPane
+                    key="middle"
+                    split="vertical"
+                    defaultSize={defaultSizeMiddle}
+                    allowResize
+                    onChange={onMiddleChange}
+                    pane1ClassName={classes.middle}
+                    pane2ClassName={classes.right}>
+                    {children}
+                    {right}
                 </SplitPane>
             ) : (
-                right ? (
-                    <SplitPane
-                        key="middle"
-                        split="vertical"
-                        defaultSize={defaultSizeMiddle}
-                        allowResize
-                        onChange={onMiddleChange}
-                        pane1ClassName={classes.middle}
-                        pane2ClassName={classes.right}
-                    >
-                        {children}
-                        {right}
-                    </SplitPane>
-                ) : (children)
+                children
             )}
         </div>
     )

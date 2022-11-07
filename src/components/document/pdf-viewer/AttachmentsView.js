@@ -1,14 +1,14 @@
-import React, { memo, useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { useDocument } from './DocumentProvider'
 import { reactIcons } from '../../../constants/icons'
 import { downloadFile } from '../../../utils'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     container: {
         backgroundColor: theme.palette.grey[100],
-    }
+    },
 }))
 
 function AttachmentsView() {
@@ -17,14 +17,16 @@ function AttachmentsView() {
     const [attachments, setAttachments] = useState([])
 
     useEffect(() => {
-        (async () => {
-            const files = await new Promise(resolve => {
-                doc.getAttachments().then(response => {
-                    resolve(!response ? [] :
-                        Object.keys(response).map(file => ({
-                            data: response[file].content,
-                            fileName: response[file].filename,
-                        }))
+        ;(async () => {
+            const files = await new Promise((resolve) => {
+                doc.getAttachments().then((response) => {
+                    resolve(
+                        !response
+                            ? []
+                            : Object.keys(response).map((file) => ({
+                                  data: response[file].content,
+                                  fileName: response[file].filename,
+                              }))
                     )
                 })
             })
@@ -37,12 +39,14 @@ function AttachmentsView() {
     return (
         <div className={classes.container}>
             <List dense>
-                {attachments.length ? attachments.map(({ fileName, data }, index)  => (
-                    <ListItem key={index} button onClick={handleFileDownload(fileName, data)}>
-                        <ListItemText primary={fileName} />
-                        <ListItemIcon>{reactIcons.download}</ListItemIcon>
-                    </ListItem>
-                )) : (
+                {attachments.length ? (
+                    attachments.map(({ fileName, data }, index) => (
+                        <ListItem key={index} button onClick={handleFileDownload(fileName, data)}>
+                            <ListItemText primary={fileName} />
+                            <ListItemIcon>{reactIcons.download}</ListItemIcon>
+                        </ListItem>
+                    ))
+                ) : (
                     <ListItem>
                         <ListItemText primary="No attachments" />
                     </ListItem>

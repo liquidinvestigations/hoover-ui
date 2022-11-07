@@ -1,4 +1,4 @@
-import React, { cloneElement, memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { cloneElement, memo, useCallback, useEffect, useMemo, useState } from 'react'
 import cn from 'classnames'
 import { DateTime } from 'luxon'
 import { Collapse, Grid, IconButton, ListItem, Menu, MenuItem, Typography } from '@mui/material'
@@ -8,7 +8,7 @@ import HistogramChart from './HistogramChart'
 import IntervalSelect from './IntervalSelect'
 import Pagination from './Pagination'
 import { useSearch } from '../SearchProvider'
-import { useSharedStore } from "../../SharedStoreProvider"
+import { useSharedStore } from '../../SharedStoreProvider'
 import { formatsLabel, formatsValue } from './DateHistogramFilter'
 import { DATE_FORMAT, DEFAULT_INTERVAL } from '../../../constants/general'
 import { daysInMonth, getClosestInterval } from '../../../utils'
@@ -19,7 +19,7 @@ const chartHeight = 100
 const barWidth = 10
 const barMargin = 1
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     expand: {
         marginLeft: theme.spacing(2),
         transform: 'rotate(90deg)',
@@ -35,8 +35,8 @@ const useStyles = makeStyles(theme => ({
         marginBottom: theme.spacing(1),
     },
     chartBox: {
-        marginBottom: theme.spacing(1)
-    }
+        marginBottom: theme.spacing(1),
+    },
 }))
 
 function Histogram({ title, field }) {
@@ -70,13 +70,13 @@ function Histogram({ title, field }) {
     const handleSelect = (event, bars) => {
         if (bars.length) {
             setSelectedBars(bars)
-            setAnchorPosition({left: event.clientX, top: event.clientY})
+            setAnchorPosition({ left: event.clientX, top: event.clientY })
         }
     }
 
     const handleBarMenuClose = () => setAnchorPosition(null)
 
-    const handleIntervalsChange = include => {
+    const handleIntervalsChange = (include) => {
         handleBarMenuClose()
 
         const { [field]: prevFilter, ...restFilters } = query.filters || {}
@@ -100,9 +100,11 @@ function Histogram({ title, field }) {
         const { [field]: prevFilter } = query.filters || {}
         const { intervals } = prevFilter || {}
 
-        handleIntervalsChange((intervals?.include || []).filter(v => {
-            return !selectedBars.includes(v)
-        }))
+        handleIntervalsChange(
+            (intervals?.include || []).filter((v) => {
+                return !selectedBars.includes(v)
+            })
+        )
     }, [query, search, selectedBars])
 
     const getDatesRange = () => {
@@ -119,7 +121,7 @@ function Histogram({ title, field }) {
                 break
 
             case 'week':
-                last = DateTime.fromISO(last).plus({days: 7}).toISODate()
+                last = DateTime.fromISO(last).plus({ days: 7 }).toISODate()
                 break
         }
 
@@ -137,32 +139,26 @@ function Histogram({ title, field }) {
         const { [field]: prevFacet, ...restFacets } = query.facets || {}
 
         search({
-            filters: { [field]: {...range, interval: getClosestInterval(range) }, ...restFilters },
+            filters: { [field]: { ...range, interval: getClosestInterval(range) }, ...restFilters },
             facets: { ...restFacets },
-            page: 1
+            page: 1,
         })
-
     }, [query, search, selectedBars])
-
 
     const interval = query.filters?.[field]?.interval || DEFAULT_INTERVAL
     const selected = query.filters?.[field]?.intervals?.include
     const axisHeight = interval === 'year' ? 20 : 40
 
-    const formatLabel = value => DateTime
-        .fromISO(value, { setZone: true })
-        .toFormat(formatsLabel[interval])
+    const formatLabel = (value) => DateTime.fromISO(value, { setZone: true }).toFormat(formatsLabel[interval])
 
-    const formatValue = value => DateTime
-        .fromISO(value, { setZone: true })
-        .toFormat(formatsValue[interval])
+    const formatValue = (value) => DateTime.fromISO(value, { setZone: true }).toFormat(formatsValue[interval])
 
     const data = useMemo(() => {
         const buckets = aggregations?.[field]?.values.buckets
 
         if (buckets) {
             let missingBarsCount = 0
-            const elements = buckets.map(({key_as_string, doc_count}, index) => {
+            const elements = buckets.map(({ key_as_string, doc_count }, index) => {
                 if (index) {
                     const unit = `${interval}s`
                     const prevDate = DateTime.fromISO(buckets[index - 1].key_as_string)
@@ -173,21 +169,21 @@ function Histogram({ title, field }) {
                     label: formatLabel(key_as_string),
                     value: formatValue(key_as_string),
                     count: doc_count,
-                    missingBarsCount
+                    missingBarsCount,
                 }
             })
 
             const xScale = chartWidth / ((elements.length + missingBarsCount) * (barWidth + barMargin) - barMargin)
-            const maxCount = Math.max(...buckets.map(({doc_count}) => doc_count))
+            const maxCount = Math.max(...buckets.map(({ doc_count }) => doc_count))
 
-            return elements.map(({label, value, count, missingBarsCount}, index) => ({
+            return elements.map(({ label, value, count, missingBarsCount }, index) => ({
                 label,
                 value,
                 count,
                 barWidth: barWidth * xScale,
-                barHeight: (chartHeight - axisHeight) * Math.log(count + 1) / Math.log(maxCount + 1),
+                barHeight: ((chartHeight - axisHeight) * Math.log(count + 1)) / Math.log(maxCount + 1),
                 barPosition: (index + missingBarsCount) * (barWidth + barMargin) * xScale,
-                labelPosition: ((index + missingBarsCount) * (barWidth + barMargin) + barWidth / 2) * xScale
+                labelPosition: ((index + missingBarsCount) * (barWidth + barMargin) + barWidth / 2) * xScale,
             }))
         }
     }, [aggregations])
@@ -195,24 +191,16 @@ function Histogram({ title, field }) {
     return (
         <>
             <ListItem onClick={toggle} button dense className={classes.histogramTitle}>
-                <Grid container
-                      className={classes.histogramTitle}
-                      justifyContent="space-between"
-                      alignItems="center"
-                      wrap="nowrap"
-                >
+                <Grid container className={classes.histogramTitle} justifyContent="space-between" alignItems="center" wrap="nowrap">
                     <Grid item>
-                        <Typography variant="h6">
-                            {title}
-                        </Typography>
+                        <Typography variant="h6">{title}</Typography>
                     </Grid>
                     <Grid item>
                         <IconButton
                             size="small"
                             className={cn(classes.expand, { [classes.expandOpen]: open })}
                             aria-expanded={open}
-                            aria-label="Show histogram"
-                        >
+                            aria-label="Show histogram">
                             {cloneElement(reactIcons.chevronDown, { color: 'action' })}
                         </IconButton>
                     </Grid>
@@ -221,7 +209,9 @@ function Histogram({ title, field }) {
 
             <Collapse in={open}>
                 <div className={classes.chartBox}>
-                    {aggregationsLoading[field] ? <Loading /> : (
+                    {aggregationsLoading[field] ? (
+                        <Loading />
+                    ) : (
                         <HistogramChart
                             width={chartWidth}
                             height={chartHeight}
@@ -243,25 +233,10 @@ function Histogram({ title, field }) {
                 </Grid>
             </Collapse>
 
-            <Menu
-                open={!!anchorPosition}
-                onClose={handleBarMenuClose}
-                anchorReference="anchorPosition"
-                anchorPosition={anchorPosition}
-            >
-                {selectedBars?.some(v => !selected?.includes(v)) && (
-                    <MenuItem onClick={handleIntervalsAdd}>
-                        select this interval
-                    </MenuItem>
-                )}
-                {selectedBars?.some(v => selected?.includes(v)) && (
-                    <MenuItem onClick={handleIntervalsRemove}>
-                        remove this interval
-                    </MenuItem>
-                )}
-                <MenuItem onClick={handleFilterRange}>
-                    set filter for this interval (zoom in)
-                </MenuItem>
+            <Menu open={!!anchorPosition} onClose={handleBarMenuClose} anchorReference="anchorPosition" anchorPosition={anchorPosition}>
+                {selectedBars?.some((v) => !selected?.includes(v)) && <MenuItem onClick={handleIntervalsAdd}>select this interval</MenuItem>}
+                {selectedBars?.some((v) => selected?.includes(v)) && <MenuItem onClick={handleIntervalsRemove}>remove this interval</MenuItem>}
+                <MenuItem onClick={handleFilterRange}>set filter for this interval (zoom in)</MenuItem>
             </Menu>
         </>
     )

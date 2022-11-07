@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { decode } from 'tiff'
 import { makeStyles } from '@mui/styles'
 import { Typography } from '@mui/material'
 import Loading from '../Loading'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     wrapper: {
         textAlign: 'center',
         paddingTop: theme.spacing(2),
@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
             maxWidth: '95%',
             boxShadow: '0 2px 10px 0 black',
             marginBottom: theme.spacing(2),
-        }
+        },
     },
 }))
 
@@ -25,7 +25,7 @@ export default function TIFFViewer({ url }) {
     const [pages, setPages] = useState(null)
 
     useEffect(() => {
-        (async () => {
+        ;(async () => {
             setError(null)
             setLoading(true)
 
@@ -48,7 +48,7 @@ export default function TIFFViewer({ url }) {
                     chunks.push(value)
                     receivedLength += value.length
 
-                    setLoading(receivedLength / contentLength * 100)
+                    setLoading((receivedLength / contentLength) * 100)
                 }
 
                 const chunksAll = new Uint8Array(receivedLength)
@@ -67,31 +67,34 @@ export default function TIFFViewer({ url }) {
                     return
                 }
 
-                setPages(ifd.map(page => {
-                    const canvas = document.createElement('canvas')
-                    canvas.width = page.width
-                    canvas.height = page.height
+                setPages(
+                    ifd.map((page) => {
+                        const canvas = document.createElement('canvas')
+                        canvas.width = page.width
+                        canvas.height = page.height
 
-                    const pixels = new Uint8ClampedArray(page.data)
-                    const ctx = canvas.getContext('2d')
+                        const pixels = new Uint8ClampedArray(page.data)
+                        const ctx = canvas.getContext('2d')
 
-                    const imageData = ctx.createImageData(page.width, page.height)
-                    const data = imageData.data
-                    const len = data.length
+                        const imageData = ctx.createImageData(page.width, page.height)
+                        const data = imageData.data
+                        const len = data.length
 
-                    let i = 0, t = 0
-                    for (; i < len; i += 4) {
-                        data[i] = pixels[t];
-                        data[i + 1] = pixels[t + 1];
-                        data[i + 2] = pixels[t + 2];
-                        data[i + 3] = page.alpha ? pixels[t + 3] : 255;
+                        let i = 0,
+                            t = 0
+                        for (; i < len; i += 4) {
+                            data[i] = pixels[t]
+                            data[i + 1] = pixels[t + 1]
+                            data[i + 2] = pixels[t + 2]
+                            data[i + 3] = page.alpha ? pixels[t + 3] : 255
 
-                        t += page.alpha ? 4 : 3;
-                    }
-                    ctx.putImageData(imageData, 0, 0)
+                            t += page.alpha ? 4 : 3
+                        }
+                        ctx.putImageData(imageData, 0, 0)
 
-                    return canvas.toDataURL()
-                }))
+                        return canvas.toDataURL()
+                    })
+                )
             } else {
                 setError(response.statusText)
             }
@@ -102,13 +105,12 @@ export default function TIFFViewer({ url }) {
     return (
         <div className={classes.wrapper}>
             {loading && (
-                <Loading
-                    variant={typeof loading === 'number' ? 'determinate' : 'indeterminate'}
-                    value={typeof loading === 'number' ? loading : null}
-                />
+                <Loading variant={typeof loading === 'number' ? 'determinate' : 'indeterminate'} value={typeof loading === 'number' ? loading : null} />
             )}
             {error && <Typography color="error">{error}</Typography>}
-            {pages?.map(data => <img key={data} src={data} />)}
+            {pages?.map((data) => (
+                <img key={data} src={data} />
+            ))}
         </div>
     )
 }

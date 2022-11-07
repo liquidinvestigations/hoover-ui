@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import Link from 'next/link'
 import url from 'url'
 import { List, ListItem, ListItemIcon, Typography } from '@mui/material'
@@ -7,14 +7,14 @@ import Loading from './Loading'
 import { locations as locationsAPI } from '../backend/api'
 import { reactIcons } from '../constants/icons'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     error: {
         padding: theme.spacing(3),
         fontSize: '14px',
 
         '& a': {
             color: theme.palette.error.main,
-        }
+        },
     },
 }))
 
@@ -29,16 +29,18 @@ function Locations({ url: docUrl, data }) {
     useEffect(() => {
         if (docUrl) {
             setError(null)
-            locationsAPI(docUrl, page).then(response => {
-                setLocations(response.locations)
-                setHasNextPage(response.has_next_page)
-            }).catch(res => {
-                setError({ status: res.status, statusText: res.statusText, url: res.url })
-            })
+            locationsAPI(docUrl, page)
+                .then((response) => {
+                    setLocations(response.locations)
+                    setHasNextPage(response.has_next_page)
+                })
+                .catch((res) => {
+                    setError({ status: res.status, statusText: res.statusText, url: res.url })
+                })
         }
     }, [docUrl, page])
 
-    const loadMore = async event => {
+    const loadMore = async (event) => {
         event.preventDefault()
         setLoadingNextPage(true)
         const response = await locationsAPI(docUrl, page + 1)
@@ -75,13 +77,11 @@ function Locations({ url: docUrl, data }) {
 
             {locations.length && (
                 <>
-                    {locations.map(location => (
+                    {locations.map((location) => (
                         <Link key={location.id} href={`${basePath}${location.id}`} shallow>
                             <a>
                                 <ListItem button>
-                                    <ListItemIcon>
-                                        {reactIcons.location}
-                                    </ListItemIcon>
+                                    <ListItemIcon>{reactIcons.location}</ListItemIcon>
 
                                     <Typography style={{ wordBreak: 'break-all' }}>
                                         {location.parent_path}/<em>{location.filename}</em>
@@ -92,9 +92,17 @@ function Locations({ url: docUrl, data }) {
                     ))}
                 </>
             )}
-            {hasNextPage && <ListItem dense>
-                {loadingNextPage ? <Loading /> : <a href="#" onClick={loadMore}>load more...</a>}
-            </ListItem>}
+            {hasNextPage && (
+                <ListItem dense>
+                    {loadingNextPage ? (
+                        <Loading />
+                    ) : (
+                        <a href="#" onClick={loadMore}>
+                            load more...
+                        </a>
+                    )}
+                </ListItem>
+            )}
         </List>
     )
 }

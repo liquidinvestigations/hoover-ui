@@ -1,17 +1,17 @@
-import React, { memo } from 'react'
+import { memo } from 'react'
 import { makeStyles } from '@mui/styles'
 import { TreeView } from '@mui/lab'
 import Bookmarks from './Bookmarks'
 import { reactIcons } from '../../../constants/icons'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     container: {
         padding: theme.spacing(1),
         backgroundColor: theme.palette.grey[100],
-    }
+    },
 }))
 
-function BookmarksView ({ expanded, onSetExpanded, onSelect }) {
+function BookmarksView({ expanded, onSetExpanded, onSelect }) {
     const classes = useStyles()
 
     const handleToggle = (event, nodeIds) => {
@@ -25,8 +25,7 @@ function BookmarksView ({ expanded, onSetExpanded, onSelect }) {
                 onNodeToggle={handleToggle}
                 disableSelection={true}
                 defaultCollapseIcon={reactIcons.chevronDown}
-                defaultExpandIcon={reactIcons.chevronRight}
-            >
+                defaultExpandIcon={reactIcons.chevronRight}>
                 <Bookmarks onSelect={onSelect} />
             </TreeView>
         </div>

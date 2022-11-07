@@ -1,11 +1,11 @@
-import React, { cloneElement } from 'react'
+import { cloneElement } from 'react'
 import cn from 'classnames'
 import { IconButton, InputAdornment, TextField, Toolbar, Tooltip } from '@mui/material'
 import { duration } from '@mui/material/styles'
 import { makeStyles } from '@mui/styles'
 import { reactIcons } from '../../../constants/icons'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     toolbar: {
         backgroundColor: theme.palette.grey[100],
         borderBottomColor: theme.palette.grey[400],
@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
         paddingRight: theme.spacing(0.7),
     },
     searchIcon: {
-        fontSize: 16
+        fontSize: 16,
     },
     pinButton: {
         marginLeft: 'auto',
@@ -47,7 +47,7 @@ const useStyles = makeStyles(theme => ({
 export default function CategoryDrawerToolbar({ search, onSearch, drawerPinned, setDrawerPinned, setOpenCategory }) {
     const classes = useStyles()
 
-    const handleSearch = event => onSearch(event.target.value)
+    const handleSearch = (event) => onSearch(event.target.value)
     const handleSearchDelete = () => onSearch('')
 
     return (
@@ -64,18 +64,15 @@ export default function CategoryDrawerToolbar({ search, onSearch, drawerPinned, 
                     startAdornment: (
                         <InputAdornment position="start">
                             {cloneElement(reactIcons.search, {
-                                className: classes.searchIcon
+                                className: classes.searchIcon,
                             })}
                         </InputAdornment>
                     ),
                     endAdornment: (
                         <InputAdornment position="end">
-                            <IconButton
-                                size="small"
-                                onClick={handleSearchDelete}
-                            >
+                            <IconButton size="small" onClick={handleSearchDelete}>
                                 {cloneElement(reactIcons.cancel, {
-                                    className: classes.searchIcon
+                                    className: classes.searchIcon,
                                 })}
                             </IconButton>
                         </InputAdornment>
@@ -84,28 +81,27 @@ export default function CategoryDrawerToolbar({ search, onSearch, drawerPinned, 
                         inputMarginDense: classes.searchInput,
                         adornedStart: classes.searchInputStart,
                         adornedEnd: classes.searchInputEnd,
-                    }
+                    },
                 }}
             />
             <Tooltip title={drawerPinned ? 'Unpin' : 'Pin'}>
                 <IconButton
                     size="small"
                     className={classes.pinButton}
-                    onClick={() => setDrawerPinned(pinned => {
-                        if (!pinned) {
-                            setOpenCategory(category => {
-                                setTimeout(() => setOpenCategory(category), duration.leavingScreen)
-                                return null
-                            })
-                        }
-                        return !pinned
-                    })}
-                >
-                    {drawerPinned ? (
-                        cloneElement(reactIcons.pinned, { className: classes.pinIcon})
-                    ) : (
-                        cloneElement(reactIcons.unpinned, { className: cn(classes.pinIcon, classes.unPinned)})
-                    )}
+                    onClick={() =>
+                        setDrawerPinned((pinned) => {
+                            if (!pinned) {
+                                setOpenCategory((category) => {
+                                    setTimeout(() => setOpenCategory(category), duration.leavingScreen)
+                                    return null
+                                })
+                            }
+                            return !pinned
+                        })
+                    }>
+                    {drawerPinned
+                        ? cloneElement(reactIcons.pinned, { className: classes.pinIcon })
+                        : cloneElement(reactIcons.unpinned, { className: cn(classes.pinIcon, classes.unPinned) })}
                 </IconButton>
             </Tooltip>
         </Toolbar>

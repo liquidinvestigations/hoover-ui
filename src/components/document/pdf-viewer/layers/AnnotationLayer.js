@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnnotationLayer as PDFJSAnnotationLayer } from 'pdfjs-dist/build/pdf'
 import { AnnotationType } from 'pdfjs-dist/lib/shared/util'
 import { useDocument } from '../DocumentProvider'
@@ -29,37 +29,27 @@ export default function AnnotationLayer({ page, pageIndex, containerRef, pagesRe
             if (linkPageIndex === undefined) {
                 // Fetch the page reference if it's not yet available. This could
                 // only occur during loading, before all pages have been resolved.
-                doc
-                    .getPageIndex(destRef)
-                    .then(index => {
-                        setCachedPageIndices(numbers => {
+                doc.getPageIndex(destRef)
+                    .then((index) => {
+                        setCachedPageIndices((numbers) => {
                             numbers[destRef] = index
                             return numbers
                         })
                         goToDestinationHelper(rawDest, namedDest, explicitDest)
                     })
                     .catch(() => {
-                        console.error(
-                            `goToDestinationHelper: "${destRef}" is not ` +
-                            `a valid page reference, for dest="${rawDest}".`
-                        )
+                        console.error(`goToDestinationHelper: "${destRef}" is not ` + `a valid page reference, for dest="${rawDest}".`)
                     })
                 return
             }
         } else if (Number.isInteger(destRef)) {
             linkPageIndex = destRef
         } else {
-            console.error(
-                `goToDestinationHelper: "${destRef}" is not ` +
-                `a valid destination reference, for dest="${rawDest}".`
-            )
-            return;
+            console.error(`goToDestinationHelper: "${destRef}" is not ` + `a valid destination reference, for dest="${rawDest}".`)
+            return
         }
         if (linkPageIndex === null || linkPageIndex < 0 || linkPageIndex > doc.numPages - 1) {
-            console.error(
-                `goToDestinationHelper: "${linkPageIndex}" is not ` +
-                `a valid page index, for dest="${rawDest}".`
-            )
+            console.error(`goToDestinationHelper: "${linkPageIndex}" is not ` + `a valid page index, for dest="${rawDest}".`)
             return
         }
 
@@ -70,7 +60,7 @@ export default function AnnotationLayer({ page, pageIndex, containerRef, pagesRe
         const container = annotationLayerRef.current
         const viewport = page.getViewport({ rotation, scale })
 
-        page.getAnnotations().then(annotations => {
+        page.getAnnotations().then((annotations) => {
             clear()
             PDFJSAnnotationLayer.render({
                 annotations,
@@ -83,7 +73,7 @@ export default function AnnotationLayer({ page, pageIndex, containerRef, pagesRe
                     addLinkAttributes: (element, url) => {
                         element.href = `javascript:alert('${url}');`
                     },
-                    getDestinationHash: dest => {
+                    getDestinationHash: (dest) => {
                         if (typeof dest === 'string') {
                             if (dest.length > 0) {
                                 return '#' + escape(dest)
@@ -96,7 +86,7 @@ export default function AnnotationLayer({ page, pageIndex, containerRef, pagesRe
                         }
                         return ''
                     },
-                    goToDestination: async dest => {
+                    goToDestination: async (dest) => {
                         if (!doc) {
                             return
                         }
@@ -110,9 +100,8 @@ export default function AnnotationLayer({ page, pageIndex, containerRef, pagesRe
                         }
                         if (!Array.isArray(explicitDest)) {
                             console.error(
-                                `PDFLinkService.goToDestination: "${explicitDest}" is not ` +
-                                `a valid destination array, for dest="${dest}".`
-                            );
+                                `PDFLinkService.goToDestination: "${explicitDest}" is not ` + `a valid destination array, for dest="${dest}".`
+                            )
                             return
                         }
                         goToDestinationHelper(dest, namedDest, explicitDest)
@@ -122,22 +111,19 @@ export default function AnnotationLayer({ page, pageIndex, containerRef, pagesRe
                 renderInteractiveForms: false,
                 viewport: viewport.clone({ dontFlip: true }),
             })
-            setExternalLinks(prevLinks => {
-                    const newLinks = annotations
-                        .filter(annotation => annotation.annotationType === AnnotationType.LINK && annotation.url)
-                        .map(({url}) => ({ pageIndex, url }))
+            setExternalLinks((prevLinks) => {
+                const newLinks = annotations
+                    .filter((annotation) => annotation.annotationType === AnnotationType.LINK && annotation.url)
+                    .map(({ url }) => ({ pageIndex, url }))
 
-                    if (newLinks.length && !prevLinks[newLinks[0].pageIndex]) {
-                        prevLinks = {...prevLinks, [newLinks[0].pageIndex]: newLinks}
-                    }
-
-                    return prevLinks
+                if (newLinks.length && !prevLinks[newLinks[0].pageIndex]) {
+                    prevLinks = { ...prevLinks, [newLinks[0].pageIndex]: newLinks }
                 }
-            )
+
+                return prevLinks
+            })
         })
     }, [rotation, scale])
 
-    return (
-        <div ref={annotationLayerRef} className="annotationLayer" />
-    )
+    return <div ref={annotationLayerRef} className="annotationLayer" />
 }

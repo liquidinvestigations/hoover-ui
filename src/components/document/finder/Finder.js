@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { makeStyles } from '@mui/styles'
 import FinderColumn from './FinderColumn'
 import ErrorBoundary from '../../ErrorBoundary'
 import { doc as docAPI } from '../../../backend/api'
 import { getBasePath } from '../../../utils'
-import { useSharedStore } from "../../SharedStoreProvider"
+import { useSharedStore } from '../../SharedStoreProvider'
 
 const parentLevels = 3
 
@@ -17,7 +17,7 @@ const makeColumns = (doc, pathname) => {
             prevPage: item.children_page > 1 ? item.children_page - 1 : null,
             nextPage: item.children_has_next_page ? item.children_page + 1 : null,
             pathname: pathname + item.id,
-            selected
+            selected,
         })
     }
 
@@ -47,11 +47,11 @@ const makeColumns = (doc, pathname) => {
     return columns
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     container: {
         display: 'flex',
         overflowX: 'auto',
-    }
+    },
 }))
 
 export default function Finder() {
@@ -62,7 +62,7 @@ export default function Finder() {
     const [columns, setColumns] = useState([])
 
     useEffect(() => {
-        (async () => {
+        ;(async () => {
             if (!loading && pathname && data) {
                 const localData = { ...data }
                 let current = localData
@@ -72,10 +72,7 @@ export default function Finder() {
                 setColumns(makeColumns(current, getBasePath(pathname)))
 
                 while (current.parent_id && level <= parentLevels) {
-                    current.parent = await docAPI(
-                        getBasePath(pathname) + current.parent_id,
-                        current.parent_children_page
-                    )
+                    current.parent = await docAPI(getBasePath(pathname) + current.parent_id, current.parent_children_page)
 
                     current = current.parent
                     level++

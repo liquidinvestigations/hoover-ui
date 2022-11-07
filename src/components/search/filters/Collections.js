@@ -1,19 +1,29 @@
-import React, { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 import CategoryDrawer from './CategoryDrawer'
 import CollectionsFilter from './CollectionsFilter'
 import { useSearch } from '../SearchProvider'
 import Expandable from '../../Expandable'
 import CategoryDrawerToolbar from './CategoryDrawerToolbar'
 
-export default function Collections({ collections, openCategory, setOpenCategory, wideFilters,
-                                        drawerWidth, drawerPinned, setDrawerPinned, drawerPortalRef }) {
-
+export default function Collections({
+    collections,
+    openCategory,
+    setOpenCategory,
+    wideFilters,
+    drawerWidth,
+    drawerPinned,
+    setDrawerPinned,
+    drawerPortalRef,
+}) {
     const { query, search, collectionsCount } = useSearch()
     const [searchCollections, setSearchCollections] = useState('')
 
-    const handleCollectionsChange = useCallback(value => {
-        search({ collections: value, page: 1 })
-    }, [collections, search])
+    const handleCollectionsChange = useCallback(
+        (value) => {
+            search({ collections: value, page: 1 })
+        },
+        [collections, search]
+    )
 
     return (
         <CategoryDrawer
@@ -28,7 +38,7 @@ export default function Collections({ collections, openCategory, setOpenCategory
             pinned={drawerPinned}
             setPinned={setDrawerPinned}
             portalRef={drawerPortalRef}
-            toolbar={(
+            toolbar={
                 <CategoryDrawerToolbar
                     search={searchCollections}
                     onSearch={setSearchCollections}
@@ -36,13 +46,8 @@ export default function Collections({ collections, openCategory, setOpenCategory
                     setDrawerPinned={setDrawerPinned}
                     setOpenCategory={setOpenCategory}
                 />
-            )}
-        >
-            <Expandable
-                title={`Collections (${query.collections?.length || 0})`}
-                open={true}
-                highlight={false}
-            >
+            }>
+            <Expandable title={`Collections (${query.collections?.length || 0})`} open={true} highlight={false}>
                 <CollectionsFilter
                     collections={collections}
                     selected={query.collections || []}

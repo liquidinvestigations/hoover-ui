@@ -1,9 +1,9 @@
-import React, { cloneElement } from 'react'
+import { cloneElement } from 'react'
 import { Grid, ListItem, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { reactIcons } from '../../constants/icons'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     expand: {
         marginLeft: theme.spacing(2),
         transform: 'rotate(90deg)',
@@ -24,26 +24,15 @@ export default function InsightsTitle({ name, open, onClick }) {
     const classes = useStyles()
 
     return (
-        <ListItem
-            button
-            dense
-            onClick={onClick}
-        >
-            <Grid container
-                  className={classes.collectionTitle}
-                  justifyContent="space-between"
-                  alignItems="center"
-                  wrap="nowrap"
-            >
+        <ListItem button dense onClick={onClick}>
+            <Grid container className={classes.collectionTitle} justifyContent="space-between" alignItems="center" wrap="nowrap">
                 <Grid item>
-                    <Typography variant="h6">
-                        {name}
-                    </Typography>
+                    <Typography variant="h6">{name}</Typography>
                 </Grid>
 
                 {open && (
-                    <Grid item className={classes.open} >
-                        {cloneElement(reactIcons.chevronRight, { color: 'action'})}
+                    <Grid item className={classes.open}>
+                        {cloneElement(reactIcons.chevronRight, { color: 'action' })}
                     </Grid>
                 )}
             </Grid>

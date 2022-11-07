@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import { memo } from 'react'
 import { Box, Fab, Fade, Grid, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import Pagination from './Pagination'
@@ -8,7 +8,7 @@ import { useSearch } from './SearchProvider'
 import { reactIcons } from '../../constants/icons'
 import ResultsProgress from './ResultsProgress'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     viewTypeIcon: {
         flex: 'none',
         boxShadow: 'none',
@@ -16,7 +16,6 @@ const useStyles = makeStyles(theme => ({
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(2),
     },
-
 }))
 
 function Results({ maxCount }) {
@@ -42,8 +41,7 @@ function Results({ maxCount }) {
                             size="small"
                             color={resultsViewType === 'list' ? 'primary' : 'default'}
                             className={classes.viewTypeIcon}
-                            onClick={() => setResultsViewType('list')}
-                        >
+                            onClick={() => setResultsViewType('list')}>
                             {reactIcons.listView}
                         </Fab>
                     </Grid>
@@ -52,8 +50,7 @@ function Results({ maxCount }) {
                             size="small"
                             color={resultsViewType === 'table' ? 'primary' : 'default'}
                             className={classes.viewTypeIcon}
-                            onClick={() => setResultsViewType('table')}
-                        >
+                            onClick={() => setResultsViewType('table')}>
                             {reactIcons.tableView}
                         </Fab>
                     </Grid>
@@ -75,14 +72,9 @@ function Results({ maxCount }) {
                 </Box>
             </Fade>
 
-            {!!results && !query.collections?.length ?
-                <i>no collections selected</i> :
-                resultsViewType === 'list' ? <ResultsList /> : <ResultsTable />
-            }
+            {!!results && !query.collections?.length ? <i>no collections selected</i> : resultsViewType === 'list' ? <ResultsList /> : <ResultsTable />}
 
-            {!!results?.hits.hits.length &&
-                <Pagination maxCount={maxCount} />
-            }
+            {!!results?.hits.hits.length && <Pagination maxCount={maxCount} />}
         </>
     )
 }

@@ -1,32 +1,39 @@
-import React, { forwardRef, useEffect, useState } from 'react'
+import { forwardRef, useEffect, useState } from 'react'
 import CanvasLayer from './layers/CanvasLayer'
 import SVGLayer from './layers/SVGLayer'
 import TextLayer from './layers/TextLayer'
 import AnnotationLayer from './layers/AnnotationLayer'
 
-export default forwardRef(function Page({ doc, containerRef, pagesRefs, renderer, pageIndex, width, height,
-                               rotation, scale, onVisibilityChanged }, pageRef) {
+export default forwardRef(function Page(
+    { doc, containerRef, pagesRefs, renderer, pageIndex, width, height, rotation, scale, onVisibilityChanged },
+    pageRef
+) {
     const [pageData, setPageData] = useState({
         page: null,
-        width, height, rotation
+        width,
+        height,
+        rotation,
     })
 
     const [visible, setVisible] = useState(false)
 
     const getPageData = () => {
-        doc.getPage(pageIndex + 1).then(page => {
+        doc.getPage(pageIndex + 1).then((page) => {
             const { width, height, rotation } = page.getViewport({ scale: 1 })
 
             setPageData({
-                page, width, height, rotation
+                page,
+                width,
+                height,
+                rotation,
             })
         })
     }
 
     useEffect(() => {
         const observer = new IntersectionObserver(
-            entries => {
-                entries.forEach(entry => {
+            (entries) => {
+                entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         if (pageData.page === null) {
                             getPageData()
@@ -37,7 +44,9 @@ export default forwardRef(function Page({ doc, containerRef, pagesRefs, renderer
                 })
             },
             {
-                threshold: Array(10).fill().map((_, i) => i / 10)
+                threshold: Array(10)
+                    .fill()
+                    .map((_, i) => i / 10),
             }
         )
         const ref = pageRef.current
@@ -66,33 +75,18 @@ export default forwardRef(function Page({ doc, containerRef, pagesRefs, renderer
             style={{
                 width: elementWidth,
                 height: elementHeight,
-            }}
-        >
-            {!page || !visible ? <span className="loadingIcon" /> :
+            }}>
+            {!page || !visible ? (
+                <span className="loadingIcon" />
+            ) : (
                 <>
                     {renderer === 'canvas' && (
-                        <CanvasLayer
-                            page={page}
-                            width={elementWidth}
-                            height={elementHeight}
-                            rotation={normalizedRotation}
-                            scale={scale}
-                        />
+                        <CanvasLayer page={page} width={elementWidth} height={elementHeight} rotation={normalizedRotation} scale={scale} />
                     )}
                     {renderer === 'svg' && (
-                        <SVGLayer
-                            page={page}
-                            width={elementWidth}
-                            height={elementHeight}
-                            rotation={normalizedRotation}
-                            scale={scale}
-                        />
+                        <SVGLayer page={page} width={elementWidth} height={elementHeight} rotation={normalizedRotation} scale={scale} />
                     )}
-                    <TextLayer
-                        page={page}
-                        rotation={normalizedRotation}
-                        scale={scale}
-                    />
+                    <TextLayer page={page} rotation={normalizedRotation} scale={scale} />
                     <AnnotationLayer
                         page={page}
                         pageIndex={pageIndex}
@@ -102,7 +96,7 @@ export default forwardRef(function Page({ doc, containerRef, pagesRefs, renderer
                         scale={scale}
                     />
                 </>
-            }
+            )}
         </div>
     )
 })

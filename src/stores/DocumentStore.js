@@ -1,6 +1,6 @@
-import { autorun, makeAutoObservable, reaction, runInAction } from "mobx"
-import { collectionUrl, documentViewUrl } from "../utils"
-import { createDownloadUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI } from "../backend/api"
+import { makeAutoObservable, reaction, runInAction } from 'mobx'
+import { collectionUrl, documentViewUrl } from '../utils'
+import { createDownloadUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI } from '../backend/api'
 
 export class DocumentStore {
     id = null
@@ -35,7 +35,7 @@ export class DocumentStore {
 
     hashStore
 
-    constructor (hashStore) {
+    constructor(hashStore) {
         makeAutoObservable(this)
 
         this.hashStore = hashStore
@@ -48,10 +48,7 @@ export class DocumentStore {
             })
         }
 
-        reaction(
-            () => this.pathname,
-            this.loadDocument
-        )
+        reaction(() => this.pathname, this.loadDocument)
 
         reaction(
             () => this.hashStore.hashState?.preview?.c && this.hashStore.hashState?.preview?.i,
@@ -62,12 +59,12 @@ export class DocumentStore {
 
         reaction(
             () => this.hashStore.hashState.tab,
-            (tab => tab && (this.tab = parseInt(tab)))
+            (tab) => tab && (this.tab = parseInt(tab))
         )
 
         reaction(
             () => this.hashStore.hashState.subTab,
-            (subTab => subTab && (this.subTab = parseInt(subTab)))
+            (subTab) => subTab && (this.subTab = parseInt(subTab))
         )
     }
 
@@ -90,9 +87,13 @@ export class DocumentStore {
 
         docAPI(this.pathname)
             .then(this.parseDocumentData)
-            .catch(res => {
+            .catch((res) => {
                 runInAction(() => {
-                    this.error = { status: res.status, statusText: res.statusText, url: res.url }
+                    this.error = {
+                        status: res.status,
+                        statusText: res.statusText,
+                        url: res.url,
+                    }
                 })
             })
             .finally(() => {
@@ -102,7 +103,7 @@ export class DocumentStore {
             })
     }
 
-    parseDocumentData = data => {
+    parseDocumentData = (data) => {
         if (data.id.startsWith('_')) {
             if (data.id.startsWith('_file_')) {
                 this.setFileDocumentAttributes(data)
@@ -115,7 +116,7 @@ export class DocumentStore {
         this.data = data
 
         const ocr = Object.keys(data.content.ocrtext || {}).map((tag) => {
-            return {tag: tag, text: data.content.ocrtext[tag]}
+            return { tag: tag, text: data.content.ocrtext[tag] }
         })
         this.ocrData = ocr
 
@@ -135,12 +136,10 @@ export class DocumentStore {
         return collectionUrl(this.collection)
     }
 
-    setFileDocumentAttributes = data => {
+    setFileDocumentAttributes = (data) => {
         this.digest = data.digest
         this.digestUrl = `${this.collectionBaseUrl}/${data.digest}`
-        this.docRawUrl = createDownloadUrl(
-            `${this.collectionBaseUrl}/${data.digest}`, data.content.filename
-        )
+        this.docRawUrl = createDownloadUrl(`${this.collectionBaseUrl}/${data.digest}`, data.content.filename)
         this.docPreviewUrl = createPreviewUrl(`${this.collectionBaseUrl}/${data.digest}`)
         this.thumbnailSrcSet = createThumbnailSrcSet(`${this.collectionBaseUrl}/${data.digest}`)
         this.urlIsSha = false
@@ -154,11 +153,9 @@ export class DocumentStore {
         this.urlIsSha = false
     }
 
-    setShaDocumentAttributes = data => {
+    setShaDocumentAttributes = (data) => {
         this.digest = data.id
-        this.docRawUrl = createDownloadUrl(
-            `${this.collectionBaseUrl}/${data.id}`, data.content.filename
-        )
+        this.docRawUrl = createDownloadUrl(`${this.collectionBaseUrl}/${data.id}`, data.content.filename)
         this.docPreviewUrl = createPreviewUrl(`${this.collectionBaseUrl}/${data.id}`)
         this.thumbnailSrcSet = createThumbnailSrcSet(`${this.collectionBaseUrl}/${data.id}`)
     }

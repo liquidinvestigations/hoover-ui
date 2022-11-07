@@ -1,4 +1,3 @@
-import React from 'react'
 import Head from 'next/head'
 import { makeStyles } from '@mui/styles'
 
@@ -10,12 +9,11 @@ const statusCodes = {
     500: 'Internal Server Error',
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     error: {
         color: '#000',
         background: '#fff',
-        fontFamily:
-            '-apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", "Fira Sans", Avenir, "Helvetica Neue", "Lucida Grande", sans-serif',
+        fontFamily: '-apple-system, BlinkMacSystemFont, Roboto, "Segoe UI", "Fira Sans", Avenir, "Helvetica Neue", "Lucida Grande", sans-serif',
         height: 'calc(100vh - 56px)',
         textAlign: 'center',
         display: 'flex',
@@ -29,7 +27,7 @@ const useStyles = makeStyles(theme => ({
 
         '@media (min-width: 600px)': {
             height: 'calc(100vh - 64px)',
-        }
+        },
     },
 
     desc: {
@@ -68,22 +66,14 @@ const useStyles = makeStyles(theme => ({
 function Error({ statusCode, title, message }) {
     const classes = useStyles()
 
-    const headTitle =
-        title ||
-        statusCodes[statusCode] ||
-        'An unexpected error has occurred'
+    const headTitle = title || statusCodes[statusCode] || 'An unexpected error has occurred'
 
-    const description =
-        message ||
-        statusCodes[statusCode] ||
-        'An unexpected error has occurred'
+    const description = message || statusCodes[statusCode] || 'An unexpected error has occurred'
 
     return (
         <div className={classes.error}>
             <Head>
-                <title>
-                    {`${statusCode}: ${headTitle}`}
-                </title>
+                <title>{`${statusCode}: ${headTitle}`}</title>
             </Head>
             <div>
                 {statusCode ? <h1 className={classes.h1}>{statusCode}</h1> : null}

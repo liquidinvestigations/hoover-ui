@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from 'react'
+import { memo, useCallback, useEffect, useState } from 'react'
 import lucene from 'lucene'
 import { Box, Chip, FormControl, Tooltip, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
@@ -7,7 +7,7 @@ import { useSearch } from './SearchProvider'
 import { shortenName } from '../../utils'
 import ChipsTree from './ChipsTree'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     treeTitle: {
         marginTop: theme.spacing(1),
     },
@@ -18,7 +18,7 @@ const useStyles = makeStyles(theme => ({
 
         '&:last-child': {
             marginBottom: 0,
-        }
+        },
     },
 
     tooltipChip: {
@@ -35,14 +35,14 @@ const useStyles = makeStyles(theme => ({
 const replaceNode = (parent, node) => {
     if (parent.left === node) {
         if (parent.right) {
-            return {...parent.right, parenthesized: parent.parenthesized}
+            return { ...parent.right, parenthesized: parent.parenthesized }
         } else {
             return null
         }
     } else if (parent.right === node) {
-        return {...parent.left, parenthesized: parent.parenthesized}
+        return { ...parent.left, parenthesized: parent.parenthesized }
     } else {
-        return {...parent}
+        return { ...parent }
     }
 }
 
@@ -63,7 +63,7 @@ const rebuildTree = (parent, node) => {
 function QueryChips() {
     const classes = useStyles()
     const { query, search } = useSearch()
-    const [ parsedQuery, setParsedQuery ] = useState()
+    const [parsedQuery, setParsedQuery] = useState()
 
     useEffect(() => {
         try {
@@ -73,12 +73,17 @@ function QueryChips() {
         }
     }, [query])
 
-    const handleDelete = useCallback(node => {
-        search({ q: lucene.toString(rebuildTree(parsedQuery, node)), page: 1 })
-    }, [parsedQuery, search])
+    const handleDelete = useCallback(
+        (node) => {
+            search({ q: lucene.toString(rebuildTree(parsedQuery, node)), page: 1 })
+        },
+        [parsedQuery, search]
+    )
 
-    const getChip = useCallback(q => {
-        let label, prefix = q.prefix, className = classes.chip
+    const getChip = useCallback((q) => {
+        let label,
+            prefix = q.prefix,
+            className = classes.chip
         if (prefix === '-' || prefix === '!') {
             prefix = null
             className += ' ' + classes.negationChip
@@ -86,16 +91,15 @@ function QueryChips() {
         if (q.field === '<implicit>') {
             label = (
                 <span>
-                    {prefix && <strong>{prefix}{' '}</strong>}
+                    {prefix && <strong>{prefix} </strong>}
                     {shortenName(q.term)}
                 </span>
             )
         } else if (q.term) {
             label = (
                 <span>
-                    {prefix && <strong>{prefix}{' '}</strong>}
-                    <strong>{q.field}:</strong>{' '}
-                    {shortenName(q.term)}
+                    {prefix && <strong>{prefix} </strong>}
+                    <strong>{q.field}:</strong> {shortenName(q.term)}
                 </span>
             )
         } else {
@@ -104,33 +108,38 @@ function QueryChips() {
 
         if (q.similarity || q.proximity || q.boost) {
             return (
-                <Tooltip placement="top" title={(
-                    <>
-                        {q.similarity && <Box><strong>Similarity:</strong>{' '}{q.similarity}</Box>}
-                        {q.proximity && <Box><strong>Proximity:</strong>{' '}{q.proximity}</Box>}
-                        {q.boost && <Box><strong>Boost:</strong>{' '}{q.boost}</Box>}
-                    </>
-                )}>
-                    <Chip
-                        label={label}
-                        className={className + ' ' + classes.tooltipChip}
-                    />
+                <Tooltip
+                    placement="top"
+                    title={
+                        <>
+                            {q.similarity && (
+                                <Box>
+                                    <strong>Similarity:</strong> {q.similarity}
+                                </Box>
+                            )}
+                            {q.proximity && (
+                                <Box>
+                                    <strong>Proximity:</strong> {q.proximity}
+                                </Box>
+                            )}
+                            {q.boost && (
+                                <Box>
+                                    <strong>Boost:</strong> {q.boost}
+                                </Box>
+                            )}
+                        </>
+                    }>
+                    <Chip label={label} className={className + ' ' + classes.tooltipChip} />
                 </Tooltip>
             )
         }
 
-        return (
-            <Chip
-                label={label}
-                className={className}
-            />
-        )
+        return <Chip label={label} className={className} />
     }, [])
 
-    const renderMenu = useCallback(isExpression =>
-        `delete selected ${isExpression ? 'expression' : 'term'}`, [])
+    const renderMenu = useCallback((isExpression) => `delete selected ${isExpression ? 'expression' : 'term'}`, [])
 
-    return query.q && parsedQuery ?
+    return query.q && parsedQuery ? (
         <Box>
             <Typography variant="h6" className={classes.treeTitle}>
                 Query
@@ -144,7 +153,8 @@ function QueryChips() {
                     onExpressionDelete={handleDelete}
                 />
             </FormControl>
-        </Box> : null;
+        </Box>
+    ) : null
 }
 
 export default memo(QueryChips)

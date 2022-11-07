@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
 import { blue, grey } from '@mui/material/colors'
 import { Tooltip } from '@mui/material'
@@ -16,13 +16,13 @@ export default function HistogramChart({ width, height, axisHeight, data, select
         }
     }, [preserveDragArea])
 
-    const getChartPosition = position => {
+    const getChartPosition = (position) => {
         const chartRect = ref.current.getBoundingClientRect()
         const chartScale = width / (chartRect.right - chartRect.left)
         return (position - chartRect.left) * chartScale
     }
 
-    const handleBarClick = bar => event => {
+    const handleBarClick = (bar) => (event) => {
         if (onSelect) {
             onSelect(event, [bar])
         } else if (onClick) {
@@ -30,12 +30,12 @@ export default function HistogramChart({ width, height, axisHeight, data, select
         }
     }
 
-    const handleMouseMove = useCallback(event => {
+    const handleMouseMove = useCallback((event) => {
         event.preventDefault()
         setCurrentDragPosition(getChartPosition(event.clientX))
     }, [])
 
-    const handleMouseUp = startDragPosition => event => {
+    const handleMouseUp = (startDragPosition) => (event) => {
         event.preventDefault()
         window.removeEventListener('mousemove', handleMouseMove)
 
@@ -43,9 +43,9 @@ export default function HistogramChart({ width, height, axisHeight, data, select
         const startPosition = Math.min(startDragPosition, endDragPosition)
         const selectionWidth = Math.abs(startDragPosition - endDragPosition)
 
-        const selected = data?.filter(({ barPosition, barWidth }) => (
-            barPosition + barWidth >= startPosition && barPosition <= startPosition + selectionWidth
-        )).map(({value}) => value)
+        const selected = data
+            ?.filter(({ barPosition, barWidth }) => barPosition + barWidth >= startPosition && barPosition <= startPosition + selectionWidth)
+            .map(({ value }) => value)
 
         if (selected.length) {
             onSelect(event, selected)
@@ -54,7 +54,7 @@ export default function HistogramChart({ width, height, axisHeight, data, select
         }
     }
 
-    const handleMouseDown = event => {
+    const handleMouseDown = (event) => {
         event.preventDefault()
 
         if (onSelect) {
@@ -62,7 +62,7 @@ export default function HistogramChart({ width, height, axisHeight, data, select
             setStartDragPosition(position)
             setCurrentDragPosition(position)
 
-            window.addEventListener('mouseup', handleMouseUp(position), {once: true})
+            window.addEventListener('mouseup', handleMouseUp(position), { once: true })
             window.addEventListener('mousemove', handleMouseMove)
         }
     }
@@ -94,21 +94,23 @@ export default function HistogramChart({ width, height, axisHeight, data, select
                 fill: ${blue[300]};
             }
         `}</style>
-            {data?.map(({label, value, count, barWidth, barHeight, barPosition, labelPosition}, index) =>
+            {data?.map(({ label, value, count, barWidth, barHeight, barPosition, labelPosition }, index) => (
                 <Fragment key={index}>
                     <text
                         className={cn('label', { selected: selected?.includes(value) })}
                         x={labelPosition}
                         y={height - axisHeight / 2}
                         transform={`rotate(-45, ${labelPosition}, ${height - axisHeight / 2})`}
-                        onClick={handleBarClick(value)}
-                    >
+                        onClick={handleBarClick(value)}>
                         {label}
                     </text>
                     <Tooltip
                         placement="top"
-                        title={<>{label}: <strong>{formatThousands(count)}</strong></>}
-                    >
+                        title={
+                            <>
+                                {label}: <strong>{formatThousands(count)}</strong>
+                            </>
+                        }>
                         <rect
                             x={barPosition}
                             y={height - axisHeight - barHeight}
@@ -119,7 +121,7 @@ export default function HistogramChart({ width, height, axisHeight, data, select
                         />
                     </Tooltip>
                 </Fragment>
-            )}
+            ))}
             {startDragPosition && (
                 <rect
                     className="selection"

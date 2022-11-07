@@ -1,8 +1,8 @@
-import React, { memo } from 'react'
+import { memo } from 'react'
 import cn from 'classnames'
 import { Grid, IconButton, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import { formatThousands } from '../../utils';
+import { formatThousands } from '../../utils'
 import SearchSize from './SearchSize'
 import { useSearch } from './SearchProvider'
 import { reactIcons } from '../../constants/icons'
@@ -10,7 +10,7 @@ import { reactIcons } from '../../constants/icons'
 const MAX_PREV_PAGES = 3
 const MAX_NEXT_PAGES = 3
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     pageLink: {
         cursor: 'pointer',
         margin: theme.spacing(1),
@@ -25,9 +25,13 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const createPageArray = (start, count) => Array.from({
-    length: count
-}, (_, i) => i + start)
+const createPageArray = (start, count) =>
+    Array.from(
+        {
+            length: count,
+        },
+        (_, i) => i + start
+    )
 
 function Pagination({ maxCount }) {
     const classes = useStyles()
@@ -39,7 +43,7 @@ function Pagination({ maxCount }) {
 
     const handleNext = () => search({ page: page + 1 })
     const handlePrev = () => search({ page: page - 1 })
-    const handleSet = page => () => search({ page })
+    const handleSet = (page) => () => search({ page })
 
     const pageCount = Math.ceil(Math.min(total, maxCount) / size)
 
@@ -91,44 +95,35 @@ function Pagination({ maxCount }) {
             {total > 0 && (
                 <Grid item container justifyContent="space-between" alignItems="center">
                     <Grid item>
-                        <IconButton
-                            onClick={handlePrev}
-                            disabled={!hasPrev}
-                            data-test="prev-results-page"
-                            size="large">
+                        <IconButton onClick={handlePrev} disabled={!hasPrev} data-test="prev-results-page" size="large">
                             {reactIcons.chevronLeft}
                         </IconButton>
                     </Grid>
                     <Grid item container justifyContent="space-between" style={{ flex: 1 }}>
-                        {Object.entries(pages).map(([group, items]) =>
+                        {Object.entries(pages).map(([group, items]) => (
                             <Grid item key={group}>
-                                {items.map((p, i) =>
+                                {items.map((p, i) => (
                                     <Typography
                                         key={i}
                                         component="a"
                                         variant="caption"
                                         onClick={page !== p ? handleSet(p) : null}
-                                        className={cn(classes.pageLink, { [classes.pageLinkCurrent]: page === p })}
-                                    >
+                                        className={cn(classes.pageLink, { [classes.pageLinkCurrent]: page === p })}>
                                         {p}
                                     </Typography>
-                                )}
+                                ))}
                             </Grid>
-                        )}
+                        ))}
                     </Grid>
                     <Grid item>
-                        <IconButton
-                            onClick={handleNext}
-                            disabled={!hasNext}
-                            data-test="next-results-page"
-                            size="large">
+                        <IconButton onClick={handleNext} disabled={!hasNext} data-test="next-results-page" size="large">
                             {reactIcons.chevronRight}
                         </IconButton>
                     </Grid>
                 </Grid>
             )}
         </Grid>
-    );
+    )
 }
 
 export default memo(Pagination)

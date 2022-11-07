@@ -1,7 +1,7 @@
 import { cloneElement } from 'react'
 import { Box, Tab, Tabs, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import { observer } from "mobx-react-lite"
+import { observer } from 'mobx-react-lite'
 import Expandable from '../Expandable'
 import Preview, { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './Preview'
 import { TabPanel } from './TabPanel'
@@ -11,9 +11,9 @@ import { Text } from './Text'
 import PDFViewer from './pdf-viewer/Dynamic'
 import { createOcrUrl } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
-import { useSharedStore } from "../SharedStoreProvider"
+import { useSharedStore } from '../SharedStoreProvider'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     printTitle: {
         margin: theme.spacing(2),
     },
@@ -33,25 +33,27 @@ export const SubTabs = observer(() => {
     const classes = useStyles()
     const {
         printMode,
-        documentStore: { data, digestUrl, docRawUrl, ocrData, collection, subTab, handleSubTabChange }
+        documentStore: { data, digestUrl, docRawUrl, ocrData, collection, subTab, handleSubTabChange },
     } = useSharedStore()
 
     if (!data || !collection || !ocrData) {
         return null
     }
 
-    const hasPreview = data.content['has-pdf-preview'] || (docRawUrl && data.content['content-type'] && (
-        PREVIEWABLE_MIME_TYPE_SUFFEXES.some(x => data.content['content-type'].endsWith(x))
-    ))
+    const hasPreview =
+        data.content['has-pdf-preview'] ||
+        (docRawUrl && data.content['content-type'] && PREVIEWABLE_MIME_TYPE_SUFFEXES.some((x) => data.content['content-type'].endsWith(x)))
 
-    const tabs = [{
-        name: 'Extracted from file',
-        icon: reactIcons.content,
-        content: <Text content={data.content.text} />,
-    }]
+    const tabs = [
+        {
+            name: 'Extracted from file',
+            icon: reactIcons.content,
+            content: <Text content={data.content.text} />,
+        },
+    ]
 
     tabs.push(
-        ...ocrData.map(({tag, text}) => ({
+        ...ocrData.map(({ tag, text }) => ({
             tag,
             name: (tag.startsWith('translated_') ? '' : 'OCR ') + tag,
             icon: reactIcons.ocr,
@@ -63,30 +65,19 @@ export const SubTabs = observer(() => {
         <>
             {!printMode && tabs.length > 1 && (
                 <Box>
-                    <Tabs
-                        value={subTab}
-                        onChange={handleSubTabChange}
-                        variant="scrollable"
-                        scrollButtons="auto"
-                    >
+                    <Tabs value={subTab} onChange={handleSubTabChange} variant="scrollable" scrollButtons="auto">
                         {tabs.map(({ icon, name }, index) => (
-                            <Tab
-                                key={index}
-                                icon={icon}
-                                label={name}
-                            />
+                            <Tab key={index} icon={icon} label={name} />
                         ))}
                     </Tabs>
                 </Box>
             )}
 
             <Box className={classes.subTab}>
-                {data.content.filetype === 'email' && (
-                    <Email />
-                )}
+                {data.content.filetype === 'email' && <Email />}
 
-                {tabs.map(({tag}, index) => {
-                    if (subTab === index && hasPreview && !tag?.startsWith('translated_')){
+                {tabs.map(({ tag }, index) => {
+                    if (subTab === index && hasPreview && !tag?.startsWith('translated_')) {
                         if (index !== 0 && data.content['content-type'] === 'application/pdf') {
                             return <PDFViewer key={index} url={createOcrUrl(digestUrl, tag)} />
                         } else {
@@ -107,8 +98,7 @@ export const SubTabs = observer(() => {
                                     {cloneElement(reactIcons.contentFiles, { className: classes.icon })}
                                     Files
                                 </>
-                            }
-                        >
+                            }>
                             <Files />
                         </Expandable>
                     </Box>
@@ -117,18 +107,11 @@ export const SubTabs = observer(() => {
                 {tabs.map(({ name, content }, index) => (
                     <Box key={index}>
                         {printMode && tabs.length > 1 && (
-                            <Typography
-                                variant="h5"
-                                className={classes.printTitle}
-                            >
+                            <Typography variant="h5" className={classes.printTitle}>
                                 {name}
                             </Typography>
                         )}
-                        <TabPanel
-                            value={subTab}
-                            index={index}
-                            alwaysVisible={printMode}
-                        >
+                        <TabPanel value={subTab} index={index} alwaysVisible={printMode}>
                             {content}
                         </TabPanel>
                     </Box>

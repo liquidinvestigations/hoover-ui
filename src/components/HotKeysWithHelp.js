@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { HotKeys } from 'react-hotkeys'
 import { makeStyles } from '@mui/styles'
 import { List, ListItem, ListItemText, Modal, Snackbar, Typography } from '@mui/material'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     keyHelp: {
         position: 'absolute',
         top: '50%',
@@ -14,8 +14,8 @@ const useStyles = makeStyles(theme => ({
         padding: theme.spacing(4),
     },
     helpDescription: {
-        marginLeft: theme.spacing(2)
-    }
+        marginLeft: theme.spacing(2),
+    },
 }))
 
 export default function HotKeysWithHelp({ keys, children }) {
@@ -32,7 +32,7 @@ export default function HotKeysWithHelp({ keys, children }) {
         openHelp: {
             key: ['?', 'h'],
             help: 'Open this help',
-            handler: openHelp
+            handler: openHelp,
         },
     }
 
@@ -41,7 +41,7 @@ export default function HotKeysWithHelp({ keys, children }) {
 
     Object.entries(keysWithHelp).forEach(([name, { key, handler }]) => {
         keyMap[name] = key
-        handlers[name] = event => handler(event, setSnackbarMessage)
+        handlers[name] = (event) => handler(event, setSnackbarMessage)
     })
 
     return (
@@ -55,11 +55,9 @@ export default function HotKeysWithHelp({ keys, children }) {
                     <Typography variant="h6">Keyboard shortcuts</Typography>
 
                     <List dense>
-                        {Object.entries(keysWithHelp).map(([ name, { key, help } ]) => (
+                        {Object.entries(keysWithHelp).map(([name, { key, help }]) => (
                             <ListItem key={key}>
-                                <span className="mono">
-                                    {Array.isArray(key) ? key.join(' or ') : key}
-                                </span>
+                                <span className="mono">{Array.isArray(key) ? key.join(' or ') : key}</span>
                                 <ListItemText primary={help} className={classes.helpDescription} />
                             </ListItem>
                         ))}

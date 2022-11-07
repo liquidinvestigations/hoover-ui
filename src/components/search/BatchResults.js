@@ -1,9 +1,8 @@
-import React, { useState } from 'react'
 import { makeStyles } from '@mui/styles'
 import { Box, Typography } from '@mui/material'
 import cn from 'classnames'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     progress: {
         float: 'right',
     },
@@ -15,7 +14,7 @@ const useStyles = makeStyles(theme => ({
     noHits: {
         '& a': {
             color: '#888',
-        }
+        },
     },
     resultLink: {
         display: 'block',
@@ -34,38 +33,38 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const getResultsCount = results => (results.count === undefined ? Infinity : results.count)
+const getResultsCount = (results) => (results.count === undefined ? Infinity : results.count)
 const resultsCompareFn = (a, b) => getResultsCount(b) - getResultsCount(a)
 
 export default function BatchResults({ loading, results, batchSize, offset, terms }) {
     const classes = useStyles()
 
-    const page = offset / batchSize;
-    const total = Math.ceil(terms?.length / batchSize);
-    const progressMessage = `Loading, ${page} of ${total}`;
+    const page = offset / batchSize
+    const total = Math.ceil(terms?.length / batchSize)
+    const progressMessage = `Loading, ${page} of ${total}`
 
     return (
         <Box>
-            {loading &&
-                <Typography className={classes.progress}>{progressMessage}</Typography>
-            }
+            {loading && <Typography className={classes.progress}>{progressMessage}</Typography>}
 
-            {results &&
+            {results && (
                 <ul className={classes.results}>
-                    {results.sort(resultsCompareFn).map(({ term, count, url, error }, index) =>
+                    {results.sort(resultsCompareFn).map(({ term, count, url, error }, index) => (
                         <li key={index} className={cn({ [classes.noHits]: count === 0 })} data-test="result">
                             <Typography>
                                 <a href={url} target="_blank" rel="noreferrer" className={classes.resultLink}>
-                                    {error ? <span className={cn(classes.result, classes.error)}>error</span> :
+                                    {error ? (
+                                        <span className={cn(classes.result, classes.error)}>error</span>
+                                    ) : (
                                         <span className={classes.result}>{count} hits</span>
-                                    }
+                                    )}
                                     {term}
                                 </a>
                             </Typography>
                         </li>
-                    )}
+                    ))}
                 </ul>
-            }
+            )}
         </Box>
     )
 }

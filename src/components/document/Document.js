@@ -7,20 +7,20 @@ import { TabPanel } from './TabPanel'
 import { HTML } from './HTML'
 import { Text } from './Text'
 import { Meta } from './Meta'
-import TagTooltip from './TagTooltip'
+import { TagTooltip } from './TagTooltip'
 import { SubTabs } from './SubTabs'
 import { Tags, getChipColor } from './Tags'
 import Toolbar from './Toolbar'
 import Loading from '../Loading'
-import { useSharedStore } from "../SharedStoreProvider"
+import { useSharedStore } from '../SharedStoreProvider'
 import { useTags } from './TagsProvider'
 import { createOcrUrl, createUploadUrl } from '../../backend/api'
 import { specialTags } from '../../constants/specialTags'
 import { reactIcons } from '../../constants/icons'
 import { getTagIcon } from '../../utils'
-import { observer } from "mobx-react-lite"
+import { observer } from 'mobx-react-lite'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
@@ -92,7 +92,7 @@ export const Document = observer(({ onPrev, onNext }) => {
         user,
         fullPage,
         printMode,
-        documentStore: { data, pathname, loading, collection, digestUrl, docRawUrl, thumbnailSrcSet, tab, handleTabChange }
+        documentStore: { data, pathname, loading, collection, digestUrl, docRawUrl, thumbnailSrcSet, tab, handleTabChange },
     } = useSharedStore()
 
     const { tags, tagsLoading, tagsLocked, handleSpecialTagClick } = useTags()
@@ -120,7 +120,7 @@ export const Document = observer(({ onPrev, onNext }) => {
     }
 
     const ocrData = Object.keys(data.content.ocrtext || {}).map((tag) => {
-        return {tag: tag, text: data.content.ocrtext[tag]}
+        return { tag: tag, text: data.content.ocrtext[tag] }
     })
 
     if (data.content.filetype !== 'folder') {
@@ -148,7 +148,7 @@ export const Document = observer(({ onPrev, onNext }) => {
         })
 
         headerLinks.actions.push(
-            ...ocrData.map(({tag}) => ({
+            ...ocrData.map(({ tag }) => ({
                 href: createOcrUrl(digestUrl, tag),
                 tooltip: `OCR ${tag}`,
                 icon: reactIcons.ocr,
@@ -173,8 +173,9 @@ export const Document = observer(({ onPrev, onNext }) => {
         }
 
         Object.entries(specialTags).forEach(([tag, params]) => {
-            const present = tags.find(current => current.tag === tag && current.public === params.public && current.user === user.username)
-            const count = tags.filter(current => current.tag === tag && current.public === params.public && current.user !== user.username)?.length || null
+            const present = tags.find((current) => current.tag === tag && current.public === params.public && current.user === user.username)
+            const count =
+                tags.filter((current) => current.tag === tag && current.public === params.public && current.user !== user.username)?.length || null
             const link = {
                 icon: present ? reactIcons[params.present.icon] : reactIcons[params.absent.icon],
                 label: present ? params.present.label : params.absent.label,
@@ -182,7 +183,7 @@ export const Document = observer(({ onPrev, onNext }) => {
                 tooltip: params.tooltip,
                 disabled: tagsLocked,
                 onClick: handleSpecialTagClick(present, tag),
-                count: present && count ? count + 1: count,
+                count: present && count ? count + 1 : count,
             }
             if (params.showInToolbar) {
                 headerLinks.tags.push(link)
@@ -198,33 +199,39 @@ export const Document = observer(({ onPrev, onNext }) => {
         indicator: classes.tabsIndicator,
     }
 
-    const tabsData = [{
-        name: data.content.filetype,
-        icon: reactIcons.contentTab,
-        visible: true,
-        padding: 0,
-        content: <SubTabs />,
-    },{
-        name: 'Tags',
-        icon: reactIcons.tagsTab,
-        visible: !printMode && data.content.filetype !== 'folder',
-        content: <Tags toolbarButtons={tagsLinks} />,
-    },{
-        name: 'Meta',
-        icon: reactIcons.metaTab,
-        visible: !printMode,
-        content: <Meta />,
-    },{
-        name: 'HTML',
-        icon: reactIcons.codeTab,
-        visible: !!data.safe_html,
-        content: <HTML html={data.safe_html} />,
-    },{
-        name: 'Headers & Parts',
-        icon: reactIcons.headersTab,
-        visible: !!data.content.tree,
-        content: <Text content={data.content.tree} />,
-    }]
+    const tabsData = [
+        {
+            name: data.content.filetype,
+            icon: reactIcons.contentTab,
+            visible: true,
+            padding: 0,
+            content: <SubTabs />,
+        },
+        {
+            name: 'Tags',
+            icon: reactIcons.tagsTab,
+            visible: !printMode && data.content.filetype !== 'folder',
+            content: <Tags toolbarButtons={tagsLinks} />,
+        },
+        {
+            name: 'Meta',
+            icon: reactIcons.metaTab,
+            visible: !printMode,
+            content: <Meta />,
+        },
+        {
+            name: 'HTML',
+            icon: reactIcons.codeTab,
+            visible: !!data.safe_html,
+            content: <HTML html={data.safe_html} />,
+        },
+        {
+            name: 'Headers & Parts',
+            icon: reactIcons.headersTab,
+            visible: !!data.content.tree,
+            content: <Text content={data.content.tree} />,
+        },
+    ]
 
     // TODO replace with styling
     const emptyTabs = []
@@ -253,7 +260,9 @@ export const Document = observer(({ onPrev, onNext }) => {
 
             {printMode && (
                 <Link href={pathname}>
-                    <a className={classes.printBackLink}>← Back to <b>normal view</b></a>
+                    <a className={classes.printBackLink}>
+                        ← Back to <b>normal view</b>
+                    </a>
                 </Link>
             )}
 
@@ -272,43 +281,45 @@ export const Document = observer(({ onPrev, onNext }) => {
                             </Typography>
                         </Grid>
 
-                        {tags.filter((item, pos, self) =>
-                            self.findIndex(tag => tag.tag === item.tag) === pos)
+                        {tags
+                            .filter((item, pos, self) => self.findIndex((tag) => tag.tag === item.tag) === pos)
                             .map((chip, index) => {
-                                const count = tags.filter(tag => tag.tag === chip.tag).length
+                                const count = tags.filter((tag) => tag.tag === chip.tag).length
                                 return (
                                     <Grid item className={classes.tag} key={index}>
                                         <TagTooltip chip={chip} count={count}>
                                             <Badge badgeContent={count > 1 ? count : null} color="secondary">
                                                 <Chip
                                                     size="small"
-                                                    label={ !!getTagIcon(chip.tag, chip.public) ?
-                                                        <>
-                                                            {cloneElement(getTagIcon(chip.tag, chip.public), {
-                                                                style: {
-                                                                    ...getTagIcon(chip.tag, chip.public).props.style,
-                                                                    marginLeft: -4,
-                                                                    marginTop: -2,
-                                                                    marginRight: 2,
-                                                                    fontSize: 18,
-                                                                    verticalAlign: 'middle',
-                                                                }
-                                                            })}
-                                                            <span style={{ verticalAlign: 'middle' }}>
-                                                                {chip.tag}
-                                                            </span>
-                                                        </> : chip.tag
+                                                    label={
+                                                        !!getTagIcon(chip.tag, chip.public) ? (
+                                                            <>
+                                                                {cloneElement(getTagIcon(chip.tag, chip.public), {
+                                                                    style: {
+                                                                        ...getTagIcon(chip.tag, chip.public).props.style,
+                                                                        marginLeft: -4,
+                                                                        marginTop: -2,
+                                                                        marginRight: 2,
+                                                                        fontSize: 18,
+                                                                        verticalAlign: 'middle',
+                                                                    },
+                                                                })}
+                                                                <span style={{ verticalAlign: 'middle' }}>{chip.tag}</span>
+                                                            </>
+                                                        ) : (
+                                                            chip.tag
+                                                        )
                                                     }
                                                     style={{
                                                         height: 20,
                                                         backgroundColor: getChipColor(chip),
-                                                    }} />
+                                                    }}
+                                                />
                                             </Badge>
                                         </TagTooltip>
                                     </Grid>
                                 )
-                            })
-                        }
+                            })}
                     </Grid>
                 </Grid>
 
@@ -322,21 +333,13 @@ export const Document = observer(({ onPrev, onNext }) => {
             </Grid>
 
             {!printMode && (
-                <Tabs
-                    value={tab}
-                    onChange={handleTabChange}
-                    classes={tabsClasses}
-                    variant="scrollable"
-                    scrollButtons="auto"
-                    indicatorColor="secondary"
-                >
-                    {tabsData.filter(tabData => tabData.visible).map((tabData, index) => (
-                        <StyledTab
-                            key={index}
-                            icon={tabData.icon}
-                            label={tabData.name}
-                        />
-                    ))}
+                <Tabs value={tab} onChange={handleTabChange} classes={tabsClasses} variant="scrollable" scrollButtons="auto" indicatorColor="secondary">
+                    {tabsData
+                        .filter((tabData) => tabData.visible)
+                        .map((tabData, index) => (
+                            <StyledTab key={index} icon={tabData.icon} label={tabData.name} />
+                        ))
+                    }
                     {data.content.filetype == 'folder' &&
                         !data.content.path.includes('//') &&
                         process.env.HOOVER_UPLOADS_ENABLED && [
@@ -347,29 +350,20 @@ export const Document = observer(({ onPrev, onNext }) => {
                 </Tabs>
             )}
 
-            {tabsData.filter(tabData => tabData.visible).map((tabData, index) => (
-                <Box
-                    key={index}
-                    className={index === tab ? classes.activeTab : null}
-                >
-                    {printMode && (
-                        <Typography
-                            variant="h3"
-                            className={classes.printTitle}
-                        >
-                            {tabData.name}
-                        </Typography>
-                    )}
-                    <TabPanel
-                        value={tab}
-                        index={index}
-                        padding={tabData.padding}
-                        alwaysVisible={printMode}
-                    >
-                        {tabData.content}
-                    </TabPanel>
-                </Box>
-            ))}
+            {tabsData
+                .filter((tabData) => tabData.visible)
+                .map((tabData, index) => (
+                    <Box key={index} className={index === tab ? classes.activeTab : null}>
+                        {printMode && (
+                            <Typography variant="h3" className={classes.printTitle}>
+                                {tabData.name}
+                            </Typography>
+                        )}
+                        <TabPanel value={tab} index={index} padding={tabData.padding} alwaysVisible={printMode}>
+                            {tabData.content}
+                        </TabPanel>
+                    </Box>
+                ))}
         </div>
     )
 })

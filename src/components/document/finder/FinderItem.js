@@ -1,12 +1,12 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import cn from 'classnames'
 import { ButtonBase, ListItem, ListItemIcon, ListItemText } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { useRouter } from 'next/router'
 import { getBasePath, getTypeIcon } from '../../../utils'
-import { useSharedStore } from "../../SharedStoreProvider"
+import { useSharedStore } from '../../SharedStoreProvider'
 
-const filenameFor = item => {
+const filenameFor = (item) => {
     if (item.filename) {
         return item.filename
     } else {
@@ -15,10 +15,10 @@ const filenameFor = item => {
     }
 }
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     item: {
-        paddingLeft: theme.spacing(.5),
-        paddingRight: theme.spacing(.5),
+        paddingLeft: theme.spacing(0.5),
+        paddingRight: theme.spacing(0.5),
     },
     active: {
         backgroundColor: '#1e90ff',
@@ -41,8 +41,8 @@ const useStyles = makeStyles(theme => ({
         minWidth: 26,
         '& *': {
             fontSize: 18,
-        }
-    }
+        },
+    },
 }))
 
 export default function FinderItem({ item, active, selected }) {
@@ -60,11 +60,7 @@ export default function FinderItem({ item, active, selected }) {
     }, [isActive, isSelected])
 
     const handleClick = () => {
-        router.push(
-            getBasePath(pathname) + (item.file || item.id),
-            undefined,
-            { shallow: true },
-        )
+        router.push(getBasePath(pathname) + (item.file || item.id), undefined, { shallow: true })
     }
 
     return (
@@ -72,14 +68,9 @@ export default function FinderItem({ item, active, selected }) {
             ref={ref}
             component={ButtonBase}
             onClick={handleClick}
-            className={cn(classes.item, { [classes.active]: isActive, [classes.selected]: isSelected && !isActive })}
-        >
-            <ListItemIcon classes={{ root: classes.iconRoot }}>
-                {getTypeIcon(item.filetype)}
-            </ListItemIcon>
-            <ListItemText classes={{ root: classes.itemRoot, primary: classes.itemText }}>
-                {filenameFor(item)}
-            </ListItemText>
+            className={cn(classes.item, { [classes.active]: isActive, [classes.selected]: isSelected && !isActive })}>
+            <ListItemIcon classes={{ root: classes.iconRoot }}>{getTypeIcon(item.filetype)}</ListItemIcon>
+            <ListItemText classes={{ root: classes.itemRoot, primary: classes.itemText }}>{filenameFor(item)}</ListItemText>
         </ListItem>
     )
 }

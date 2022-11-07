@@ -16,7 +16,6 @@ const handler = async (req, res) => {
         const response = await search(headers, params, type, fieldList, missing, refresh, async, fields.fields, whoAmI.uuid)
         res.json(response)
         res.end()
-
     } catch (e) {
         res.status(e.status || 500)
         res.json(e)

@@ -1,4 +1,4 @@
-import React, { cloneElement, useEffect, useMemo, useRef, useState } from 'react'
+import { cloneElement, useEffect, useMemo, useRef, useState } from 'react'
 import Router from 'next/router'
 import { makeStyles } from '@mui/styles'
 import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Tooltip, Typography } from '@mui/material'
@@ -17,9 +17,9 @@ import SplitPaneLayout from '../SplitPaneLayout'
 import { Document } from '../document/Document'
 import { tooltips } from '../../constants/help'
 import { reactIcons } from '../../constants/icons'
-import { TagsProvider } from "../document/TagsProvider"
+import { TagsProvider } from '../document/TagsProvider'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     error: {
         paddingTop: theme.spacing(3),
     },
@@ -49,15 +49,15 @@ const useStyles = makeStyles(theme => ({
 export default function Search({ collections }) {
     const classes = useStyles()
     const inputRef = useRef()
-    const { query, error, search, searchText, setSearchText, resultsLoading,
-        clearResults, selectedDocData, previewNextDoc, previewPreviousDoc } = useSearch()
+    const { query, error, search, searchText, setSearchText, resultsLoading, clearResults, selectedDocData, previewNextDoc, previewPreviousDoc } =
+        useSearch()
 
     const clearInput = () => {
         setSearchText('')
         inputRef.current.focus()
     }
 
-    const clearSearchResults = url => {
+    const clearSearchResults = (url) => {
         if (url === '/') {
             clearInput()
             clearResults()
@@ -76,29 +76,31 @@ export default function Search({ collections }) {
         setLoading(resultsLoading)
     }, [resultsLoading, setLoading])
 
-    const maxResultsCount = useMemo(() => collections
-            .filter(collection => query.collections?.includes(collection.name))
-            .reduce((accumulator, collection) => {
-                if (!isNaN(collection.max_result_window) && collection.max_result_window < accumulator) {
-                    return collection.max_result_window
-                }
-                return accumulator
-            }, DEFAULT_MAX_RESULTS),
+    const maxResultsCount = useMemo(
+        () =>
+            collections
+                .filter((collection) => query.collections?.includes(collection.name))
+                .reduce((accumulator, collection) => {
+                    if (!isNaN(collection.max_result_window) && collection.max_result_window < accumulator) {
+                        return collection.max_result_window
+                    }
+                    return accumulator
+                }, DEFAULT_MAX_RESULTS),
         [collections, query]
     )
 
-    const handleSubmit = event => {
+    const handleSubmit = (event) => {
         event.preventDefault()
         search({ page: 1 })
     }
 
-    const handleInputKey = event => {
+    const handleInputKey = (event) => {
         if (event.key === 'Enter' && !event.shiftKey) {
             handleSubmit(event)
         }
     }
 
-    const handleInputChange = event => {
+    const handleInputChange = (event) => {
         setSearchText(event.target.value)
     }
 
@@ -123,20 +125,14 @@ export default function Search({ collections }) {
 
                 <Grid item style={{ flex: 1 }}>
                     <SplitPaneLayout
-                        left={
-                            drawerPinned && <div ref={drawerRef} />
-                        }
-                        onLeftChange={size => setDrawerWidth(size)}
+                        left={drawerPinned && <div ref={drawerRef} />}
+                        onLeftChange={(size) => setDrawerWidth(size)}
                         defaultSizeLeft={drawerWidth}
                         right={
                             <TagsProvider>
-                                <Document
-                                    onPrev={previewPreviousDoc}
-                                    onNext={previewNextDoc}
-                                />
+                                <Document onPrev={previewPreviousDoc} onNext={previewNextDoc} />
                             </TagsProvider>
-                        }
-                    >
+                        }>
                         <div className={classes.main} ref={!drawerPinned ? drawerRef : undefined}>
                             <Grid container>
                                 <Grid item sm={12}>
@@ -154,34 +150,27 @@ export default function Search({ collections }) {
                                                     autoFocus
                                                     fullWidth
                                                     multiline
-                                                    InputProps={{ endAdornment:
-                                                        <InputAdornment position="end">
-                                                            <IconButton onClick={clearInput} size="small">
-                                                                {cloneElement(reactIcons.cancel, { className: classes.clear })}
-                                                            </IconButton>
-                                                        </InputAdornment>,
-                                                    }} />
+                                                    InputProps={{
+                                                        endAdornment: (
+                                                            <InputAdornment position="end">
+                                                                <IconButton onClick={clearInput} size="small">
+                                                                    {cloneElement(reactIcons.cancel, { className: classes.clear })}
+                                                                </IconButton>
+                                                            </InputAdornment>
+                                                        ),
+                                                    }}
+                                                />
                                             </Grid>
 
                                             <Grid item style={{ marginLeft: 20, marginBottom: 7 }}>
-                                                <Tooltip
-                                                    interactive="true"
-                                                    classes={{ tooltip: classes.noMaxWidth }}
-                                                    title={tooltips.search}
-                                                >
-                                                    {React.cloneElement(reactIcons.help, { className: classes.help })}
+                                                <Tooltip interactive="true" classes={{ tooltip: classes.noMaxWidth }} title={tooltips.search}>
+                                                    {cloneElement(reactIcons.help, { className: classes.help })}
                                                 </Tooltip>
                                             </Grid>
 
                                             <Grid item style={{ marginLeft: 20 }}>
                                                 <FormControl variant="standard" margin="normal">
-                                                    <Button
-                                                        variant="contained"
-                                                        color="primary"
-                                                        type="submit"
-                                                        size="large"
-                                                        endIcon={reactIcons.search}
-                                                    >
+                                                    <Button variant="contained" color="primary" type="submit" size="large" endIcon={reactIcons.search}>
                                                         Search
                                                     </Button>
                                                 </FormControl>
@@ -204,7 +193,11 @@ export default function Search({ collections }) {
                                 </Grid>
                             </Grid>
 
-                            {error && <Typography color="error" className={classes.error}>{error}</Typography>}
+                            {error && (
+                                <Typography color="error" className={classes.error}>
+                                    {error}
+                                </Typography>
+                            )}
 
                             <Grid container>
                                 <Grid item sm={12}>
@@ -216,5 +209,5 @@ export default function Search({ collections }) {
                 </Grid>
             </Grid>
         </HotKeys>
-    );
+    )
 }

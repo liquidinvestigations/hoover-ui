@@ -15,8 +15,8 @@ const moveToFilters = (query, param, value) => {
     const data = value || query[param]
     if (Array.isArray(data)) {
         query.filters[param] = {
-            include: data.filter(v => !v.startsWith('~')),
-            exclude: data.filter(v => v.startsWith('~')),
+            include: data.filter((v) => !v.startsWith('~')),
+            exclude: data.filter((v) => v.startsWith('~')),
         }
     } else {
         query.filters[param] = data
@@ -50,14 +50,13 @@ export default function fixLegacyQuery(query) {
         }
     }
 
-    ['date', 'date-created', 'filetype', 'lang', 'email-domains',
-        'from.keyword', 'to.keyword', 'path-parts', 'tags'].forEach(field => {
+    ;['date', 'date-created', 'filetype', 'lang', 'email-domains', 'from.keyword', 'to.keyword', 'path-parts', 'tags'].forEach((field) => {
         if (query[field]) {
             moveToFilters(query, field)
         }
     })
-    const privateTags = Object.keys(query).filter(tag => /^priv-tags\./.test(tag))
-    privateTags.forEach(tag => {
+    const privateTags = Object.keys(query).filter((tag) => /^priv-tags\./.test(tag))
+    privateTags.forEach((tag) => {
         moveToFilters(query, 'priv-tags', query[tag])
     })
 }

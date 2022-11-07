@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export default function CanvasLayer({ page, width, height, rotation, scale }) {
     const canvasRef = useRef()
@@ -38,10 +38,7 @@ export default function CanvasLayer({ page, width, height, rotation, scale }) {
     }, [rotation, scale])
 
     return (
-        <div
-            className="canvasWrapper"
-            style={{ width, height }}
-        >
+        <div className="canvasWrapper" style={{ width, height }}>
             <canvas
                 ref={canvasRef}
                 style={{

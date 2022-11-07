@@ -1,6 +1,6 @@
-import { useSearch } from '../search/SearchProvider'
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { DateTime } from 'luxon'
+import { useSearch } from '../search/SearchProvider'
 import { formatsLabel, formatsValue } from '../search/filters/DateHistogramFilter'
 import Loading from '../Loading'
 import HistogramChart from '../search/filters/HistogramChart'
@@ -16,33 +16,32 @@ export default function Histogram() {
     const { aggregations, query, search, aggregationsLoading } = useSearch()
 
     const handleClick = (event, bar) => {
-        window.open(createSearchUrl({
-                format: 'year',
-                interval: 'month',
-                term: bar
-            },
-            'date',
-            query.collections,
-            {
-                histogram: { date: true }
-            }
-        ))
+        window.open(
+            createSearchUrl(
+                {
+                    format: 'year',
+                    interval: 'month',
+                    term: bar,
+                },
+                'date',
+                query.collections,
+                {
+                    histogram: { date: true },
+                }
+            )
+        )
     }
 
-    const formatLabel = value => DateTime
-        .fromISO(value, { setZone: true })
-        .toFormat(formatsLabel.year)
+    const formatLabel = (value) => DateTime.fromISO(value, { setZone: true }).toFormat(formatsLabel.year)
 
-    const formatValue = value => DateTime
-        .fromISO(value, { setZone: true })
-        .toFormat(formatsValue.year)
+    const formatValue = (value) => DateTime.fromISO(value, { setZone: true }).toFormat(formatsValue.year)
 
     const data = useMemo(() => {
         const buckets = aggregations?.date?.values.buckets
 
         if (buckets) {
             let missingBarsCount = 0
-            const elements = buckets.map(({key_as_string, doc_count}, index) => {
+            const elements = buckets.map(({ key_as_string, doc_count }, index) => {
                 if (index) {
                     const unit = `years`
                     const prevDate = DateTime.fromISO(buckets[index - 1].key_as_string)
@@ -53,37 +52,37 @@ export default function Histogram() {
                     label: formatLabel(key_as_string),
                     value: formatValue(key_as_string),
                     count: doc_count,
-                    missingBarsCount
+                    missingBarsCount,
                 }
             })
 
             const xScale = chartWidth / ((elements.length + missingBarsCount) * (barWidth + barMargin) - barMargin)
-            const maxCount = Math.max(...buckets.map(({doc_count}) => doc_count))
+            const maxCount = Math.max(...buckets.map(({ doc_count }) => doc_count))
 
-            return elements.map(({label, value, count, missingBarsCount}, index) => ({
+            return elements.map(({ label, value, count, missingBarsCount }, index) => ({
                 label,
                 value,
                 count,
                 barWidth: barWidth * xScale,
-                barHeight: (chartHeight - axisHeight) * Math.log(count + 1) / Math.log(maxCount + 1),
+                barHeight: ((chartHeight - axisHeight) * Math.log(count + 1)) / Math.log(maxCount + 1),
                 barPosition: (index + missingBarsCount) * (barWidth + barMargin) * xScale,
-                labelPosition: ((index + missingBarsCount) * (barWidth + barMargin) + barWidth / 2) * xScale
+                labelPosition: ((index + missingBarsCount) * (barWidth + barMargin) + barWidth / 2) * xScale,
             }))
         }
     }, [aggregations])
 
-    return (
-        aggregationsLoading.date ? <Loading /> : (
-            <div style={{ padding: '20px 20px 0 20px' }}>
-                <HistogramChart
-                    width={chartWidth}
-                    height={chartHeight}
-                    axisHeight={axisHeight}
-                    data={data}
-                    onClick={handleClick}
-                    preserveDragArea={false}
-                />
-            </div>
-        )
+    return aggregationsLoading.date ? (
+        <Loading />
+    ) : (
+        <div style={{ padding: '20px 20px 0 20px' }}>
+            <HistogramChart
+                width={chartWidth}
+                height={chartHeight}
+                axisHeight={axisHeight}
+                data={data}
+                onClick={handleClick}
+                preserveDragArea={false}
+            />
+        </div>
     )
 }

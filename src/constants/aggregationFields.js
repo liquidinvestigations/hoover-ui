@@ -42,22 +42,22 @@ export const aggregationCategories = {
     size: {
         label: 'File Sizes',
         icon: 'categorySize',
-        filters: ['size', 'word-count']
+        filters: ['size', 'word-count'],
     },
     ocr: {
         label: 'OCR',
         icon: 'ocr',
-        filters: ['ocr', 'ocrpdf', 'ocrimage']
+        filters: ['ocr', 'ocrpdf', 'ocrimage'],
     },
     imageAi: {
         label: 'Image AI',
         icon: 'imageAi',
-        filters: ['detected-objects.object.keyword', 'image-classes.class.keyword']
+        filters: ['detected-objects.object.keyword', 'image-classes.class.keyword'],
     },
     tables: {
         label: 'Tables',
         icon: 'typeXls',
-        filters: [ "is-table", "table-columns", "table-sheets", "table-row-count", "table-col-count"]
+        filters: ['is-table', 'table-columns', 'table-sheets', 'table-row-count', 'table-col-count'],
     },
 }
 
@@ -178,7 +178,7 @@ export const aggregationFields = {
                 key: '1000000000000-*',
                 label: '>= 1 TB',
             },*/
-        ]
+        ],
     },
     'word-count': {
         filterLabel: 'Word count',
@@ -217,19 +217,19 @@ export const aggregationFields = {
                 key: '1000000-*',
                 label: '>= 1,000,000',
             },
-        ]
+        ],
     },
-    'ocr': {
+    ocr: {
         filterLabel: 'OCRed',
         chipLabel: 'OCRed',
         type: 'term-or',
     },
-    'ocrpdf': {
+    ocrpdf: {
         filterLabel: 'OCRed PDF/Office Document',
         chipLabel: 'OCRed PDF/Office Document',
         type: 'term-or',
     },
-    'ocrimage': {
+    ocrimage: {
         filterLabel: 'OCRed Image',
         chipLabel: 'OCRed Image',
         type: 'term-or',
@@ -284,22 +284,22 @@ export const aggregationFields = {
         chipLabel: 'Translated To',
         type: 'term-or',
     },
-    "is-table": {
+    'is-table': {
         filterLabel: 'Is Table',
         chipLabel: 'Is Table',
         type: 'term-or',
     },
-    "table-columns": {
+    'table-columns': {
         filterLabel: 'Table Column Name',
         chipLabel: 'Table Column Name',
         type: 'term-or',
     },
-    "table-sheets": {
+    'table-sheets': {
         filterLabel: 'Table Sheet Name',
         chipLabel: 'Table Sheet Name',
         type: 'term-or',
     },
-    "table-row-count": {
+    'table-row-count': {
         filterLabel: 'Row Count',
         chipLabel: 'Table Row Count',
         type: 'range-or',
@@ -336,9 +336,9 @@ export const aggregationFields = {
                 key: '1000000-*',
                 label: '>= 1,000,000',
             },
-        ]
+        ],
     },
-    "table-col-count": {
+    'table-col-count': {
         filterLabel: 'Column Count',
         chipLabel: 'Table Column Count',
         type: 'range-or',
@@ -367,9 +367,9 @@ export const aggregationFields = {
                 key: '100-*',
                 label: '>= 100',
             },
-        ]
+        ],
     },
-    "table-sheet-count": {
+    'table-sheet-count': {
         filterLabel: 'Sheet Count',
         chipLabel: 'Table Sheet Count',
         type: 'range-or',
@@ -398,6 +398,6 @@ export const aggregationFields = {
                 key: '100-*',
                 label: '>= 100',
             },
-        ]
+        ],
     },
 }

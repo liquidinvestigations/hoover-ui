@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import { memo } from 'react'
 import cn from 'classnames'
 import { makeStyles } from '@mui/styles'
 import { Chip } from '@mui/material'
@@ -8,7 +8,7 @@ import { SORTABLE_FIELDS } from '../../../constants/general'
 import { reactIcons } from '../../../constants/icons'
 import { titleCase } from '../../../utils'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     icon: {
         transition: 'transform .2s ease-in-out',
     },
@@ -31,13 +31,13 @@ function SortingChips() {
     const { query, search } = useSearch()
 
     const order = query.order
-    const changeOrder = newOrder => {
+    const changeOrder = (newOrder) => {
         search({ order: newOrder, page: 1 })
     }
 
-    const handleClick = field => () => {
+    const handleClick = (field) => () => {
         const index = order.findIndex(([v]) => v === field)
-        const [,direction] = order[index]
+        const [, direction] = order[index]
         const newOrder = [...order]
         if (direction) {
             newOrder[index] = [field]
@@ -47,14 +47,14 @@ function SortingChips() {
         changeOrder(newOrder)
     }
 
-    const handleDelete = field => () => {
+    const handleDelete = (field) => () => {
         const index = order.findIndex(([v]) => v === field)
         const newOrder = [...order]
         newOrder.splice(index, 1)
         changeOrder(newOrder)
     }
 
-    const handleDragEnd = result => {
+    const handleDragEnd = (result) => {
         if (result.destination) {
             const newOrder = [...order]
             const [reorderedItem] = newOrder.splice(result.source.index, 1)
@@ -66,11 +66,11 @@ function SortingChips() {
     return (
         <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="sorting" direction="horizontal">
-                {provided => (
+                {(provided) => (
                     <div {...provided.droppableProps} ref={provided.innerRef} className={classes.chips}>
-                        {order?.map(([field, direction = 'asc'], index) =>
+                        {order?.map(([field, direction = 'asc'], index) => (
                             <Draggable key={field} draggableId={field} index={index}>
-                                {provided => (
+                                {(provided) => (
                                     <Chip
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
@@ -82,13 +82,13 @@ function SortingChips() {
                                         onDelete={handleDelete(field)}
                                         classes={{
                                             icon: cn(classes.icon, {
-                                                [classes.iconDown]: direction === 'desc'
-                                            })
+                                                [classes.iconDown]: direction === 'desc',
+                                            }),
                                         }}
                                     />
                                 )}
                             </Draggable>
-                        )}
+                        ))}
                         {provided.placeholder}
                     </div>
                 )}

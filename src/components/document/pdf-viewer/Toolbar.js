@@ -1,4 +1,4 @@
-import React, { cloneElement, memo, useEffect, useRef, useState } from 'react'
+import { cloneElement, memo, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
 import screenfull from 'screenfull'
 import { Grid, IconButton, Menu, MenuItem, TextField, Toolbar as MuiToolbar, Tooltip } from '@mui/material'
@@ -6,7 +6,7 @@ import { makeStyles } from '@mui/styles'
 import { zoomIn, zoomOut } from './zooming'
 import { reactIcons } from '../../../constants/icons'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     toolbar: {
         backgroundColor: theme.palette.grey[100],
         borderColor: theme.palette.grey[400],
@@ -22,8 +22,8 @@ const useStyles = makeStyles(theme => ({
         display: 'inline-flex',
         alignItems: 'center',
         '& span': {
-            marginLeft: theme.spacing(0.5)
-        }
+            marginLeft: theme.spacing(0.5),
+        },
     },
     pageNumber: {
         width: 60,
@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
         '& .MuiOutlinedInput-inputMarginDense': {
             textAlign: 'right',
             padding: '5px 8px',
-        }
+        },
     },
     scaleSelect: {
         width: 120,
@@ -51,15 +51,27 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPages, firstPageData, pageMargin,
-                     scale, setScale, toggleSidePanel, fullscreenClass, fullscreenExitClass}) {
+function Toolbar({
+    viewerRef,
+    containerRef,
+    pagesRefs,
+    initialPageIndex,
+    numPages,
+    firstPageData,
+    pageMargin,
+    scale,
+    setScale,
+    toggleSidePanel,
+    fullscreenClass,
+    fullscreenExitClass,
+}) {
     const classes = useStyles()
     const pageInputRef = useRef()
 
     const [anchorEl, setAnchorEl] = useState(null)
-    const handleScaleMenuClick = event => setAnchorEl(event.currentTarget)
+    const handleScaleMenuClick = (event) => setAnchorEl(event.currentTarget)
     const handleScaleMenuClose = () => setAnchorEl(null)
-    const handleScaleSet = newScale => () => {
+    const handleScaleSet = (newScale) => () => {
         handleScaleMenuClose()
         const containerWidth = containerRef.current.clientWidth - pageMargin
         const containerHeight = containerRef.current.clientHeight - pageMargin
@@ -71,22 +83,27 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
             setScale(newScale)
         }
         const pageSpaces = initialPageIndex * 27
-        const scrollTopPages = (containerRef.current.scrollTop - pageSpaces) * newScale / scale
+        const scrollTopPages = ((containerRef.current.scrollTop - pageSpaces) * newScale) / scale
         containerRef.current.scrollTop = scrollTopPages + pageSpaces
     }
 
-    const scrollToPage = index => containerRef.current.scrollTop = pagesRefs[index].current.offsetTop
+    const scrollToPage = (index) => (containerRef.current.scrollTop = pagesRefs[index].current.offsetTop)
 
     const onPrevPage = () => scrollToPage(initialPageIndex - 1)
     const onNextPage = () => scrollToPage(initialPageIndex + 1)
     const onPageFocus = () => pageInputRef.current.select()
     const onPageBlur = () => onPageChange()
-    const onPageKey = event => {
+    const onPageKey = (event) => {
         if (event.keyCode === 13) {
             onPageChange()
             pageInputRef.current.blur()
         }
-        if (!Array(10).fill().map((_, i) => ''+i).includes(event.key)) {
+        if (
+            !Array(10)
+                .fill()
+                .map((_, i) => '' + i)
+                .includes(event.key)
+        ) {
             event.preventDefault()
         }
     }
@@ -109,22 +126,17 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
     const onFullScreenExit = () => screenfull.exit()
 
     const popperProps = {
-        container: viewerRef.current
+        container: viewerRef.current,
     }
 
     return (
         <>
-            <MuiToolbar variant="dense" classes={{root: classes.toolbar}}>
+            <MuiToolbar variant="dense" classes={{ root: classes.toolbar }}>
                 <Grid container justifyContent="space-between">
                     <Grid item>
                         <Tooltip title="Side panel" PopperProps={popperProps}>
                             <span>
-                                <IconButton
-                                    size="small"
-                                    onClick={toggleSidePanel}
-                                    className={classes.toolbarIcon}
-                                    style={{ marginRight: 50 }}
-                                >
+                                <IconButton size="small" onClick={toggleSidePanel} className={classes.toolbarIcon} style={{ marginRight: 50 }}>
                                     {reactIcons.viewerSidePanel}
                                 </IconButton>
                             </span>
@@ -135,8 +147,7 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
                                     size="small"
                                     onClick={onPrevPage}
                                     disabled={!firstPageData || initialPageIndex === 0}
-                                    className={classes.toolbarIcon}
-                                >
+                                    className={classes.toolbarIcon}>
                                     {reactIcons.arrowUp}
                                 </IconButton>
                             </span>
@@ -147,8 +158,7 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
                                     size="small"
                                     onClick={onNextPage}
                                     disabled={!firstPageData || initialPageIndex === numPages - 1}
-                                    className={classes.toolbarIcon}
-                                >
+                                    className={classes.toolbarIcon}>
                                     {reactIcons.arrowDown}
                                 </IconButton>
                             </span>
@@ -169,59 +179,34 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
                                     />
                                 </span>
                             </Tooltip>
-                            <span>
-                                of
-                            </span>
-                            <span>
-                                {numPages}
-                            </span>
+                            <span>of</span>
+                            <span>{numPages}</span>
                         </div>
                     </Grid>
                     <Grid item>
                         <Tooltip title="Zoom out" PopperProps={popperProps}>
                             <span>
-                                <IconButton
-                                    size="small"
-                                    onClick={onZoomOut}
-                                    className={classes.toolbarIcon}
-                                    disabled={!firstPageData}
-                                >
+                                <IconButton size="small" onClick={onZoomOut} className={classes.toolbarIcon} disabled={!firstPageData}>
                                     {reactIcons.zoomOut}
                                 </IconButton>
                             </span>
                         </Tooltip>
                         <Tooltip title="Zoom in" PopperProps={popperProps}>
                             <span>
-                                <IconButton
-                                    size="small"
-                                    onClick={onZoomIn}
-                                    className={classes.toolbarIcon}
-                                    disabled={!firstPageData}
-                                >
+                                <IconButton size="small" onClick={onZoomIn} className={classes.toolbarIcon} disabled={!firstPageData}>
                                     {reactIcons.zoomIn}
                                 </IconButton>
                             </span>
                         </Tooltip>
                         <Tooltip title="Scale" PopperProps={popperProps}>
-                            <div className={cn(
-                                    'MuiInputBase-root',
-                                    'MuiOutlinedInput-root',
-                                    'MuiInputBase-formControl',
-                                    classes.scaleSelect,
-                                    {
-                                        'Mui-disabled': !firstPageData
-                                    }
-                                )}
-                                onClick={!!firstPageData ? handleScaleMenuClick : null}
-                            >
-                                <span className={cn(
-                                    'MuiInputBase-input',
-                                    'MuiOutlinedInput-input',
-                                )}>
-                                    {Math.round(scale * 100) + '%'}
-                                </span>
+                            <div
+                                className={cn('MuiInputBase-root', 'MuiOutlinedInput-root', 'MuiInputBase-formControl', classes.scaleSelect, {
+                                    'Mui-disabled': !firstPageData,
+                                })}
+                                onClick={!!firstPageData ? handleScaleMenuClick : null}>
+                                <span className={cn('MuiInputBase-input', 'MuiOutlinedInput-input')}>{Math.round(scale * 100) + '%'}</span>
                                 {cloneElement(reactIcons.dropDown, {
-                                    className: cn('MuiSelect-icon', 'MuiSelect-iconOutlined')
+                                    className: cn('MuiSelect-icon', 'MuiSelect-iconOutlined'),
                                 })}
                             </div>
                         </Tooltip>
@@ -229,20 +214,12 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
                     {screenfull.isEnabled && (
                         <Grid item>
                             <Tooltip title="Full screen" PopperProps={popperProps}>
-                                <IconButton
-                                    size="small"
-                                    onClick={onFullScreen}
-                                    className={fullscreenClass}
-                                >
+                                <IconButton size="small" onClick={onFullScreen} className={fullscreenClass}>
                                     {reactIcons.fullscreen}
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title="Exit full screen" PopperProps={popperProps}>
-                                <IconButton
-                                    size="small"
-                                    onClick={onFullScreenExit}
-                                    className={fullscreenExitClass}
-                                >
+                                <IconButton size="small" onClick={onFullScreenExit} className={fullscreenExitClass}>
                                     {reactIcons.fullscreenExit}
                                 </IconButton>
                             </Tooltip>
@@ -251,13 +228,7 @@ function Toolbar({ viewerRef, containerRef, pagesRefs, initialPageIndex, numPage
                 </Grid>
             </MuiToolbar>
 
-            <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleScaleMenuClose}
-                disableScrollLock={true}
-                {...popperProps}
-            >
+            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleScaleMenuClose} disableScrollLock={true} {...popperProps}>
                 <MenuItem onClick={handleScaleSet(1)}>Original</MenuItem>
                 <MenuItem onClick={handleScaleSet('page')}>Page fit</MenuItem>
                 <MenuItem onClick={handleScaleSet('width')}>Page width</MenuItem>

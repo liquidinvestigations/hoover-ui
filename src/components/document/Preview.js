@@ -1,8 +1,8 @@
-import React, { memo } from 'react'
+import { memo } from 'react'
 import { makeStyles } from '@mui/styles'
 import PDFViewer from './pdf-viewer/Dynamic'
 import TIFFViewer from './TIFFViewer'
-import { useSharedStore } from "../SharedStoreProvider"
+import { useSharedStore } from '../SharedStoreProvider'
 
 // List copy/pasted from https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
 // and then ran through ` grep -o '[^ /]\+/[^ ]\+' | sort ` - only image, audio, video are here
@@ -38,7 +38,7 @@ export const PREVIEWABLE_MIME_TYPE_SUFFEXES = [
     '/x-troff-msvideo',
 ]
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     preview: {
         height: '50vh',
         overflow: 'hidden',
@@ -66,7 +66,7 @@ function Preview() {
     return (
         <div className={classes.preview}>
             <embed
-                style={{ objectFit: 'contain'}}
+                style={{ objectFit: 'contain' }}
                 src={docRawUrl}
                 type={data.content['content-type']}
                 height="100%"

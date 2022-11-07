@@ -1,9 +1,8 @@
-import React from 'react'
 import { Grid, IconButton, Toolbar as MuiToolbar, Tooltip } from '@mui/material'
 import { reactIcons } from '../../../constants/icons'
 import { makeStyles } from '@mui/styles'
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     toolbar: {
         borderColor: theme.palette.grey[400],
         borderBottomStyle: 'solid',
@@ -17,12 +16,12 @@ const useStyles = makeStyles(theme => ({
 export default function SideToolbar({ viewerRef, currentTab, onTabSwitch }) {
     const classes = useStyles()
 
-    const openTab = tab => () => {
+    const openTab = (tab) => () => {
         onTabSwitch(tab)
     }
 
     const popperProps = {
-        container: viewerRef.current
+        container: viewerRef.current,
     }
 
     return (
@@ -30,41 +29,29 @@ export default function SideToolbar({ viewerRef, currentTab, onTabSwitch }) {
             <Grid container justifyContent="flex-start">
                 <Grid item>
                     <Tooltip title="Thumbnails" PopperProps={popperProps}>
-                            <span>
-                                <IconButton
-                                    size="small"
-                                    className={classes.toolbarIcon}
-                                    onClick={openTab('thumbnails')}
-                                >
-                                    {reactIcons.thumbnails}
-                                </IconButton>
-                            </span>
+                        <span>
+                            <IconButton size="small" className={classes.toolbarIcon} onClick={openTab('thumbnails')}>
+                                {reactIcons.thumbnails}
+                            </IconButton>
+                        </span>
                     </Tooltip>
                 </Grid>
                 <Grid item>
                     <Tooltip title="Bookmarks" PopperProps={popperProps}>
-                            <span>
-                                <IconButton
-                                    size="small"
-                                    className={classes.toolbarIcon}
-                                    onClick={openTab('bookmarks')}
-                                >
-                                    {reactIcons.contentTab}
-                                </IconButton>
-                            </span>
+                        <span>
+                            <IconButton size="small" className={classes.toolbarIcon} onClick={openTab('bookmarks')}>
+                                {reactIcons.contentTab}
+                            </IconButton>
+                        </span>
                     </Tooltip>
                 </Grid>
                 <Grid item>
                     <Tooltip title="Attachments" PopperProps={popperProps}>
-                            <span>
-                                <IconButton
-                                    size="small"
-                                    className={classes.toolbarIcon}
-                                    onClick={openTab('attachments')}
-                                >
-                                    {reactIcons.attachment}
-                                </IconButton>
-                            </span>
+                        <span>
+                            <IconButton size="small" className={classes.toolbarIcon} onClick={openTab('attachments')}>
+                                {reactIcons.attachment}
+                            </IconButton>
+                        </span>
                     </Tooltip>
                 </Grid>
             </Grid>
