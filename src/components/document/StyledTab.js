@@ -8,6 +8,9 @@ const StyledTab = withStyles(
         labelIcon: {
             minHeight: 48,
         },
+        textColorPrimary: {
+            color: theme.palette.primary.contrastText,
+        },
         selected: {
             color: theme.palette.text.primary,
             backgroundColor: theme.palette.background.default,

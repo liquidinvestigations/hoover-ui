@@ -3,7 +3,7 @@ import cn from 'classnames'
 import { IconButton, Paper, Popper, TableCell, TableRow, Tooltip } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { useSearch } from './SearchProvider'
-import { useHashState } from '../HashStateProvider'
+import { useSharedStore } from "../SharedStoreProvider"
 import { createDownloadUrl, createThumbnailSrc } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
 import {
@@ -60,7 +60,7 @@ export default function ResultsTableRow({ hit, index }) {
     const start = 1 + (query.page - 1) * query.size
 
     const nodeRef = useRef()
-    const { hashState, setHashState } = useHashState()
+    const { hashState, setHashState } = useSharedStore().hashStore
 
     const url = documentViewUrl(hit)
     const fields = hit._source || {}

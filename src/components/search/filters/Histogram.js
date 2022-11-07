@@ -8,7 +8,7 @@ import HistogramChart from './HistogramChart'
 import IntervalSelect from './IntervalSelect'
 import Pagination from './Pagination'
 import { useSearch } from '../SearchProvider'
-import { useHashState } from '../../HashStateProvider'
+import { useSharedStore } from "../../SharedStoreProvider"
 import { formatsLabel, formatsValue } from './DateHistogramFilter'
 import { DATE_FORMAT, DEFAULT_INTERVAL } from '../../../constants/general'
 import { daysInMonth, getClosestInterval } from '../../../utils'
@@ -43,7 +43,7 @@ function Histogram({ title, field }) {
     const classes = useStyles()
     const { aggregations, query, search, aggregationsLoading } = useSearch()
 
-    const { hashState, setHashState } = useHashState()
+    const { hashState, setHashState } = useSharedStore().hashStore
     const [open, setOpen] = useState(false)
     useEffect(() => {
         if (hashState?.histogram?.[field]) {
