@@ -1,7 +1,7 @@
 import React from 'react'
 import Head from 'next/head'
 import ProgressIndicator, { ProgressIndicatorProvider } from './ProgressIndicator'
-import Header from './Header'
+import { Header } from './Header'
 import ErrorBoundary from './ErrorBoundary'
 
 export default function Layout({ children }) {

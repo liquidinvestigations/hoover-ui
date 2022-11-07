@@ -3,8 +3,7 @@ import Head from 'next/head'
 import { Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import SplitPane from 'react-split-pane'
-import { useDocument } from './DocumentProvider'
-import Document  from './Document'
+import { Document } from './Document'
 import Finder from './finder/Finder'
 import Locations from '../Locations'
 import SplitPaneLayout from '../SplitPaneLayout'
@@ -12,6 +11,7 @@ import HotKeysWithHelp from '../HotKeysWithHelp'
 import { useSharedStore } from "../SharedStoreProvider"
 import Error from '../../../pages/_error'
 import { copyMetadata, shortenName } from '../../utils'
+import { TagsProvider } from "./TagsProvider"
 
 const useStyles = makeStyles(theme => ({
     splitPane: {
@@ -47,12 +47,13 @@ const useStyles = makeStyles(theme => ({
 
 export default function DocPage() {
     const classes = useStyles()
-    const user = useSharedStore().user
-
     const {
-        data, loading, error, printMode,
-        digest, digestUrl, urlIsSha,
-    } = useDocument()
+        user,
+        printMode,
+        documentStore: {
+            data, loading, error, digest, digestUrl, urlIsSha
+        }
+    } = useSharedStore()
 
     if (error) {
         return (
@@ -69,7 +70,7 @@ export default function DocPage() {
     }
 
     const infoPane = (
-        <>
+        <TagsProvider>
             {!digest ? <Document /> :
                 <SplitPaneLayout
                     container={false}
@@ -80,13 +81,17 @@ export default function DocPage() {
                     <Document />
                 </SplitPaneLayout>
             }
-        </>
+        </TagsProvider>
     )
 
     let content
 
     if (printMode) {
-        content = <Document />
+        content = (
+            <TagsProvider>
+                <Document />
+            </TagsProvider>
+        )
     } else {
         content = urlIsSha ?
             <>

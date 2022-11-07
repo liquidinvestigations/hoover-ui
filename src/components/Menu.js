@@ -1,12 +1,13 @@
-import React, { memo } from 'react'
+import React from 'react'
+import { observer } from "mobx-react-lite"
 import Link from 'next/link'
 import { Button } from '@mui/material'
 import { useRouter } from 'next/router'
 import { useSharedStore } from "./SharedStoreProvider"
 
-function Menu() {
+export const Menu = observer(() => {
     const router = useRouter()
-    const user = useSharedStore().user
+    const { user } = useSharedStore()
 
     const { query } = router
     const printMode = query.print && query.print !== 'false'
@@ -115,6 +116,4 @@ function Menu() {
             }
         </>
     )
-}
-
-export default memo(Menu)
+})

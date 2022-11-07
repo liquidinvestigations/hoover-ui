@@ -1,12 +1,12 @@
-import React, { memo, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { Table, TableBody, TableCell, TableRow } from '@mui/material'
 import { makeStyles } from '@mui/styles'
+import { observer } from "mobx-react-lite"
 import LinkMenu from './LinkMenu'
-import { useDocument } from './DocumentProvider'
-import { useHashState } from '../HashStateProvider'
 import { formatDateTime } from '../../utils'
 import { createSearchUrl } from '../../queryUtils'
+import { useSharedStore } from "../SharedStoreProvider"
 
 const useStyles = makeStyles(theme => ({
     preWrap: {
@@ -47,10 +47,13 @@ const tableFields = {
     }
 }
 
-function Email() {
+export const Email = observer(() => {
     const classes = useStyles()
-    const { hashState } = useHashState()
-    const { data, collection, digest, printMode } = useDocument()
+    const {
+        printMode,
+        hashStore: { hashState },
+        documentStore: { data, collection, digest }
+    } = useSharedStore()
 
     const [menuPosition, setMenuPosition] = useState(null)
     const [currentLink, setCurrentLink] = useState(null)
@@ -136,6 +139,4 @@ function Email() {
             />
         </>
     )
-}
-
-export default memo(Email)
+})

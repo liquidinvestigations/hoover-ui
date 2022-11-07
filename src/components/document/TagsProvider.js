@@ -1,14 +1,14 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { useDocument } from './DocumentProvider'
 import { useSearch } from '../search/SearchProvider'
 import { publicTagsList } from '../../constants/specialTags'
 import { createTag, deleteTag, tags as tagsAPI, updateTag } from '../../backend/api'
+import { useSharedStore } from "../SharedStoreProvider"
 
 const TagsContext = createContext({})
 
-export function TagsProvider({children}) {
-    const { digestUrl } = useDocument()
+    export function TagsProvider({children}) {
     const { addTagToRefreshQueue } = useSearch()
+    const { digestUrl } = useSharedStore().documentStore
 
     const [tags, setTags] = useState([])
     const [tagsLocked, setTagsLocked] = useState(false)

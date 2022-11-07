@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactPlaceholder from 'react-placeholder'
 import { useSearch } from './SearchProvider'
-import ResultItem from './ResultItem'
+import { ResultItem } from './ResultItem'
 import { documentViewUrl } from '../../utils'
 
 export default function ResultsList() {

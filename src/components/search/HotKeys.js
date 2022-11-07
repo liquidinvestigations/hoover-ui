@@ -1,13 +1,14 @@
 import React, { useMemo } from 'react'
-import { useSearch } from './SearchProvider'
-import { useHashState } from '../HashStateProvider'
-import { useDocument } from '../document/DocumentProvider'
-import HotKeysWithHelp from '../HotKeysWithHelp'
 import { copyMetadata, documentViewUrl } from '../../utils'
+import HotKeysWithHelp from '../HotKeysWithHelp'
+import { useSharedStore } from "../SharedStoreProvider"
+import { useSearch } from './SearchProvider'
 
 export default function HotKeys({ children, inputRef  }) {
-    const { hashState } = useHashState()
-    const { data } = useDocument()
+    const {
+        hashStore: { hashState },
+        documentStore: { data },
+    } = useSharedStore()
     const { previewNextDoc, previewPreviousDoc } = useSearch()
     const isInputFocused = () => inputRef.current === document.activeElement
 

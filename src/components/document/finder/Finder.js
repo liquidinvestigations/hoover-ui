@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { makeStyles } from '@mui/styles'
 import FinderColumn from './FinderColumn'
-import { useDocument } from '../DocumentProvider'
 import ErrorBoundary from '../../ErrorBoundary'
 import { doc as docAPI } from '../../../backend/api'
 import { getBasePath } from '../../../utils'
+import { useSharedStore } from "../../SharedStoreProvider"
 
 const parentLevels = 3
 
@@ -56,7 +56,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Finder() {
     const classes = useStyles()
-    const { data, pathname, loading } = useDocument()
+    const { data, pathname, loading } = useSharedStore().documentStore
 
     const [active, setActive] = useState()
     const [columns, setColumns] = useState([])

@@ -1,10 +1,16 @@
 import React from 'react'
 import { SearchProvider } from '../src/components/search/SearchProvider'
+import { useSharedStore } from "../src/components/SharedStoreProvider"
 import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
 import { collections as collectionsAPI } from '../src/backend/api'
 import Insights from '../src/components/insights/Insights'
 
 export default function InsightsPage({ collections, serverQuery }) {
+    const store = useSharedStore()
+
+    store.collections = collections
+    store.serverQuery = serverQuery
+
     return (
         <SearchProvider serverQuery={serverQuery}>
             <Insights collections={collections} />

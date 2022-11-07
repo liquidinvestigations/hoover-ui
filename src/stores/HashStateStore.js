@@ -1,28 +1,41 @@
 import qs from "qs"
-import { makeAutoObservable, reaction } from "mobx"
+import { autorun, makeAutoObservable, reaction } from "mobx"
+import { createObservableHistory } from "mobx-observable-history"
 import { rollupParams, unwindParams } from "../queryUtils"
 
+let navigation
+
+if (typeof window !== "undefined") {
+    navigation = createObservableHistory()
+}
+
 export class HashStateStore {
-    state = {}
+    hashState = {}
 
     constructor () {
         makeAutoObservable(this)
 
-        reaction(
-            () => typeof window !== "undefined" && window.location.hash,
-            (hash => {
-                this.state = unwindParams(qs.parse(hash.substring(1)))
+        if (typeof window !== "undefined") {
+            autorun(() => {
+                const { hash } = navigation.location
+
+                if (hash) {
+                    this.hashState = unwindParams(qs.parse(hash.substring(1)))
+                }
             })
-        )
+
+            reaction(
+                () => navigation.location.hash,
+                (hash => {
+                    this.hashState = unwindParams(qs.parse(hash.substring(1)))
+                })
+            )
+        }
     }
 
-    setState = (params, pushHistory = true) => {
-        this.state = {...this.state, ...params}
-        const hash = qs.stringify(rollupParams(this.state))
-        if (pushHistory) {
-            location.hash = hash
-        } else {
-            history.replaceState(undefined, undefined, `#${hash}`)
-        }
+    setHashState = (params, pushHistory = true) => {
+        this.hashState = {...this.hashState, ...params}
+        const hash = qs.stringify(rollupParams(this.hashState))
+        navigation.merge({ hash }, !pushHistory)
     }
 }

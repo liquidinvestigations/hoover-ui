@@ -5,6 +5,16 @@ import { DocumentStore } from "./DocumentStore"
 export class SharedStore {
     user = null
 
+    collections = []
+
+    limits = null
+
+    fullPage = false
+
+    printMode = false
+
+    serverQuery = null
+
     hashStore = null
 
     documentStore = null
