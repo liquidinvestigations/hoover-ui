@@ -1,7 +1,8 @@
-import React, { cloneElement, memo, useEffect, useRef, useState } from 'react'
+import React, { cloneElement, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
 import { DateTime } from 'luxon'
 import { makeStyles } from '@mui/styles'
+import { observer } from "mobx-react-lite"
 import {
     Box,
     Card,
@@ -15,7 +16,6 @@ import {
     Typography
 } from '@mui/material'
 import Loading from '../Loading'
-import { useHashState } from '../HashStateProvider'
 import { useSharedStore } from "../SharedStoreProvider"
 import {
     getPreviewParams,
@@ -133,10 +133,12 @@ const useStyles = makeStyles(theme => ({
 
 const timeMs = () => new Date().getTime()
 
-function ResultItem({ hit, url, index }) {
+export const ResultItem = observer(({ hit, url, index }) =>  {
     const classes = useStyles()
-    const user = useSharedStore().user
-    const { hashState, setHashState } = useHashState()
+    const {
+        user,
+        hashStore: { hashState, setHashState },
+    } = useSharedStore()
 
     const isPreview = hit._collection === hashState.preview?.c && hit._id === hashState.preview?.i
     const unsearchable = !!hashState.preview
@@ -434,6 +436,4 @@ function ResultItem({ hit, url, index }) {
             </CardContent>
         </Card>
     )
-}
-
-export default memo(ResultItem)
+})

@@ -1,16 +1,17 @@
-import React, { cloneElement, memo } from 'react'
+import { cloneElement } from 'react'
 import { Box, Tab, Tabs, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
+import { observer } from "mobx-react-lite"
 import Expandable from '../Expandable'
 import Preview, { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './Preview'
-import { useDocument } from './DocumentProvider'
-import TabPanel from './TabPanel'
-import Email from './Email'
-import Files from './Files'
-import Text from './Text'
+import { TabPanel } from './TabPanel'
+import { Email } from './Email'
+import { Files } from './Files'
+import { Text } from './Text'
 import PDFViewer from './pdf-viewer/Dynamic'
 import { createOcrUrl } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
+import { useSharedStore } from "../SharedStoreProvider"
 
 const useStyles = makeStyles(theme => ({
     printTitle: {
@@ -28,9 +29,12 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function SubTabs() {
+export const SubTabs = observer(() => {
     const classes = useStyles()
-    const { data, digestUrl, docRawUrl, ocrData, printMode, collection, subTab, handleSubTabChange } = useDocument()
+    const {
+        printMode,
+        documentStore: { data, digestUrl, docRawUrl, ocrData, collection, subTab, handleSubTabChange }
+    } = useSharedStore()
 
     if (!data || !collection || !ocrData) {
         return null
@@ -132,6 +136,4 @@ function SubTabs() {
             </Box>
         </>
     )
-}
-
-export default memo(SubTabs)
+})

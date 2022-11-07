@@ -1,12 +1,13 @@
-import React, { memo, useState } from 'react'
+import { useState } from 'react'
+import { observer } from "mobx-react-lite"
 import Link from 'next/link'
 import { Box, Table, TableBody, TableCell, TableRow } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import { useDocument } from './DocumentProvider'
 import Loading from '../Loading'
 import { humanFileSize } from '../../utils'
 import { reactIcons } from '../../constants/icons'
 import { createDownloadUrl, doc as docAPI } from '../../backend/api'
+import { useSharedStore } from "../SharedStoreProvider"
 
 const useStyles = makeStyles(theme => ({
     box: {
@@ -25,9 +26,12 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function Files() {
+export const Files = observer(() => {
     const classes = useStyles()
-    const { data, collectionBaseUrl, docRawUrl, pathname, fullPage } = useDocument()
+    const {
+        fullPage,
+        documentStore: { data, collectionBaseUrl, pathname }
+    } = useSharedStore()
 
     const [files, setFiles] = useState(data.children)
     const [currentPage, setCurrentPage] = useState(data.children_page)
@@ -95,6 +99,4 @@ function Files() {
             </Table>
         </Box>
     )
-}
-
-export default memo(Files)
+})

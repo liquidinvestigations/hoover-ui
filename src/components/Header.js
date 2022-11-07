@@ -1,9 +1,10 @@
-import React, { memo } from 'react'
+import React from 'react'
+import { observer } from "mobx-react-lite"
 import Link from 'next/link'
 import { makeStyles } from '@mui/styles'
 import { AppBar, Toolbar, Typography } from '@mui/material'
 import { useSharedStore } from "./SharedStoreProvider"
-import Menu from './Menu'
+import { Menu } from './Menu'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -18,9 +19,9 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-function Header() {
+export const Header = observer(() => {
     const classes = useStyles()
-    const user = useSharedStore().user
+    const { user } = useSharedStore()
 
     return (
         <div className={classes.root}>
@@ -44,6 +45,4 @@ function Header() {
             </AppBar>
         </div>
     )
-}
-
-export default memo(Header)
+})

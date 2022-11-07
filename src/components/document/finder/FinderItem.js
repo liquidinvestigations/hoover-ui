@@ -3,9 +3,8 @@ import cn from 'classnames'
 import { ButtonBase, ListItem, ListItemIcon, ListItemText } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { useRouter } from 'next/router'
-import { useDocument } from '../DocumentProvider'
-import { reactIcons } from '../../../constants/icons'
 import { getBasePath, getTypeIcon } from '../../../utils'
+import { useSharedStore } from "../../SharedStoreProvider"
 
 const filenameFor = item => {
     if (item.filename) {
@@ -50,7 +49,7 @@ export default function FinderItem({ item, active, selected }) {
     const classes = useStyles()
     const ref = useRef()
     const router = useRouter()
-    const { pathname } = useDocument()
+    const { pathname } = useSharedStore().documentStore
     const isActive = item.id === active.id
     const isSelected = item.id === selected.id
 

@@ -2,7 +2,7 @@ import React, { memo } from 'react'
 import { makeStyles } from '@mui/styles'
 import PDFViewer from './pdf-viewer/Dynamic'
 import TIFFViewer from './TIFFViewer'
-import { useDocument } from './DocumentProvider'
+import { useSharedStore } from "../SharedStoreProvider"
 
 // List copy/pasted from https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
 // and then ran through ` grep -o '[^ /]\+/[^ ]\+' | sort ` - only image, audio, video are here
@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => ({
 
 function Preview() {
     const classes = useStyles()
-    const { data, docRawUrl, docPreviewUrl } = useDocument()
+    const { data, docRawUrl, docPreviewUrl } = useSharedStore().documentStore
 
     if (data.content['has-pdf-preview']) {
         return <PDFViewer url={docPreviewUrl} />

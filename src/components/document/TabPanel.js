@@ -1,4 +1,3 @@
-import React, { memo } from 'react'
 import { Box } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 
@@ -13,7 +12,7 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-const TabPanel = ({ children, value, index, padding = 2, alwaysVisible = false, tabClass, ...other }) => {
+export const TabPanel = ({ children, value, index, padding = 2, alwaysVisible = false, tabClass, ...other }) => {
     const classes = useStyles()
 
     return (
@@ -31,5 +30,3 @@ const TabPanel = ({ children, value, index, padding = 2, alwaysVisible = false, 
         </div>
     )
 }
-
-export default memo(TabPanel)

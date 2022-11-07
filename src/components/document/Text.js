@@ -7,12 +7,10 @@ const useStyles = makeStyles({
     },
 })
 
-function Text({ content }) {
+export const Text = ({ content }) => {
     const classes = useStyles()
 
     return !content ?
         <i>No text</i> :
         <pre className={classes.preWrap}>{content.trim()}</pre>
 }
-
-export default memo(Text)

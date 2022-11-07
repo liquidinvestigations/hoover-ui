@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { makeStyles } from '@mui/styles'
 import {
@@ -9,9 +9,10 @@ import {
     ListItemText,
     Typography
 } from '@mui/material'
+import { observer } from "mobx-react-lite"
 import LinkMenu from './LinkMenu'
-import { useDocument } from './DocumentProvider'
 import { flatten, formatDateTime, getLanguageName, humanFileSize, shortenName } from '../../utils'
+import { useSharedStore } from "../SharedStoreProvider"
 
 const useStyles = makeStyles(theme => ({
     icon: {
@@ -88,9 +89,9 @@ const tableFields = {
     },
 }
 
-const Meta = () => {
+export const Meta = observer(() => {
     const classes = useStyles()
-    const { data, collection, collectionBaseUrl } = useDocument()
+    const { data, collection, collectionBaseUrl } = useSharedStore().documentStore
 
     const [menuPosition, setMenuPosition] = useState(null)
     const [currentLink, setCurrentLink] = useState(null)
@@ -234,6 +235,4 @@ const Meta = () => {
             />
         </>
     )
-}
-
-export default memo(Meta)
+})

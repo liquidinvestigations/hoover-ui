@@ -1,27 +1,21 @@
 import React from 'react'
 import { useRouter } from 'next/router'
 import DocPage from '../../../src/components/document/DocPage'
-import { DocumentProvider } from '../../../src/components/document/DocumentProvider'
+import { useSharedStore } from "../../../src/components/SharedStoreProvider"
 import getAuthorizationHeaders from '../../../src/backend/getAuthorizationHeaders'
 import { collections as collectionsAPI } from '../../../src/backend/api'
 
 export default function Doc({ collections }) {
     const router = useRouter()
+    const store = useSharedStore()
     const { query } = router
     const printMode = query.print && query.print !== 'false'
 
-    return (
-        <DocumentProvider
-            collection={query.collection}
-            collections={collections}
-            id={query.id}
-            path={query.path}
-            printMode={printMode}
-            fullPage
-        >
-            <DocPage />
-        </DocumentProvider>
-    )
+    store.collections = collections
+    store.printMode = printMode
+    store.fullPage = true
+
+    return <DocPage />
 }
 
 export async function getServerSideProps({ req }) {

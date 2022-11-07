@@ -3,11 +3,10 @@ import qs from 'qs'
 import { mergeWith } from 'lodash'
 import { Menu, MenuItem } from '@mui/material'
 import { NestedMenuItem } from 'mui-nested-menu'
-import { useDocument } from './DocumentProvider'
 import { useSearch } from '../search/SearchProvider'
-import { useHashState } from '../HashStateProvider'
 import { buildSearchQuerystring, createSearchParams, createSearchUrl, rollupParams } from '../../queryUtils'
 import { aggregationFields } from '../../constants/aggregationFields'
+import { useSharedStore } from "../SharedStoreProvider"
 
 function customizer(objValue, srcValue) {
     if (Array.isArray(objValue)) {
@@ -18,15 +17,17 @@ function customizer(objValue, srcValue) {
 const formats = ['year', 'month', 'week', 'day']
 
 export default function LinkMenu({ link, anchorPosition, onClose }) {
-    const { hashState } = useHashState()
     const { query, search } = useSearch()
-    const { collection, digest } = useDocument()
+    const {
+        hashStore: { hashState },
+        documentStore: { collection, digest },
+    } = useSharedStore()
 
     const hash = { preview: { c: collection, i: digest }, tab: hashState.tab }
 
     const getCollections = () => Array.from(new Set([...(query?.collections || []), collection]))
 
-    const handleAddSearch = (newTab = false, term) => () => {
+    const handleAddSearch = (newTab, term) => () => {
         onClose()
 
         const newTerm = term || link.term

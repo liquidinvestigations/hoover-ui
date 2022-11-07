@@ -1,8 +1,12 @@
-import { makeAutoObservable, reaction } from "mobx"
+import { autorun, makeAutoObservable, reaction } from "mobx"
 import { collectionUrl, documentViewUrl } from "../utils"
 import { createDownloadUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI } from "../backend/api"
 
 export class DocumentStore {
+    id = null
+
+    collection = null
+
     data = null
 
     error = null
@@ -31,12 +35,19 @@ export class DocumentStore {
 
     hashStore
 
-    collectionBaseUrl
-
     constructor (hashStore) {
         this.hashStore = hashStore
 
+        const hashState = this.hashStore.hashState
+
         makeAutoObservable(this)
+
+        autorun(() => {
+            if (hashState.preview) {
+                this.setDocument(hashState.preview.c, hashState.preview.i)
+                this.loadDocument()
+            }
+        })
 
         reaction(
             () => this.pathname,
@@ -44,26 +55,34 @@ export class DocumentStore {
         )
 
         reaction(
-            () => this.hashStore.state?.tab,
-            (tab => tab && (this.tab = tab))
+            () => ({ collection: hashState.preview?.c, id: hashState.preview?.i }),
+            (({ collection, id }) => {
+                collection && id && this.setDocument(collection, id)
+            })
         )
 
         reaction(
-            () => this.hashStore.state?.subTab,
-            (subTab => subTab && (this.subTab = subTab))
+            () => hashState.tab,
+            (tab => tab && (this.tab = parseInt(tab)))
+        )
+
+        reaction(
+            () => hashState.subTab,
+            (subTab => subTab && (this.subTab = parseInt(subTab)))
         )
     }
 
-    setDocument = ({ collection, id, path }) => {
-        this.pathname = path || documentViewUrl({ _collection: collection, _id: id })
-        this.collectionBaseUrl = collectionUrl(collection)
+    setDocument = (collection, id) => {
+        this.collection = collection
+        this.id = id
+        this.pathname = documentViewUrl({ _collection: collection, _id: id })
     }
 
     loadDocument = () => {
         this.data = null
         this.error = null
         this.loading = true
-        this.tab = parseInt(this.hashStore.state?.tab) || 0
+        this.tab = parseInt(this.hashStore.hashState.tab) || 0
 
         if (!this.pathname.includes('_file_') && !this.pathname.includes('_directory_')) {
             this.digestUrl = this.pathname
@@ -97,7 +116,7 @@ export class DocumentStore {
         })
         this.ocrData = ocr
 
-        const subTabState = parseInt(this.hashStore.state?.subTab)
+        const subTabState = parseInt(this.hashStore.hashState?.subTab)
         if (!isNaN(subTabState)) {
             this.subTab = subTabState
         } else {
@@ -107,6 +126,10 @@ export class DocumentStore {
                 this.subTab = 0
             }
         }
+    }
+
+    get collectionBaseUrl() {
+        return collectionUrl(this.collection)
     }
 
     setFileDocumentAttributes = data => {

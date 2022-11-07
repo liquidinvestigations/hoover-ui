@@ -80,6 +80,9 @@ export default function AnnotationLayer({ page, pageIndex, containerRef, pagesRe
                     externalLinkTarget: 2,
                     externalLinkRel: 'nofollow',
                     externalLinkEnabled: false,
+                    addLinkAttributes: (element, url) => {
+                        element.href = `javascript:alert('${url}');`
+                    },
                     getDestinationHash: dest => {
                         if (typeof dest === 'string') {
                             if (dest.length > 0) {

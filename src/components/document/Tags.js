@@ -1,4 +1,4 @@
-import React, { cloneElement, memo, useEffect, useMemo, useState } from 'react'
+import React, { cloneElement, useEffect, useMemo, useState } from 'react'
 import {
     Autocomplete,
     Box,
@@ -17,9 +17,9 @@ import {
 } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { blue } from '@mui/material/colors'
+import { observer } from "mobx-react-lite"
 import Loading from '../Loading'
 import TagTooltip from './TagTooltip'
-import { useDocument } from './DocumentProvider'
 import { useTags } from './TagsProvider'
 import { useSharedStore } from "../SharedStoreProvider"
 import { specialTagsList } from '../../constants/specialTags'
@@ -78,13 +78,14 @@ const useStyles = makeStyles(theme => ({
 
 export const getChipColor = chip => chip.public ? blue[200] : undefined
 
-function Tags({ toolbarButtons }) {
+export const Tags = observer(({ toolbarButtons }) => {
     const classes = useStyles()
-    const user = useSharedStore().user
-
     const {
-        digestUrl, printMode, collections
-    } = useDocument()
+        user,
+        printMode,
+        collections,
+        documentStore: { digestUrl }
+    } = useSharedStore()
 
     const {
         tags, tagsLocked, tagsLoading, tagsError,
@@ -398,6 +399,4 @@ function Tags({ toolbarButtons }) {
                 </Box>
             )}
         </>;
-}
-
-export default memo(Tags)
+})
