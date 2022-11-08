@@ -1,4 +1,17 @@
-export const availableColumns = {
+export type ResultColumnFormat = 'array' | 'boolean' | 'date' | 'icon' | 'size' | 'string' | 'tags' | 'thumbnail'
+
+export interface ResultColumns {
+    [field: string]: {
+        label: string
+        align: 'center' | 'left' | 'right'
+        sortable: boolean
+        hidden: boolean
+        format: ResultColumnFormat
+        path: string
+    }
+}
+
+export const availableColumns: ResultColumns = {
     filetype: {
         label: 'Filetype',
         align: 'center',

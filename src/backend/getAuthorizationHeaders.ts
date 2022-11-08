@@ -1,4 +1,4 @@
-export default function getAuthorizationHeaders(req) {
+export default function getAuthorizationHeaders(req: { headers: Record<string, string> }): Record<string, string> {
     return {
         cookie: req.headers.cookie,
         ...Object.fromEntries(

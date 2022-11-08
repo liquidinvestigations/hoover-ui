@@ -1,6 +1,6 @@
 import { memo, useEffect, useState } from 'react'
-import { Button, Grid, List, ListItem } from '@mui/material'
-import DatePicker from '@mui/lab/DatePicker'
+import { Button, Grid, List, ListItem, TextField } from '@mui/material'
+import { DatePicker } from '@mui/x-date-pickers'
 import { DATE_FORMAT } from '../../../constants/general'
 import { reactIcons } from '../../../constants/icons'
 
@@ -44,10 +44,11 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange, loading }) {
         <List disablePadding>
             <ListItem>
                 <DatePicker
+                    renderInput={(props) => <TextField {...props} />}
                     value={from}
                     label={from ? null : emptyLabel}
                     labelFunc={labelFunc(from)}
-                    format={DATE_FORMAT}
+                    inputFormat={DATE_FORMAT}
                     onChange={handleFromChange}
                     maxDate={to}
                     openTo="year"
@@ -61,10 +62,11 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange, loading }) {
 
             <ListItem>
                 <DatePicker
+                    renderInput={(props) => <TextField {...props} />}
                     value={to}
                     label={to ? null : emptyLabel}
                     labelFunc={labelFunc(to)}
-                    format={DATE_FORMAT}
+                    inputFormat={DATE_FORMAT}
                     minDate={from}
                     onChange={handleToChange}
                     openTo="year"

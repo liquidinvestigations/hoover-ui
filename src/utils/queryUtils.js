@@ -1,7 +1,7 @@
 import qs from 'qs'
 import { DateTime } from 'luxon'
 import { daysInMonth } from './utils'
-import { aggregationFields } from './constants/aggregationFields'
+import { aggregationFields } from '../constants/aggregationFields'
 
 export const defaultSearchParams = {
     page: 1,

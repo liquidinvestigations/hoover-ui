@@ -1,5 +1,5 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { formatTitleCase } from '../../utils'
+import { formatTitleCase } from '../../utils/utils'
 import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles((theme) => ({

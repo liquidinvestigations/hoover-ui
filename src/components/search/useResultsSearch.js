@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { getPreviewParams } from '../../utils'
-import { search as searchAPI } from '../../api'
+import { getPreviewParams } from '../../utils/utils'
+import { search as searchAPI } from '../../utils/api'
 import { asyncSearch as asyncSearchAPI } from '../../backend/api'
 
 export default function useResultsSearch(query, previewOnLoad, setPreviewOnLoad, setHashState) {
@@ -64,7 +64,6 @@ export default function useResultsSearch(query, previewOnLoad, setPreviewOnLoad,
 
     useEffect(() => {
         let timeout
-
         ;(async () => {
             const prevTaskResults = resultsTask
 

@@ -11,7 +11,7 @@ import { useSearch } from '../SearchProvider'
 import { useSharedStore } from '../../SharedStoreProvider'
 import { formatsLabel, formatsValue } from './DateHistogramFilter'
 import { DATE_FORMAT, DEFAULT_INTERVAL } from '../../../constants/general'
-import { daysInMonth, getClosestInterval } from '../../../utils'
+import { daysInMonth, getClosestInterval } from '../../../utils/utils'
 import { reactIcons } from '../../../constants/icons'
 
 const chartWidth = 300

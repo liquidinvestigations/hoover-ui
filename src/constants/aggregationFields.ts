@@ -61,7 +61,17 @@ export const aggregationCategories = {
     },
 }
 
-export const aggregationFields = {
+export interface AggregationFields {
+    [field: string]: {
+        filterLabel: string
+        chipLabel: string
+        type: string
+        bucketsMax?: boolean
+        buckets?: { key: string; label: string }[]
+    }
+}
+
+export const aggregationFields: AggregationFields = {
     tags: {
         filterLabel: 'Public tags',
         chipLabel: 'Public tag',

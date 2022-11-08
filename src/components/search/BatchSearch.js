@@ -6,7 +6,7 @@ import Loading from '../Loading'
 import BatchResults from './BatchResults'
 import CollectionsFilter from './filters/CollectionsFilter'
 import { reactIcons } from '../../constants/icons'
-import { createSearchUrl } from '../../queryUtils'
+import { createSearchUrl } from '../../utils/queryUtils'
 import { batch } from '../../backend/api'
 
 const useStyles = makeStyles((theme) => ({

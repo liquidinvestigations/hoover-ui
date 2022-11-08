@@ -9,7 +9,7 @@ import SplitPaneLayout from '../SplitPaneLayout'
 import HotKeysWithHelp from '../HotKeysWithHelp'
 import { useSharedStore } from '../SharedStoreProvider'
 import Error from '../../../pages/_error'
-import { copyMetadata, shortenName } from '../../utils'
+import { copyMetadata, shortenName } from '../../utils/utils'
 import { TagsProvider } from './TagsProvider'
 
 const useStyles = makeStyles((theme) => ({

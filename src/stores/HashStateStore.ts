@@ -1,16 +1,25 @@
 import qs from 'qs'
-import { autorun, makeAutoObservable, reaction, runInAction } from 'mobx'
-import { createObservableHistory } from 'mobx-observable-history'
-import { rollupParams, unwindParams } from '../queryUtils'
+import { makeAutoObservable, reaction, runInAction } from 'mobx'
+import { createObservableHistory, ObservableHistory } from 'mobx-observable-history'
+import { rollupParams, unwindParams } from '../utils/queryUtils'
 
-let navigation
+let navigation: ObservableHistory
 
 if (typeof window !== 'undefined') {
     navigation = createObservableHistory()
 }
 
+export interface HashState {
+    preview?: {
+        c: string
+        i: string
+    }
+    tab?: string
+    subTab?: string
+}
+
 export class HashStateStore {
-    hashState = {}
+    hashState: HashState = {}
 
     constructor() {
         makeAutoObservable(this)
@@ -33,7 +42,7 @@ export class HashStateStore {
         }
     }
 
-    setHashState = (params, pushHistory = true) => {
+    setHashState = (params: Record<string, string>, pushHistory = true) => {
         runInAction(() => {
             this.hashState = { ...this.hashState, ...params }
         })

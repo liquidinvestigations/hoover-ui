@@ -7,7 +7,7 @@ import TaskTable from './TaskTable'
 import SplitPaneLayout from '../SplitPaneLayout'
 import AggregationsTable from './AggregationsTable'
 import { useSearch } from '../search/SearchProvider'
-import { humanFileSize } from '../../utils'
+import { humanFileSize } from '../../utils/utils'
 import { collectionsInsights } from '../../backend/api'
 import Histogram from './Histogram'
 

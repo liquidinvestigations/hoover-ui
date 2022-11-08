@@ -6,3 +6,4 @@
 /.npmrc
 /.coverage
 /.env.local
+/next-env.d.ts

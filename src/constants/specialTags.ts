@@ -1,4 +1,24 @@
-export const specialTags = {
+export interface SpecialTags {
+    [tag: string]: {
+        color: string
+        public: boolean
+        tooltip: string
+        present: {
+            icon: string
+            color: string
+            label?: string
+        }
+        absent: {
+            icon: string
+            color: string
+            label?: string
+        }
+        showInToolbar: boolean
+        showInTagsTab: boolean
+    }
+}
+
+export const specialTags: SpecialTags = {
     starred: {
         color: '#ffda80',
         public: false,

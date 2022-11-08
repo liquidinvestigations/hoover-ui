@@ -3,7 +3,7 @@ import cn from 'classnames'
 import { ButtonBase, ListItem, ListItemIcon, ListItemText } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { useRouter } from 'next/router'
-import { getBasePath, getTypeIcon } from '../../../utils'
+import { getBasePath, getTypeIcon } from '../../../utils/utils'
 import { useSharedStore } from '../../SharedStoreProvider'
 
 const filenameFor = (item) => {

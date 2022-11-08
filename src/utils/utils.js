@@ -3,10 +3,10 @@ import url from 'url'
 import copy from 'copy-text-to-clipboard'
 import langs from 'langs'
 import { Tooltip } from '@mui/material'
-import { ELLIPSIS_TERM_LENGTH } from './constants/general'
+import { ELLIPSIS_TERM_LENGTH } from '../constants/general'
 import { DateTime } from 'luxon'
-import { reactIcons } from './constants/icons'
-import { specialTags } from './constants/specialTags'
+import { reactIcons } from '../constants/icons'
+import { specialTags } from '../constants/specialTags'
 
 const typeIconsMap = {
     archive: 'typeArchive',
