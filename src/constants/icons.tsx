@@ -1,5 +1,7 @@
-import { createElement } from 'react'
+import { createElement, CSSProperties } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
+import type { IconDefinition } from '@fortawesome/fontawesome-common-types'
 
 import {
     faAngleDoubleRight,
@@ -79,7 +81,13 @@ import {
     ZoomOut,
 } from '@mui/icons-material'
 
-const FAIcon = ({ icon, style, className }) =>
+interface FAIconProps {
+    icon: IconDefinition
+    style?: CSSProperties
+    className?: string
+}
+
+const FAIcon = ({ icon, style = {}, className = '' }: FAIconProps) =>
     createElement(FontAwesomeIcon, {
         icon,
         className,

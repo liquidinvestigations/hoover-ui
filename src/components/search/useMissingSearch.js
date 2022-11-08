@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { aggregationFields } from '../../constants/aggregationFields'
-import { search as searchAPI } from '../../api'
+import { search as searchAPI } from '../../utils/api'
 import { asyncSearch as asyncSearchAPI } from '../../backend/api'
 
 export default function useMissingSearch(query) {

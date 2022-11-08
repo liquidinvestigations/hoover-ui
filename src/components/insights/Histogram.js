@@ -4,7 +4,7 @@ import { useSearch } from '../search/SearchProvider'
 import { formatsLabel, formatsValue } from '../search/filters/DateHistogramFilter'
 import Loading from '../Loading'
 import HistogramChart from '../search/filters/HistogramChart'
-import { createSearchUrl } from '../../queryUtils'
+import { createSearchUrl } from '../../utils/queryUtils'
 
 const chartWidth = 500
 const chartHeight = 100

@@ -4,7 +4,7 @@ import { Box, Chip, FormControl, Tooltip, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { blue, red } from '@mui/material/colors'
 import { useSearch } from './SearchProvider'
-import { shortenName } from '../../utils'
+import { shortenName } from '../../utils/utils'
 import ChipsTree from './ChipsTree'
 
 const useStyles = makeStyles((theme) => ({

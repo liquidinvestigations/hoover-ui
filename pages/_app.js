@@ -22,7 +22,7 @@ export default function HooverApp({ Component, pageProps, user }) {
         }
     }, [])
 
-    const sharedStore = new SharedStore({ user })
+    const sharedStore = new SharedStore(user)
 
     return (
         <ThemeProvider theme={theme}>

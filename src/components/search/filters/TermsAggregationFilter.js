@@ -3,7 +3,7 @@ import isEqual from 'react-fast-compare'
 import { Typography } from '@mui/material'
 import Expandable from '../../Expandable'
 import AggregationFilter from './AggregationFilter'
-import { formatThousands } from '../../../utils'
+import { formatThousands } from '../../../utils/utils'
 import { aggregationFields } from '../../../constants/aggregationFields'
 import useMissingLoader from './useMissingLoader'
 

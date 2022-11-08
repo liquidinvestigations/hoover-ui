@@ -4,8 +4,8 @@ import { Table, TableBody, TableCell, TableRow } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { observer } from 'mobx-react-lite'
 import LinkMenu from './LinkMenu'
-import { formatDateTime } from '../../utils'
-import { createSearchUrl } from '../../queryUtils'
+import { formatDateTime } from '../../utils/utils'
+import { createSearchUrl } from '../../utils/queryUtils'
 import { useSharedStore } from '../SharedStoreProvider'
 
 const useStyles = makeStyles((theme) => ({

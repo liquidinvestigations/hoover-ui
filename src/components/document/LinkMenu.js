@@ -3,7 +3,7 @@ import { mergeWith } from 'lodash'
 import { Menu, MenuItem } from '@mui/material'
 import { NestedMenuItem } from 'mui-nested-menu'
 import { useSearch } from '../search/SearchProvider'
-import { buildSearchQuerystring, createSearchParams, createSearchUrl, rollupParams } from '../../queryUtils'
+import { buildSearchQuerystring, createSearchParams, createSearchUrl, rollupParams } from '../../utils/queryUtils'
 import { aggregationFields } from '../../constants/aggregationFields'
 import { useSharedStore } from '../SharedStoreProvider'
 

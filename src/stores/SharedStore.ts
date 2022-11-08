@@ -1,10 +1,9 @@
 import { makeAutoObservable } from 'mobx'
+import { User } from '../Types'
 import { HashStateStore } from './HashStateStore'
 import { DocumentStore } from './DocumentStore'
 
 export class SharedStore {
-    user = null
-
     collections = []
 
     limits = null
@@ -15,11 +14,13 @@ export class SharedStore {
 
     serverQuery = null
 
-    hashStore = null
+    user
 
-    documentStore = null
+    hashStore
 
-    constructor({ user }) {
+    documentStore
+
+    constructor(user: User) {
         this.user = user
         this.hashStore = new HashStateStore()
         this.documentStore = new DocumentStore(this.hashStore)

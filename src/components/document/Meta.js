@@ -4,7 +4,7 @@ import { makeStyles } from '@mui/styles'
 import { Box, Divider, List, ListItem, ListItemText, Typography } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import LinkMenu from './LinkMenu'
-import { flatten, formatDateTime, getLanguageName, humanFileSize, shortenName } from '../../utils'
+import { flatten, formatDateTime, getLanguageName, humanFileSize, shortenName } from '../../utils/utils'
 import { useSharedStore } from '../SharedStoreProvider'
 
 const useStyles = makeStyles((theme) => ({

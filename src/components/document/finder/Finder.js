@@ -3,7 +3,7 @@ import { makeStyles } from '@mui/styles'
 import FinderColumn from './FinderColumn'
 import ErrorBoundary from '../../ErrorBoundary'
 import { doc as docAPI } from '../../../backend/api'
-import { getBasePath } from '../../../utils'
+import { getBasePath } from '../../../utils/utils'
 import { useSharedStore } from '../../SharedStoreProvider'
 
 const parentLevels = 3

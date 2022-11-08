@@ -1,16 +1,45 @@
 import { DateTime } from 'luxon'
 import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL, DEFAULT_OPERATOR, HIGHLIGHT_SETTINGS, PRIVATE_FIELDS } from '../constants/general'
-import { daysInMonth } from '../utils'
+import { daysInMonth } from '../utils/utils'
 import { aggregationFields } from '../constants/aggregationFields'
 
-const expandPrivate = (field, uuid) => {
+export interface SearchFields {
+    all: string[]
+    highlight: string[]
+    _source: string[]
+}
+
+export interface Terms {
+    include?: string[]
+    exclude?: string[]
+    missing?: 'false' | 'true'
+}
+
+export interface Field {
+    field: string
+    originalField: string
+    aggregation: {
+        terms?: {
+            field: string
+            size: number
+        }
+        range?: {}
+        missing?: {}
+        date_histogram?: {}
+    }
+    filterClause?: any
+    filterExclude?: any
+    filterMissing?: boolean | null
+}
+
+const expandPrivate = (field: string, uuid: string) => {
     if (PRIVATE_FIELDS.includes(field)) {
         return `${field}.${uuid}`
     }
     return field
 }
 
-const buildQuery = (q, filters, searchFields) => {
+const buildQuery = (q: string, filters: Record<string, any>, searchFields: SearchFields) => {
     const qs = {
         query_string: {
             query: q,
@@ -20,7 +49,7 @@ const buildQuery = (q, filters, searchFields) => {
         },
     }
 
-    const ranges = []
+    const ranges: { range: { [x: string]: { gte: string; lte: string } } }[] = []
     ;['date', 'date-created'].forEach((field) => {
         const value = filters[field]
         if (value?.from && value?.to) {
@@ -46,14 +75,14 @@ const buildQuery = (q, filters, searchFields) => {
     return qs
 }
 
-const buildSortQuery = (order) =>
+const buildSortQuery = (order: string[][] | undefined) =>
     order
         ?.reverse()
         .map(([field, direction = 'asc']) =>
             field.startsWith('_') ? { [field]: { order: direction } } : { [field]: { order: direction, missing: '_last' } }
         ) || []
 
-const buildTermsField = (field, uuid, terms, page = 1, size = DEFAULT_FACET_SIZE) => {
+const buildTermsField = (field: string, uuid: string, terms: Terms, page = 1, size = DEFAULT_FACET_SIZE): Field => {
     const fieldKey = expandPrivate(field, uuid)
 
     let filterClause = null
@@ -98,7 +127,9 @@ const buildTermsField = (field, uuid, terms, page = 1, size = DEFAULT_FACET_SIZE
     }
 }
 
-const intervalFormat = (interval, param) => {
+export type Interval = 'day' | 'hour' | 'month' | 'week' | 'year'
+
+const intervalFormat = (interval: Interval, param: string) => {
     switch (interval) {
         case 'year':
             return {
@@ -132,7 +163,18 @@ const intervalFormat = (interval, param) => {
     }
 }
 
-const buildHistogramField = (field, uuid, { interval = DEFAULT_INTERVAL, intervals } = {}, page = 1, size = DEFAULT_FACET_SIZE) => {
+interface HistogramParams {
+    interval?: Interval
+    intervals?: Terms
+}
+
+const buildHistogramField = (
+    field: string,
+    uuid: string,
+    { interval = DEFAULT_INTERVAL, intervals }: HistogramParams = {},
+    page = 1,
+    size = DEFAULT_FACET_SIZE
+) => {
     const fieldKey = expandPrivate(field, uuid)
 
     let filterClause = null
@@ -179,12 +221,11 @@ const buildHistogramField = (field, uuid, { interval = DEFAULT_INTERVAL, interva
     }
 }
 
-const rangeFormat = (fieldKey, range, isFilter = false) => {
+const rangeFormat = (range: string, isFilter = false) => {
     if (!range.includes('-')) {
         throw new Error('Invalid range format. Missing "-" sign.')
     }
 
-    let rangeQuery
     const rangeEdges = range.split('-')
 
     if (!rangeEdges[0].length || !rangeEdges[1].length) {
@@ -207,18 +248,20 @@ const rangeFormat = (fieldKey, range, isFilter = false) => {
     }
 }
 
-const buildRangeField = (field, uuid, ranges) => {
+const buildRangeField = (field: string, uuid: string, ranges: Terms | undefined): Field => {
     const fieldKey = expandPrivate(field, uuid)
+
+    const rangeFields = (selected: string) => ({
+        range: {
+            [fieldKey]: rangeFormat(selected, true),
+        },
+    })
 
     let filterClause = null
     if (ranges?.include?.length) {
         filterClause = {
             bool: {
-                should: ranges.include.map((selected) => ({
-                    range: {
-                        [fieldKey]: rangeFormat(fieldKey, selected, true),
-                    },
-                })),
+                should: ranges.include.map(rangeFields),
             },
         }
     }
@@ -227,11 +270,7 @@ const buildRangeField = (field, uuid, ranges) => {
     if (ranges?.exclude?.length) {
         filterExclude = {
             bool: {
-                should: ranges.exclude.map((selected) => ({
-                    range: {
-                        [fieldKey]: rangeFormat(fieldKey, selected, true),
-                    },
-                })),
+                should: ranges.exclude.map(rangeFields),
             },
         }
     }
@@ -249,9 +288,9 @@ const buildRangeField = (field, uuid, ranges) => {
         aggregation: {
             range: {
                 field: fieldKey,
-                ranges: aggregationFields[field].buckets.map(({ key }) => ({
+                ranges: aggregationFields[field].buckets?.map(({ key }) => ({
                     key,
-                    ...rangeFormat(fieldKey, key),
+                    ...rangeFormat(key),
                 })),
             },
         },
@@ -261,7 +300,7 @@ const buildRangeField = (field, uuid, ranges) => {
     }
 }
 
-const buildMissingField = (field, uuid) => ({
+const buildMissingField = (field: string, uuid: string) => ({
     field: `${field}-missing`,
     originalField: field,
     aggregation: {
@@ -269,7 +308,7 @@ const buildMissingField = (field, uuid) => ({
     },
 })
 
-const prepareFilter = (field) => {
+const prepareFilter = (field: Field) => {
     const filter = []
 
     if (field.filterClause) {
@@ -294,8 +333,8 @@ const prepareFilter = (field) => {
     }
 }
 
-const buildFilter = (fields) => {
-    const filter = []
+const buildFilter = (fields: Field[]) => {
+    const filter: any = []
 
     fields.forEach((field) => {
         const fieldFilter = prepareFilter(field)
@@ -316,7 +355,7 @@ const buildFilter = (fields) => {
     }
 }
 
-const buildAggs = (fields) =>
+const buildAggs = (fields: Field[]) =>
     fields.reduce(
         (result, field) => ({
             ...result,
@@ -331,19 +370,34 @@ const buildAggs = (fields) =>
         {}
     )
 
-const getAggregationFields = (type, fieldList) =>
+export type FieldList = '*' | string[]
+export type FieldType = 'date' | 'range' | 'term'
+
+const getAggregationFields = (type: FieldType, fieldList: FieldList) =>
     Object.entries(aggregationFields)
         .filter(([, field]) => field.type.startsWith(type))
         .map(([key]) => key)
         .filter((field) => fieldList === '*' || (Array.isArray(fieldList) && fieldList.includes(field)))
 
+export interface SearchQueryParams {
+    q?: string
+    page?: number
+    size?: number
+    order?: string[][]
+    collections?: string[]
+    facets?: Record<string, any>
+    filters?: Record<string, any>
+}
+
+export type QueryType = 'aggregations' | 'results'
+
 const buildSearchQuery = (
-    { q = '*', page = 1, size = 0, order, collections = [], facets = {}, filters = {} } = {},
-    type = 'results',
-    fieldList = '*',
-    missing = false,
-    searchFields,
-    uuid
+    { q = '*', page = 1, size = 0, order, collections = [], facets = {}, filters = {} }: SearchQueryParams = {},
+    type: QueryType,
+    fieldList: FieldList,
+    missing: boolean,
+    searchFields: SearchFields,
+    uuid: string
 ) => {
     const query = buildQuery(q, filters, searchFields)
     const sort = buildSortQuery(order)
@@ -362,13 +416,13 @@ const buildSearchQuery = (
         : [
               ...dateFields.map((field) => buildHistogramField(field, uuid, filters[field], facets[field])),
               ...termFields.map((field) => buildTermsField(field, uuid, filters[field], facets[field])),
-              ...rangeFields.map((field) => buildRangeField(field, uuid, filters[field], facets[field])),
+              ...rangeFields.map((field) => buildRangeField(field, uuid, filters[field])),
           ]
 
     const postFilter = buildFilter(fields)
     const aggs = buildAggs(fields)
 
-    const highlightFields = {}
+    const highlightFields: Record<string, any> = {}
     searchFields.highlight.forEach((field) => {
         highlightFields[field] = HIGHLIGHT_SETTINGS
     })

@@ -6,7 +6,7 @@ import IntervalSelect from './IntervalSelect'
 import DateRangeFilter from './DateRangeFilter'
 import AggregationFilter from './AggregationFilter'
 import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL } from '../../../constants/general'
-import { formatThousands, getClosestInterval } from '../../../utils'
+import { formatThousands, getClosestInterval } from '../../../utils/utils'
 import useMissingLoader from './useMissingLoader'
 
 export const formatsLabel = {

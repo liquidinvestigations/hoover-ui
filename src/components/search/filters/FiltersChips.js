@@ -6,8 +6,8 @@ import { blue, green, red } from '@mui/material/colors'
 import ChipsTree from '../ChipsTree'
 import { useSearch } from '../SearchProvider'
 import { aggregationFields } from '../../../constants/aggregationFields'
-import { clearQuotedParam } from '../../../queryUtils'
-import { getTagIcon, shortenName } from '../../../utils'
+import { clearQuotedParam } from '../../../utils/queryUtils'
+import { getTagIcon, shortenName } from '../../../utils/utils'
 
 const useStyles = makeStyles((theme) => ({
     treeTitle: {

@@ -23,10 +23,10 @@ import { TagTooltip } from './TagTooltip'
 import { useTags } from './TagsProvider'
 import { useSharedStore } from '../SharedStoreProvider'
 import { specialTagsList } from '../../constants/specialTags'
-import { search as searchAPI } from '../../api'
+import { search as searchAPI } from '../../utils/api'
 import { tooltips } from '../../constants/help'
 import { reactIcons } from '../../constants/icons'
-import { getTagIcon } from '../../utils'
+import { getTagIcon } from '../../utils/utils'
 
 const forbiddenCharsRegex = /[^a-z0-9_!@#$%^&*()-=+:,./?]/gi
 

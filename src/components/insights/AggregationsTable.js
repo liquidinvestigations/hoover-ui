@@ -2,7 +2,7 @@ import ReactPlaceholder from 'react-placeholder'
 import { ButtonBase, List, ListItem, ListItemText, ListItemSecondaryAction, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { useSearch } from '../search/SearchProvider'
-import { createSearchUrl } from '../../queryUtils'
+import { createSearchUrl } from '../../utils/queryUtils'
 
 const useStyles = makeStyles((theme) => ({
     bucket: {

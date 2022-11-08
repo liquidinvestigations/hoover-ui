@@ -6,7 +6,7 @@ import { useSearch } from './SearchProvider'
 import { useSharedStore } from '../SharedStoreProvider'
 import { createDownloadUrl, createThumbnailSrc } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
-import { documentViewUrl, formatDateTime, getPreviewParams, getTagIcon, getTypeIcon, humanFileSize, shortenName } from '../../utils'
+import { documentViewUrl, formatDateTime, getPreviewParams, getTagIcon, getTypeIcon, humanFileSize, shortenName } from '../../utils/utils'
 import Loading from '../Loading'
 
 const useStyles = makeStyles((theme) => ({

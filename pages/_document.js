@@ -2,7 +2,7 @@ import { Children } from 'react'
 import Document, { Head, Html, Main, NextScript } from 'next/document'
 import { ServerStyleSheets } from '@mui/styles'
 import { resetServerContext } from 'react-beautiful-dnd'
-import { removeCommentsAndSpacing } from '../src/utils'
+import { removeCommentsAndSpacing } from '../src/utils/utils'
 import { JSS_CSS } from '../src/constants/general'
 
 class HooverDocument extends Document {

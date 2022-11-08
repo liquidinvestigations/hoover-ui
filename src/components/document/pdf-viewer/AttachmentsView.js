@@ -3,7 +3,7 @@ import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { useDocument } from './DocumentProvider'
 import { reactIcons } from '../../../constants/icons'
-import { downloadFile } from '../../../utils'
+import { downloadFile } from '../../../utils/utils'
 
 const useStyles = makeStyles((theme) => ({
     container: {

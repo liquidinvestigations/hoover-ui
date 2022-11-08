@@ -6,7 +6,7 @@ import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import { useSearch } from '../SearchProvider'
 import { SORTABLE_FIELDS } from '../../../constants/general'
 import { reactIcons } from '../../../constants/icons'
-import { titleCase } from '../../../utils'
+import { titleCase } from '../../../utils/utils'
 
 const useStyles = makeStyles((theme) => ({
     icon: {

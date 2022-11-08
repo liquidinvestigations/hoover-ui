@@ -1,7 +1,7 @@
 import ReactPlaceholder from 'react-placeholder'
 import { useSearch } from './SearchProvider'
 import { ResultItem } from './ResultItem'
-import { documentViewUrl } from '../../utils'
+import { documentViewUrl } from '../../utils/utils'
 
 export default function ResultsList() {
     const { query, results, resultsLoading } = useSearch()

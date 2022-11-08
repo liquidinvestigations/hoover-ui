@@ -17,7 +17,7 @@ import { useTags } from './TagsProvider'
 import { createOcrUrl, createUploadUrl } from '../../backend/api'
 import { specialTags } from '../../constants/specialTags'
 import { reactIcons } from '../../constants/icons'
-import { getTagIcon } from '../../utils'
+import { getTagIcon } from '../../utils/utils'
 import { observer } from 'mobx-react-lite'
 
 const useStyles = makeStyles((theme) => ({
