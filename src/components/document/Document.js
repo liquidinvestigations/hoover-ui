@@ -93,6 +93,16 @@ function Document({ onPrev, onNext }) {
     const classes = useStyles()
     const whoAmI = useUser()
 
+
+    const {
+        data, pathname, loading,
+        fullPage, printMode,
+        collection,
+        digestUrl, docRawUrl,
+        thumbnailSrcSet,
+        tab, handleTabChange,
+    } = useDocument()
+
     const uppy = new Uppy({
         meta: {},
         restrictions: { maxNumberOfFiles: 1 },
@@ -103,8 +113,8 @@ function Document({ onPrev, onNext }) {
     uppy.on('file-added', (file) =>{
         uppy.setFileMeta(file.id, {
             name: file.name,
-            dirpk: '4',
-            collection: 'test3'
+            dirpk: data.id,
+            collection: collection
         });
     });
 
@@ -114,15 +124,6 @@ function Document({ onPrev, onNext }) {
         retryDelays: [0, 1000, 3000, 5000],
         limit: 3,
     })
-
-    const {
-        data, pathname, loading,
-        fullPage, printMode,
-        collection,
-        digestUrl, docRawUrl,
-        thumbnailSrcSet,
-        tab, handleTabChange,
-    } = useDocument()
 
     const { tags, tagsLoading, tagsLocked, handleSpecialTagClick } = useTags()
 
