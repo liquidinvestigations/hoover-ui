@@ -103,7 +103,7 @@ function Document({ onPrev, onNext }) {
     })
 
     uppy.use(Tus, {
-        endpoint: 'http://localhost:8000/api/v1/upload/',
+        endpoint: createUploadUrl(),
         retryDelays: [0, 1000, 3000, 5000],
         limit: 3,
     })
