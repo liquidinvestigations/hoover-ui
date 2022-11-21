@@ -94,13 +94,20 @@ function Document({ onPrev, onNext }) {
     const whoAmI = useUser()
 
     const uppy = new Uppy({
-        meta: { name: '200.jpg',
-                collection: 'test3',
-                dirpk: 4,
-              },
+        meta: {},
         restrictions: { maxNumberOfFiles: 1 },
         autoProceed: true,
     })
+
+
+    uppy.on('file-added', (file) =>{
+        uppy.setFileMeta(file.id, {
+            name: file.name,
+            dirpk: '4',
+            collection: 'test3'
+        });
+    });
+
 
     uppy.use(Tus, {
         endpoint: createUploadUrl(),
@@ -249,9 +256,8 @@ function Document({ onPrev, onNext }) {
 
     },{name: 'Upload',
        icon: reactIcons.headersTab,
-       visible: !printMode,
+       visible: !printMode && data.content.filetype == 'folder',
        content: <FileInput
-       // assuming `props.uppy` contains an Uppy instance:
        uppy={uppy}
        pretty
        inputName="files[]"
