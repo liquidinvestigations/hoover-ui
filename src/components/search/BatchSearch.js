@@ -43,10 +43,11 @@ export default function BatchSearch({ collections, limits }) {
 
     const search = (collections = selectedCollections, offset = 0) => {
         if (!terms.trim() || !selectedCollections) return null
+        const allTerms = terms.trim().split('\n')
 
         const searchResults = []
         setResultsLoading(true)
-        const termsPage = terms.trim().split('\n').slice(offset, offset + limits.batch);
+        const termsPage = allTerms.slice(offset, offset + limits.batch);
 
         batch({
             query_strings: termsPage,
@@ -70,7 +71,7 @@ export default function BatchSearch({ collections, limits }) {
                 searchResults.push(...responseResults)
 
                 const nextOffset = offset + limits.batch
-                if (nextOffset >= terms.length) {
+                if (nextOffset >= allTerms.length) {
                     setResults(searchResults)
                     setResultsLoading(false)
                 } else {
@@ -159,7 +160,7 @@ export default function BatchSearch({ collections, limits }) {
                         results={results}
                         offset={batchOffset}
                         batchSize={limits.batch}
-                        terms={terms}
+                        terms={terms?.trim().split('\n')}
                     />
                 </div>
             </Grid>
