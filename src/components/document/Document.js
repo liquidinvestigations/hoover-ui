@@ -257,7 +257,7 @@ function Document({ onPrev, onNext }) {
 
     },{name: 'Upload',
        icon: reactIcons.headersTab,
-       visible: !printMode && data.content.filetype == 'folder',
+       visible: !printMode && data.id.startsWith('_directory'),
        content: <FileInput
        uppy={uppy}
        pretty
