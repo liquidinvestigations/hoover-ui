@@ -8,8 +8,11 @@ import SplitPaneLayout from '../SplitPaneLayout'
 import AggregationsTable from '../insights/AggregationsTable'
 import { useSearch } from '../search/SearchProvider'
 import { humanFileSize } from '../../utils'
-import { getUploads } from '../../backend/api'
+import { getDirectoryUploads, createUploadUrl } from '../../backend/api'
 import Histogram from '../insights/Histogram'
+import Uppy from '@uppy/core'
+import Tus from '@uppy/tus'
+import { FileInput } from '@uppy/react'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -27,20 +30,42 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function Uploads(collections) {
+export default function DirectoryUploads(props) {
     const classes = useStyles()
 
-    const [uploadsState, setUploadsState] = useState([])
+    const [uploadsState, setUploadsState] = useState({'uploads':[]})
     const intervalRef = useRef(0)
+
+    const uppy = new Uppy({
+        meta: {},
+        restrictions: { maxNumberOfFiles: 1 },
+        autoProceed: true,
+    })
+
+
+    uppy.on('file-added', (file) =>{
+        uppy.setFileMeta(file.id, {
+            name: file.name,
+            dirpk: props.directoryId,
+            collection: props.collection
+        });
+    });
+
+
+    uppy.use(Tus, {
+        endpoint: createUploadUrl(),
+        retryDelays: [0, 1000, 3000, 5000],
+        limit: 3,
+    })
+
     useEffect(() => {
-        getUploads()
+        getDirectoryUploads(props.collection, props.directoryId)
             .then(data => {
-                setUploadsState(data)
+                setUploadsState(data);
             })
-            .catch(error => setError(error.message));
 
         intervalRef.current = setInterval(async () => {
-            setUploadsState(await getUploads())
+            setUploadsState(await getDirectoryUploads(props.collection, props.directoryId))
         }, 60000)
 
         return () => {
@@ -53,6 +78,15 @@ export default function Uploads(collections) {
     return (
                 <div className={classes.root}>
                     <Grid container spacing={2}>
+            <Grid item xs={6}>
+            <Typography variant="h5" className={classes.sectionTitle}>Directory: {uploadsState.directory_name}</Typography>
+            </Grid>
+            <Grid item xs={6}>
+            <Typography variant="h5" className={classes.sectionTitle}>Collection: {uploadsState.collection}</Typography>
+            </Grid>
+            <Grid item xs={6}>
+            <Typography variant="h5" className={classes.sectionTitle}>Path: {uploadsState.directory_path}</Typography>
+            </Grid>
                         <Grid item xs={12}>
                             <Paper>
                                 <Typography variant="h5" className={classes.sectionTitle}>Uploads</Typography>
@@ -62,22 +96,16 @@ export default function Uploads(collections) {
             <th>Started</th>
             <th>Finished</th>
             <th>Uploader</th>
-            <th>Collection</th>
-            <th>Directory ID</th>
-            <th>Directory Path</th>
             <th>Filename</th>
             <th>Processed</th>
             </tr>
             </thead>
             <tbody>
-            {uploadsState.map((upload, index) =>(
+            {uploadsState.uploads.map((upload, index) =>(
                     <tr key={index}>
                     <td>{upload.started ? upload.started : ''}</td>
                     <td>{upload.finished ? upload.finished : ''}</td>
                     <td>{upload.uploader ? upload.uploader : ''}</td>
-                    <td>{upload.collection ? upload.collection : ''}</td>
-                    <td>{upload.directory_id ? upload.directory_id : ''}</td>
-                    <td>{upload.directory_path ? upload.directory_path : ''}</td>
                     <td>{upload.filename ? upload.filename : ''}</td>
                     <td>{(upload.processed || upload.processed === false) ? upload.processed.toString() : ''}</td>
                     </tr>
@@ -86,6 +114,11 @@ export default function Uploads(collections) {
             </table>
                             </Paper>
                         </Grid>
+                  <FileInput
+         uppy={uppy}
+         pretty
+         inputName="files[]"
+             />
                     </Grid>
                 </div>
     )

@@ -262,7 +262,7 @@ function Document({ onPrev, onNext }) {
        key={'Upload'}
        variant="text"
        component="a"
-       href={'/uploads'}
+       href={'/upload/' + collection + '/' + data.id}
        color="inherit"
        >
        {'Upload'}

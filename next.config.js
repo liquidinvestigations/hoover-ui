@@ -123,8 +123,14 @@ const nextConfig = {
         source: '/api/v1/get_uploads',
         destination: API_URL + '/api/v1/get_uploads',
     },{
+        source: '/api/v1/:collection/:directory/get_directory_uploads',
+        destination: API_URL + '/api/v1/:collection/:directory/get_directory_uploads',
+    },{
         source: '/api/v1/limits',
         destination: API_URL + '/api/v1/limits',
+    },{
+        source: '/api/v1/upload',
+        destination: API_URL + '/api/v1/upload',
     }] : [],
 }
 
