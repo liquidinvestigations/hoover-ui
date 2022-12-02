@@ -119,6 +119,12 @@ const nextConfig = {
     },{
         source: '/api/v1/doc/:collection/:hash/thumbnail/:size(100|200|400).jpg',
         destination: API_URL + '/api/v1/doc/:collection/:hash/thumbnail/:size.jpg',
+    },{
+        source: '/api/v1/get_uploads',
+        destination: API_URL + '/api/v1/get_uploads',
+    },{
+        source: '/api/v1/limits',
+        destination: API_URL + '/api/v1/limits',
     }] : [],
 }
 

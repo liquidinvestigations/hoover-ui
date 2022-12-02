@@ -1,7 +1,7 @@
 import React, { cloneElement, memo, useEffect } from 'react'
 import Link from 'next/link'
 import { makeStyles } from '@mui/styles'
-import { Badge, Box, Chip, Grid, Tabs, Typography } from '@mui/material'
+import { Badge, Box, Button, Chip, Grid, Tabs, Typography } from '@mui/material'
 import { useDocument } from './DocumentProvider'
 import StyledTab from './StyledTab'
 import TabPanel from './TabPanel'
@@ -258,12 +258,23 @@ function Document({ onPrev, onNext }) {
     },{name: 'Upload',
        icon: reactIcons.headersTab,
        visible: !printMode && data.id.startsWith('_directory'),
-       content: <FileInput
-       uppy={uppy}
-       pretty
-       inputName="files[]"
-       />
-    }]
+       content: <Button
+       key={'Upload'}
+       variant="text"
+       component="a"
+       href={'/uploads'}
+       color="inherit"
+       >
+       {'Upload'}
+       </Button>
+      }]
+
+   //       <FileInput
+   // uppy={uppy}
+   // pretty
+   // inputName="files[]"
+   //     />
+
 
     return (
         <div className={classes.root} data-test="doc-view">

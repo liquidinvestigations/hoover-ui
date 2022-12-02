@@ -63,8 +63,8 @@ export default function Uploads() {
             <th>Directory Path</th>
             <th>Filename</th>
             <th>Processed</th>
-            {uploadsState.map(upload =>(
-                <tr>
+            {uploadsState.map((upload, index) =>(
+                    <tr key={index}>
                     <td>{upload.started ? upload.started : ''}</td>
                     <td>{upload.finished ? upload.finished : ''}</td>
                     <td>{upload.uploader ? upload.uploader : ''}</td>
