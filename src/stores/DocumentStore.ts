@@ -79,7 +79,7 @@ export class DocumentStore {
 
     pathname: string | undefined
 
-    loading = true
+    loading = false
 
     digest: string | undefined
 

@@ -6,7 +6,7 @@ import { duration } from '@mui/material/styles'
 import { makeStyles } from '@mui/styles'
 import CategoriesToolbar from './CategoriesToolbar'
 import Filters from './Filters'
-import Collections from './Collections'
+import { Collections } from './Collections'
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -21,16 +21,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-export default function Categories({
-    collections,
-    openCategory,
-    setOpenCategory,
-    drawerRef,
-    drawerWidth,
-    setDrawerWidth,
-    drawerPinned,
-    setDrawerPinned,
-}) {
+export default function Categories({ openCategory, setOpenCategory, drawerRef, drawerWidth, setDrawerWidth, drawerPinned, setDrawerPinned }) {
     const classes = useStyles()
     const [wideFilters, setWideFilters] = useState(true)
 
@@ -57,7 +48,6 @@ export default function Categories({
                     <CategoriesToolbar collapsed={!wideFilters} onCollapseToggle={setWideFilters} />
 
                     <Collections
-                        collections={collections}
                         openCategory={openCategory}
                         setOpenCategory={setOpenCategory}
                         wideFilters={wideFilters}

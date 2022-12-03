@@ -18,6 +18,8 @@ import { Document } from '../document/Document'
 import { tooltips } from '../../constants/help'
 import { reactIcons } from '../../constants/icons'
 import { TagsProvider } from '../document/TagsProvider'
+import { observer } from 'mobx-react-lite'
+import { useSharedStore } from '../SharedStoreProvider'
 
 const useStyles = makeStyles((theme) => ({
     error: {
@@ -46,11 +48,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-export default function Search({ collections }) {
+export const Search = observer(({ collections }) => {
     const classes = useStyles()
     const inputRef = useRef()
-    const { query, error, search, searchText, setSearchText, resultsLoading, clearResults, selectedDocData, previewNextDoc, previewPreviousDoc } =
-        useSearch()
+    const { query, error, setSearchText, resultsLoading, clearResults, previewNextDoc, previewPreviousDoc } = useSearch()
+    const {
+        searchStore: { search, searchText, handleInputChange },
+    } = useSharedStore()
 
     const clearInput = () => {
         setSearchText('')
@@ -91,17 +95,13 @@ export default function Search({ collections }) {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-        search({ page: 1 })
+        search()
     }
 
     const handleInputKey = (event) => {
         if (event.key === 'Enter' && !event.shiftKey) {
             handleSubmit(event)
         }
-    }
-
-    const handleInputChange = (event) => {
-        setSearchText(event.target.value)
     }
 
     const drawerRef = useRef()
@@ -210,4 +210,4 @@ export default function Search({ collections }) {
             </Grid>
         </HotKeys>
     )
-}
+})

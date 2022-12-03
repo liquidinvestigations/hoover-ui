@@ -11,7 +11,7 @@ import theme from '../src/theme'
 import { whoami } from '../src/backend/api'
 import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
 import { SharedStore } from '../src/stores/SharedStore'
-import SharedStoreProvider from '../src/components/SharedStoreProvider'
+import { SharedStoreProvider } from '../src/components/SharedStoreProvider'
 
 export default function HooverApp({ Component, pageProps, user }) {
     useEffect(() => {
@@ -22,13 +22,11 @@ export default function HooverApp({ Component, pageProps, user }) {
         }
     }, [])
 
-    const sharedStore = new SharedStore(user)
-
     return (
         <ThemeProvider theme={theme}>
             <LocalizationProvider dateAdapter={AdapterLuxon}>
                 <CssBaseline />
-                <SharedStoreProvider store={sharedStore}>
+                <SharedStoreProvider store={new SharedStore(user)}>
                     <Layout>
                         <Component {...pageProps} />
                     </Layout>

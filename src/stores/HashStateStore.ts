@@ -1,13 +1,7 @@
 import qs from 'qs'
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
-import { createObservableHistory, ObservableHistory } from 'mobx-observable-history'
 import { rollupParams, unwindParams } from '../utils/queryUtils'
-
-let navigation: ObservableHistory
-
-if (typeof window !== 'undefined') {
-    navigation = createObservableHistory()
-}
+import { SharedStore } from './SharedStore'
 
 export interface HashState {
     preview?: {
@@ -19,13 +13,17 @@ export interface HashState {
 }
 
 export class HashStateStore {
+    sharedStore: SharedStore
+
     hashState: HashState = {}
 
-    constructor() {
+    constructor(sharedStore: SharedStore) {
+        this.sharedStore = sharedStore
+
         makeAutoObservable(this)
 
         if (typeof window !== 'undefined') {
-            const { hash } = navigation.location
+            const { hash } = this.sharedStore.navigation?.location
 
             if (hash) {
                 runInAction(() => {
@@ -34,7 +32,7 @@ export class HashStateStore {
             }
 
             reaction(
-                () => navigation.location.hash,
+                () => this.sharedStore.navigation?.location.hash,
                 (hashString) => {
                     this.hashState = unwindParams(qs.parse(hashString.substring(1)))
                 }
@@ -48,6 +46,6 @@ export class HashStateStore {
         })
 
         const hash = qs.stringify(rollupParams(this.hashState))
-        navigation.merge({ hash }, !pushHistory)
+        this.sharedStore.navigation?.merge({ hash }, !pushHistory)
     }
 }
