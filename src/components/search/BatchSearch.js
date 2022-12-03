@@ -47,7 +47,7 @@ export default function BatchSearch({ collections, limits }) {
 
         const searchResults = []
         setResultsLoading(true)
-        const termsPage = allTerms.slice(offset, offset + limits.batch);
+        const termsPage = allTerms.slice(offset, offset + limits.batch)
 
         batch({
             query_strings: termsPage,
@@ -71,25 +71,26 @@ export default function BatchSearch({ collections, limits }) {
                     })
                     searchResults.push(...responseResults)
 
-                const nextOffset = offset + limits.batch
-                if (nextOffset >= allTerms.length) {
-                    setResults(searchResults)
-                    setResultsLoading(false)
-                } else {
-                    setBatchOffset(nextOffset)
-                    search(collections, nextOffset)
+                    const nextOffset = offset + limits.batch
+                    if (nextOffset >= allTerms.length) {
+                        setResults(searchResults)
+                        setResultsLoading(false)
+                    } else {
+                        setBatchOffset(nextOffset)
+                        search(collections, nextOffset)
+                    }
                 }
-            }
-        }).catch(error => {
-            let message = error.statusText
-            if (error.status === 429) {
-                message = 'Rate limit exceeded'
-            } else if (!message) {
-                message = 'Unknown server error while searching'
-            }
-            setError(message)
-            setResultsLoading(false)
-        })
+            })
+            .catch((error) => {
+                let message = error.statusText
+                if (error.status === 429) {
+                    message = 'Rate limit exceeded'
+                } else if (!message) {
+                    message = 'Unknown server error while searching'
+                }
+                setError(message)
+                setResultsLoading(false)
+            })
     }
 
     const handleSearch = () => {
