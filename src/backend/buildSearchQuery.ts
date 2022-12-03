@@ -2,6 +2,7 @@ import { DateTime } from 'luxon'
 import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL, DEFAULT_OPERATOR, HIGHLIGHT_SETTINGS, PRIVATE_FIELDS } from '../constants/general'
 import { daysInMonth } from '../utils/utils'
 import { aggregationFields } from '../constants/aggregationFields'
+import { SearchQueryParams, SearchQueryType } from '../Types'
 
 export interface SearchFields {
     all: string[]
@@ -379,21 +380,9 @@ const getAggregationFields = (type: FieldType, fieldList: FieldList) =>
         .map(([key]) => key)
         .filter((field) => fieldList === '*' || (Array.isArray(fieldList) && fieldList.includes(field)))
 
-export interface SearchQueryParams {
-    q?: string
-    page?: number
-    size?: number
-    order?: string[][]
-    collections?: string[]
-    facets?: Record<string, any>
-    filters?: Record<string, any>
-}
-
-export type QueryType = 'aggregations' | 'results'
-
 const buildSearchQuery = (
     { q = '*', page = 1, size = 0, order, collections = [], facets = {}, filters = {} }: SearchQueryParams = {},
-    type: QueryType,
+    type: SearchQueryType,
     fieldList: FieldList,
     missing: boolean,
     searchFields: SearchFields,

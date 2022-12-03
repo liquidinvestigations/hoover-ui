@@ -1,7 +1,7 @@
 import fetch from 'node-fetch'
 import { stringify } from 'qs'
 import memoize from 'lodash/memoize'
-import buildSearchQuery, { FieldList, QueryType, SearchFields, SearchQueryParams } from './buildSearchQuery'
+import buildSearchQuery, { FieldList, SearchQueryType, SearchFields, SearchQueryParams } from './buildSearchQuery'
 
 const { API_URL } = process.env
 

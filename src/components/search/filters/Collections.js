@@ -1,29 +1,23 @@
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
+import { observer } from 'mobx-react-lite'
 import CategoryDrawer from './CategoryDrawer'
 import CollectionsFilter from './CollectionsFilter'
 import { useSearch } from '../SearchProvider'
 import Expandable from '../../Expandable'
 import CategoryDrawerToolbar from './CategoryDrawerToolbar'
+import { useSharedStore } from '../../SharedStoreProvider'
 
-export default function Collections({
-    collections,
-    openCategory,
-    setOpenCategory,
-    wideFilters,
-    drawerWidth,
-    drawerPinned,
-    setDrawerPinned,
-    drawerPortalRef,
-}) {
-    const { query, search, collectionsCount } = useSearch()
+export const Collections = observer(({ openCategory, setOpenCategory, wideFilters, drawerWidth, drawerPinned, setDrawerPinned, drawerPortalRef }) => {
+    const { collectionsCount } = useSearch()
     const [searchCollections, setSearchCollections] = useState('')
+    const {
+        collections,
+        searchStore: { query, search },
+    } = useSharedStore()
 
-    const handleCollectionsChange = useCallback(
-        (value) => {
-            search({ collections: value, page: 1 })
-        },
-        [collections, search]
-    )
+    const handleCollectionsChange = (value) => {
+        search({ collections: value })
+    }
 
     return (
         <CategoryDrawer
@@ -47,10 +41,10 @@ export default function Collections({
                     setOpenCategory={setOpenCategory}
                 />
             }>
-            <Expandable title={`Collections (${query.collections?.length || 0})`} open={true} highlight={false}>
+            <Expandable title={`Collections (${query?.collections?.length || 0})`} open={true} highlight={false}>
                 <CollectionsFilter
                     collections={collections}
-                    selected={query.collections || []}
+                    selected={query?.collections || []}
                     changeSelection={handleCollectionsChange}
                     counts={collectionsCount}
                     search={searchCollections}
@@ -58,4 +52,4 @@ export default function Collections({
             </Expandable>
         </CategoryDrawer>
     )
-}
+})

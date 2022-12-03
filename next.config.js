@@ -48,21 +48,24 @@ const nextConfig = {
                         to: './static/pdf.worker.js',
                     },
                 ],
-            }),
-        );
+            })
+        )
 
-        config.module.rules.push({
-            test: /\.svg$/,
-            use: ['@svgr/webpack', 'url-loader'],
-        },{
-            test: /\.worker\.js$/,
-            loader: 'worker-loader',
-            options: {
-                filename: 'static/[name].js',
+        config.module.rules.push(
+            {
+                test: /\.svg$/,
+                use: ['@svgr/webpack', 'url-loader'],
             },
-        });
+            {
+                test: /\.worker\.js$/,
+                loader: 'worker-loader',
+                options: {
+                    filename: 'static/[name].js',
+                },
+            }
+        )
 
-        return config;
+        return config
     },
     distDir: 'build',
     poweredByHeader: false,
@@ -70,70 +73,99 @@ const nextConfig = {
     // TODO on some sunny day, enable
     reactStrictMode: false,
     compress: false,
-    redirects: () => [{
-        source: '/doc/:collection/:id/raw/:filename',
-        destination: '/doc/:collection/:id',
-        permanent: true,
-    },{
-        source: '/doc/:collection/:id/ocr/:tag',
-        destination: '/doc/:collection/:id',
-        permanent: true,
-    }],
-    rewrites: () => REWRITE_API ? [{
-        source: '/api/geo',
-        destination: API_URL + '/api/geo',
-    },{
-        source: '/api/map/:path*',
-        destination: API_URL + '/api/map/:path*',
-    },{
-        source: '/api/v1/whoami',
-        destination: API_URL + '/api/v1/whoami',
-    },{
-        source: '/api/v1/batch',
-        destination: API_URL + '/api/v1/batch',
-    },{
-        source: '/api/v1/collections',
-        destination: API_URL + '/api/v1/collections',
-    },{
-        source: '/api/v1/async_search/:uuid',
-        destination: API_URL + '/api/v1/async_search/:uuid',
-    },{
-        source: '/api/v1/doc/:collection/:hash/json',
-        destination: API_URL + '/api/v1/doc/:collection/:hash/json',
-    },{
-        source: '/api/v1/doc/:collection/:hash/locations',
-        destination: API_URL + '/api/v1/doc/:collection/:hash/locations',
-    },{
-        source: '/api/v1/doc/:collection/:hash/tags',
-        destination: API_URL + '/api/v1/doc/:collection/:hash/tags',
-    },{
-        source: '/api/v1/doc/:collection/:hash/tags/:id',
-        destination: API_URL + '/api/v1/doc/:collection/:hash/tags/:id',
-    },{
-        source: '/api/v1/doc/:collection/:hash/raw/:filename',
-        destination: API_URL + '/api/v1/doc/:collection/:hash/raw/:filename',
-    },{
-        source: '/api/v1/doc/:collection/:hash/pdf-preview',
-        destination: API_URL + '/api/v1/doc/:collection/:hash/pdf-preview',
-    },{
-        source: '/api/v1/doc/:collection/:hash/ocr/:tag',
-        destination: API_URL + '/api/v1/doc/:collection/:hash/ocr/:tag',
-    },{
-        source: '/api/v1/doc/:collection/:hash/thumbnail/:size(100|200|400).jpg',
-        destination: API_URL + '/api/v1/doc/:collection/:hash/thumbnail/:size.jpg',
-    },{
-        source: '/api/v1/get_uploads',
-        destination: API_URL + '/api/v1/get_uploads',
-    },{
-        source: '/api/v1/:collection/:directory/get_directory_uploads',
-        destination: API_URL + '/api/v1/:collection/:directory/get_directory_uploads',
-    },{
-        source: '/api/v1/limits',
-        destination: API_URL + '/api/v1/limits',
-    },{
-        source: '/api/v1/upload/',
-        destination: API_URL + '/api/v1/upload/',
-    }] : [],
+    redirects: () => [
+        {
+            source: '/doc/:collection/:id/raw/:filename',
+            destination: '/doc/:collection/:id',
+            permanent: true,
+        },
+        {
+            source: '/doc/:collection/:id/ocr/:tag',
+            destination: '/doc/:collection/:id',
+            permanent: true,
+        },
+    ],
+    rewrites: () =>
+        REWRITE_API
+            ? [
+                  {
+                      source: '/api/geo',
+                      destination: API_URL + '/api/geo',
+                  },
+                  {
+                      source: '/api/map/:path*',
+                      destination: API_URL + '/api/map/:path*',
+                  },
+                  {
+                      source: '/api/v1/whoami',
+                      destination: API_URL + '/api/v1/whoami',
+                  },
+                  {
+                      source: '/api/v1/batch',
+                      destination: API_URL + '/api/v1/batch',
+                  },
+                  {
+                      source: '/api/v1/collections',
+                      destination: API_URL + '/api/v1/collections',
+                  },
+                  {
+                      source: '/api/v1/get_uploads',
+                      destination: API_URL + '/api/v1/get_uploads',
+                  },
+                  {
+                      source: '/api/v1/async_search/:uuid',
+                      destination: API_URL + '/api/v1/async_search/:uuid',
+                  },
+                  {
+                      source: '/api/v1/doc/:collection/:hash/json',
+                      destination: API_URL + '/api/v1/doc/:collection/:hash/json',
+                  },
+                  {
+                      source: '/api/v1/doc/:collection/:hash/locations',
+                      destination: API_URL + '/api/v1/doc/:collection/:hash/locations',
+                  },
+                  {
+                      source: '/api/v1/doc/:collection/:hash/tags',
+                      destination: API_URL + '/api/v1/doc/:collection/:hash/tags',
+                  },
+                  {
+                      source: '/api/v1/doc/:collection/:hash/tags/:id',
+                      destination: API_URL + '/api/v1/doc/:collection/:hash/tags/:id',
+                  },
+                  {
+                      source: '/api/v1/doc/:collection/:hash/raw/:filename',
+                      destination: API_URL + '/api/v1/doc/:collection/:hash/raw/:filename',
+                  },
+                  {
+                      source: '/api/v1/doc/:collection/:hash/pdf-preview',
+                      destination: API_URL + '/api/v1/doc/:collection/:hash/pdf-preview',
+                  },
+                  {
+                      source: '/api/v1/doc/:collection/:hash/ocr/:tag',
+                      destination: API_URL + '/api/v1/doc/:collection/:hash/ocr/:tag',
+                  },
+                  {
+                      source: '/api/v1/doc/:collection/:hash/thumbnail/:size(100|200|400).jpg',
+                      destination: API_URL + '/api/v1/doc/:collection/:hash/thumbnail/:size.jpg',
+                  },
+                  {
+                      source: '/api/v1/get_uploads',
+                      destination: API_URL + '/api/v1/get_uploads',
+                  },
+                  {
+                      source: '/api/v1/:collection/:directory/get_directory_uploads',
+                      destination: API_URL + '/api/v1/:collection/:directory/get_directory_uploads',
+                  },
+                  {
+                      source: '/api/v1/limits',
+                      destination: API_URL + '/api/v1/limits',
+                  },
+                  {
+                      source: '/api/v1/upload/',
+                      destination: API_URL + '/api/v1/upload/',
+                  },
+              ]
+            : [],
 }
 
 module.exports = () => {

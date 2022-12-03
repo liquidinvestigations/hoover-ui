@@ -1,14 +1,15 @@
-import qs from 'qs'
+import qs, { ParsedQs } from 'qs'
 import { DateTime } from 'luxon'
 import { daysInMonth } from './utils'
 import { aggregationFields } from '../constants/aggregationFields'
+import { SearchQueryParams } from '../Types'
 
-export const defaultSearchParams = {
+export const defaultSearchTextParams = {
     page: 1,
     size: 10,
 }
 
-const PARAMS_MAP = {
+const PARAMS_MAP: Record<string, string> = {
     q: 'q',
     c: 'collections',
     p: 'page',
@@ -23,7 +24,7 @@ const PARAMS_MAP = {
     g: 'previewPage',
 }
 
-const LEGACY_PARAMS = {
+const LEGACY_PARAMS: Record<string, string> = {
     ...PARAMS_MAP,
     d: 'date',
     r: 'date-created',
@@ -32,7 +33,7 @@ const LEGACY_PARAMS = {
     e: 'email-domains',
 }
 
-export const rollupParams = (query) =>
+export const rollupParams = (query: Record<string, any>) =>
     Object.fromEntries(
         Object.entries(query).map(([field, value]) => {
             const key = Object.keys(PARAMS_MAP).find((key) => PARAMS_MAP[key] === field)
@@ -40,28 +41,33 @@ export const rollupParams = (query) =>
         })
     )
 
-export const unwindParams = (query) =>
+export const unwindParams = (query: ParsedQs) =>
     Object.fromEntries(Object.entries(query).map(([field, value]) => (LEGACY_PARAMS[field] ? [LEGACY_PARAMS[field], value] : [field, value])))
 
-export const buildSearchQuerystring = (params) =>
+export const buildSearchQuerystring = (params: SearchQueryParams) =>
     qs.stringify(
         rollupParams({
-            ...defaultSearchParams,
             ...params,
             collections: params?.collections?.join?.('+'),
         })
     )
 
-export const clearQuotedParam = (param) => param.replace(/#/g, ' ').replace(/"/g, '')
+export const clearQuotedParam = (param: string) => param.replace(/#/g, ' ').replace(/"/g, '')
 
-export const createSearchParams = (field, term) => {
-    const params = {}
+export interface Term {
+    term: string
+    format: string
+    interval: number
+}
+
+export const createSearchParams = (field: string, term: string | Term) => {
+    const params: SearchQueryParams = {}
 
     if (aggregationFields[field]) {
         params.q = '*'
         params.filters = {}
 
-        if (aggregationFields[field].type === 'date') {
+        if (aggregationFields[field].type === 'date' && typeof term === 'object') {
             switch (term.format) {
                 case 'year':
                     const year = term.term.substring(0, 4)
@@ -110,16 +116,16 @@ export const createSearchParams = (field, term) => {
         } else {
             params.filters[field] = { include: [term] }
         }
-    } else if (field) {
+    } else if (field && typeof term === 'string') {
         params.q = `${field}:"${clearQuotedParam(term)}"`
-    } else {
+    } else if (typeof term === 'string') {
         params.q = term
     }
 
     return params
 }
 
-export const createSearchUrl = (term, field, collections, hash) => {
+export const createSearchUrl = (term: Term | string, field: string, collections: string | string[], hash: Record<string, any>) => {
     const params = createSearchParams(field, term)
     const hashParams = hash ? '#' + qs.stringify(rollupParams(hash)) : ''
 

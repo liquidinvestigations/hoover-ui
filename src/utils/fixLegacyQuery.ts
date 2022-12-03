@@ -1,3 +1,5 @@
+import { SearchQueryParams } from '../Types'
+
 const SORT_RELEVANCE = 'Relevance'
 const SORT_NEWEST = 'Newest'
 const SORT_OLDEST = 'Oldest'
@@ -8,7 +10,11 @@ const SORT_SIZE_ASCENDING = 'Size ascending'
 const SORT_WORD_COUNT_DESCENDING = 'Word count descending'
 const SORT_WORD_COUNT_ASCENDING = 'Word count ascending'
 
-const moveToFilters = (query, param, value) => {
+interface LegacySearchQueryParams {
+    [field: string]: any
+}
+
+const moveToFilters = (query: LegacySearchQueryParams, param: string, value?: string) => {
     if (!query.filters) {
         query.filters = {}
     }
@@ -23,7 +29,7 @@ const moveToFilters = (query, param, value) => {
     }
 }
 
-export default function fixLegacyQuery(query) {
+export default function fixLegacyQuery(query: LegacySearchQueryParams): SearchQueryParams {
     if (query.collections && typeof query.collections === 'string') {
         query.collections = query.collections.split('+')
     }
@@ -59,4 +65,6 @@ export default function fixLegacyQuery(query) {
     privateTags.forEach((tag) => {
         moveToFilters(query, 'priv-tags', query[tag])
     })
+
+    return query
 }
