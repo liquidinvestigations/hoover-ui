@@ -12,7 +12,11 @@ import { getDirectoryUploads, createUploadUrl } from '../../backend/api'
 import Histogram from '../insights/Histogram'
 import Uppy from '@uppy/core'
 import Tus from '@uppy/tus'
-import { FileInput } from '@uppy/react'
+import { FileInput, StatusBar } from '@uppy/react'
+import '@uppy/core/dist/style.css'
+import '@uppy/file-input/dist/style.css'
+import '@uppy/core/dist/style.css'
+import '@uppy/status-bar/dist/style.css'
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -71,18 +75,18 @@ export default function DirectoryUploads(props) {
         return () => {
             clearInterval(intervalRef.current)
         }
-    }, [])
+    }, [props.collection, props.directoryId])
 
     const { query, search } = useSearch()
 
     return (
                 <div className={classes.root}>
                     <Grid container spacing={2}>
-            <Grid item xs={6}>
-            <Typography variant="h5" className={classes.sectionTitle}>Directory: {uploadsState.directory_name}</Typography>
+            <Grid item xs={12}>
+            <Typography variant="h5" className={classes.sectionTitle}>Collection: {uploadsState.collection}</Typography>
             </Grid>
             <Grid item xs={6}>
-            <Typography variant="h5" className={classes.sectionTitle}>Collection: {uploadsState.collection}</Typography>
+            <Typography variant="h5" className={classes.sectionTitle}>Directory Name: {uploadsState.directory_name}</Typography>
             </Grid>
             <Grid item xs={6}>
             <Typography variant="h5" className={classes.sectionTitle}>Path: {uploadsState.directory_path}</Typography>
@@ -116,11 +120,20 @@ export default function DirectoryUploads(props) {
             </table>
                             </Paper>
                         </Grid>
+            <Grid item xs={12}>
                   <FileInput
          uppy={uppy}
-         pretty
+        pretty={true}
          inputName="files[]"
+        locale={{strings: { chooseFiles: 'Choose files to upload'}}}
              />
+            <StatusBar
+        uppy={uppy}
+        hideUploadButton
+        hideAfterFinish={false}
+        showProgressDetails
+            />
+            </Grid>
                     </Grid>
                 </div>
     )

@@ -109,4 +109,4 @@ export const createThumbnailSrcSet = (docUrl) =>
     `${createThumbnailSrc(docUrl, 100)}, `+
     `${createThumbnailSrc(docUrl, 200)} 2x, `+
     `${createThumbnailSrc(docUrl, 400)} 4x`
-export const createUploadUrl = () => buildUrl('upload/')
+export const createUploadUrl = () => buildUrl('upload')
