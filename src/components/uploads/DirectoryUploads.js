@@ -97,6 +97,7 @@ export default function DirectoryUploads(props) {
             <th>Finished</th>
             <th>Uploader</th>
             <th>Filename</th>
+            <th>Progress</th>
             <th>Processed</th>
             </tr>
             </thead>
@@ -107,6 +108,7 @@ export default function DirectoryUploads(props) {
                     <td>{upload.finished ? upload.finished : ''}</td>
                     <td>{upload.uploader ? upload.uploader : ''}</td>
                     <td>{upload.filename ? upload.filename : ''}</td>
+                    <td>{upload.tasks_done != undefined ? (upload.tasks_done + '/' + upload.tasks_total) : ''}</td>
                     <td>{(upload.processed || upload.processed === false) ? upload.processed.toString() : ''}</td>
                     </tr>
             ))}
