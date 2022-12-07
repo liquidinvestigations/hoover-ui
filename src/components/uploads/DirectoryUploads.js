@@ -111,8 +111,6 @@ export default function DirectoryUploads(props) {
                             <thead>
                                 <tr>
                                     <th>Filename</th>
-                                    <th>Started</th>
-                                    <th>Finished</th>
                                     <th>Uploader</th>
                                     <th>Started</th>
                                     <th>Finished</th>
