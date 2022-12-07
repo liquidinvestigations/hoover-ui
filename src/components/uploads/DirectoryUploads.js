@@ -52,9 +52,15 @@ export default function DirectoryUploads(props) {
             name: file.name,
             dirpk: props.directoryId,
             collection: props.collection
-        });
-    });
+        })
+    })
 
+    uppy.on('complete', () => {
+        getDirectoryUploads(props.collection, props.directoryId)
+            .then(data => {
+                setUploadsState(data);
+            })
+    })
 
     uppy.use(Tus, {
         endpoint: createUploadUrl(),
