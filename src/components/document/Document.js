@@ -19,9 +19,6 @@ import { createOcrUrl, createUploadUrl } from '../../backend/api'
 import { specialTags } from '../../constants/specialTags'
 import { reactIcons } from '../../constants/icons'
 import { getTagIcon } from '../../utils'
-import Uppy from '@uppy/core'
-import Tus from '@uppy/tus'
-import { FileInput } from '@uppy/react'
 
 
 const useStyles = makeStyles(theme => ({
@@ -102,28 +99,6 @@ function Document({ onPrev, onNext }) {
         thumbnailSrcSet,
         tab, handleTabChange,
     } = useDocument()
-
-    const uppy = new Uppy({
-        meta: {},
-        restrictions: { maxNumberOfFiles: 1 },
-        autoProceed: true,
-    })
-
-
-    uppy.on('file-added', (file) =>{
-        uppy.setFileMeta(file.id, {
-            name: file.name,
-            dirpk: data.id,
-            collection: collection
-        });
-    });
-
-
-    uppy.use(Tus, {
-        endpoint: createUploadUrl(),
-        retryDelays: [0, 1000, 3000, 5000],
-        limit: 3,
-    })
 
     const { tags, tagsLoading, tagsLocked, handleSpecialTagClick } = useTags()
 
@@ -255,25 +230,12 @@ function Document({ onPrev, onNext }) {
         visible: !!data.content.tree,
         content: <Text content={data.content.tree} />,
 
-    },{name: 'Upload',
-       icon: reactIcons.headersTab,
-       visible: !printMode && data.id.startsWith('_directory'),
-       content: <Button
-       key={'Upload'}
-       variant="text"
-       component="a"
-       href={'/upload/' + collection + '/' + data.id}
-       color="inherit"
-       >
-       {'Upload'}
-       </Button>
-      }]
+    }]
 
-   //       <FileInput
-   // uppy={uppy}
-   // pretty
-   // inputName="files[]"
-   //     />
+    const emptyTabs = []
+    for (let i = 0; i < 10; i++) {
+        emptyTabs.push(<StyledTab disabled />)
+    }
 
 
     return (
@@ -366,6 +328,17 @@ function Document({ onPrev, onNext }) {
                             label={tabData.name}
                         />
                     ))}
+                {emptyTabs}
+                    <Button
+                key={'Upload'}
+                startIcon={reactIcons.download}
+                variant="text"
+                component="a"
+                href={'/upload/' + collection + '/' + data.id}
+                color="inherit"
+                    >
+                    {'Upload File'}
+                </Button>
                 </Tabs>
             )}
 
