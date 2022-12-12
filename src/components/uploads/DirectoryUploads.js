@@ -119,35 +119,45 @@ export default function DirectoryUploads(props) {
                                 </tr>
                             </thead>
                             <tbody>
-                                {uploadsState.uploads.map((upload) => (
-                                    <tr key={upload.started}>
-                                        <td>
-                                            {upload.filename ? upload.filename : ''}
-                                        </td>
-                                        <td>
-                                            {upload.uploader ? upload.uploader : ''}
-                                        </td>
-                                        <td>
-                                            {upload.started ? upload.started : ''}
-                                        </td>
-                                        <td>
-                                            {upload.finished ? upload.finished : ''}
-                                        </td>
-                                        <td>
-                                            {upload.tasks_done != undefined
-                                                ? upload.tasks_done +
-                                                  '/' +
-                                                  upload.tasks_total
-                                                : ''}
-                                        </td>
-                                        <td>
-                                            {upload.processed ||
-                                            upload.processed === false
-                                                ? upload.processed.toString()
-                                                : ''}
-                                        </td>
-                                    </tr>
-                                ))}
+                                {uploadsState.uploads
+                                    .sort((a, b) => a.started - b.started)
+                                    .map((upload) => (
+                                        <tr key={upload.started}>
+                                            <td>
+                                                {upload.filename
+                                                    ? upload.filename
+                                                    : ''}
+                                            </td>
+                                            <td>
+                                                {upload.uploader
+                                                    ? upload.uploader
+                                                    : ''}
+                                            </td>
+                                            <td>
+                                                {upload.started
+                                                    ? upload.started
+                                                    : ''}
+                                            </td>
+                                            <td>
+                                                {upload.finished
+                                                    ? upload.finished
+                                                    : ''}
+                                            </td>
+                                            <td>
+                                                {upload.tasks_done != undefined
+                                                    ? upload.tasks_done +
+                                                      '/' +
+                                                      upload.tasks_total
+                                                    : ''}
+                                            </td>
+                                            <td>
+                                                {upload.processed ||
+                                                upload.processed === false
+                                                    ? upload.processed.toString()
+                                                    : ''}
+                                            </td>
+                                        </tr>
+                                    ))}
                             </tbody>
                         </table>
                     </Paper>
