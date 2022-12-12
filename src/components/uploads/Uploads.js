@@ -36,7 +36,10 @@ export default function Uploads(collections) {
         getUploads()
             .then((data) => {
                 const sortedData = data.uploads.sort((a, b) => a.started - b.started)
-                setUploadsState(sortedData);
+                setUploadsState({
+                    ...uploadsState,
+                    uploads: sortedData,
+                });
             })
             .catch((error) => setError(error.message));
 

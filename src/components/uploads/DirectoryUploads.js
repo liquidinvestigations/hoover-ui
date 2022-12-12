@@ -68,8 +68,10 @@ export default function DirectoryUploads(props) {
 
     useEffect(() => {
         getDirectoryUploads(props.collection, props.directoryId).then((data) => {
-            const sortedData = data.uploads.sort((a, b) => a.started -b .started)
-            setUploadsState(sortedData);
+            const sortedData = data.uploads.sort((a, b) => a.started - b.started)
+            setUploadsState({
+                ...uploadsState,
+                uploads: sortedData,
         });
 
         intervalRef.current = setInterval(async () => {
