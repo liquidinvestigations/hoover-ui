@@ -35,7 +35,8 @@ export default function Uploads(collections) {
     useEffect(() => {
         getUploads()
             .then((data) => {
-                setUploadsState(data);
+                const sortedData = data.uploads.sort((a, b) => a.started - b.started)
+                setUploadsState(sortedData);
             })
             .catch((error) => setError(error.message));
 
@@ -73,7 +74,6 @@ export default function Uploads(collections) {
                             </thead>
                             <tbody>
                                 {uploadsState
-                                    .sort((a, b) => a.started - b.started)
                                     .map((upload) => (
                                         <tr key={upload.started}>
                                             <td>
