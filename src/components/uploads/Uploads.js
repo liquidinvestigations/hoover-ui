@@ -33,15 +33,9 @@ export default function Uploads(collections) {
     const [uploadsState, setUploadsState] = useState([]);
     const intervalRef = useRef(0);
     useEffect(() => {
-        getUploads()
-            .then((data) => {
-                const sortedData = data.uploads.sort((a, b) => a.started - b.started)
-                setUploadsState({
-                    ...uploadsState,
-                    uploads: sortedData,
-                });
-            })
-            .catch((error) => setError(error.message));
+        getUploads().then((data) => {
+            setUploadsState(data);
+        });
 
         intervalRef.current = setInterval(async () => {
             setUploadsState(await getUploads());
@@ -77,6 +71,11 @@ export default function Uploads(collections) {
                             </thead>
                             <tbody>
                                 {uploadsState
+                                    .sort((a, b) =>
+                                        String(a.started).localeCompare(
+                                            String(b.started)
+                                        )
+                                    )
                                     .map((upload) => (
                                         <tr key={upload.started}>
                                             <td>

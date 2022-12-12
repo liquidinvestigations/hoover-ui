@@ -68,10 +68,7 @@ export default function DirectoryUploads(props) {
 
     useEffect(() => {
         getDirectoryUploads(props.collection, props.directoryId).then((data) => {
-            const sortedData = data.uploads.sort((a, b) => a.started - b.started)
-            setUploadsState({
-                ...uploadsState,
-                uploads: sortedData,
+            setUploadsState(data);
         });
 
         intervalRef.current = setInterval(async () => {
@@ -123,6 +120,11 @@ export default function DirectoryUploads(props) {
                             </thead>
                             <tbody>
                                 {uploadsState.uploads
+                                    .sort((a, b) =>
+                                        String(a.started).localeCompare(
+                                            String(b.started)
+                                        )
+                                    )
                                     .map((upload) => (
                                         <tr key={upload.started}>
                                             <td>
