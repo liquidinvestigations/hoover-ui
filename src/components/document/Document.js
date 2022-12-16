@@ -237,6 +237,19 @@ function Document({ onPrev, onNext }) {
         emptyTabs.push(<StyledTab disabled />)
     }
 
+    const uploadButton = () => {
+        <Button
+    key={'Upload'}
+    startIcon={reactIcons.download}
+    variant="text"
+    component="a"
+    href={'/upload/' + collection + '/' + data.id}
+    color="inherit"
+        >
+        {'Upload File'}
+    </Button>
+    }
+
 
     return (
         <div className={classes.root} data-test="doc-view">
@@ -328,17 +341,7 @@ function Document({ onPrev, onNext }) {
                             label={tabData.name}
                         />
                     ))}
-                {emptyTabs}
-                    <Button
-                key={'Upload'}
-                startIcon={reactIcons.download}
-                variant="text"
-                component="a"
-                href={'/upload/' + collection + '/' + data.id}
-                color="inherit"
-                    >
-                    {'Upload File'}
-                </Button>
+                {data.content.filetype == 'directory' && [...emptyTabs, uploadButton()]}
                 </Tabs>
             )}
 
