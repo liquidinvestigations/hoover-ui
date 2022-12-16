@@ -341,7 +341,7 @@ function Document({ onPrev, onNext }) {
                             label={tabData.name}
                         />
                     ))}
-                {data.content.filetype == 'directory' && [...emptyTabs, uploadButton()]}
+                {data.content.filetype == 'folder' && [...emptyTabs, uploadButton()]}
                 </Tabs>
             )}
 
