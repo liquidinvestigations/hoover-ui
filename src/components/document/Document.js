@@ -238,6 +238,7 @@ function Document({ onPrev, onNext }) {
     }
 
     const uploadButton = () => {
+        return(
         <Button
     key={'Upload'}
     startIcon={reactIcons.download}
@@ -248,6 +249,7 @@ function Document({ onPrev, onNext }) {
         >
         {'Upload File'}
     </Button>
+        )
     }
 
 
