@@ -64,6 +64,8 @@ export default function DirectoryUploads(props) {
         endpoint: createUploadUrl(),
         retryDelays: [0, 1000, 3000, 5000],
         limit: 3,
+        // needs to match the chunksize of the client
+        chunkSize: 5242880,
     });
 
     useEffect(() => {
