@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, memo } from 'react';
 import { Grid, List, ListItem, Paper, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import InsightsTitle from '../insights/InsightsTitle';
@@ -85,6 +85,8 @@ export default function DirectoryUploads(props) {
     }, [props.collection, props.directoryId]);
 
     const { query, search } = useSearch();
+
+    const MemoizedStatusBar = memo(StatusBar);
 
     return (
         <div className={classes.root}>
@@ -177,7 +179,7 @@ export default function DirectoryUploads(props) {
                             strings: { chooseFiles: 'Choose file to upload' },
                         }}
                     />
-                    <StatusBar
+                    <MemoizedStatusBar
                         uppy={uppy}
                         hideUploadButton
                         hideAfterFinish={false}
