@@ -40,33 +40,40 @@ export default function DirectoryUploads(props) {
     const [uploadsState, setUploadsState] = useState({ uploads: [] });
     const intervalRef = useRef(0);
 
-    const uppy = new Uppy({
-        meta: {},
-        restrictions: { maxNumberOfFiles: 1 },
-        autoProceed: true,
-    });
+    const uppyRef = useRef(null);
 
-    uppy.on('file-added', (file) => {
-        uppy.setFileMeta(file.id, {
-            name: file.name,
-            dirpk: props.directoryId,
-            collection: props.collection,
-        });
-    });
+    useEffect(() => {
+        if (uppyRef.current === null) {
+            uppyRef.current = new Uppy({
+                meta: {},
+                restrictions: { maxNumberOfFiles: 1 },
+                autoProceed: true,
+            });
+            uppyRef.current.use(Tus, {
+                endpoint: createUploadUrl(),
+                retryDelays: [0, 1000, 3000, 5000],
+                limit: 1,
+                // needs to match the chunksize of the client
+                chunkSize: 5242880,
+            });
+            uppyRef.current.on('file-added', (file) => {
+                uppyRef.current.setFileMeta(file.id, {
+                    name: file.name,
+                    dirpk: props.directoryId,
+                    collection: props.collection,
+                });
+            });
+            uppyRef.current.on('complete', () => {
+                getDirectoryUploads(props.collection, props.directoryId).then(
+                    (data) => {
+                        setUploadsState(data);
+                    }
+                );
+            });
+        }
 
-    uppy.on('complete', () => {
-        getDirectoryUploads(props.collection, props.directoryId).then((data) => {
-            setUploadsState(data);
-        });
-    });
-
-    uppy.use(Tus, {
-        endpoint: createUploadUrl(),
-        retryDelays: [0, 1000, 3000, 5000],
-        limit: 1,
-        // needs to match the chunksize of the client
-        chunkSize: 5242880,
-    });
+        return () => uppyRef.current.close();
+    }, [props]); // The empty array ensures that this effect only runs on mount.
 
     useEffect(() => {
         getDirectoryUploads(props.collection, props.directoryId).then((data) => {
@@ -89,104 +96,115 @@ export default function DirectoryUploads(props) {
     const MemoizedStatusBar = memo(StatusBar);
 
     return (
-        <div className={classes.root}>
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <Typography variant="h5" className={classes.sectionTitle}>
-                        Collection: {uploadsState.collection}
-                    </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                    <Typography variant="h5" className={classes.sectionTitle}>
-                        Directory Name: {uploadsState.directory_name}
-                    </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                    <Typography variant="h5" className={classes.sectionTitle}>
-                        Path: {uploadsState.directory_path}
-                    </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                    <Paper>
+        <>
+            <div className={classes.root}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
                         <Typography variant="h5" className={classes.sectionTitle}>
-                            Uploads
+                            Collection: {uploadsState.collection}
                         </Typography>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Filename</th>
-                                    <th>Uploader</th>
-                                    <th>Started</th>
-                                    <th>Finished</th>
-                                    <th>Progress</th>
-                                    <th>Processed</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {uploadsState.uploads
-                                    .sort((a, b) =>
-                                        String(a.started).localeCompare(
-                                            String(b.started)
+                    </Grid>
+                    <Grid item xs={6}>
+                        <Typography variant="h5" className={classes.sectionTitle}>
+                            Directory Name: {uploadsState.directory_name}
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <Typography variant="h5" className={classes.sectionTitle}>
+                            Path: {uploadsState.directory_path}
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Paper>
+                            <Typography
+                                variant="h5"
+                                className={classes.sectionTitle}
+                            >
+                                Uploads
+                            </Typography>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Filename</th>
+                                        <th>Uploader</th>
+                                        <th>Started</th>
+                                        <th>Finished</th>
+                                        <th>Progress</th>
+                                        <th>Processed</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {uploadsState.uploads
+                                        .sort((a, b) =>
+                                            String(a.started).localeCompare(
+                                                String(b.started)
+                                            )
                                         )
-                                    )
-                                    .map((upload) => (
-                                        <tr key={upload.started}>
-                                            <td>
-                                                {upload.filename
-                                                    ? upload.filename
-                                                    : ''}
-                                            </td>
-                                            <td>
-                                                {upload.uploader
-                                                    ? upload.uploader
-                                                    : ''}
-                                            </td>
-                                            <td>
-                                                {upload.started
-                                                    ? upload.started
-                                                    : ''}
-                                            </td>
-                                            <td>
-                                                {upload.finished
-                                                    ? upload.finished
-                                                    : ''}
-                                            </td>
-                                            <td>
-                                                {upload.tasks_done != undefined
-                                                    ? upload.tasks_done +
-                                                      '/' +
-                                                      upload.tasks_total
-                                                    : ''}
-                                            </td>
-                                            <td>
-                                                {upload.processed ||
-                                                upload.processed === false
-                                                    ? upload.processed.toString()
-                                                    : ''}
-                                            </td>
-                                        </tr>
-                                    ))}
-                            </tbody>
-                        </table>
-                    </Paper>
+                                        .map((upload) => (
+                                            <tr key={upload.started}>
+                                                <td>
+                                                    {upload.filename
+                                                        ? upload.filename
+                                                        : ''}
+                                                </td>
+                                                <td>
+                                                    {upload.uploader
+                                                        ? upload.uploader
+                                                        : ''}
+                                                </td>
+                                                <td>
+                                                    {upload.started
+                                                        ? upload.started
+                                                        : ''}
+                                                </td>
+                                                <td>
+                                                    {upload.finished
+                                                        ? upload.finished
+                                                        : ''}
+                                                </td>
+                                                <td>
+                                                    {upload.tasks_done != undefined
+                                                        ? upload.tasks_done +
+                                                          '/' +
+                                                          upload.tasks_total
+                                                        : ''}
+                                                </td>
+                                                <td>
+                                                    {upload.processed ||
+                                                    upload.processed === false
+                                                        ? upload.processed.toString()
+                                                        : ''}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                </tbody>
+                            </table>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={12}>
+                        {uppyRef.current !== null ? (
+                            <>
+                                <FileInput
+                                    uppy={uppyRef.current}
+                                    pretty={true}
+                                    inputName="files[]"
+                                    locale={{
+                                        strings: {
+                                            chooseFiles: 'Choose file to upload',
+                                        },
+                                    }}
+                                />
+                                <MemoizedStatusBar
+                                    uppy={uppyRef.current}
+                                    hideUploadButton
+                                    hideAfterFinish={false}
+                                    showProgressDetails
+                                />
+                            </>
+                        ) : null}
+                    </Grid>
                 </Grid>
-                <Grid item xs={12}>
-                    <FileInput
-                        uppy={uppy}
-                        pretty={true}
-                        inputName="files[]"
-                        locale={{
-                            strings: { chooseFiles: 'Choose file to upload' },
-                        }}
-                    />
-                    <MemoizedStatusBar
-                        uppy={uppy}
-                        hideUploadButton
-                        hideAfterFinish={false}
-                        showProgressDetails
-                    />
-                </Grid>
-            </Grid>
-        </div>
+            </div>
+        </>
     );
 }
