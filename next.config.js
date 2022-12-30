@@ -129,8 +129,8 @@ const nextConfig = {
         source: '/api/v1/limits',
         destination: API_URL + '/api/v1/limits',
     },{
-        source: '/api/v1/upload',
-        destination: API_URL + '/api/v1/upload',
+        source: '/api/v1/upload/',
+        destination: API_URL + '/api/v1/upload/',
     }] : [],
 }
 
