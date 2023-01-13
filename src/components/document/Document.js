@@ -343,7 +343,7 @@ function Document({ onPrev, onNext }) {
                             label={tabData.name}
                         />
                     ))}
-                {data.content.filetype == 'folder' && [...emptyTabs, uploadButton()]}
+                {data.content.filetype == 'folder' && !data.content.path.includes('//') && [...emptyTabs, uploadButton()]}
                 </Tabs>
             )}
 
