@@ -55,6 +55,7 @@ export default function DirectoryUploads(props) {
                 limit: 1,
                 // needs to match the chunksize of the client
                 chunkSize: 5242880,
+                allowMultipleUploads: true,
             });
             uppyRef.current.on('file-added', (file) => {
                 uppyRef.current.setFileMeta(file.id, {
