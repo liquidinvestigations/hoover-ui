@@ -46,7 +46,7 @@ export default function DirectoryUploads(props) {
         if (uppyRef.current === null) {
             uppyRef.current = new Uppy({
                 meta: {},
-                restrictions: { maxNumberOfFiles: 1 },
+                restrictions: { maxNumberOfFiles: null },
                 autoProceed: true,
                 allowMultipleUploadBatches: true,
             });
