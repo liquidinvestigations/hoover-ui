@@ -48,6 +48,7 @@ export default function DirectoryUploads(props) {
                 meta: {},
                 restrictions: { maxNumberOfFiles: 1 },
                 autoProceed: true,
+                allowMultipleUploadBatches: true,
             });
             uppyRef.current.use(Tus, {
                 endpoint: createUploadUrl(),
@@ -55,7 +56,6 @@ export default function DirectoryUploads(props) {
                 limit: 1,
                 // needs to match the chunksize of the client
                 chunkSize: 5242880,
-                allowMultipleUploads: true,
             });
             uppyRef.current.on('file-added', (file) => {
                 uppyRef.current.setFileMeta(file.id, {
