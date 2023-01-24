@@ -5,7 +5,7 @@ import getAuthorizationHeaders from '../../../src/backend/getAuthorizationHeader
 import { collections as collectionsAPI } from '../../../src/backend/api'
 import DirectoryUploads from '../../../src/components/uploads/DirectoryUploads'
 
-export default function DirectoryUploads({ collections, serverQuery }) {
+export default function DirectoryUploadsPage({ collections, serverQuery }) {
 
     const router = useRouter()
     const { query } = router
