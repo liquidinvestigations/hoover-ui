@@ -5,16 +5,14 @@ import getAuthorizationHeaders from '../../../src/backend/getAuthorizationHeader
 import { collections as collectionsAPI } from '../../../src/backend/api'
 import DirectoryUploads from '../../../src/components/uploads/DirectoryUploads'
 
-export default function InsightsPage({ collections, serverQuery }) {
+export default function DirectoryUploads({ collections, serverQuery }) {
 
     const router = useRouter()
     const { query } = router
     const printMode = query.print && query.print !== 'false'
 
     return (
-            <SearchProvider serverQuery={serverQuery}>
             <DirectoryUploads collection={query.collection} directoryId={query.id} />
-            </SearchProvider>
     )
 }
 

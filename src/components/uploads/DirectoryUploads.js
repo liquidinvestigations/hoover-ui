@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export default function DirectoryUploads(props) {
+export default function DirectoryUploads({ collection, directoryId }) {
     const classes = useStyles();
 
     const [uploadsState, setUploadsState] = useState({ uploads: [] });
@@ -60,12 +60,12 @@ export default function DirectoryUploads(props) {
             uppyRef.current.on('file-added', (file) => {
                 uppyRef.current.setFileMeta(file.id, {
                     name: file.name,
-                    dirpk: props.directoryId,
-                    collection: props.collection,
+                    dirpk: directoryId,
+                    collection: collection,
                 });
             });
             uppyRef.current.on('complete', () => {
-                getDirectoryUploads(props.collection, props.directoryId).then(
+                getDirectoryUploads(collection, directoryId).then(
                     (data) => {
                         setUploadsState(data);
                     }
@@ -74,7 +74,7 @@ export default function DirectoryUploads(props) {
         }
 
         return () => uppyRef.current.close();
-    }, [props]); // The empty array ensures that this effect only runs on mount.
+    }, [directoryId, collection]); // The empty array ensures that this effect only runs on mount.
 
     useEffect(() => {
         getDirectoryUploads(props.collection, props.directoryId).then((data) => {
@@ -90,9 +90,7 @@ export default function DirectoryUploads(props) {
         return () => {
             clearInterval(intervalRef.current);
         };
-    }, [props.collection, props.directoryId]);
-
-    const { query, search } = useSearch();
+    }, [collection, directoryId]);
 
     const MemoizedStatusBar = memo(StatusBar);
 

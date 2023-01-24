@@ -46,8 +46,6 @@ export default function Uploads(collections) {
         };
     }, []);
 
-    const { query, search } = useSearch();
-
     return (
         <div className={classes.root}>
             <Grid container spacing={2}>

@@ -4,11 +4,9 @@ import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
 import { collections as collectionsAPI } from '../src/backend/api'
 import Uploads from '../src/components/uploads/Uploads'
 
-export default function InsightsPage({ collections, serverQuery }) {
+export default function UploadsPage({ collections, serverQuery }) {
     return (
-            <SearchProvider serverQuery={serverQuery}>
             <Uploads collections={collections} />
-            </SearchProvider>
     )
 }
 
