@@ -77,13 +77,13 @@ export default function DirectoryUploads({ collection, directoryId }) {
     }, [directoryId, collection]); // The empty array ensures that this effect only runs on mount.
 
     useEffect(() => {
-        getDirectoryUploads(props.collection, props.directoryId).then((data) => {
+        getDirectoryUploads(collection, directoryId).then((data) => {
             setUploadsState(data);
         });
 
         intervalRef.current = setInterval(async () => {
             setUploadsState(
-                await getDirectoryUploads(props.collection, props.directoryId)
+                await getDirectoryUploads(collection, directoryId)
             );
         }, 10000);
 
