@@ -40,7 +40,7 @@ export class HashStateStore {
         }
     }
 
-    setHashState = (params: Record<string, string>, pushHistory = true) => {
+    setHashState = (params: Record<string, any>, pushHistory = true) => {
         runInAction(() => {
             this.hashState = { ...this.hashState, ...params }
         })

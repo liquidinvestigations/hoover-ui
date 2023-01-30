@@ -381,7 +381,7 @@ const getAggregationFields = (type: FieldType, fieldList: FieldList) =>
         .filter((field) => fieldList === '*' || (Array.isArray(fieldList) && fieldList.includes(field)))
 
 const buildSearchQuery = (
-    { q = '*', page = 1, size = 0, order, collections = [], facets = {}, filters = {} }: SearchQueryParams = {},
+    { q = '*', page = 1, size = 0, order, collections = [], facets = {}, filters = {} }: Partial<SearchQueryParams> = {},
     type: SearchQueryType,
     fieldList: FieldList,
     missing: boolean,

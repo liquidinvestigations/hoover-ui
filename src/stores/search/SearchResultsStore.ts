@@ -1,14 +1,14 @@
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx'
 import { SearchStore } from './SearchStore'
-import { search as searchAPI } from '../../utils/api'
 import { SearchQueryParams } from '../../Types'
+import { AsyncQueryTask, AsyncQueryTaskRunner } from './AsyncTaskRunner'
+
+export type ViewType = 'list' | 'table'
 
 export class SearchResultsStore {
-    results: any
+    resultsQueryTasks: Record<string, AsyncQueryTask> = {}
 
-    resultsTask: any
-
-    resultsLoading = false
+    viewType: ViewType = 'list'
 
     error: any
 
@@ -20,7 +20,7 @@ export class SearchResultsStore {
         makeAutoObservable(this)
     }
 
-    maskIrrelevantParams = (query: SearchQueryParams): SearchQueryParams => ({
+    private maskIrrelevantParams = (query: SearchQueryParams): SearchQueryParams => ({
         ...query,
         facets: undefined,
         filters: {
@@ -38,27 +38,28 @@ export class SearchResultsStore {
         },
     })
 
-    resultsQueryDiffer = (query?: SearchQueryParams): boolean => {
-        if (query && !this.searchStore.query) {
+    queryDiffer = (query: SearchQueryParams): boolean => {
+        if (!this.searchStore.query) {
             return true
-        } else if (query && this.searchStore.query) {
+        } else if (this.searchStore.query) {
             return JSON.stringify(this.maskIrrelevantParams(query)) !== JSON.stringify(this.maskIrrelevantParams(this.searchStore.query))
         }
         return false
     }
 
-    runQueryTask = async () => {
-        try {
-            const taskData = await searchAPI({
-                ...this.searchStore.query,
-                type: 'results',
-                fieldList: '*',
-                async: true,
-            })
+    queryResult = (query: SearchQueryParams) => {
+        this.resultsQueryTasks = {}
 
-            this.resultsTask = { ...taskData, initialEta: taskData.eta?.total_sec }
-        } catch (error) {
-            //handleResultsError(error)
+        for (const collection of query.collections) {
+            const { collections, ...queryParams } = query
+            const singleCollectionQuery = { collections: [collection], ...queryParams }
+            this.resultsQueryTasks[collection] = AsyncQueryTaskRunner.createAsyncQueryTask(singleCollectionQuery, 'results', '*')
         }
+    }
+
+    setViewType = (viewType: ViewType): void => {
+        runInAction(() => {
+            this.viewType = viewType
+        })
     }
 }

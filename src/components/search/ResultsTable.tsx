@@ -1,15 +1,19 @@
-import { cloneElement, useState } from 'react'
 import cn from 'classnames'
+import { cloneElement, FC, useState, MouseEvent } from 'react'
 import ReactPlaceholder from 'react-placeholder'
 import { TextRow } from 'react-placeholder/lib/placeholders'
 import { IconButton, Menu, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { makeStyles } from '@mui/styles'
+import { Theme } from '@mui/system'
 import { useSearch } from './SearchProvider'
 import ResultsTableRow from './ResultsTableRow'
 import { availableColumns } from '../../constants/availableColumns'
 import { reactIcons } from '../../constants/icons'
+import { AsyncQueryTask } from '../../stores/search/AsyncTaskRunner'
+import { Hit } from '../../Types'
+import { observer } from 'mobx-react-lite'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
     table: {
         '& th': {
             fontWeight: 'bold',
@@ -37,18 +41,23 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-export default function ResultsTable() {
+interface ResultsTableProps {
+    queryTask: AsyncQueryTask
+}
+
+export const ResultsTable: FC<ResultsTableProps> = observer(({ queryTask }) => {
     const classes = useStyles()
+    // @ts-ignore
     const { query, results, resultsLoading, resultsColumns, setResultsColumns, search } = useSearch()
 
     const size = parseInt(query.size || 10)
     const order = query.order
-    const changeOrder = (newOrder) => {
+    const changeOrder = (newOrder: string[]) => {
         search({ order: newOrder, page: 1 })
     }
 
-    const handleClick = (field) => () => {
-        const index = order?.findIndex(([v]) => v === field)
+    const handleClick = (field: string) => () => {
+        const index = order?.findIndex(([v]: string[]) => v === field)
         const newOrder = [...(order || [])]
         if (index !== undefined && index !== -1) {
             const [, direction] = order[index]
@@ -63,18 +72,18 @@ export default function ResultsTable() {
         changeOrder(newOrder)
     }
 
-    const [anchorEl, setAnchorEl] = useState(null)
-    const handleColumnsMenuClick = (event) => setAnchorEl(event.currentTarget)
+    const [anchorEl, setAnchorEl] = useState<Element | null>(null)
+    const handleColumnsMenuClick = (event: MouseEvent) => setAnchorEl(event.currentTarget)
     const handleColumnsMenuClose = () => setAnchorEl(null)
-    const handleColumnMenuClick = (field) => () => {
-        setResultsColumns((columns) => {
-            let index = resultsColumns.findIndex(([visibleField]) => visibleField === field)
+    const handleColumnMenuClick = (field: string) => () => {
+        setResultsColumns((columns: any[]) => {
+            let index = resultsColumns.findIndex(([visibleField]: string[]) => visibleField === field)
             if (index !== -1) {
                 columns.splice(index, 1)
                 return [...columns]
             } else {
-                return Object.entries(availableColumns).filter(([availableField, { hidden }]) => {
-                    return !!resultsColumns.find(([visibleField]) => visibleField === availableField) || availableField === field
+                return Object.entries(availableColumns).filter(([availableField]) => {
+                    return !!resultsColumns.find(([visibleField]: string[]) => visibleField === availableField) || availableField === field
                 })
             }
         })
@@ -86,8 +95,8 @@ export default function ResultsTable() {
                 <TableHead>
                     <TableRow>
                         <TableCell>#</TableCell>
-                        {resultsColumns.map(([field, { label, align, sortable }]) => {
-                            const index = order?.findIndex(([v]) => v === field)
+                        {resultsColumns.map(([field, { label, align, sortable }]: any[]) => {
+                            const index = order?.findIndex(([v]: string[]) => v === field)
                             let orderIcon = null
                             if (index !== undefined && index !== -1) {
                                 const [, direction] = order[index]
@@ -101,8 +110,8 @@ export default function ResultsTable() {
                                 <TableCell
                                     key={field}
                                     align={align}
-                                    className={sortable ? 'sortable' : null}
-                                    onClick={sortable ? handleClick(field) : null}>
+                                    className={sortable ? 'sortable' : undefined}
+                                    onClick={sortable ? handleClick(field) : undefined}>
                                     {label}
                                     {orderIcon}
                                 </TableCell>
@@ -118,7 +127,7 @@ export default function ResultsTable() {
                                     <MenuItem
                                         key={field}
                                         value={field}
-                                        selected={!!resultsColumns.find(([visibleField]) => visibleField === field)}
+                                        selected={!!resultsColumns.find(([visibleField]: string[]) => visibleField === field)}
                                         onClick={handleColumnMenuClick(field)}>
                                         {label}
                                     </MenuItem>
@@ -131,17 +140,21 @@ export default function ResultsTable() {
                     <ReactPlaceholder
                         showLoadingAnimation
                         ready={!resultsLoading}
-                        customPlaceholder={[...Array(size)].map((v, i) => (
-                            <TableRow key={i}>
-                                <TableCell colSpan={resultsColumns.length + 2}>
-                                    <TextRow lineSpacing={0} color="#CDCDCD" style={{ height: 26 }} />
-                                </TableCell>
-                            </TableRow>
-                        ))}>
-                        {!results ? null : results.hits.hits.map((hit, i) => <ResultsTableRow key={hit._id} index={i} hit={hit} />)}
+                        customPlaceholder={
+                            <>
+                                {[...Array(size)].map((_v, i) => (
+                                    <TableRow key={i}>
+                                        <TableCell colSpan={resultsColumns.length + 2}>
+                                            <TextRow lineSpacing={0} color="#CDCDCD" style={{ height: 26 }} />
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </>
+                        }>
+                        {!results ? null : results.hits.hits.map((hit: Hit, i: number) => <ResultsTableRow key={hit._id} index={i} hit={hit} />)}
                     </ReactPlaceholder>
                 </TableBody>
             </Table>
         </TableContainer>
     )
-}
+})

@@ -1,7 +1,8 @@
 import fetch from 'node-fetch'
 import { stringify } from 'qs'
 import memoize from 'lodash/memoize'
-import buildSearchQuery, { FieldList, SearchQueryType, SearchFields, SearchQueryParams } from './buildSearchQuery'
+import buildSearchQuery, { FieldList, SearchFields } from './buildSearchQuery'
+import { SearchQueryParams, SearchQueryType } from '../Types'
 
 const { API_URL } = process.env
 
@@ -56,7 +57,7 @@ export const searchFields = (headers: Record<string, string>) => fetchJson(build
 export const search = async (
     headers: Record<string, string>,
     params: SearchQueryParams,
-    type: QueryType,
+    type: SearchQueryType,
     fieldList: FieldList,
     missing: boolean,
     refresh: boolean,
