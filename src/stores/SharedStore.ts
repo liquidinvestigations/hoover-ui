@@ -1,12 +1,12 @@
 import { makeAutoObservable } from 'mobx'
 import { createObservableHistory, ObservableHistory } from 'mobx-observable-history'
-import { User } from '../Types'
+import { CollectionData, User } from '../Types'
 import { HashStateStore } from './HashStateStore'
 import { DocumentStore } from './DocumentStore'
 import { SearchStore } from './search/SearchStore'
 
 export class SharedStore {
-    collections: string[] = []
+    collectionsData: CollectionData[] = []
 
     limits = undefined
 

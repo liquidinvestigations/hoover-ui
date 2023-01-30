@@ -4,24 +4,24 @@ import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
 import { collections as collectionsAPI } from '../src/backend/api'
 import { Search } from '../src/components/search/Search'
 
-export default function Index({ collections, serverQuery }) {
+export default function Index({ collectionsData, serverQuery }) {
     const store = useSharedStore()
 
-    store.collections = collections
+    store.collectionsData = collectionsData
     store.searchStore.query = store.searchStore.parseSearchParams(serverQuery)
 
     return (
         <SearchProvider serverQuery={serverQuery}>
-            <Search collections={collections} />
+            <Search collections={collectionsData} />
         </SearchProvider>
     )
 }
 
 export async function getServerSideProps({ req }) {
     const headers = getAuthorizationHeaders(req)
-    const collections = await collectionsAPI(headers)
+    const collectionsData = await collectionsAPI(headers)
 
     const serverQuery = req.url.split('?')[1]?.split('#')[0] || ''
 
-    return { props: { collections, serverQuery } }
+    return { props: { collectionsData, serverQuery } }
 }

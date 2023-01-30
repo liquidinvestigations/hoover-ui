@@ -1,16 +1,19 @@
-import { memo } from 'react'
+import { FC } from 'react'
 import cn from 'classnames'
+import { observer } from 'mobx-react-lite'
 import { Grid, IconButton, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
+import { Theme } from '@mui/system'
 import { formatThousands } from '../../utils/utils'
 import SearchSize from './SearchSize'
-import { useSearch } from './SearchProvider'
 import { reactIcons } from '../../constants/icons'
+import { useSharedStore } from '../SharedStoreProvider'
+import { DEFAULT_MAX_RESULTS } from '../../constants/general'
 
 const MAX_PREV_PAGES = 3
 const MAX_NEXT_PAGES = 3
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
     pageLink: {
         cursor: 'pointer',
         margin: theme.spacing(1),
@@ -25,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-const createPageArray = (start, count) =>
+const createPageArray = (start: number, count: number) =>
     Array.from(
         {
             length: count,
@@ -33,17 +36,33 @@ const createPageArray = (start, count) =>
         (_, i) => i + start
     )
 
-function Pagination({ maxCount }) {
-    const classes = useStyles()
-    const { query, search, results } = useSearch()
+interface PaginationProps {
+    collection: string
+}
 
-    const total = parseInt(results?.hits.total || 0)
-    const size = parseInt(query.size || 10)
-    const page = parseInt(query.page || 0)
+export const Pagination: FC<PaginationProps> = observer(({ collection }) => {
+    const classes = useStyles()
+    const {
+        collectionsData,
+        searchStore: {
+            query,
+            search,
+            searchResultsStore: { resultsQueryTasks },
+        },
+    } = useSharedStore()
+
+    const queryTask = resultsQueryTasks[collection]
+
+    const maxResultWindow = collectionsData.find((collectionData) => collectionData.name === collection)?.max_result_window
+    const maxCount = maxResultWindow && !isNaN(maxResultWindow) && maxResultWindow < DEFAULT_MAX_RESULTS ? maxResultWindow : DEFAULT_MAX_RESULTS
+
+    const total = queryTask.data?.result?.hits.total || 0
+    const size = query?.size || 10
+    const page = query?.page || 0
 
     const handleNext = () => search({ page: page + 1 })
     const handlePrev = () => search({ page: page - 1 })
-    const handleSet = (page) => () => search({ page })
+    const handleSet = (page: number) => () => search({ page })
 
     const pageCount = Math.ceil(Math.min(total, maxCount) / size)
 
@@ -53,7 +72,7 @@ function Pagination({ maxCount }) {
     const hasNext = page < pageCount
     const hasPrev = page > 1
 
-    const pages = {
+    const pages: Record<string, number[]> = {
         left: [],
         middle: [],
         right: [],
@@ -107,7 +126,7 @@ function Pagination({ maxCount }) {
                                         key={i}
                                         component="a"
                                         variant="caption"
-                                        onClick={page !== p ? handleSet(p) : null}
+                                        onClick={page !== p ? handleSet(p) : undefined}
                                         className={cn(classes.pageLink, { [classes.pageLinkCurrent]: page === p })}>
                                         {p}
                                     </Typography>
@@ -124,6 +143,4 @@ function Pagination({ maxCount }) {
             )}
         </Grid>
     )
-}
-
-export default memo(Pagination)
+})

@@ -5,12 +5,11 @@ import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Toolt
 import { useProgressIndicator } from '../ProgressIndicator'
 import { useSearch } from './SearchProvider'
 import HotKeys from './HotKeys'
-import SearchResults from './Results'
+import { Results } from './Results'
 import QueryChips from './QueryChips'
 import Categories from './filters/Categories'
 import FiltersChips from './filters/FiltersChips'
 import Histogram from './filters/Histogram'
-import { DEFAULT_MAX_RESULTS } from '../../constants/general'
 import SortingChips from './sorting/SortingChips'
 import SortingMenu from './sorting/SortingMenu'
 import SplitPaneLayout from '../SplitPaneLayout'
@@ -51,10 +50,8 @@ const useStyles = makeStyles((theme) => ({
 export const Search = observer(({ collections }) => {
     const classes = useStyles()
     const inputRef = useRef()
-    const { query, error, setSearchText, resultsLoading, clearResults, previewNextDoc, previewPreviousDoc } = useSearch()
-    const {
-        searchStore: { search, searchText, handleInputChange },
-    } = useSharedStore()
+    const { error, setSearchText, resultsLoading, clearResults, previewNextDoc, previewPreviousDoc } = useSearch()
+    const { search, searchText, handleInputChange } = useSharedStore().searchStore
 
     const clearInput = () => {
         setSearchText('')
@@ -79,19 +76,6 @@ export const Search = observer(({ collections }) => {
     useEffect(() => {
         setLoading(resultsLoading)
     }, [resultsLoading, setLoading])
-
-    const maxResultsCount = useMemo(
-        () =>
-            collections
-                .filter((collection) => query.collections?.includes(collection.name))
-                .reduce((accumulator, collection) => {
-                    if (!isNaN(collection.max_result_window) && collection.max_result_window < accumulator) {
-                        return collection.max_result_window
-                    }
-                    return accumulator
-                }, DEFAULT_MAX_RESULTS),
-        [collections, query]
-    )
 
     const handleSubmit = (event) => {
         event.preventDefault()
@@ -201,7 +185,7 @@ export const Search = observer(({ collections }) => {
 
                             <Grid container>
                                 <Grid item sm={12}>
-                                    <SearchResults maxCount={maxResultsCount} />
+                                    <Results />
                                 </Grid>
                             </Grid>
                         </div>

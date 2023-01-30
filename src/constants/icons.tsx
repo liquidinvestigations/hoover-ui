@@ -1,4 +1,4 @@
-import { createElement, CSSProperties } from 'react'
+import { createElement, CSSProperties, ReactElement } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import type { IconDefinition } from '@fortawesome/fontawesome-common-types'
@@ -98,7 +98,7 @@ const FAIcon = ({ icon, style = {}, className = '' }: FAIconProps) =>
         },
     })
 
-export const reactIcons = {
+export const reactIcons: Record<string, ReactElement> = {
     categoryCollections: <FAIcon icon={faLayerGroup} style={{ width: '1.25em' }} />,
     categoryTags: <LocalOffer />,
     categoryDates: <DateRange />,

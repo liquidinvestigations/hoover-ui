@@ -11,7 +11,7 @@ export const Collections = observer(({ openCategory, setOpenCategory, wideFilter
     const { collectionsCount } = useSearch()
     const [searchCollections, setSearchCollections] = useState('')
     const {
-        collections,
+        collectionsData,
         searchStore: { query, search },
     } = useSharedStore()
 
@@ -43,7 +43,7 @@ export const Collections = observer(({ openCategory, setOpenCategory, wideFilter
             }>
             <Expandable title={`Collections (${query?.collections?.length || 0})`} open={true} highlight={false}>
                 <CollectionsFilter
-                    collections={collections}
+                    collections={collectionsData}
                     selected={query?.collections || []}
                     changeSelection={handleCollectionsChange}
                     counts={collectionsCount}

@@ -1,24 +1,26 @@
-import { cloneElement, useEffect, useRef, useState } from 'react'
+import { cloneElement, FC, RefObject, useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
 import { DateTime } from 'luxon'
 import { makeStyles } from '@mui/styles'
+import { Theme } from '@mui/system'
 import { observer } from 'mobx-react-lite'
 import { Box, Card, CardContent, CardHeader, Grid, IconButton, Paper, Popper, Tooltip, Typography } from '@mui/material'
 import Loading from '../Loading'
 import { useSharedStore } from '../SharedStoreProvider'
+import { Hit } from '../../Types'
 import { getPreviewParams, getTypeIcon, humanFileSize, makeUnsearchable, truncatePath } from '../../utils/utils'
 import { createDownloadUrl, createThumbnailSrc, createThumbnailSrcSet } from '../../backend/api'
 import { specialTags, specialTagsList } from '../../constants/specialTags'
 import { reactIcons } from '../../constants/icons'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
     card: {
         cursor: 'pointer',
         position: 'relative',
         marginTop: theme.spacing(1),
         borderLeft: '3px solid transparent',
-        transition: theme.transitions.create('border', {
-            duration: theme.transitions.duration.short,
+        transition: (theme.transitions as any).create('border', {
+            duration: (theme.transitions as any).duration.short,
         }),
     },
     cardContentRoot: {
@@ -63,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
     },
     text: {
         cursor: 'text',
-        fontFamily: theme.typography.fontFamilyMono,
+        fontFamily: (theme.typography as any).fontFamilyMono,
         fontSize: '.7rem',
         color: '#555',
     },
@@ -116,7 +118,13 @@ const useStyles = makeStyles((theme) => ({
 
 const timeMs = () => new Date().getTime()
 
-export const ResultItem = observer(({ hit, url, index }) => {
+interface ResultItemProps {
+    hit: Hit
+    url: string
+    index: number
+}
+
+export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) => {
     const classes = useStyles()
     const {
         user,
@@ -128,14 +136,14 @@ export const ResultItem = observer(({ hit, url, index }) => {
 
     const nodeRef = useRef()
     const handleMouseDown = () => {
-        nodeRef.current.willFocus = !(nodeRef.current.tUp && timeMs() - nodeRef.current.tUp < 300)
+        ;(nodeRef.current as any).willFocus = !((nodeRef.current as any).tUp && timeMs() - (nodeRef.current as any).tUp < 300)
     }
     const handleMouseMove = () => {
-        nodeRef.current.willFocus = false
+        ;(nodeRef.current as any).willFocus = false
     }
     const handleMouseUp = () => {
-        if (nodeRef.current.willFocus) {
-            nodeRef.current.tUp = timeMs()
+        if ((nodeRef.current as any).willFocus) {
+            ;(nodeRef.current as any).tUp = timeMs()
             setHashState({ ...getPreviewParams(hit), tab: undefined, subTab: undefined, previewPage: undefined })
         }
     }
@@ -152,8 +160,8 @@ export const ResultItem = observer(({ hit, url, index }) => {
     }
 
     useEffect(() => {
-        if (isPreview && 'scrollIntoView' in nodeRef.current) {
-            nodeRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        if (isPreview && 'scrollIntoView' in (nodeRef.current as any)) {
+            ;(nodeRef.current as any).scrollIntoView({ behavior: 'smooth', block: 'center' })
         }
     }, [isPreview])
 
@@ -172,7 +180,7 @@ export const ResultItem = observer(({ hit, url, index }) => {
 
     return (
         <Card
-            ref={nodeRef}
+            ref={nodeRef as unknown as RefObject<HTMLDivElement>}
             className={cn(classes.card, { [classes.selected]: isPreview })}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
@@ -241,7 +249,7 @@ export const ResultItem = observer(({ hit, url, index }) => {
                             {hit._source['has-thumbnails'] && (
                                 <Box className={classes.thumbnail}>
                                     <img
-                                        ref={thumbRef}
+                                        ref={thumbRef as unknown as RefObject<HTMLImageElement>}
                                         className={classes.thumbnailImg}
                                         srcSet={createThumbnailSrcSet(`doc/${hit._collection}/${hit._id}`)}
                                         onMouseEnter={handleThumbEnter}
@@ -296,11 +304,11 @@ export const ResultItem = observer(({ hit, url, index }) => {
                                 </Tooltip>
                             </Grid>
 
-                            {Object.entries(specialTags).map(([tag, params], index) => {
-                                const tagsField = params.public ? fields.tags : fields[`priv-tags.${user.uuid}`]
+                            {Object.entries(specialTags).map(([tag, params], tagIndex) => {
+                                const tagsField = params.public ? fields.tags : fields[`priv-tags.${user.uuid}` as 'priv-tags.*']
                                 if (tagsField?.includes(tag)) {
                                     return (
-                                        <Grid item key={index}>
+                                        <Grid item key={tagIndex}>
                                             <Tooltip placement="top" title={tag}>
                                                 {cloneElement(reactIcons[params.present.icon], {
                                                     className: classes.actionIcon,
@@ -366,19 +374,21 @@ export const ResultItem = observer(({ hit, url, index }) => {
                             </Box>
                         )}
 
-                        {fields.tags?.filter((tag) => !specialTagsList.includes(tag)).length > 0 && (
+                        {fields.tags?.filter((tag: string) => !specialTagsList.includes(tag)).length > 0 && (
                             <Box>
                                 <Typography variant="caption">
-                                    <strong>Public tags:</strong> {fields.tags.filter((tag) => !specialTagsList.includes(tag)).join(', ')}
+                                    <strong>Public tags:</strong> {fields.tags.filter((tag: string) => !specialTagsList.includes(tag)).join(', ')}
                                 </Typography>
                             </Box>
                         )}
 
-                        {fields[`priv-tags.${user.uuid}`]?.filter((tag) => !specialTagsList.includes(tag)).length > 0 && (
+                        {fields[`priv-tags.${user.uuid}` as 'priv-tags.*']?.filter((tag: string) => !specialTagsList.includes(tag)).length > 0 && (
                             <Box>
                                 <Typography variant="caption">
                                     <strong>Private tags:</strong>{' '}
-                                    {fields[`priv-tags.${user.uuid}`].filter((tag) => !specialTagsList.includes(tag)).join(', ')}
+                                    {fields[`priv-tags.${user.uuid}` as 'priv-tags.*']
+                                        .filter((tag: string) => !specialTagsList.includes(tag))
+                                        .join(', ')}
                                 </Typography>
                             </Box>
                         )}

@@ -7,4 +7,12 @@ export const SharedStoreProvider: FC<{ children: React.ReactNode; store: SharedS
     return <Context.Provider value={store}>{children}</Context.Provider>
 }
 
-export const useSharedStore = () => useContext(Context)
+export const useSharedStore = () => {
+    const store = useContext(Context)
+
+    if (!store) {
+        throw new Error('hook must be used within a Provider')
+    }
+
+    return store
+}

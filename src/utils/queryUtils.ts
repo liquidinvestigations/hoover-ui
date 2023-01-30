@@ -44,7 +44,7 @@ export const rollupParams = (query: Record<string, any>) =>
 export const unwindParams = (query: ParsedQs) =>
     Object.fromEntries(Object.entries(query).map(([field, value]) => (LEGACY_PARAMS[field] ? [LEGACY_PARAMS[field], value] : [field, value])))
 
-export const buildSearchQuerystring = (params: SearchQueryParams) =>
+export const buildSearchQuerystring = (params: Partial<SearchQueryParams>) =>
     qs.stringify(
         rollupParams({
             ...params,
@@ -61,7 +61,7 @@ export interface Term {
 }
 
 export const createSearchParams = (field: string, term: string | Term) => {
-    const params: SearchQueryParams = {}
+    const params: Partial<SearchQueryParams> = {}
 
     if (aggregationFields[field]) {
         params.q = '*'
