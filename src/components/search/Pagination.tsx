@@ -1,14 +1,17 @@
-import { FC } from 'react'
-import cn from 'classnames'
-import { observer } from 'mobx-react-lite'
 import { Grid, IconButton, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import { Theme } from '@mui/system'
-import { formatThousands, numberArray } from '../../utils/utils'
-import SearchSize from './SearchSize'
-import { reactIcons } from '../../constants/icons'
-import { useSharedStore } from '../SharedStoreProvider'
+import cn from 'classnames'
+import { observer } from 'mobx-react-lite'
+import { FC } from 'react'
+
 import { DEFAULT_MAX_RESULTS } from '../../constants/general'
+import { reactIcons } from '../../constants/icons'
+import { formatThousands, numberArray } from '../../utils/utils'
+import { useSharedStore } from '../SharedStoreProvider'
+
+import SearchSize from './SearchSize'
+
+import type { Theme } from '@mui/material'
 
 const MAX_PREV_PAGES = 3
 const MAX_NEXT_PAGES = 3

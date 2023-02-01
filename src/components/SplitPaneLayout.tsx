@@ -1,9 +1,10 @@
-import { memo } from 'react'
-import cn from 'classnames'
-import SplitPane from 'react-split-pane'
+import { Theme } from '@mui/material'
 import { makeStyles } from '@mui/styles'
+import cn from 'classnames'
+import { CSSProperties, FC, ReactNode } from 'react'
+import SplitPane, { Size } from 'react-split-pane'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
     left: {
         overflowX: 'hidden',
         overflowY: 'auto',
@@ -41,10 +42,26 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-function SplitPaneLayout({
+interface SplitPaneLayoutProps {
+    left?: ReactNode
+    right?: ReactNode
+    children: ReactNode | ReactNode[]
+    onLeftChange?: (newSize: number) => void
+    onMiddleChange?: (newSize: number) => void
+    leftSize?: Size
+    leftMinSize?: Size
+    leftStyle?: CSSProperties
+    leftResizerStyle?: CSSProperties
+    className?: string
+    defaultSizeLeft: string
+    defaultSizeMiddle: string
+    container: boolean
+}
+
+export const SplitPaneLayout: FC<SplitPaneLayoutProps> = ({
     left,
-    children,
     right,
+    children,
     onLeftChange,
     onMiddleChange,
     leftSize,
@@ -55,7 +72,7 @@ function SplitPaneLayout({
     defaultSizeLeft = '20%',
     defaultSizeMiddle = '60%',
     container = true,
-}) {
+}) => {
     const classes = useStyles()
 
     return (
@@ -72,7 +89,7 @@ function SplitPaneLayout({
                     allowResize
                     onChange={onLeftChange}
                     pane1ClassName={classes.left}
-                    pane2ClassName={right ? null : classes.middle}>
+                    pane2ClassName={right ? undefined : classes.middle}>
                     {left}
                     {right ? (
                         <SplitPane
@@ -107,5 +124,3 @@ function SplitPaneLayout({
         </div>
     )
 }
-
-export default memo(SplitPaneLayout)

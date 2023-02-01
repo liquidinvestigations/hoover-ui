@@ -3,8 +3,17 @@ import Link from 'next/link'
 import { Button } from '@mui/material'
 import { useRouter } from 'next/router'
 import { useSharedStore } from './SharedStoreProvider'
+import { makeStyles } from '@mui/styles'
+
+const useStyles = makeStyles((theme) => ({
+    link: {
+        color: 'white',
+        textDecoration: 'none',
+    },
+}))
 
 export const Menu = observer(() => {
+    const classes = useStyles()
     const router = useRouter()
     const { user } = useSharedStore()
 
@@ -101,21 +110,19 @@ export const Menu = observer(() => {
         <>
             {links()
                 .filter(shouldShow)
-                .map((link) => {
-                    const b = (
-                        <Button key={link.name} variant="text" component="a" href={link.url} color="inherit">
+                .map((link) =>
+                    !link.next ? (
+                        <Button key={link.name} variant="text" href={link.url} color="inherit">
                             {link.name}
                         </Button>
-                    )
-
-                    return !link.next ? (
-                        b
                     ) : (
-                        <Link key={link.name} href={link.url} shallow>
-                            {b}
+                        <Link key={link.name} href={link.url} shallow className={classes.link}>
+                            <Button variant="text" href={link.url} color="inherit" component="span">
+                                {link.name}
+                            </Button>
                         </Link>
                     )
-                })}
+                )}
         </>
     )
 })

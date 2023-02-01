@@ -1,5 +1,5 @@
-const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
 const withTM = require('next-transpile-modules')(['pdfjs-dist', 'screenfull'])
 
 const {
@@ -17,6 +17,7 @@ const {
     HOOVER_UPLOADS_ENABLED,
 } = process.env
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
     env: {
         AGGREGATIONS_SPLIT,

@@ -1,7 +1,9 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
-import { collectionUrl, documentViewUrl } from '../utils/utils'
-import { RequestError } from '../Types'
+
 import { createDownloadUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI } from '../backend/api'
+import { RequestError } from '../Types'
+import { collectionUrl, documentViewUrl } from '../utils/utils'
+
 import { HashStateStore } from './HashStateStore'
 
 export interface OcrData {
@@ -12,7 +14,7 @@ export interface OcrData {
 export interface ChildDocument {
     id: string
     filename: string
-    filetype: 'folder' | null
+    filetype: string
     content_type: string
     digest?: string
     file?: string

@@ -1,77 +1,44 @@
-import { useEffect, useState } from 'react'
 import { makeStyles } from '@mui/styles'
-import FinderColumn from './FinderColumn'
-import ErrorBoundary from '../../ErrorBoundary'
+import { observer } from 'mobx-react-lite'
+import { FC, useEffect, useState } from 'react'
+
 import { doc as docAPI } from '../../../backend/api'
 import { getBasePath } from '../../../utils/utils'
+import ErrorBoundary from '../../ErrorBoundary'
 import { useSharedStore } from '../../SharedStoreProvider'
+
+import { FinderColumn } from './FinderColumn'
+import { makeColumns } from './utils'
+
+import type { ColumnItem, LocalDocumentData } from './Types'
 
 const parentLevels = 3
 
-const makeColumns = (doc, pathname) => {
-    const columns = []
-
-    const createColumn = (item, selected) => {
-        columns.unshift({
-            items: item.children,
-            prevPage: item.children_page > 1 ? item.children_page - 1 : null,
-            nextPage: item.children_has_next_page ? item.children_page + 1 : null,
-            pathname: pathname + item.id,
-            selected,
-        })
-    }
-
-    if (doc.children) {
-        createColumn(doc, doc)
-    }
-
-    if (doc.parent) {
-        let node = doc
-        while (node.parent) {
-            createColumn(node.parent, node)
-            node = node.parent
-        }
-        columns.unshift({
-            items: [node],
-            pathname: pathname + node.id,
-            selected: node,
-        })
-    } else {
-        columns.unshift({
-            items: [doc],
-            pathname: pathname + doc.id,
-            selected: doc,
-        })
-    }
-
-    return columns
-}
-
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     container: {
         display: 'flex',
         overflowX: 'auto',
     },
 }))
 
-export default function Finder() {
+export const Finder: FC = observer(() => {
     const classes = useStyles()
     const { data, pathname, loading } = useSharedStore().documentStore
 
-    const [active, setActive] = useState()
-    const [columns, setColumns] = useState([])
+    const [active, setActive] = useState<LocalDocumentData>()
+    const [columns, setColumns] = useState<ColumnItem[]>([])
 
     useEffect(() => {
         ;(async () => {
             if (!loading && pathname && data) {
                 const localData = { ...data }
-                let current = localData
+                let current: LocalDocumentData | undefined = localData
                 let level = 0
 
                 setActive(current)
                 setColumns(makeColumns(current, getBasePath(pathname)))
 
-                while (current.parent_id && level <= parentLevels) {
+                while (current?.parent_id && level <= parentLevels) {
                     current.parent = await docAPI(getBasePath(pathname) + current.parent_id, current.parent_children_page)
 
                     current = current.parent
@@ -88,7 +55,7 @@ export default function Finder() {
             <div className={classes.container}>
                 {columns.map(({ items, pathname, prevPage, nextPage, selected }, index) => (
                     <FinderColumn
-                        key={pathname + index}
+                        key={index}
                         items={items}
                         pathname={pathname}
                         prevPage={prevPage}
@@ -100,4 +67,4 @@ export default function Finder() {
             </div>
         </ErrorBoundary>
     )
-}
+})

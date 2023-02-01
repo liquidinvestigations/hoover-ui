@@ -152,8 +152,8 @@ export const Meta = observer(() => {
                         <ListItemText
                             primary="ID"
                             secondary={
-                                <Link href={`${collectionBaseUrl}/${data.digest}`} shallow>
-                                    <a title="open digest URL">{data.digest}</a>
+                                <Link href={`${collectionBaseUrl}/${data.digest}`} title="open digest URL" shallow>
+                                    {data.digest}
                                 </Link>
                             }
                         />

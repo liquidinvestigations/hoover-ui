@@ -259,10 +259,8 @@ export const Document = observer(({ onPrev, onNext }) => {
             {!printMode && data.content.filetype !== 'folder' && <Toolbar links={headerLinks} />}
 
             {printMode && (
-                <Link href={pathname}>
-                    <a className={classes.printBackLink}>
-                        ← Back to <b>normal view</b>
-                    </a>
+                <Link href={pathname} className={classes.printBackLink}>
+                    ← Back to <b>normal view</b>
                 </Link>
             )}
 

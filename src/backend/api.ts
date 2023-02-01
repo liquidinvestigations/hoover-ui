@@ -1,15 +1,19 @@
+import { OutgoingHttpHeaders } from 'http'
+
+import memoize from 'lodash/memoize'
 import fetch from 'node-fetch'
 import { stringify } from 'qs'
-import memoize from 'lodash/memoize'
+
 import buildSearchQuery, { FieldList, SearchFields } from './buildSearchQuery'
-import { SearchQueryParams, SearchQueryType } from '../Types'
+
+import type { SearchQueryParams, SearchQueryType } from '../Types'
 
 const { API_URL } = process.env
 
 const prefix = '/api/v1/'
 
 interface FetchOptions {
-    headers?: Record<string, string>
+    headers?: OutgoingHttpHeaders
     method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
     body?: string
 }
@@ -50,12 +54,12 @@ const fetchJson = async (url: string, opts: FetchOptions = {}) => {
 /*
  called only by node.js
  */
-export const whoami = (headers: Record<string, string>) => fetchJson(buildUrl('whoami'), { headers })
-export const limits = (headers: Record<string, string>) => fetchJson(buildUrl('limits'), { headers })
-export const collections = (headers: Record<string, string>) => fetchJson(buildUrl('collections'), { headers })
-export const searchFields = (headers: Record<string, string>) => fetchJson(buildUrl('search_fields'), { headers })
+export const whoami = (headers: OutgoingHttpHeaders) => fetchJson(buildUrl('whoami'), { headers })
+export const limits = (headers: OutgoingHttpHeaders) => fetchJson(buildUrl('limits'), { headers })
+export const collections = (headers: OutgoingHttpHeaders) => fetchJson(buildUrl('collections'), { headers })
+export const searchFields = (headers: OutgoingHttpHeaders) => fetchJson(buildUrl('search_fields'), { headers })
 export const search = async (
-    headers: Record<string, string>,
+    headers: OutgoingHttpHeaders,
     params: SearchQueryParams,
     type: SearchQueryType,
     fieldList: FieldList,

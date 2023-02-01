@@ -27,8 +27,8 @@ export const Header = observer(() => {
             <AppBar position="sticky">
                 <Toolbar>
                     <Typography variant="h6" color="inherit" className={classes.flex}>
-                        <Link href="/">
-                            <a className={classes.noLink}>{user.title}</a>
+                        <Link href="/" className={classes.noLink}>
+                            {user.title}
                         </Link>
                         {' ⟶ '}
                         <a href={user.liquid.url} className={classes.noLink}>
