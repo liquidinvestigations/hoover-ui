@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite'
 import { Grid, IconButton, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { Theme } from '@mui/system'
-import { formatThousands } from '../../utils/utils'
+import { formatThousands, numberArray } from '../../utils/utils'
 import SearchSize from './SearchSize'
 import { reactIcons } from '../../constants/icons'
 import { useSharedStore } from '../SharedStoreProvider'
@@ -27,14 +27,6 @@ const useStyles = makeStyles((theme: Theme) => ({
         textDecoration: 'underline',
     },
 }))
-
-const createPageArray = (start: number, count: number) =>
-    Array.from(
-        {
-            length: count,
-        },
-        (_, i) => i + start
-    )
 
 interface PaginationProps {
     collection: string
@@ -77,18 +69,19 @@ export const Pagination: FC<PaginationProps> = observer(({ collection }) => {
         middle: [],
         right: [],
     }
+
     if (pageCount <= MAX_PREV_PAGES + MAX_NEXT_PAGES + 1) {
-        pages.middle.push(...createPageArray(1, Math.min(MAX_PREV_PAGES + MAX_NEXT_PAGES + 1, pageCount)))
+        pages.middle.push(...numberArray(1, Math.min(MAX_PREV_PAGES + MAX_NEXT_PAGES + 1, pageCount)))
     } else if (page - 1 <= MAX_PREV_PAGES) {
-        pages.left.push(...createPageArray(1, MAX_PREV_PAGES + MAX_NEXT_PAGES + 1))
+        pages.left.push(...numberArray(1, MAX_PREV_PAGES + MAX_NEXT_PAGES + 1))
         pages.right.push(pageCount)
     } else if (page + MAX_NEXT_PAGES + 1 <= pageCount) {
         pages.left.push(1)
-        pages.middle.push(...createPageArray(page - MAX_PREV_PAGES, MAX_PREV_PAGES + MAX_NEXT_PAGES + 1))
+        pages.middle.push(...numberArray(page - MAX_PREV_PAGES, MAX_PREV_PAGES + MAX_NEXT_PAGES + 1))
         pages.right.push(pageCount)
     } else {
         pages.left.push(1)
-        pages.right.push(...createPageArray(page - MAX_PREV_PAGES, MAX_PREV_PAGES + pageCount - page + 1))
+        pages.right.push(...numberArray(page - MAX_PREV_PAGES, MAX_PREV_PAGES + pageCount - page + 1))
     }
 
     return (

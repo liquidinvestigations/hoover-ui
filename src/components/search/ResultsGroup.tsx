@@ -34,7 +34,7 @@ export const ResultsGroup: FC<ResultsProps> = observer(({ collection }) => {
 
             <h2>{collection}</h2>
 
-            <Pagination collection={collection} />
+            {!!queryTask.data?.result?.hits.hits.length && <Pagination collection={collection} />}
 
             <Fade in={queryTask.data?.status === 'pending'} unmountOnExit>
                 <Box display="flex" alignItems="center">

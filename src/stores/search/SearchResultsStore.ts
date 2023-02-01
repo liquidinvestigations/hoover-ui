@@ -1,6 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx'
-import { SearchStore } from './SearchStore'
 import { SearchQueryParams } from '../../Types'
+import { getPreviewParams } from '../../utils/utils'
+import { SearchStore } from './SearchStore'
 import { AsyncQueryTask, AsyncQueryTaskRunner } from './AsyncTaskRunner'
 
 export type ViewType = 'list' | 'table'
@@ -57,9 +58,45 @@ export class SearchResultsStore {
         }
     }
 
+    previewNextDoc = () => {
+        /*
+        if (!resultsLoading && results?.hits.hits && (parseInt(query.page) - 1) * parseInt(query.size) + currentIndex < results.hits.total - 1) {
+            if (currentIndex === results.hits.hits.length - 1) {
+                setPreviewOnLoad('first')
+                search({ page: parseInt(query.page) + 1 })
+            } else {
+                setHashState({ ...getPreviewParams(results.hits.hits[currentIndex + 1]), tab: undefined, subTab: undefined, previewPage: undefined })
+            }
+        }
+         */
+    }
+
+    previewPreviousDoc = () => {
+        /*
+        if ((!resultsLoading && results?.hits.hits && parseInt(query.page) > 1) || currentIndex >= 1) {
+            if (currentIndex === 0 && parseInt(query.page) > 1) {
+                setPreviewOnLoad('last')
+                search({ page: parseInt(query.page) - 1 })
+            } else {
+                setHashState({ ...getPreviewParams(results.hits.hits[currentIndex - 1]), tab: undefined, subTab: undefined, previewPage: undefined })
+            }
+        }
+         */
+    }
+
+    get resultsLoading() {
+        return Object.entries(this.resultsQueryTasks).find(([_collection, queryTask]) => queryTask.data?.status !== 'done')
+    }
+
     setViewType = (viewType: ViewType): void => {
         runInAction(() => {
             this.viewType = viewType
+        })
+    }
+
+    clearResults = (): void => {
+        runInAction(() => {
+            this.resultsQueryTasks = {}
         })
     }
 }

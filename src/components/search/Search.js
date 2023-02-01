@@ -1,9 +1,8 @@
-import { cloneElement, useEffect, useMemo, useRef, useState } from 'react'
+import { cloneElement, useEffect, useRef, useState } from 'react'
 import Router from 'next/router'
 import { makeStyles } from '@mui/styles'
 import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Tooltip, Typography } from '@mui/material'
 import { useProgressIndicator } from '../ProgressIndicator'
-import { useSearch } from './SearchProvider'
 import HotKeys from './HotKeys'
 import { Results } from './Results'
 import QueryChips from './QueryChips'
@@ -50,11 +49,16 @@ const useStyles = makeStyles((theme) => ({
 export const Search = observer(({ collections }) => {
     const classes = useStyles()
     const inputRef = useRef()
-    const { error, setSearchText, resultsLoading, clearResults, previewNextDoc, previewPreviousDoc } = useSearch()
-    const { search, searchText, handleInputChange } = useSharedStore().searchStore
+    const {
+        search,
+        searchText,
+        clearSearchText,
+        handleInputChange,
+        searchResultsStore: { error, clearResults, resultsLoading, previewNextDoc, previewPreviousDoc },
+    } = useSharedStore().searchStore
 
     const clearInput = () => {
-        setSearchText('')
+        clearSearchText()
         inputRef.current.focus()
     }
 
