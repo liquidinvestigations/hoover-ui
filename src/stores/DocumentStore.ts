@@ -200,7 +200,9 @@ export class DocumentStore {
     }
 
     get collectionBaseUrl() {
-        return collectionUrl(this.collection)
+        if (this.collection) {
+            return collectionUrl(this.collection)
+        }
     }
 
     setFileDocumentAttributes = (data: DocumentData) => {

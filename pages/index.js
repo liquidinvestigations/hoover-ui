@@ -8,7 +8,11 @@ export default function Index({ collectionsData, serverQuery }) {
     const store = useSharedStore()
 
     store.collectionsData = collectionsData
-    store.searchStore.query = store.searchStore.parseSearchParams(serverQuery)
+    const query = store.searchStore.parseSearchParams(serverQuery)
+
+    if (query.q) {
+        store.searchStore.search(query)
+    }
 
     return (
         <SearchProvider serverQuery={serverQuery}>

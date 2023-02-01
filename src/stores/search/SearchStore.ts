@@ -55,4 +55,10 @@ export class SearchStore {
             this.searchText = event.target.value
         })
     }
+
+    clearSearchText = () => {
+        runInAction(() => {
+            this.searchText = undefined
+        })
+    }
 }

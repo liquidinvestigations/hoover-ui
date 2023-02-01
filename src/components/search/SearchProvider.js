@@ -63,7 +63,7 @@ export function SearchProvider({ children, serverQuery }) {
 
     const [collectionsCount, setCollectionsCount] = useState([])
 
-    const { results, setResults, resultsTask, resultsLoading, error } = useResultsSearch(query, previewOnLoad, setPreviewOnLoad, setHashState)
+    //const { results, setResults, resultsTask, resultsLoading, error } = useResultsSearch(query, previewOnLoad, setPreviewOnLoad, setHashState)
 
     const [forcedRefresh, forceRefresh] = useState({})
     const { aggregations, setAggregations, aggregationsTasks, aggregationsLoading, aggregationsError } = useAggregationsSearch(
@@ -74,37 +74,37 @@ export function SearchProvider({ children, serverQuery }) {
 
     const { missingAggregations, setMissingAggregations, missingTasks, loadMissing, missingLoading } = useMissingSearch(query)
 
-    const clearResults = () => {
-        setSelectedDocData(null)
-        setCollectionsCount(null)
-        setResults(null)
-        setAggregations(null)
-        setMissingAggregations(null)
-    }
+    //const clearResults = () => {
+    //    setSelectedDocData(null)
+    //    setCollectionsCount(null)
+    //    setResults(null)
+    //    setAggregations(null)
+    //    setMissingAggregations(null)
+    //}
 
-    const currentIndex = results?.hits.hits.findIndex((hit) => hit._collection === hashState.preview?.c && hit._id === hashState.preview?.i)
+    //const currentIndex = results?.hits.hits.findIndex((hit) => hit._collection === hashState.preview?.c && hit._id === hashState.preview?.i)
 
-    const previewNextDoc = useCallback(() => {
-        if (!resultsLoading && results?.hits.hits && (parseInt(query.page) - 1) * parseInt(query.size) + currentIndex < results.hits.total - 1) {
-            if (currentIndex === results.hits.hits.length - 1) {
-                setPreviewOnLoad('first')
-                search({ page: parseInt(query.page) + 1 })
-            } else {
-                setHashState({ ...getPreviewParams(results.hits.hits[currentIndex + 1]), tab: undefined, subTab: undefined, previewPage: undefined })
-            }
-        }
-    }, [query, hashState, results, resultsLoading])
+    //const previewNextDoc = useCallback(() => {
+    //    if (!resultsLoading && results?.hits.hits && (parseInt(query.page) - 1) * parseInt(query.size) + currentIndex < results.hits.total - 1) {
+    //        if (currentIndex === results.hits.hits.length - 1) {
+    //            setPreviewOnLoad('first')
+    //            search({ page: parseInt(query.page) + 1 })
+    //        } else {
+    //            setHashState({ ...getPreviewParams(results.hits.hits[currentIndex + 1]), tab: undefined, subTab: undefined, previewPage: undefined })
+    //        }
+    //    }
+    //}, [query, hashState, results, resultsLoading])
 
-    const previewPreviousDoc = useCallback(() => {
-        if ((!resultsLoading && results?.hits.hits && parseInt(query.page) > 1) || currentIndex >= 1) {
-            if (currentIndex === 0 && parseInt(query.page) > 1) {
-                setPreviewOnLoad('last')
-                search({ page: parseInt(query.page) - 1 })
-            } else {
-                setHashState({ ...getPreviewParams(results.hits.hits[currentIndex - 1]), tab: undefined, subTab: undefined, previewPage: undefined })
-            }
-        }
-    }, [query, hashState, results, resultsLoading])
+    //const previewPreviousDoc = useCallback(() => {
+    //    if ((!resultsLoading && results?.hits.hits && parseInt(query.page) > 1) || currentIndex >= 1) {
+    //        if (currentIndex === 0 && parseInt(query.page) > 1) {
+    //            setPreviewOnLoad('last')
+    //            search({ page: parseInt(query.page) - 1 })
+    //        } else {
+    //            setHashState({ ...getPreviewParams(results.hits.hits[currentIndex - 1]), tab: undefined, subTab: undefined, previewPage: undefined })
+    //        }
+    //    }
+    //}, [query, hashState, results, resultsLoading])
 
     const periodicallyCheckIndexedTime = (digestUrl) => {
         let timeout,
@@ -179,10 +179,10 @@ export function SearchProvider({ children, serverQuery }) {
                 searchText,
                 setSearchText,
                 collectionsCount,
-                error,
-                results,
-                resultsTask,
-                resultsLoading,
+                //            error,
+                //            results,
+                //            resultsTask,
+                //            resultsLoading,
                 aggregations,
                 aggregationsTasks,
                 aggregationsLoading,
@@ -191,10 +191,10 @@ export function SearchProvider({ children, serverQuery }) {
                 loadMissing,
                 missingLoading,
                 missingTasks,
-                previewNextDoc,
-                previewPreviousDoc,
+                //            previewNextDoc,
+                //            previewPreviousDoc,
                 selectedDocData,
-                clearResults,
+                //            clearResults,
                 addTagToRefreshQueue,
                 resultsViewType,
                 setResultsViewType,

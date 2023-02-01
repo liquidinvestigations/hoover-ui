@@ -4,11 +4,13 @@ import copy from 'copy-text-to-clipboard'
 import langs from 'langs'
 import { Tooltip } from '@mui/material'
 import { ELLIPSIS_TERM_LENGTH } from '../constants/general'
-import { DateTime } from 'luxon'
+import { DateTime, DurationLikeObject, DurationObjectUnits, DurationUnit } from 'luxon'
 import { reactIcons } from '../constants/icons'
 import { specialTags } from '../constants/specialTags'
+import { Hit } from '../Types'
+import { DocumentData } from '../stores/DocumentStore'
 
-const typeIconsMap = {
+const typeIconsMap: Record<string, string> = {
     archive: 'typeArchive',
     audio: 'typeAudio',
     default: 'typeFile',
@@ -24,9 +26,9 @@ const typeIconsMap = {
     xls: 'typeXls',
 }
 
-export const getTypeIcon = (fileType) => reactIcons[typeIconsMap[fileType] || typeIconsMap.default]
+export const getTypeIcon = (fileType: string) => reactIcons[typeIconsMap[fileType] || typeIconsMap.default]
 
-export const getTagIcon = (tag, isPublic = false, absent = false) => {
+export const getTagIcon = (tag: string, isPublic = false, absent = false) => {
     if (specialTags[tag]) {
         const state = absent ? 'absent' : 'present'
         if ((isPublic && specialTags[tag].public) || (!isPublic && !specialTags[tag].public)) {
@@ -40,30 +42,30 @@ export const getTagIcon = (tag, isPublic = false, absent = false) => {
     return null
 }
 
-export const getLanguageName = (key) => {
+export const getLanguageName = (key: string) => {
     const found = langs.where('1', key)
     return found ? found.name : key
 }
 
-export const formatDateTime = (dateTime) => DateTime.fromISO(dateTime, { locale: 'en-US' }).toLocaleString(DateTime.DATETIME_FULL)
+export const formatDateTime = (dateTime: string) => DateTime.fromISO(dateTime, { locale: 'en-US' }).toLocaleString(DateTime.DATETIME_FULL)
 
-export const daysInMonth = (date) => {
-    const [, year, month] = /(\d{4})-(\d{2})/.exec(date)
-    return new Date(year, month, 0).getDate()
+export const daysInMonth = (date: string) => {
+    const [, year, month] = /(\d{4})-(\d{2})/.exec(date) as string[]
+    return new Date(parseInt(year), parseInt(month), 0).getDate()
 }
 
 const intervalsList = ['year', 'month', 'week', 'day', 'hour']
-export const getClosestInterval = (range) => {
+export const getClosestInterval = (range: any) => {
     const from = range.from + 'T00:00:00'
     const to = range.to + 'T23:59:59'
 
     let selectedInterval = range.interval
 
     intervalsList.some((interval) => {
-        const intervalPlural = `${interval}s`
-        const duration = DateTime.fromISO(to).diff(DateTime.fromISO(from), intervalPlural)
+        const intervalPlural = `${interval}s` as keyof DurationObjectUnits
+        const duration = DateTime.fromISO(to).diff(DateTime.fromISO(from), intervalPlural).toObject()
 
-        if (duration[intervalPlural] > 1) {
+        if (duration[intervalPlural] || 0 > 1) {
             if (intervalsList.indexOf(interval) > intervalsList.indexOf(selectedInterval)) {
                 selectedInterval = interval
             }
@@ -74,9 +76,9 @@ export const getClosestInterval = (range) => {
     return selectedInterval
 }
 
-export const getBasePath = (docUrl) => url.parse(url.resolve(docUrl, './')).pathname
+export const getBasePath = (docUrl: string) => url.parse(url.resolve(docUrl, './')).pathname
 
-export const makeUnsearchable = (text) => {
+export const makeUnsearchable = (text: string) => {
     let inMark = false
 
     const chars = text.split('')
@@ -102,7 +104,7 @@ export const makeUnsearchable = (text) => {
         .join('')
 }
 
-export const truncatePath = (str) => {
+export const truncatePath = (str: string) => {
     if (str.length < 100) {
         return str
     }
@@ -111,7 +113,7 @@ export const truncatePath = (str) => {
     return [...parts.slice(0, parts.length / 3), '…', ...parts.slice(-(parts.length / 3))].join('/')
 }
 
-export const shortenName = (name, length = ELLIPSIS_TERM_LENGTH) =>
+export const shortenName = (name: string, length = ELLIPSIS_TERM_LENGTH) =>
     name && name.length > length ? (
         <Tooltip title={name}>
             <span>{`${name.substr(0, (2 / 3) * length - 3)}...${name.substr((-1 / 3) * length)}`}</span>
@@ -120,9 +122,9 @@ export const shortenName = (name, length = ELLIPSIS_TERM_LENGTH) =>
         name
     )
 
-export const formatThousands = (n) => {
+export const formatThousands = (number: number) => {
     let decimalPart = ''
-    n = n.toString()
+    let n: string | number = number.toString()
     if (n.indexOf('.') !== -1) {
         decimalPart = '.' + n.split('.')[1]
         n = parseInt(n.split('.')[0])
@@ -136,23 +138,23 @@ export const formatThousands = (n) => {
         index -= 4
     }
 
-    return array.join('') + decimalPart
+    return array?.join('') + decimalPart
 }
 
-export const copyMetadata = (doc) => {
+export const copyMetadata = (doc: DocumentData) => {
     const string = [doc.content.md5, doc.content.path].join('\n')
 
     return copy(string) ? `Copied MD5 and path to clipboard` : `Could not copy meta metadata – unsupported browser?`
 }
 
 const documentUrlPrefix = '/doc'
-export const collectionUrl = (collection) => [documentUrlPrefix, collection].join('/')
-export const documentViewUrl = (item) => [documentUrlPrefix, item._collection, item._id].join('/')
-export const getPreviewParams = (item) => ({ preview: { c: item._collection, i: item._id } })
+export const collectionUrl = (collection: string) => [documentUrlPrefix, collection].join('/')
+export const documentViewUrl = (item: Pick<Hit, '_collection' | '_id'>) => [documentUrlPrefix, item._collection, item._id].join('/')
+export const getPreviewParams = (item: Pick<Hit, '_collection' | '_id'>) => ({ preview: { c: item._collection, i: item._id } })
 
 export const removeCommentsAndSpacing = (str = '') => str.replace(/\/\*.*\*\//g, ' ').replace(/\s+/g, ' ')
 
-export const humanFileSize = (bytes, si = true, dp = 1) => {
+export const humanFileSize = (bytes: number, si = true, dp = 1) => {
     const thresh = si ? 1000 : 1024
 
     if (Math.abs(bytes) < thresh) {
@@ -171,13 +173,13 @@ export const humanFileSize = (bytes, si = true, dp = 1) => {
     return bytes.toFixed(dp) + ' ' + units[u]
 }
 
-export const titleCase = (string) => {
+export const titleCase = (string: string) => {
     let sentence = string.includes('_') ? string.toLowerCase().split('_') : string.includes('-') ? string.toLowerCase().split('-') : [string]
 
     return sentence.map((word) => word[0].toUpperCase() + word.slice(1)).join(' ')
 }
 
-export const formatTitleCase = (name) => {
+export const formatTitleCase = (name: string) => {
     const [group, func] = name.split('.')
     return (
         <>
@@ -188,7 +190,7 @@ export const formatTitleCase = (name) => {
 
 // $roots keeps previous parent properties as they will be added as a prefix for each prop.
 // $sep is just a preference if you want to seperate nested paths other than dot.
-export const flatten = (obj, roots = [], sep = '.') =>
+export const flatten = (obj: Record<string, any>, roots: Record<string, any> = [], sep = '.'): Record<string, any> =>
     Object
         // find props of given object
         .keys(obj)
@@ -209,12 +211,12 @@ export const flatten = (obj, roots = [], sep = '.') =>
             {}
         )
 
-export const getFileName = (url) => {
+export const getFileName = (url: string) => {
     const str = url.split('/').pop()
     return str ? str.split('#')[0].split('?')[0] : url
 }
 
-export const downloadFile = (url, data) => {
+export const downloadFile = (url: string, data: string | BlobPart) => {
     const blobUrl = typeof data === 'string' ? '' : URL.createObjectURL(new Blob([data], { type: '' }))
     const link = document.createElement('a')
     link.style.display = 'none'
@@ -229,3 +231,11 @@ export const downloadFile = (url, data) => {
         URL.revokeObjectURL(blobUrl)
     }
 }
+
+export const numberArray = (start: number, count: number) =>
+    Array.from(
+        {
+            length: count,
+        },
+        (_, i) => i + start
+    )
