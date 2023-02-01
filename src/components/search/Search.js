@@ -1,23 +1,25 @@
-import { cloneElement, useEffect, useRef, useState } from 'react'
-import Router from 'next/router'
-import { makeStyles } from '@mui/styles'
 import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Tooltip, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
+import { observer } from 'mobx-react-lite'
+import Router from 'next/router'
+import { cloneElement, useEffect, useRef, useState } from 'react'
+
+import { tooltips } from '../../constants/help'
+import { reactIcons } from '../../constants/icons'
+import { Document } from '../document/Document'
+import { TagsProvider } from '../document/TagsProvider'
 import { useProgressIndicator } from '../ProgressIndicator'
-import HotKeys from './HotKeys'
-import { Results } from './Results'
-import QueryChips from './QueryChips'
+import { useSharedStore } from '../SharedStoreProvider'
+import { SplitPaneLayout } from '../SplitPaneLayout'
+
 import Categories from './filters/Categories'
 import FiltersChips from './filters/FiltersChips'
 import Histogram from './filters/Histogram'
+import HotKeys from './HotKeys'
+import QueryChips from './QueryChips'
+import { Results } from './Results'
 import SortingChips from './sorting/SortingChips'
 import SortingMenu from './sorting/SortingMenu'
-import SplitPaneLayout from '../SplitPaneLayout'
-import { Document } from '../document/Document'
-import { tooltips } from '../../constants/help'
-import { reactIcons } from '../../constants/icons'
-import { TagsProvider } from '../document/TagsProvider'
-import { observer } from 'mobx-react-lite'
-import { useSharedStore } from '../SharedStoreProvider'
 
 const useStyles = makeStyles((theme) => ({
     error: {
@@ -46,16 +48,19 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-export const Search = observer(({ collections }) => {
+export const Search = observer(() => {
     const classes = useStyles()
     const inputRef = useRef()
     const {
-        search,
-        searchText,
-        clearSearchText,
-        handleInputChange,
-        searchResultsStore: { error, clearResults, resultsLoading, previewNextDoc, previewPreviousDoc },
-    } = useSharedStore().searchStore
+        collectionsData,
+        searchStore: {
+            search,
+            searchText,
+            clearSearchText,
+            handleInputChange,
+            searchResultsStore: { error, clearResults, resultsLoading, previewNextDoc, previewPreviousDoc },
+        },
+    } = useSharedStore()
 
     const clearInput = () => {
         clearSearchText()
@@ -101,7 +106,7 @@ export const Search = observer(({ collections }) => {
         <HotKeys inputRef={inputRef}>
             <Grid container>
                 <Categories
-                    collections={collections}
+                    collections={collectionsData}
                     openCategory={openCategory}
                     setOpenCategory={setOpenCategory}
                     drawerRef={drawerRef}

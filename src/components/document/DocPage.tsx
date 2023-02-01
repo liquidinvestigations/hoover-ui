@@ -1,18 +1,24 @@
-import Head from 'next/head'
 import { Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
+import { observer } from 'mobx-react-lite'
+import Head from 'next/head'
+import { FC } from 'react'
 import SplitPane from 'react-split-pane'
-import { Document } from './Document'
-import Finder from './finder/Finder'
-import Locations from '../Locations'
-import SplitPaneLayout from '../SplitPaneLayout'
-import HotKeysWithHelp from '../HotKeysWithHelp'
-import { useSharedStore } from '../SharedStoreProvider'
+
 import Error from '../../../pages/_error'
 import { copyMetadata, shortenName } from '../../utils/utils'
+import HotKeysWithHelp from '../HotKeysWithHelp'
+import Locations from '../Locations'
+import { useSharedStore } from '../SharedStoreProvider'
+import { SplitPaneLayout } from '../SplitPaneLayout'
+
+import { Document } from './Document'
+import { Finder } from './finder/Finder'
 import { TagsProvider } from './TagsProvider'
 
-const useStyles = makeStyles((theme) => ({
+import type { Theme } from '@mui/material'
+
+const useStyles = makeStyles((theme: Theme) => ({
     splitPane: {
         overflow: 'hidden',
         position: 'relative',
@@ -44,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-export default function DocPage() {
+export const DocPage: FC = observer(() => {
     const classes = useStyles()
     const {
         user,
@@ -125,7 +131,7 @@ export default function DocPage() {
         copyMetadata: {
             key: 'c',
             help: 'Copy MD5 and path to clipboard',
-            handler: (e, showMessage) => {
+            handler: (_event: Event, showMessage: (s: string) => void) => {
                 if (data?.content) {
                     showMessage(copyMetadata(data))
                 }
@@ -153,8 +159,8 @@ export default function DocPage() {
                 )}
             </Head>
             <HotKeysWithHelp keys={keys}>
-                <div tabIndex="-1">{content}</div>
+                <div tabIndex={-1}>{content}</div>
             </HotKeysWithHelp>
         </>
     )
-}
+})

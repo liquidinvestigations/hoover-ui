@@ -79,15 +79,13 @@ function Locations({ url: docUrl, data }) {
                 <>
                     {locations.map((location) => (
                         <Link key={location.id} href={`${basePath}${location.id}`} shallow>
-                            <a>
-                                <ListItem button>
-                                    <ListItemIcon>{reactIcons.location}</ListItemIcon>
+                            <ListItem button>
+                                <ListItemIcon>{reactIcons.location}</ListItemIcon>
 
-                                    <Typography style={{ wordBreak: 'break-all' }}>
-                                        {location.parent_path}/<em>{location.filename}</em>
-                                    </Typography>
-                                </ListItem>
-                            </a>
+                                <Typography style={{ wordBreak: 'break-all' }}>
+                                    {location.parent_path}/<em>{location.filename}</em>
+                                </Typography>
+                            </ListItem>
                         </Link>
                     ))}
                 </>

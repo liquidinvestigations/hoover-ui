@@ -51,13 +51,7 @@ export const Files = observer(() => {
     const filesRows = files.map(({ id, digest, file, filename, content_type, filetype, size }, index) => (
         <TableRow key={index}>
             <TableCell className={classes.cell}>
-                {id ? (
-                    <Link href={`${collectionBaseUrl}/${file || id}`}>
-                        <a>{filename}</a>
-                    </Link>
-                ) : (
-                    <span>{filename}</span>
-                )}
+                {id ? <Link href={`${collectionBaseUrl}/${file || id}`}>{filename}</Link> : <span>{filename}</span>}
             </TableCell>
             <TableCell className={classes.cell}>
                 {digest && (

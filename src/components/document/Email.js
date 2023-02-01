@@ -114,7 +114,7 @@ export const Email = observer(() => {
                             <TableRow key={index}>
                                 <TableCell colSpan={2}>
                                     <Link href={createSearchUrl(messageId, 'in-reply-to', collection, hash)} shallow>
-                                        <a>search e-mails replying to this one</a>
+                                        search e-mails replying to this one
                                     </Link>
                                 </TableCell>
                             </TableRow>
@@ -126,7 +126,7 @@ export const Email = observer(() => {
                             <TableRow key={index}>
                                 <TableCell colSpan={2}>
                                     <Link href={createSearchUrl(threadIndex, 'thread-index', collection, hash)} shallow>
-                                        <a>search e-mails in this thread</a>
+                                        search e-mails in this thread
                                     </Link>
                                 </TableCell>
                             </TableRow>

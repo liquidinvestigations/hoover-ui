@@ -1,21 +1,15 @@
-import { useEffect, useRef } from 'react'
-import cn from 'classnames'
-import { ButtonBase, ListItem, ListItemIcon, ListItemText } from '@mui/material'
+import { ButtonBase, ListItem, ListItemIcon, ListItemText, Theme } from '@mui/material'
 import { makeStyles } from '@mui/styles'
+import cn from 'classnames'
 import { useRouter } from 'next/router'
+import { FC, useEffect, useRef } from 'react'
+
+import { ChildDocument, DocumentData } from '../../../stores/DocumentStore'
 import { getBasePath, getTypeIcon } from '../../../utils/utils'
-import { useSharedStore } from '../../SharedStoreProvider'
 
-const filenameFor = (item) => {
-    if (item.filename) {
-        return item.filename
-    } else {
-        const { filename, path } = item.content
-        return filename || path.split('/').filter(Boolean).pop() || path || '/'
-    }
-}
+import { filenameFor } from './utils'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
     item: {
         paddingLeft: theme.spacing(0.5),
         paddingRight: theme.spacing(0.5),
@@ -45,13 +39,19 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-export default function FinderItem({ item, active, selected }) {
+interface FinderItemProps {
+    pathname: string
+    item: DocumentData | ChildDocument
+    active?: DocumentData | ChildDocument
+    selected?: DocumentData | ChildDocument
+}
+
+export const FinderItem: FC<FinderItemProps> = ({ pathname, item, active, selected }) => {
     const classes = useStyles()
-    const ref = useRef()
+    const ref = useRef<HTMLLIElement>(null)
     const router = useRouter()
-    const { pathname } = useSharedStore().documentStore
-    const isActive = item.id === active.id
-    const isSelected = item.id === selected.id
+    const isActive = item.id === active?.id
+    const isSelected = item.id === selected?.id
 
     useEffect(() => {
         if (ref.current && (isActive || isSelected)) {
@@ -60,16 +60,16 @@ export default function FinderItem({ item, active, selected }) {
     }, [isActive, isSelected])
 
     const handleClick = () => {
-        router.push(getBasePath(pathname) + (item.file || item.id), undefined, { shallow: true })
+        router.push(getBasePath(pathname) + ((item as any).file || item.id), undefined, { shallow: true })
     }
 
     return (
         <ListItem
             ref={ref}
-            component={ButtonBase}
+            component={ButtonBase as any}
             onClick={handleClick}
             className={cn(classes.item, { [classes.active]: isActive, [classes.selected]: isSelected && !isActive })}>
-            <ListItemIcon classes={{ root: classes.iconRoot }}>{getTypeIcon(item.filetype)}</ListItemIcon>
+            <ListItemIcon classes={{ root: classes.iconRoot }}>{getTypeIcon((item as any).filetype)}</ListItemIcon>
             <ListItemText classes={{ root: classes.itemRoot, primary: classes.itemText }}>{filenameFor(item)}</ListItemText>
         </ListItem>
     )

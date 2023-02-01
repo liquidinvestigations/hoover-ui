@@ -1,14 +1,17 @@
-import { cloneElement } from 'react'
 import url from 'url'
+
+import { Tooltip } from '@mui/material'
 import copy from 'copy-text-to-clipboard'
 import langs from 'langs'
-import { Tooltip } from '@mui/material'
+import { DateTime, DurationObjectUnits } from 'luxon'
+import { cloneElement } from 'react'
+
 import { ELLIPSIS_TERM_LENGTH } from '../constants/general'
-import { DateTime, DurationLikeObject, DurationObjectUnits, DurationUnit } from 'luxon'
 import { reactIcons } from '../constants/icons'
 import { specialTags } from '../constants/specialTags'
-import { Hit } from '../Types'
 import { DocumentData } from '../stores/DocumentStore'
+
+import type { Hit } from '../Types'
 
 const typeIconsMap: Record<string, string> = {
     archive: 'typeArchive',

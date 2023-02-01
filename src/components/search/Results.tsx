@@ -1,11 +1,14 @@
-import { FC } from 'react'
-import { observer } from 'mobx-react-lite'
 import { Fab, Grid } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import { Theme } from '@mui/system'
-import { ResultsGroup } from './ResultsGroup'
-import { useSharedStore } from '../SharedStoreProvider'
+import { observer } from 'mobx-react-lite'
+import { FC } from 'react'
+
 import { reactIcons } from '../../constants/icons'
+import { useSharedStore } from '../SharedStoreProvider'
+
+import { ResultsGroup } from './ResultsGroup'
+
+import type { Theme } from '@mui/material'
 
 const useStyles = makeStyles((theme: Theme) => ({
     viewTypeIcon: {

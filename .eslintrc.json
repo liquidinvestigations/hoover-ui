@@ -1,4 +1,17 @@
 {
   "extends": "next/core-web-vitals",
-  "semi": "off"
+  "rules": {
+    "semi": "off",
+    "import/order": [
+      "error",
+      {
+        "groups": ["builtin", "external", "internal", "parent", "sibling", "index", "type"],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ]
+  }
 }

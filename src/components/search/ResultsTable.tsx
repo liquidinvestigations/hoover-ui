@@ -1,17 +1,20 @@
+import { IconButton, Menu, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import cn from 'classnames'
+import { observer } from 'mobx-react-lite'
 import { cloneElement, FC, useState, MouseEvent } from 'react'
 import ReactPlaceholder from 'react-placeholder'
 import { TextRow } from 'react-placeholder/lib/placeholders'
-import { IconButton, Menu, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { makeStyles } from '@mui/styles'
-import { Theme } from '@mui/system'
-import { useSearch } from './SearchProvider'
-import ResultsTableRow from './ResultsTableRow'
+
 import { availableColumns } from '../../constants/availableColumns'
 import { reactIcons } from '../../constants/icons'
 import { AsyncQueryTask } from '../../stores/search/AsyncTaskRunner'
 import { Hit } from '../../Types'
-import { observer } from 'mobx-react-lite'
+
+import ResultsTableRow from './ResultsTableRow'
+import { useSearch } from './SearchProvider'
+
+import type { Theme } from '@mui/material'
 
 const useStyles = makeStyles((theme: Theme) => ({
     table: {

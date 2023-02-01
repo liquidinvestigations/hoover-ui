@@ -1,17 +1,19 @@
-import { cloneElement, FC, RefObject, useEffect, useRef, useState } from 'react'
+import { Box, Card, CardContent, CardHeader, Grid, IconButton, Paper, Popper, Tooltip, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import cn from 'classnames'
 import { DateTime } from 'luxon'
-import { makeStyles } from '@mui/styles'
-import { Theme } from '@mui/system'
 import { observer } from 'mobx-react-lite'
-import { Box, Card, CardContent, CardHeader, Grid, IconButton, Paper, Popper, Tooltip, Typography } from '@mui/material'
-import Loading from '../Loading'
-import { useSharedStore } from '../SharedStoreProvider'
+import { cloneElement, FC, RefObject, useEffect, useRef, useState } from 'react'
+
+import { createDownloadUrl, createThumbnailSrc, createThumbnailSrcSet } from '../../backend/api'
+import { reactIcons } from '../../constants/icons'
+import { specialTags, specialTagsList } from '../../constants/specialTags'
 import { Hit } from '../../Types'
 import { getPreviewParams, getTypeIcon, humanFileSize, makeUnsearchable, truncatePath } from '../../utils/utils'
-import { createDownloadUrl, createThumbnailSrc, createThumbnailSrcSet } from '../../backend/api'
-import { specialTags, specialTagsList } from '../../constants/specialTags'
-import { reactIcons } from '../../constants/icons'
+import Loading from '../Loading'
+import { useSharedStore } from '../SharedStoreProvider'
+
+import type { Theme } from '@mui/material'
 
 const useStyles = makeStyles((theme: Theme) => ({
     card: {
