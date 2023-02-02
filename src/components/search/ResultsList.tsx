@@ -1,9 +1,11 @@
-import { FC } from 'react'
 import { observer } from 'mobx-react-lite'
+import { FC } from 'react'
 import ReactPlaceholder from 'react-placeholder'
-import { ResultItem } from './ResultItem'
-import { documentViewUrl } from '../../utils/utils'
+
 import { AsyncQueryTask } from '../../stores/search/AsyncTaskRunner'
+import { documentViewUrl } from '../../utils/utils'
+
+import { ResultItem } from './ResultItem'
 
 interface ResultsListProps {
     queryTask: AsyncQueryTask

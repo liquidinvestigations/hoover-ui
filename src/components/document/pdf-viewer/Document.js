@@ -1,18 +1,20 @@
-import { cloneElement, createRef, useCallback, useEffect, useRef, useState } from 'react'
-import cn from 'classnames'
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
+import cn from 'classnames'
+import { cloneElement, createRef, useCallback, useEffect, useRef, useState } from 'react'
+
+import { reactIcons } from '../../../constants/icons'
+import Expandable from '../../Expandable'
+import Loading from '../../Loading'
+import { SplitPaneLayout } from '../../SplitPaneLayout'
+
 import AttachmentsView from './AttachmentsView'
 import BookmarksView from './BookmarksView'
+import { STATUS_COMPLETE, STATUS_ERROR, STATUS_LOADING, useDocument } from './DocumentProvider'
 import Page from './Page'
 import SideToolbar from './SideToolbar'
 import ThumbnailsView from './ThumbnailsView'
 import Toolbar from './Toolbar'
-import Loading from '../../Loading'
-import Expandable from '../../Expandable'
-import SplitPaneLayout from '../../SplitPaneLayout'
-import { reactIcons } from '../../../constants/icons'
-import { STATUS_COMPLETE, STATUS_ERROR, STATUS_LOADING, useDocument } from './DocumentProvider'
 
 const useStyles = makeStyles((theme) => ({
     error: {

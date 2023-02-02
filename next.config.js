@@ -1,6 +1,5 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
-const withTM = require('next-transpile-modules')(['pdfjs-dist', 'screenfull'])
 
 const {
     API_URL,
@@ -31,6 +30,7 @@ const nextConfig = {
         HOOVER_TRANSLATION_ENABLED,
         HOOVER_UPLOADS_ENABLED,
     },
+    transpilePackages: ['pdfjs-dist', 'screenfull'],
     webpack(config) {
         config.plugins.push(
             new LodashModuleReplacementPlugin(),
@@ -169,7 +169,4 @@ const nextConfig = {
             : [],
 }
 
-module.exports = () => {
-    const plugins = [withTM]
-    return plugins.reduce((acc, plugin) => plugin(acc), { ...nextConfig })
-}
+module.exports = () => [].reduce((acc, plugin) => plugin(acc), { ...nextConfig })

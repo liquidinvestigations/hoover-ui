@@ -1,9 +1,8 @@
 import { Box, Card, CardContent, CardHeader, Grid, IconButton, Paper, Popper, Tooltip, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
-import cn from 'classnames'
 import { DateTime } from 'luxon'
 import { observer } from 'mobx-react-lite'
 import { cloneElement, FC, RefObject, useEffect, useRef, useState } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 import { createDownloadUrl, createThumbnailSrc, createThumbnailSrcSet } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
@@ -15,7 +14,7 @@ import { useSharedStore } from '../SharedStoreProvider'
 
 import type { Theme } from '@mui/material'
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
     card: {
         cursor: 'pointer',
         position: 'relative',
@@ -127,7 +126,7 @@ interface ResultItemProps {
 }
 
 export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) => {
-    const classes = useStyles()
+    const { classes, cx } = useStyles()
     const {
         user,
         hashStore: { hashState, setHashState },
@@ -183,7 +182,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
     return (
         <Card
             ref={nodeRef as unknown as RefObject<HTMLDivElement>}
-            className={cn(classes.card, { [classes.selected]: isPreview })}
+            className={cx(classes.card, { [classes.selected]: isPreview })}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}

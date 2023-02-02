@@ -1,7 +1,7 @@
 import { Fab, Grid } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 import { reactIcons } from '../../constants/icons'
 import { useSharedStore } from '../SharedStoreProvider'
@@ -10,7 +10,7 @@ import { ResultsGroup } from './ResultsGroup'
 
 import type { Theme } from '@mui/material'
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
     viewTypeIcon: {
         flex: 'none',
         boxShadow: 'none',
@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }))
 
 export const Results: FC = observer(() => {
-    const classes = useStyles()
+    const { classes } = useStyles()
     const {
         query,
         searchResultsStore: { resultsQueryTasks, viewType, setViewType },
