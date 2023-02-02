@@ -1,8 +1,7 @@
 import { Grid, IconButton, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
-import cn from 'classnames'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 import { DEFAULT_MAX_RESULTS } from '../../constants/general'
 import { reactIcons } from '../../constants/icons'
@@ -16,7 +15,7 @@ import type { Theme } from '@mui/material'
 const MAX_PREV_PAGES = 3
 const MAX_NEXT_PAGES = 3
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
     pageLink: {
         cursor: 'pointer',
         margin: theme.spacing(1),
@@ -36,7 +35,7 @@ interface PaginationProps {
 }
 
 export const Pagination: FC<PaginationProps> = observer(({ collection }) => {
-    const classes = useStyles()
+    const { classes, cx } = useStyles()
     const {
         collectionsData,
         searchStore: {
@@ -123,7 +122,7 @@ export const Pagination: FC<PaginationProps> = observer(({ collection }) => {
                                         component="a"
                                         variant="caption"
                                         onClick={page !== p ? handleSet(p) : undefined}
-                                        className={cn(classes.pageLink, { [classes.pageLinkCurrent]: page === p })}>
+                                        className={cx(classes.pageLink, { [classes.pageLinkCurrent]: page === p })}>
                                         {p}
                                     </Typography>
                                 ))}

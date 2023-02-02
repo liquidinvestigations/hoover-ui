@@ -1,9 +1,9 @@
 import { Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import { observer } from 'mobx-react-lite'
 import Head from 'next/head'
 import { FC } from 'react'
 import SplitPane from 'react-split-pane'
+import { makeStyles } from 'tss-react/mui'
 
 import Error from '../../../pages/_error'
 import { copyMetadata, shortenName } from '../../utils/utils'
@@ -18,7 +18,7 @@ import { TagsProvider } from './TagsProvider'
 
 import type { Theme } from '@mui/material'
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
     splitPane: {
         overflow: 'hidden',
         position: 'relative',
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }))
 
 export const DocPage: FC = observer(() => {
-    const classes = useStyles()
+    const { classes } = useStyles()
     const {
         user,
         printMode,

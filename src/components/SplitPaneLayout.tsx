@@ -1,10 +1,9 @@
 import { Theme } from '@mui/material'
-import { makeStyles } from '@mui/styles'
-import cn from 'classnames'
 import { CSSProperties, FC, ReactNode } from 'react'
 import SplitPane, { Size } from 'react-split-pane'
+import { makeStyles } from 'tss-react/mui'
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
     left: {
         overflowX: 'hidden',
         overflowY: 'auto',
@@ -73,10 +72,10 @@ export const SplitPaneLayout: FC<SplitPaneLayoutProps> = ({
     defaultSizeMiddle = '60%',
     container = true,
 }) => {
-    const classes = useStyles()
+    const { classes, cx } = useStyles()
 
     return (
-        <div className={container ? cn(classes.container, className) : className}>
+        <div className={container ? cx(classes.container, className) : className}>
             {left ? (
                 <SplitPane
                     key="left"

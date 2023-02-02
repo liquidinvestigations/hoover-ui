@@ -1,10 +1,9 @@
 import { IconButton, Menu, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { makeStyles } from '@mui/styles'
-import cn from 'classnames'
 import { observer } from 'mobx-react-lite'
 import { cloneElement, FC, useState, MouseEvent } from 'react'
 import ReactPlaceholder from 'react-placeholder'
 import { TextRow } from 'react-placeholder/lib/placeholders'
+import { makeStyles } from 'tss-react/mui'
 
 import { availableColumns } from '../../constants/availableColumns'
 import { reactIcons } from '../../constants/icons'
@@ -16,7 +15,7 @@ import { useSearch } from './SearchProvider'
 
 import type { Theme } from '@mui/material'
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
     table: {
         '& th': {
             fontWeight: 'bold',
@@ -49,7 +48,7 @@ interface ResultsTableProps {
 }
 
 export const ResultsTable: FC<ResultsTableProps> = observer(({ queryTask }) => {
-    const classes = useStyles()
+    const { classes, cx } = useStyles()
     // @ts-ignore
     const { query, results, resultsLoading, resultsColumns, setResultsColumns, search } = useSearch()
 
@@ -104,7 +103,7 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ queryTask }) => {
                             if (index !== undefined && index !== -1) {
                                 const [, direction] = order[index]
                                 orderIcon = cloneElement(reactIcons.arrowUp, {
-                                    className: cn(classes.icon, {
+                                    className: cx(classes.icon, {
                                         [classes.iconDown]: direction === 'desc',
                                     }),
                                 })
