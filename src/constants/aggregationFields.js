@@ -12,7 +12,7 @@ export const aggregationCategories = {
     type: {
         label: 'File Types',
         icon: 'categoryType',
-        filters: ['content-type', 'filetype', 'skipped'],
+        filters: ['filetype', 'content-type', 'skipped'],
     },
     language: {
         label: 'Language',
@@ -82,14 +82,14 @@ export const aggregationFields = {
         chipLabel: 'Date created',
         type: 'date',
     },
-    'content-type': {
-        filterLabel: 'Content type',
-        chipLabel: 'Content type',
-        type: 'term-or',
-    },
     filetype: {
         filterLabel: 'File type',
         chipLabel: 'File type',
+        type: 'term-or',
+    },
+    'content-type': {
+        filterLabel: 'Content type',
+        chipLabel: 'Content type',
         type: 'term-or',
     },
     skipped: {
