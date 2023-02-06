@@ -14,6 +14,7 @@ const {
     ASYNC_SEARCH_ERROR_SUMMATION = 60,
     HOOVER_MAPS_ENABLED,
     HOOVER_TRANSLATION_ENABLED,
+    HOOVER_UPLOADS_ENABLED,
 } = process.env
 
 const nextConfig = {
@@ -27,6 +28,7 @@ const nextConfig = {
         ASYNC_SEARCH_ERROR_SUMMATION,
         HOOVER_MAPS_ENABLED,
         HOOVER_TRANSLATION_ENABLED,
+        HOOVER_UPLOADS_ENABLED,
     },
     webpack(config) {
         config.plugins.push(
