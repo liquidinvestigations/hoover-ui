@@ -14,6 +14,7 @@ const {
     ASYNC_SEARCH_ERROR_SUMMATION = 60,
     HOOVER_MAPS_ENABLED,
     HOOVER_TRANSLATION_ENABLED,
+    HOOVER_UPLOADS_ENABLED,
 } = process.env
 
 const nextConfig = {
@@ -27,6 +28,7 @@ const nextConfig = {
         ASYNC_SEARCH_ERROR_SUMMATION,
         HOOVER_MAPS_ENABLED,
         HOOVER_TRANSLATION_ENABLED,
+        HOOVER_UPLOADS_ENABLED,
     },
     webpack(config) {
         config.plugins.push(
@@ -119,6 +121,18 @@ const nextConfig = {
     },{
         source: '/api/v1/doc/:collection/:hash/thumbnail/:size(100|200|400).jpg',
         destination: API_URL + '/api/v1/doc/:collection/:hash/thumbnail/:size.jpg',
+    },{
+        source: '/api/v1/get_uploads',
+        destination: API_URL + '/api/v1/get_uploads',
+    },{
+        source: '/api/v1/:collection/:directory/get_directory_uploads',
+        destination: API_URL + '/api/v1/:collection/:directory/get_directory_uploads',
+    },{
+        source: '/api/v1/limits',
+        destination: API_URL + '/api/v1/limits',
+    },{
+        source: '/api/v1/upload/',
+        destination: API_URL + '/api/v1/upload/',
     }] : [],
 }
 

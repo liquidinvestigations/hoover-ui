@@ -31,6 +31,11 @@ function Menu() {
             url: '/insights',
             next: true,
         },
+        process.env.HOOVER_UPLOADS_ENABLED ? {
+            name: 'Uploads',
+            url: '/uploads',
+            next: true,
+        } : false,
         process.env.HOOVER_MAPS_ENABLED ? {
             name: 'Maps',
             url: '/maps',

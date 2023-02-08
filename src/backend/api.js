@@ -87,6 +87,10 @@ export const batch = query => fetchJson(buildUrl('batch'), {
 
 export const collectionsInsights = () => fetchJson(buildUrl('collections'))
 
+export const getUploads = () => fetchJson(buildUrl('get_uploads'))
+
+export const getDirectoryUploads = (collection, directoryId) => fetchJson(buildUrl(collection, directoryId, 'get_directory_uploads'))
+
 export const asyncSearch = (uuid, wait) => fetchJson(buildUrl('async_search', uuid, { wait }))
 
 export const logError = error => fetch('/api/save-error', {
@@ -105,3 +109,4 @@ export const createThumbnailSrcSet = (docUrl) =>
     `${createThumbnailSrc(docUrl, 100)}, `+
     `${createThumbnailSrc(docUrl, 200)} 2x, `+
     `${createThumbnailSrc(docUrl, 400)} 4x`
+export const createUploadUrl = () => buildUrl('upload/')
