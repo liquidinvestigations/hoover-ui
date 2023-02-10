@@ -1,6 +1,8 @@
-import qs from 'qs'
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
+import qs from 'qs'
+
 import { rollupParams, unwindParams } from '../utils/queryUtils'
+
 import { SharedStore } from './SharedStore'
 
 export interface HashState {

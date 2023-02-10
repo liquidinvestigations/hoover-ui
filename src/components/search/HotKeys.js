@@ -1,7 +1,9 @@
 import { useMemo } from 'react'
+
 import { copyMetadata, documentViewUrl } from '../../utils/utils'
 import HotKeysWithHelp from '../HotKeysWithHelp'
 import { useSharedStore } from '../SharedStoreProvider'
+
 import { useSearch } from './SearchProvider'
 
 export default function HotKeys({ children, inputRef }) {

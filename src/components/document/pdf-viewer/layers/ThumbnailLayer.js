@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
 import { makeStyles } from '@mui/styles'
+import { useEffect, useRef, useState } from 'react'
 
 const useStyles = makeStyles((theme) => ({
     thumbnailImage: {

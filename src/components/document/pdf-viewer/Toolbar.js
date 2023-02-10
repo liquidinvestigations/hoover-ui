@@ -1,10 +1,12 @@
-import { cloneElement, memo, useEffect, useRef, useState } from 'react'
-import cn from 'classnames'
-import screenfull from 'screenfull'
 import { Grid, IconButton, Menu, MenuItem, TextField, Toolbar as MuiToolbar, Tooltip } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import { zoomIn, zoomOut } from './zooming'
+import cn from 'classnames'
+import { cloneElement, memo, useEffect, useRef, useState } from 'react'
+import screenfull from 'screenfull'
+
 import { reactIcons } from '../../../constants/icons'
+
+import { zoomIn, zoomOut } from './zooming'
 
 const useStyles = makeStyles((theme) => ({
     toolbar: {

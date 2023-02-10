@@ -1,8 +1,9 @@
-import { makeStyles } from '@mui/styles'
 import { CircularProgress, IconButton } from '@mui/material'
-import { useSearch } from '../SearchProvider'
+import { makeStyles } from '@mui/styles'
+
 import { DEFAULT_FACET_SIZE } from '../../../constants/general'
 import { reactIcons } from '../../../constants/icons'
+import { useSearch } from '../SearchProvider'
 
 const useStyles = makeStyles((theme) => ({
     loading: {

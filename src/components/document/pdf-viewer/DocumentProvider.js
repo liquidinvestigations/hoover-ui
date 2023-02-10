@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState } from 'react'
 import { getDocument, GlobalWorkerOptions, PasswordResponses, PDFWorker } from 'pdfjs-dist/build/pdf'
+import { createContext, useContext, useEffect, useState } from 'react'
 
 if (typeof window !== 'undefined' && 'Worker' in window) {
     GlobalWorkerOptions.workerSrc = '/_next/static/pdf.worker.js'

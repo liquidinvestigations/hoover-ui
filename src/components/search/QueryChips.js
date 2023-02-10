@@ -1,11 +1,14 @@
-import { memo, useCallback, useEffect, useState } from 'react'
-import lucene from 'lucene'
 import { Box, Chip, FormControl, Tooltip, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import { blue, red } from '@mui/material/colors'
-import { useSearch } from './SearchProvider'
+import { makeStyles } from '@mui/styles'
+import lucene from 'lucene'
+import { memo, useCallback, useEffect, useState } from 'react'
+
+
 import { shortenName } from '../../utils/utils'
+
 import ChipsTree from './ChipsTree'
+import { useSearch } from './SearchProvider'
 
 const useStyles = makeStyles((theme) => ({
     treeTitle: {

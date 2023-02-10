@@ -1,8 +1,10 @@
 import { makeAutoObservable, runInAction } from 'mobx'
+
 import { SearchQueryParams } from '../../Types'
 import { getPreviewParams } from '../../utils/utils'
-import { SearchStore } from './SearchStore'
+
 import { AsyncQueryTask, AsyncQueryTaskRunner } from './AsyncTaskRunner'
+import { SearchStore } from './SearchStore'
 
 export type ViewType = 'list' | 'table'
 

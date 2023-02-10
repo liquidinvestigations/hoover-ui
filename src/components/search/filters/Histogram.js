@@ -1,18 +1,20 @@
-import { cloneElement, memo, useCallback, useEffect, useMemo, useState } from 'react'
-import cn from 'classnames'
-import { DateTime } from 'luxon'
 import { Collapse, Grid, IconButton, ListItem, Menu, MenuItem, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
+import cn from 'classnames'
+import { DateTime } from 'luxon'
+import { cloneElement, memo, useCallback, useEffect, useMemo, useState } from 'react'
+
+import { DATE_FORMAT, DEFAULT_INTERVAL } from '../../../constants/general'
+import { reactIcons } from '../../../constants/icons'
+import { daysInMonth, getClosestInterval } from '../../../utils/utils'
 import Loading from '../../Loading'
+import { useSharedStore } from '../../SharedStoreProvider'
+import { useSearch } from '../SearchProvider'
+
+import { formatsLabel, formatsValue } from './DateHistogramFilter'
 import HistogramChart from './HistogramChart'
 import IntervalSelect from './IntervalSelect'
 import Pagination from './Pagination'
-import { useSearch } from '../SearchProvider'
-import { useSharedStore } from '../../SharedStoreProvider'
-import { formatsLabel, formatsValue } from './DateHistogramFilter'
-import { DATE_FORMAT, DEFAULT_INTERVAL } from '../../../constants/general'
-import { daysInMonth, getClosestInterval } from '../../../utils/utils'
-import { reactIcons } from '../../../constants/icons'
 
 const chartWidth = 300
 const chartHeight = 100

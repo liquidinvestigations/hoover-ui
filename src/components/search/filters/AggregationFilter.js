@@ -1,14 +1,16 @@
-import { cloneElement, memo } from 'react'
-import cn from 'classnames'
-import isEqual from 'react-fast-compare'
-import { makeStyles } from '@mui/styles'
 import { Button, Checkbox, CircularProgress, Divider, Fade, Grid, List, ListItem, ListItemText, Typography } from '@mui/material'
-import Pagination from './Pagination'
-import MoreButton from './MoreButton'
-import { formatThousands, getTagIcon, getTypeIcon } from '../../../utils/utils'
-import { aggregationFields } from '../../../constants/aggregationFields'
+import { makeStyles } from '@mui/styles'
+import cn from 'classnames'
+import { cloneElement, memo } from 'react'
+import isEqual from 'react-fast-compare'
 import Highlighter from 'react-highlight-words'
+
+import { aggregationFields } from '../../../constants/aggregationFields'
+import { formatThousands, getTagIcon, getTypeIcon } from '../../../utils/utils'
 import ThinProgress from '../ThinProgress'
+
+import MoreButton from './MoreButton'
+import Pagination from './Pagination'
 
 const useStyles = makeStyles((theme) => ({
     checkbox: {

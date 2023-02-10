@@ -1,4 +1,5 @@
 import { makeStyles } from '@mui/styles'
+
 import { useCoordinates } from './CoordinatesProvider'
 
 const useStyles = makeStyles((theme) => ({

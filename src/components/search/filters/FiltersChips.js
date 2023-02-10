@@ -1,13 +1,14 @@
-import { cloneElement, useCallback, useEffect, useState } from 'react'
-import { makeStyles } from '@mui/styles'
-import lucene from 'lucene'
 import { Box, Chip, FormControl, Typography } from '@mui/material'
 import { blue, green, red } from '@mui/material/colors'
-import ChipsTree from '../ChipsTree'
-import { useSearch } from '../SearchProvider'
+import { makeStyles } from '@mui/styles'
+import lucene from 'lucene'
+import { cloneElement, useCallback, useEffect, useState } from 'react'
+
 import { aggregationFields } from '../../../constants/aggregationFields'
 import { clearQuotedParam } from '../../../utils/queryUtils'
 import { getTagIcon, shortenName } from '../../../utils/utils'
+import ChipsTree from '../ChipsTree'
+import { useSearch } from '../SearchProvider'
 
 const useStyles = makeStyles((theme) => ({
     treeTitle: {

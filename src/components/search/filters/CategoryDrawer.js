@@ -1,9 +1,10 @@
-import { cloneElement, useEffect, useMemo, useState } from 'react'
-import cn from 'classnames'
-import { Transition } from 'react-transition-group'
+import { ClickAwayListener, Fade, Grid, ListItem, Portal, Slide, Typography } from '@mui/material'
 import { duration } from '@mui/material/styles'
 import { makeStyles } from '@mui/styles'
-import { ClickAwayListener, Fade, Grid, ListItem, Portal, Slide, Typography } from '@mui/material'
+import cn from 'classnames'
+import { cloneElement, useEffect, useMemo, useState } from 'react'
+import { Transition } from 'react-transition-group'
+
 import { reactIcons } from '../../../constants/icons'
 import ThinProgress from '../ThinProgress'
 

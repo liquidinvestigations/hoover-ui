@@ -1,8 +1,9 @@
-import ReactPlaceholder from 'react-placeholder'
 import { ButtonBase, List, ListItem, ListItemText, ListItemSecondaryAction, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import { useSearch } from '../search/SearchProvider'
+import ReactPlaceholder from 'react-placeholder'
+
 import { createSearchUrl } from '../../utils/queryUtils'
+import { useSearch } from '../search/SearchProvider'
 
 const useStyles = makeStyles((theme) => ({
     bucket: {

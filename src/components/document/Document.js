@@ -1,24 +1,27 @@
-import { cloneElement, useEffect } from 'react'
-import Link from 'next/link'
-import { makeStyles } from '@mui/styles'
 import { Badge, Box, Button, Chip, Grid, Tabs, Typography } from '@mui/material'
-import StyledTab from './StyledTab'
-import { TabPanel } from './TabPanel'
-import { HTML } from './HTML'
-import { Text } from './Text'
-import { Meta } from './Meta'
-import { TagTooltip } from './TagTooltip'
-import { SubTabs } from './SubTabs'
-import { Tags, getChipColor } from './Tags'
-import Toolbar from './Toolbar'
+import { makeStyles } from '@mui/styles'
+import { observer } from 'mobx-react-lite'
+import Image from 'next/image'
+import Link from 'next/link'
+import { cloneElement, useEffect } from 'react'
+
+import { createOcrUrl } from '../../backend/api'
+import { reactIcons } from '../../constants/icons'
+import { specialTags } from '../../constants/specialTags'
+import { getTagIcon } from '../../utils/utils'
 import Loading from '../Loading'
 import { useSharedStore } from '../SharedStoreProvider'
+
+import { HTML } from './HTML'
+import { Meta } from './Meta'
+import StyledTab from './StyledTab'
+import { SubTabs } from './SubTabs'
+import { TabPanel } from './TabPanel'
+import { Tags, getChipColor } from './Tags'
 import { useTags } from './TagsProvider'
-import { createOcrUrl, createUploadUrl } from '../../backend/api'
-import { specialTags } from '../../constants/specialTags'
-import { reactIcons } from '../../constants/icons'
-import { getTagIcon } from '../../utils/utils'
-import { observer } from 'mobx-react-lite'
+import { TagTooltip } from './TagTooltip'
+import { Text } from './Text'
+import Toolbar from './Toolbar'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -324,7 +327,7 @@ export const Document = observer(({ onPrev, onNext }) => {
                 {data.content['has-thumbnails'] && (
                     <Grid item>
                         <Box className={classes.thumbnail}>
-                            <img className={classes.thumbnailImg} srcSet={thumbnailSrcSet} />
+                            <Image className={classes.thumbnailImg} srcSet={thumbnailSrcSet} alt="thumbnail" />
                         </Box>
                     </Grid>
                 )}

@@ -1,4 +1,5 @@
 import { makeStyles } from '@mui/styles'
+
 import IntervalProgress from '../IntervalProgress'
 
 const useStyles = makeStyles((theme) => ({

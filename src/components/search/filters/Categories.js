@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react'
-import cn from 'classnames'
-import { Transition } from 'react-transition-group'
 import { Grid } from '@mui/material'
 import { duration } from '@mui/material/styles'
 import { makeStyles } from '@mui/styles'
+import cn from 'classnames'
+import { useEffect, useState } from 'react'
+import { Transition } from 'react-transition-group'
+
 import CategoriesToolbar from './CategoriesToolbar'
-import Filters from './Filters'
 import { Collections } from './Collections'
+import Filters from './Filters'
 
 const useStyles = makeStyles((theme) => ({
     container: {

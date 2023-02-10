@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { search as searchAPI } from '../../utils/api'
+
 import { asyncSearch as asyncSearchAPI } from '../../backend/api'
 import { aggregationFields } from '../../constants/aggregationFields'
+import { search as searchAPI } from '../../utils/api'
 
 const maxAggregationsBatchSize = Math.ceil(Object.entries(aggregationFields).length /* / process.env.AGGREGATIONS_SPLIT */)
 const aggregationGroups = Object.entries(aggregationFields).reduce((acc, [key]) => {

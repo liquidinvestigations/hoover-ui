@@ -1,7 +1,8 @@
-import { makeStyles } from '@mui/styles'
 import { Button, CircularProgress } from '@mui/material'
-import { useSearch } from '../SearchProvider'
+import { makeStyles } from '@mui/styles'
+
 import { DEFAULT_FACET_SIZE } from '../../../constants/general'
+import { useSearch } from '../SearchProvider'
 
 const useStyles = makeStyles((theme) => ({
     loading: {

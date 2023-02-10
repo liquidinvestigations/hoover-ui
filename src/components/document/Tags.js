@@ -1,4 +1,3 @@
-import { cloneElement, useEffect, useMemo, useState } from 'react'
 import {
     Autocomplete,
     Box,
@@ -15,18 +14,21 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import { blue } from '@mui/material/colors'
+import { makeStyles } from '@mui/styles'
 import { observer } from 'mobx-react-lite'
-import Loading from '../Loading'
-import { TagTooltip } from './TagTooltip'
-import { useTags } from './TagsProvider'
-import { useSharedStore } from '../SharedStoreProvider'
-import { specialTagsList } from '../../constants/specialTags'
-import { search as searchAPI } from '../../utils/api'
+import { cloneElement, useEffect, useMemo, useState } from 'react'
+
 import { tooltips } from '../../constants/help'
 import { reactIcons } from '../../constants/icons'
+import { specialTagsList } from '../../constants/specialTags'
+import { search as searchAPI } from '../../utils/api'
 import { getTagIcon } from '../../utils/utils'
+import Loading from '../Loading'
+import { useSharedStore } from '../SharedStoreProvider'
+
+import { useTags } from './TagsProvider'
+import { TagTooltip } from './TagTooltip'
 
 const forbiddenCharsRegex = /[^a-z0-9_!@#$%^&*()-=+:,./?]/gi
 

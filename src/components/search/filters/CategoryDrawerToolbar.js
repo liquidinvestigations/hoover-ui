@@ -1,8 +1,9 @@
-import { cloneElement } from 'react'
-import cn from 'classnames'
 import { IconButton, InputAdornment, TextField, Toolbar, Tooltip } from '@mui/material'
 import { duration } from '@mui/material/styles'
 import { makeStyles } from '@mui/styles'
+import cn from 'classnames'
+import { cloneElement } from 'react'
+
 import { reactIcons } from '../../../constants/icons'
 
 const useStyles = makeStyles((theme) => ({

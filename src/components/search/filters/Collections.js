@@ -1,11 +1,13 @@
-import { useState } from 'react'
 import { observer } from 'mobx-react-lite'
-import CategoryDrawer from './CategoryDrawer'
-import CollectionsFilter from './CollectionsFilter'
-import { useSearch } from '../SearchProvider'
+import { useState } from 'react'
+
 import Expandable from '../../Expandable'
-import CategoryDrawerToolbar from './CategoryDrawerToolbar'
 import { useSharedStore } from '../../SharedStoreProvider'
+import { useSearch } from '../SearchProvider'
+
+import CategoryDrawer from './CategoryDrawer'
+import CategoryDrawerToolbar from './CategoryDrawerToolbar'
+import CollectionsFilter from './CollectionsFilter'
 
 export const Collections = observer(({ openCategory, setOpenCategory, wideFilters, drawerWidth, drawerPinned, setDrawerPinned, drawerPortalRef }) => {
     const { collectionsCount } = useSearch()

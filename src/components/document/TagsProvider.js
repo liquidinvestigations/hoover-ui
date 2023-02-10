@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { useSearch } from '../search/SearchProvider'
-import { publicTagsList } from '../../constants/specialTags'
+
 import { createTag, deleteTag, tags as tagsAPI, updateTag } from '../../backend/api'
+import { publicTagsList } from '../../constants/specialTags'
+import { useSearch } from '../search/SearchProvider'
 import { useSharedStore } from '../SharedStoreProvider'
 
 const TagsContext = createContext({})

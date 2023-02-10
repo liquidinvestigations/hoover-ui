@@ -1,8 +1,9 @@
-import { useState } from 'react'
 import { Fab, Menu, MenuItem } from '@mui/material'
+import { useState } from 'react'
+
 import { SORTABLE_FIELDS } from '../../../constants/general'
-import { useSearch } from '../SearchProvider'
 import { reactIcons } from '../../../constants/icons'
+import { useSearch } from '../SearchProvider'
 
 export default function SortingMenu() {
     const { query, search } = useSearch()

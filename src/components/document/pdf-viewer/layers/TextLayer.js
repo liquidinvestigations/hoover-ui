@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react'
 import { renderTextLayer } from 'pdfjs-dist/build/pdf'
+import { useEffect, useRef } from 'react'
 
 export default function TextLayer({ page, rotation, scale }) {
     const containerRef = useRef()

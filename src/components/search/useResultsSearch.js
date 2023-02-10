@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { getPreviewParams } from '../../utils/utils'
-import { search as searchAPI } from '../../utils/api'
+
 import { asyncSearch as asyncSearchAPI } from '../../backend/api'
+import { search as searchAPI } from '../../utils/api'
+import { getPreviewParams } from '../../utils/utils'
 
 export default function useResultsSearch(query, previewOnLoad, setPreviewOnLoad, setHashState) {
     const [error, setError] = useState()

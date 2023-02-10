@@ -1,7 +1,7 @@
+import { List, ListItem, ListItemText, Modal, Snackbar, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import { useState } from 'react'
 import { HotKeys } from 'react-hotkeys'
-import { makeStyles } from '@mui/styles'
-import { List, ListItem, ListItemText, Modal, Snackbar, Typography } from '@mui/material'
 
 const useStyles = makeStyles((theme) => ({
     keyHelp: {

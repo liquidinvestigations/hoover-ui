@@ -1,8 +1,9 @@
-import { forwardRef, useEffect, useState } from 'react'
-import cn from 'classnames'
 import { makeStyles } from '@mui/styles'
-import ThumbnailLayer from './layers/ThumbnailLayer'
+import cn from 'classnames'
+import { forwardRef, useEffect, useState } from 'react'
+
 import { useDocument } from './DocumentProvider'
+import ThumbnailLayer from './layers/ThumbnailLayer'
 
 const thumbnailWidth = 100
 const thumbnailHeight = 150

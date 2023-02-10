@@ -1,7 +1,8 @@
+import { Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import { useEffect, useState } from 'react'
 import { decode } from 'tiff'
-import { makeStyles } from '@mui/styles'
-import { Typography } from '@mui/material'
+
 import Loading from '../Loading'
 
 const useStyles = makeStyles((theme) => ({

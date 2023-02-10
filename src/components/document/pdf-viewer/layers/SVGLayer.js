@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react'
 import { SVGGraphics } from 'pdfjs-dist/build/pdf'
+import { useEffect, useRef } from 'react'
 
 export default function SVGLayer({ page, width, height, rotation, scale }) {
     const containerRef = useRef()

@@ -1,9 +1,11 @@
-import { memo, useCallback, useMemo, useState } from 'react'
-import { makeStyles } from '@mui/styles'
 import { CircularProgress, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
+import { memo, useCallback, useMemo, useState } from 'react'
+
 import { aggregationCategories, aggregationFields } from '../../../constants/aggregationFields'
 import { getLanguageName } from '../../../utils/utils'
 import { useSearch } from '../SearchProvider'
+
 import CategoryDrawer from './CategoryDrawer'
 import CategoryDrawerToolbar from './CategoryDrawerToolbar'
 import DateHistogramFilter from './DateHistogramFilter'

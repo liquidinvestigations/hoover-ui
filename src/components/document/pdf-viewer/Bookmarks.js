@@ -1,5 +1,6 @@
-import { useCallback, useEffect } from 'react'
 import { TreeItem } from '@mui/lab'
+import { useCallback, useEffect } from 'react'
+
 import { useDocument } from './DocumentProvider'
 
 export default function Bookmarks({ onSelect }) {
