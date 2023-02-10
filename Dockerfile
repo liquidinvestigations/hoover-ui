@@ -5,7 +5,7 @@ WORKDIR /opt/hoover/ui
 
 ADD package*.json /opt/hoover/ui/
 ADD patches /opt/hoover/ui/
-RUN npm install
+RUN npm install --unsafe-perm
 
 ADD . /opt/hoover/ui/
 ENV NEXT_TELEMETRY_DISABLED=1
