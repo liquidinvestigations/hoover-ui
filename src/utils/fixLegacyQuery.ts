@@ -29,7 +29,7 @@ const moveToFilters = (query: LegacySearchQueryParams, param: string, value?: st
     }
 }
 
-export default function fixLegacyQuery(query: LegacySearchQueryParams): SearchQueryParams {
+export default function fixLegacyQuery(query: LegacySearchQueryParams): LegacySearchQueryParams {
     if (query.collections && typeof query.collections === 'string') {
         query.collections = query.collections.split('+')
     }
