@@ -1,13 +1,15 @@
-import { cloneElement, useEffect, useRef, useState } from 'react'
-import cn from 'classnames'
 import { IconButton, Paper, Popper, TableCell, TableRow, Tooltip } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import { useSearch } from './SearchProvider'
-import { useSharedStore } from '../SharedStoreProvider'
+import cn from 'classnames'
+import { cloneElement, useEffect, useRef, useState } from 'react'
+
 import { createDownloadUrl, createThumbnailSrc } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
 import { documentViewUrl, formatDateTime, getPreviewParams, getTagIcon, getTypeIcon, humanFileSize, shortenName } from '../../utils/utils'
 import Loading from '../Loading'
+import { useSharedStore } from '../SharedStoreProvider'
+
+import { useSearch } from './SearchProvider'
 
 const useStyles = makeStyles((theme) => ({
     selected: {

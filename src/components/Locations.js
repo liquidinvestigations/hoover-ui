@@ -1,11 +1,14 @@
-import { memo, useEffect, useState } from 'react'
-import Link from 'next/link'
 import url from 'url'
+
 import { List, ListItem, ListItemIcon, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import Loading from './Loading'
+import Link from 'next/link'
+import { memo, useEffect, useState } from 'react'
+
 import { locations as locationsAPI } from '../backend/api'
 import { reactIcons } from '../constants/icons'
+
+import Loading from './Loading'
 
 const useStyles = makeStyles((theme) => ({
     error: {

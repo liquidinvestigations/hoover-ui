@@ -1,7 +1,9 @@
-import { memo } from 'react'
-import { makeStyles } from '@mui/styles'
 import { Grid, MenuItem, Select, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
+import { memo } from 'react'
+
 import { SIZE_OPTIONS } from '../../constants/general'
+
 import { useSearch } from './SearchProvider'
 
 const useStyles = makeStyles((theme) => ({

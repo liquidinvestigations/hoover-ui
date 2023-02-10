@@ -1,17 +1,19 @@
-import { cloneElement } from 'react'
 import { Box, Tab, Tabs, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { observer } from 'mobx-react-lite'
-import Expandable from '../Expandable'
-import Preview, { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './Preview'
-import { TabPanel } from './TabPanel'
-import { Email } from './Email'
-import { Files } from './Files'
-import { Text } from './Text'
-import PDFViewer from './pdf-viewer/Dynamic'
+import { cloneElement } from 'react'
+
 import { createOcrUrl } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
+import Expandable from '../Expandable'
 import { useSharedStore } from '../SharedStoreProvider'
+
+import { Email } from './Email'
+import { Files } from './Files'
+import PDFViewer from './pdf-viewer/Dynamic'
+import Preview, { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './Preview'
+import { TabPanel } from './TabPanel'
+import { Text } from './Text'
 
 const useStyles = makeStyles((theme) => ({
     printTitle: {

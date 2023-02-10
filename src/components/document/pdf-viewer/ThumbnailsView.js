@@ -1,7 +1,8 @@
-import { memo } from 'react'
 import { makeStyles } from '@mui/styles'
-import Thumbnail from './Thumbnail'
+import { memo } from 'react'
+
 import { useDocument } from './DocumentProvider'
+import Thumbnail from './Thumbnail'
 
 const useStyles = makeStyles((theme) => ({
     container: {

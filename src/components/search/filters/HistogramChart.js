@@ -1,7 +1,8 @@
-import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
-import cn from 'classnames'
-import { blue, grey } from '@mui/material/colors'
 import { Tooltip } from '@mui/material'
+import { blue, grey } from '@mui/material/colors'
+import cn from 'classnames'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
+
 import { formatThousands } from '../../../utils/utils'
 
 export default function HistogramChart({ width, height, axisHeight, data, selected, onSelect, onClick, preserveDragArea }) {

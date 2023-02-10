@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
+
+import { useSharedStore } from '../../SharedStoreProvider'
+
 import Document from './Document'
 import DocumentProvider from './DocumentProvider'
-import { useSharedStore } from '../../SharedStoreProvider'
 
 function debounce(fn, wait) {
     let t

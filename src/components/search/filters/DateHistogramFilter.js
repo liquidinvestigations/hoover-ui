@@ -1,12 +1,14 @@
-import { memo, useCallback, useEffect } from 'react'
-import { DateTime } from 'luxon'
 import { ListItem, Typography } from '@mui/material'
-import Expandable from '../../Expandable'
-import IntervalSelect from './IntervalSelect'
-import DateRangeFilter from './DateRangeFilter'
-import AggregationFilter from './AggregationFilter'
+import { DateTime } from 'luxon'
+import { memo, useCallback, useEffect } from 'react'
+
 import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL } from '../../../constants/general'
 import { formatThousands, getClosestInterval } from '../../../utils/utils'
+import Expandable from '../../Expandable'
+
+import AggregationFilter from './AggregationFilter'
+import DateRangeFilter from './DateRangeFilter'
+import IntervalSelect from './IntervalSelect'
 import useMissingLoader from './useMissingLoader'
 
 export const formatsLabel = {

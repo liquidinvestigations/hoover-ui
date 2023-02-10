@@ -1,8 +1,3 @@
-import { createElement, CSSProperties, ReactElement } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-
-import type { IconDefinition } from '@fortawesome/fontawesome-common-types'
-
 import {
     faAngleDoubleRight,
     faBrain,
@@ -24,7 +19,7 @@ import {
     faSearch,
     faSearchPlus,
 } from '@fortawesome/free-solid-svg-icons'
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
     AccountTree,
     AccountTreeOutlined,
@@ -80,6 +75,10 @@ import {
     ZoomIn,
     ZoomOut,
 } from '@mui/icons-material'
+import { createElement, CSSProperties, ReactElement } from 'react'
+
+import type { IconDefinition } from '@fortawesome/fontawesome-common-types'
+
 
 interface FAIconProps {
     icon: IconDefinition

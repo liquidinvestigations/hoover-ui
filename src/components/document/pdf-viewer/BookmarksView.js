@@ -1,8 +1,10 @@
-import { memo } from 'react'
-import { makeStyles } from '@mui/styles'
 import { TreeView } from '@mui/lab'
-import Bookmarks from './Bookmarks'
+import { makeStyles } from '@mui/styles'
+import { memo } from 'react'
+
 import { reactIcons } from '../../../constants/icons'
+
+import Bookmarks from './Bookmarks'
 
 const useStyles = makeStyles((theme) => ({
     container: {

@@ -1,8 +1,9 @@
-import { useEffect } from 'react'
-import mapLibreGL from 'maplibre-gl'
 import { makeStyles } from '@mui/styles'
-import { useGeoSearch } from './GeoSearchProvider'
+import mapLibreGL from 'maplibre-gl'
+import { useEffect } from 'react'
+
 import { useCoordinates } from './CoordinatesProvider'
+import { useGeoSearch } from './GeoSearchProvider'
 
 const useStyles = makeStyles((theme) => ({
     map: {

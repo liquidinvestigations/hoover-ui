@@ -1,11 +1,13 @@
+import { makeAutoObservable, runInAction } from 'mobx'
 import qs from 'qs'
 import { ChangeEvent } from 'react'
-import { makeAutoObservable, runInAction } from 'mobx'
+
 import { SearchQueryParams } from '../../Types'
+import fixLegacyQuery from '../../utils/fixLegacyQuery'
 import { buildSearchQuerystring, defaultSearchTextParams, unwindParams } from '../../utils/queryUtils'
 import { SharedStore } from '../SharedStore'
+
 import { SearchResultsStore } from './SearchResultsStore'
-import fixLegacyQuery from '../../utils/fixLegacyQuery'
 
 export class SearchStore {
     searchText: string | undefined
@@ -30,7 +32,7 @@ export class SearchStore {
         return parsedQuery
     }
 
-    search = (params: Partial<SearchQueryParams>) => {
+    search = (params: SearchQueryParams) => {
         let mergedParams = { ...this.query, ...params }
         if (this.searchText) {
             mergedParams.q = this.searchText

@@ -1,5 +1,5 @@
-import { makeStyles } from '@mui/styles'
 import { Box, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import cn from 'classnames'
 
 const useStyles = makeStyles((theme) => ({

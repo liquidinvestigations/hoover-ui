@@ -1,15 +1,17 @@
-import { useEffect, useRef, useState } from 'react'
 import { Grid, List, ListItem, Paper, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
+import { useEffect, useRef, useState } from 'react'
+
+import { collectionsInsights } from '../../backend/api'
+import { humanFileSize } from '../../utils/utils'
+import { useSearch } from '../search/SearchProvider'
+import SplitPaneLayout from '../SplitPaneLayout'
+
+import AggregationsTable from './AggregationsTable'
+import Histogram from './Histogram'
 import InsightsTitle from './InsightsTitle'
 import TaskErrorsTable from './TaskErrorsTable'
 import TaskTable from './TaskTable'
-import SplitPaneLayout from '../SplitPaneLayout'
-import AggregationsTable from './AggregationsTable'
-import { useSearch } from '../search/SearchProvider'
-import { humanFileSize } from '../../utils/utils'
-import { collectionsInsights } from '../../backend/api'
-import Histogram from './Histogram'
 
 const useStyles = makeStyles((theme) => ({
     root: {

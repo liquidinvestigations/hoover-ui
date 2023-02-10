@@ -1,12 +1,13 @@
-import { memo } from 'react'
-import cn from 'classnames'
-import { makeStyles } from '@mui/styles'
 import { Chip } from '@mui/material'
+import { makeStyles } from '@mui/styles'
+import cn from 'classnames'
+import { memo } from 'react'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
-import { useSearch } from '../SearchProvider'
+
 import { SORTABLE_FIELDS } from '../../../constants/general'
 import { reactIcons } from '../../../constants/icons'
 import { titleCase } from '../../../utils/utils'
+import { useSearch } from '../SearchProvider'
 
 const useStyles = makeStyles((theme) => ({
     icon: {

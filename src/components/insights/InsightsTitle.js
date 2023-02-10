@@ -1,6 +1,7 @@
-import { cloneElement } from 'react'
 import { Grid, ListItem, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
+import { cloneElement } from 'react'
+
 import { reactIcons } from '../../constants/icons'
 
 const useStyles = makeStyles((theme) => ({

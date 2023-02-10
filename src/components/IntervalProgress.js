@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
 import { LinearProgress } from '@mui/material'
+import { useEffect, useState } from 'react'
 
 export default function IntervalProgress({ classes, eta }) {
     const [initialTime, setInitialTime] = useState(Date.now())

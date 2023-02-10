@@ -1,8 +1,10 @@
-import { memo } from 'react'
 import { makeStyles } from '@mui/styles'
+import { memo } from 'react'
+
+import { useSharedStore } from '../SharedStoreProvider'
+
 import PDFViewer from './pdf-viewer/Dynamic'
 import TIFFViewer from './TIFFViewer'
-import { useSharedStore } from '../SharedStoreProvider'
 
 // List copy/pasted from https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
 // and then ran through ` grep -o '[^ /]\+/[^ ]\+' | sort ` - only image, audio, video are here

@@ -1,7 +1,8 @@
+import { Checkbox, List, ListItem, ListItemText, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import { memo } from 'react'
 import Highlighter from 'react-highlight-words'
-import { makeStyles } from '@mui/styles'
-import { Checkbox, List, ListItem, ListItemText, Typography } from '@mui/material'
+
 import { formatThousands } from '../../../utils/utils'
 
 const useStyles = makeStyles((theme) => ({

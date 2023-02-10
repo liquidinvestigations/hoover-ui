@@ -1,7 +1,8 @@
-import { DateTime } from 'luxon'
 import { Box, Tooltip } from '@mui/material'
-import { useSharedStore } from '../SharedStoreProvider'
+import { DateTime } from 'luxon'
+
 import { formatDateTime } from '../../utils/utils'
+import { useSharedStore } from '../SharedStoreProvider'
 
 export const TagTooltip = ({ chip, count, children }) => {
     const { user } = useSharedStore()

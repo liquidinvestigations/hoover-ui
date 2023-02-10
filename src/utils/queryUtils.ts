@@ -1,8 +1,11 @@
-import qs, { ParsedQs } from 'qs'
 import { DateTime } from 'luxon'
-import { daysInMonth } from './utils'
+import qs, { ParsedQs } from 'qs'
+
+
 import { aggregationFields } from '../constants/aggregationFields'
 import { SearchQueryParams } from '../Types'
+
+import { daysInMonth } from './utils'
 
 export const defaultSearchTextParams = {
     page: 1,

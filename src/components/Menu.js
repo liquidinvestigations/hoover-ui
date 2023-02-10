@@ -1,9 +1,10 @@
+import { Button } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
-import { Button } from '@mui/material'
 import { useRouter } from 'next/router'
+
 import { useSharedStore } from './SharedStoreProvider'
-import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles((theme) => ({
     link: {

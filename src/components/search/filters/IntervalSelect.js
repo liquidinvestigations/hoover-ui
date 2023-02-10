@@ -1,6 +1,7 @@
 import { FormControl, FormHelperText, MenuItem, Select } from '@mui/material'
-import { useSearch } from '../SearchProvider'
+
 import { DEFAULT_INTERVAL } from '../../../constants/general'
+import { useSearch } from '../SearchProvider'
 
 export default function IntervalSelect({ field }) {
     const { query, search } = useSearch()

@@ -1,9 +1,10 @@
+import { AppBar, Toolbar, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
 import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
-import { makeStyles } from '@mui/styles'
-import { AppBar, Toolbar, Typography } from '@mui/material'
-import { useSharedStore } from './SharedStoreProvider'
+
 import { Menu } from './Menu'
+import { useSharedStore } from './SharedStoreProvider'
 
 const useStyles = makeStyles((theme) => ({
     root: {

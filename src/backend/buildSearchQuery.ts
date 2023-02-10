@@ -1,8 +1,9 @@
 import { DateTime } from 'luxon'
-import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL, DEFAULT_OPERATOR, HIGHLIGHT_SETTINGS, PRIVATE_FIELDS } from '../constants/general'
-import { daysInMonth } from '../utils/utils'
+
 import { aggregationFields } from '../constants/aggregationFields'
+import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL, DEFAULT_OPERATOR, HIGHLIGHT_SETTINGS, PRIVATE_FIELDS } from '../constants/general'
 import { SearchQueryParams, SearchQueryType } from '../Types'
+import { daysInMonth } from '../utils/utils'
 
 export interface SearchFields {
     all: string[]

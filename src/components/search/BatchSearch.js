@@ -1,13 +1,15 @@
-import { useState } from 'react'
-import { makeStyles } from '@mui/styles'
 import { Button, Grid, List, TextField, Typography } from '@mui/material'
-import Expandable from '../Expandable'
-import Loading from '../Loading'
-import BatchResults from './BatchResults'
-import CollectionsFilter from './filters/CollectionsFilter'
+import { makeStyles } from '@mui/styles'
+import { useState } from 'react'
+
+import { batch } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
 import { createSearchUrl } from '../../utils/queryUtils'
-import { batch } from '../../backend/api'
+import Expandable from '../Expandable'
+import Loading from '../Loading'
+
+import BatchResults from './BatchResults'
+import CollectionsFilter from './filters/CollectionsFilter'
 
 const useStyles = makeStyles((theme) => ({
     main: {

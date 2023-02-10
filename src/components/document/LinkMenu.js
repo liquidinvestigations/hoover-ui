@@ -1,10 +1,11 @@
-import qs from 'qs'
-import { mergeWith } from 'lodash'
 import { Menu, MenuItem } from '@mui/material'
+import { mergeWith } from 'lodash'
 import { NestedMenuItem } from 'mui-nested-menu'
-import { useSearch } from '../search/SearchProvider'
-import { buildSearchQuerystring, createSearchParams, createSearchUrl, rollupParams } from '../../utils/queryUtils'
+import qs from 'qs'
+
 import { aggregationFields } from '../../constants/aggregationFields'
+import { buildSearchQuerystring, createSearchParams, createSearchUrl, rollupParams } from '../../utils/queryUtils'
+import { useSearch } from '../search/SearchProvider'
 import { useSharedStore } from '../SharedStoreProvider'
 
 function customizer(objValue, srcValue) {

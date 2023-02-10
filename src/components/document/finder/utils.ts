@@ -1,5 +1,6 @@
-import { ColumnItem, LocalDocumentData } from './Types'
 import { ChildDocument } from '../../../stores/DocumentStore'
+
+import { ColumnItem, LocalDocumentData } from './Types'
 
 export const makeColumns = (doc: LocalDocumentData, pathname: string | null) => {
     const columns: ColumnItem[] = []

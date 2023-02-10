@@ -1,10 +1,11 @@
-import { useMemo } from 'react'
 import { DateTime } from 'luxon'
-import { useSearch } from '../search/SearchProvider'
-import { formatsLabel, formatsValue } from '../search/filters/DateHistogramFilter'
-import Loading from '../Loading'
-import HistogramChart from '../search/filters/HistogramChart'
+import { useMemo } from 'react'
+
 import { createSearchUrl } from '../../utils/queryUtils'
+import Loading from '../Loading'
+import { formatsLabel, formatsValue } from '../search/filters/DateHistogramFilter'
+import HistogramChart from '../search/filters/HistogramChart'
+import { useSearch } from '../search/SearchProvider'
 
 const chartWidth = 500
 const chartHeight = 100

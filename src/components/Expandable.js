@@ -1,8 +1,10 @@
-import { cloneElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import cn from 'classnames'
-import { makeStyles } from '@mui/styles'
 import { CircularProgress, Collapse, Fade, Grid, IconButton, ListItem, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
+import cn from 'classnames'
+import { cloneElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+
 import { reactIcons } from '../constants/icons'
+
 import ThinProgress from './search/ThinProgress'
 
 const useStyles = makeStyles((theme) => ({

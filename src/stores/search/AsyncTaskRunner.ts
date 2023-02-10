@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx'
-import { AsyncTaskData, SearchQueryParams, SearchQueryType } from '../../Types'
+
 import { asyncSearch as asyncSearchAPI } from '../../backend/api'
+import { AsyncTaskData, SearchQueryParams, SearchQueryType } from '../../Types'
 
 export class AsyncQueryTask {
     running: boolean = false

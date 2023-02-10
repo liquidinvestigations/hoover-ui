@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
 import { AnnotationLayer as PDFJSAnnotationLayer } from 'pdfjs-dist/build/pdf'
 import { AnnotationType } from 'pdfjs-dist/lib/shared/util'
+import { useEffect, useRef, useState } from 'react'
+
 import { useDocument } from '../DocumentProvider'
 
 export default function AnnotationLayer({ page, pageIndex, containerRef, pagesRefs, rotation, scale }) {

@@ -1,11 +1,13 @@
-import { FC } from 'react'
-import { observer } from 'mobx-react-lite'
 import { Box, Fade, Typography } from '@mui/material'
+import { observer } from 'mobx-react-lite'
+import { FC } from 'react'
+
+import { useSharedStore } from '../SharedStoreProvider'
+
 import { Pagination } from './Pagination'
 import { ResultsList } from './ResultsList'
-import { ResultsTable } from './ResultsTable'
 import ResultsProgress from './ResultsProgress'
-import { useSharedStore } from '../SharedStoreProvider'
+import { ResultsTable } from './ResultsTable'
 
 interface ResultsProps {
     collection: string

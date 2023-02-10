@@ -1,3 +1,5 @@
+import { IncomingMessage } from 'http'
+
 import { search, searchFields, whoami } from './api'
 import getAuthorizationHeaders from './getAuthorizationHeaders'
 
@@ -11,7 +13,7 @@ export const searchHandler = async (req: NextApiRequest, res: NextApiResponse) =
     }
 
     try {
-        const headers = getAuthorizationHeaders(req as { headers: Record<string, string> })
+        const headers = getAuthorizationHeaders(req as IncomingMessage)
         const whoAmI = await whoami(headers)
         const fields = await searchFields(headers)
         const { type, fieldList, missing, refresh = '', async = false, ...params } = req.body

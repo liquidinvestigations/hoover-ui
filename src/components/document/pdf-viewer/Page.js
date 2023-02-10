@@ -1,8 +1,9 @@
 import { forwardRef, useEffect, useState } from 'react'
+
+import AnnotationLayer from './layers/AnnotationLayer'
 import CanvasLayer from './layers/CanvasLayer'
 import SVGLayer from './layers/SVGLayer'
 import TextLayer from './layers/TextLayer'
-import AnnotationLayer from './layers/AnnotationLayer'
 
 export default forwardRef(function Page(
     { doc, containerRef, pagesRefs, renderer, pageIndex, width, height, rotation, scale, onVisibilityChanged },
