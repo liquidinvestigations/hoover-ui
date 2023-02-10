@@ -1,22 +1,15 @@
-import React, { useEffect, useRef, useState, memo } from 'react';
-import { Grid, List, ListItem, Paper, Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import InsightsTitle from '../insights/InsightsTitle';
-import TaskErrorsTable from '../insights/TaskErrorsTable';
-import TaskTable from '../insights/TaskTable';
-import SplitPaneLayout from '../SplitPaneLayout';
-import AggregationsTable from '../insights/AggregationsTable';
-import { useSearch } from '../search/SearchProvider';
-import { humanFileSize } from '../../utils';
-import { getDirectoryUploads, createUploadUrl } from '../../backend/api';
-import Histogram from '../insights/Histogram';
-import Uppy from '@uppy/core';
-import Tus from '@uppy/tus';
-import { FileInput, StatusBar } from '@uppy/react';
-import '@uppy/core/dist/style.css';
-import '@uppy/file-input/dist/style.css';
-import '@uppy/core/dist/style.css';
-import '@uppy/status-bar/dist/style.css';
+import { Grid, Paper, Typography } from '@mui/material'
+import { makeStyles } from '@mui/styles'
+import Uppy from '@uppy/core'
+import { FileInput, StatusBar } from '@uppy/react'
+import Tus from '@uppy/tus'
+import React, { useEffect, useRef, useState, memo } from 'react'
+
+import { getDirectoryUploads, createUploadUrl } from '../../backend/api'
+
+import '@uppy/core/dist/style.css'
+import '@uppy/file-input/dist/style.css'
+import '@uppy/status-bar/dist/style.css'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -32,15 +25,15 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         backgroundColor: theme.palette.grey[300],
     },
-}));
+}))
 
 export default function DirectoryUploads({ collection, directoryId }) {
-    const classes = useStyles();
+    const classes = useStyles()
 
-    const [uploadsState, setUploadsState] = useState({ uploads: [] });
-    const intervalRef = useRef(0);
+    const [uploadsState, setUploadsState] = useState({ uploads: [] })
+    const intervalRef = useRef(0)
 
-    const uppyRef = useRef(null);
+    const uppyRef = useRef(null)
 
     useEffect(() => {
         if (uppyRef.current === null) {
@@ -49,50 +42,46 @@ export default function DirectoryUploads({ collection, directoryId }) {
                 restrictions: { maxNumberOfFiles: null },
                 autoProceed: true,
                 allowMultipleUploadBatches: true,
-            });
+            })
             uppyRef.current.use(Tus, {
                 endpoint: createUploadUrl(),
                 retryDelays: [0, 1000, 3000, 5000],
                 limit: 1,
                 // needs to match the chunksize of the client
                 chunkSize: 5242880,
-            });
+            })
             uppyRef.current.on('file-added', (file) => {
                 uppyRef.current.setFileMeta(file.id, {
                     name: file.name,
                     dirpk: directoryId,
                     collection: collection,
-                });
-            });
+                })
+            })
             uppyRef.current.on('complete', () => {
-                getDirectoryUploads(collection, directoryId).then(
-                    (data) => {
-                        setUploadsState(data);
-                    }
-                );
-            });
+                getDirectoryUploads(collection, directoryId).then((data) => {
+                    setUploadsState(data)
+                })
+            })
         }
 
-        return () => uppyRef.current.close();
-    }, [directoryId, collection]); // The empty array ensures that this effect only runs on mount.
+        return () => uppyRef.current.close()
+    }, [directoryId, collection]) // The empty array ensures that this effect only runs on mount.
 
     useEffect(() => {
         getDirectoryUploads(collection, directoryId).then((data) => {
-            setUploadsState(data);
-        });
+            setUploadsState(data)
+        })
 
         intervalRef.current = setInterval(async () => {
-            setUploadsState(
-                await getDirectoryUploads(collection, directoryId)
-            );
-        }, 10000);
+            setUploadsState(await getDirectoryUploads(collection, directoryId))
+        }, 10000)
 
         return () => {
-            clearInterval(intervalRef.current);
-        };
-    }, [collection, directoryId]);
+            clearInterval(intervalRef.current)
+        }
+    }, [collection, directoryId])
 
-    const MemoizedStatusBar = memo(StatusBar);
+    const MemoizedStatusBar = memo(StatusBar)
 
     return (
         <>
@@ -115,10 +104,7 @@ export default function DirectoryUploads({ collection, directoryId }) {
                     </Grid>
                     <Grid item xs={12}>
                         <Paper>
-                            <Typography
-                                variant="h5"
-                                className={classes.sectionTitle}
-                            >
+                            <Typography variant="h5" className={classes.sectionTitle}>
                                 Uploads
                             </Typography>
                             <table>
@@ -134,46 +120,15 @@ export default function DirectoryUploads({ collection, directoryId }) {
                                 </thead>
                                 <tbody>
                                     {uploadsState.uploads
-                                        .sort((a, b) =>
-                                            String(a.started).localeCompare(
-                                                String(b.started)
-                                            )
-                                        )
+                                        .sort((a, b) => String(a.started).localeCompare(String(b.started)))
                                         .map((upload) => (
                                             <tr key={upload.started}>
-                                                <td>
-                                                    {upload.filename
-                                                        ? upload.filename
-                                                        : ''}
-                                                </td>
-                                                <td>
-                                                    {upload.uploader
-                                                        ? upload.uploader
-                                                        : ''}
-                                                </td>
-                                                <td>
-                                                    {upload.started
-                                                        ? upload.started
-                                                        : ''}
-                                                </td>
-                                                <td>
-                                                    {upload.finished
-                                                        ? upload.finished
-                                                        : ''}
-                                                </td>
-                                                <td>
-                                                    {upload.tasks_done != undefined
-                                                        ? upload.tasks_done +
-                                                          '/' +
-                                                          upload.tasks_total
-                                                        : ''}
-                                                </td>
-                                                <td>
-                                                    {upload.processed ||
-                                                    upload.processed === false
-                                                        ? upload.processed.toString()
-                                                        : ''}
-                                                </td>
+                                                <td>{upload.filename ? upload.filename : ''}</td>
+                                                <td>{upload.uploader ? upload.uploader : ''}</td>
+                                                <td>{upload.started ? upload.started : ''}</td>
+                                                <td>{upload.finished ? upload.finished : ''}</td>
+                                                <td>{upload.tasks_done !== undefined ? upload.tasks_done + '/' + upload.tasks_total : ''}</td>
+                                                <td>{upload.processed || upload.processed === false ? upload.processed.toString() : ''}</td>
                                             </tr>
                                         ))}
                                 </tbody>
@@ -193,17 +148,12 @@ export default function DirectoryUploads({ collection, directoryId }) {
                                         },
                                     }}
                                 />
-                                <MemoizedStatusBar
-                                    uppy={uppyRef.current}
-                                    hideUploadButton
-                                    hideAfterFinish={false}
-                                    showProgressDetails
-                                />
+                                <MemoizedStatusBar uppy={uppyRef.current} hideUploadButton hideAfterFinish={false} showProgressDetails />
                             </>
                         ) : null}
                     </Grid>
                 </Grid>
             </div>
         </>
-    );
+    )
 }
