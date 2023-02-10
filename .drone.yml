@@ -49,7 +49,7 @@ steps:
 - name: npm install
   image: node:14
   commands:
-  - npm install
+  - npm install --unsafe-perm
 
 - name: npm run build
   image: node:14
