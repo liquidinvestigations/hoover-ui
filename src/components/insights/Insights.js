@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { collectionsInsights } from '../../backend/api'
 import { humanFileSize } from '../../utils/utils'
 import { useSearch } from '../search/SearchProvider'
-import SplitPaneLayout from '../SplitPaneLayout'
+import { SplitPaneLayout } from '../SplitPaneLayout'
 
 import AggregationsTable from './AggregationsTable'
 import Histogram from './Histogram'
