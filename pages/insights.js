@@ -1,8 +1,8 @@
+import { collections as collectionsAPI } from '../src/backend/api'
+import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
+import Insights from '../src/components/insights/Insights'
 import { SearchProvider } from '../src/components/search/SearchProvider'
 import { useSharedStore } from '../src/components/SharedStoreProvider'
-import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
-import { collections as collectionsAPI } from '../src/backend/api'
-import Insights from '../src/components/insights/Insights'
 
 export default function InsightsPage({ collections, serverQuery }) {
     const store = useSharedStore()

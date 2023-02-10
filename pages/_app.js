@@ -1,17 +1,18 @@
 import '../styles/main.css'
-import { useEffect } from 'react'
-import App from 'next/app'
-import { ThemeProvider } from '@mui/styles'
 import { CssBaseline } from '@mui/material'
-import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
+import { ThemeProvider } from '@mui/styles'
 import { LocalizationProvider } from '@mui/x-date-pickers'
-import { JSS_CSS } from '../src/constants/general'
-import Layout from '../src/components/Layout'
-import theme from '../src/theme'
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
+import App from 'next/app'
+import { useEffect } from 'react'
+
 import { whoami } from '../src/backend/api'
 import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
-import { SharedStore } from '../src/stores/SharedStore'
+import Layout from '../src/components/Layout'
 import { SharedStoreProvider } from '../src/components/SharedStoreProvider'
+import { JSS_CSS } from '../src/constants/general'
+import { SharedStore } from '../src/stores/SharedStore'
+import theme from '../src/theme'
 
 export default function HooverApp({ Component, pageProps, user }) {
     useEffect(() => {

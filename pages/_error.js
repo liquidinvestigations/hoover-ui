@@ -1,5 +1,5 @@
-import Head from 'next/head'
 import { makeStyles } from '@mui/styles'
+import Head from 'next/head'
 
 const statusCodes = {
     400: 'Bad Request',
