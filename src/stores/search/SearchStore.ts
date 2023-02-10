@@ -22,7 +22,7 @@ export class SearchStore {
         makeAutoObservable(this)
     }
 
-    parseSearchParams = (search: string): SearchQueryParams => {
+    parseSearchParams = (search: string): Partial<SearchQueryParams> => {
         const parsedQuery = fixLegacyQuery(unwindParams(qs.parse(search, { arrayLimit: 100 })))
 
         if (parsedQuery.q) {
@@ -32,7 +32,7 @@ export class SearchStore {
         return parsedQuery
     }
 
-    search = (params: SearchQueryParams) => {
+    search = (params: Partial<SearchQueryParams>) => {
         let mergedParams = { ...this.query, ...params }
         if (this.searchText) {
             mergedParams.q = this.searchText
@@ -42,9 +42,11 @@ export class SearchStore {
         const queryString = buildSearchQuerystring(mergedParams)
         const query = this.parseSearchParams(queryString)
 
-        if (query?.collections?.length && this.searchResultsStore.queryDiffer(query)) {
-            this.query = query
-            this.searchResultsStore.queryResult(query)
+        if (query.q && query.page && query.size && query?.collections?.length) {
+            if (this.searchResultsStore.queryDiffer(query as SearchQueryParams)) {
+                this.query = query as SearchQueryParams
+                this.searchResultsStore.queryResult(query as SearchQueryParams)
+            }
         }
 
         if (this.sharedStore.navigation) {

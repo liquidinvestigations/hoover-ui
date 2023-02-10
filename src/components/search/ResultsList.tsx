@@ -12,7 +12,8 @@ interface ResultsListProps {
 }
 
 export const ResultsList: FC<ResultsListProps> = observer(({ queryTask }) => {
-    const start = 1 + (queryTask.query.page - 1) * queryTask.query.size
+    const { page, size } = queryTask.query
+    const start = 1 + (page - 1) * size
 
     if (!queryTask.data?.result) {
         return null

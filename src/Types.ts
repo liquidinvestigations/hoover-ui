@@ -48,10 +48,10 @@ export interface CollectionData {
 export type SearchQueryType = 'aggregations' | 'results'
 
 export interface SearchQueryParams {
-    q?: string
-    page?: number
-    size?: number
-    collections?: string[]
+    q: string
+    page: number
+    size: number
+    collections: string[]
     order?: string[][]
     facets?: Record<string, any>
     filters?: Record<string, any>

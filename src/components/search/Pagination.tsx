@@ -45,14 +45,17 @@ export const Pagination: FC<PaginationProps> = observer(({ collection }) => {
         },
     } = useSharedStore()
 
+    if (!query) {
+        return null
+    }
+
     const queryTask = resultsQueryTasks[collection]
 
     const maxResultWindow = collectionsData.find((collectionData) => collectionData.name === collection)?.max_result_window
     const maxCount = maxResultWindow && !isNaN(maxResultWindow) && maxResultWindow < DEFAULT_MAX_RESULTS ? maxResultWindow : DEFAULT_MAX_RESULTS
 
     const total = queryTask.data?.result?.hits.total || 0
-    const size = query?.size || 10
-    const page = query?.page || 0
+    const { size, page } = query
 
     const handleNext = () => search({ page: page + 1 })
     const handlePrev = () => search({ page: page - 1 })
