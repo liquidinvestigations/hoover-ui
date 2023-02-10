@@ -5,6 +5,7 @@ WORKDIR /opt/hoover/ui
 
 ADD package*.json /opt/hoover/ui/
 ADD patches /opt/hoover/ui/
+ADD postinstall-fixes.js /opt/hoover/ui/
 RUN npm install --unsafe-perm
 
 ADD . /opt/hoover/ui/
