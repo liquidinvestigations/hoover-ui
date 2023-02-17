@@ -12,8 +12,11 @@ import { getDirectoryUploads, createUploadUrl } from '../../backend/api';
 import Histogram from '../insights/Histogram';
 import Uppy from '@uppy/core';
 import Tus from '@uppy/tus';
+import Dashboard from '@uppy/dashboard';
+// import DropTarget from '@uppy/drop-target';
 import { FileInput, StatusBar } from '@uppy/react';
 import '@uppy/core/dist/style.css';
+import "@uppy/dashboard/dist/style.css"
 import '@uppy/file-input/dist/style.css';
 import '@uppy/core/dist/style.css';
 import '@uppy/status-bar/dist/style.css';
@@ -50,6 +53,18 @@ export default function DirectoryUploads({ collection, directoryId }) {
                 autoProceed: true,
                 allowMultipleUploadBatches: true,
             });
+            uppyRef.current.use(Dashboard, {
+                fileManagerSelectionType: "both",
+                inline: true,
+                disableStatusBar: false,
+                disableInformer: false,
+                animateOpenClose: true,
+                disableThumbnailGenerator: false,
+                proudlyDisplayPoweredByUppy: false,
+                showSelectedFiles: false,
+                note: "",
+            })
+            // uppyRef.current.use(DropTarget, { target: document.body })
             uppyRef.current.use(Tus, {
                 endpoint: createUploadUrl(),
                 retryDelays: [0, 1000, 3000, 5000],
