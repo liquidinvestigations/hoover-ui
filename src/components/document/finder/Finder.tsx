@@ -55,7 +55,7 @@ export const Finder: FC = observer(() => {
             <div className={classes.container}>
                 {columns.map(({ items, pathname, prevPage, nextPage, selected }, index) => (
                     <FinderColumn
-                        key={index}
+                        key={pathname + index}
                         items={items}
                         pathname={pathname}
                         prevPage={prevPage}
