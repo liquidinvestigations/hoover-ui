@@ -33,11 +33,13 @@ const makeColumns = (doc, pathname) => {
         }
         columns.unshift({
             items: [node],
+            pathname: pathname + node.id,
             selected: node,
         })
     } else {
         columns.unshift({
             items: [doc],
+            pathname: pathname + doc.id,
             selected: doc,
         })
     }
@@ -87,9 +89,9 @@ export default function Finder() {
     return (
         <ErrorBoundary visible>
             <div className={classes.container}>
-                {columns.map(({ items, pathname, prevPage, nextPage, selected }) => (
+                {columns.map(({ items, pathname, prevPage, nextPage, selected }, index) => (
                     <FinderColumn
-                        key={pathname}
+                        key={pathname + index}
                         items={items}
                         pathname={pathname}
                         prevPage={prevPage}
