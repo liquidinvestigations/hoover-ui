@@ -1,7 +1,6 @@
 import { Badge, Box, Button, Chip, Grid, Tabs, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { observer } from 'mobx-react-lite'
-import Image from 'next/image'
 import Link from 'next/link'
 import { cloneElement, useEffect } from 'react'
 
@@ -250,8 +249,7 @@ export const Document = observer(({ onPrev, onNext }) => {
                 variant="text"
                 component="a"
                 href={'/upload/' + collection + '/' + data.id}
-                color="inherit"
-            >
+                color="inherit">
                 {'Upload File'}
             </Button>
         )
@@ -327,7 +325,7 @@ export const Document = observer(({ onPrev, onNext }) => {
                 {data.content['has-thumbnails'] && (
                     <Grid item>
                         <Box className={classes.thumbnail}>
-                            <Image className={classes.thumbnailImg} srcSet={thumbnailSrcSet} alt="thumbnail" />
+                            <img className={classes.thumbnailImg} srcSet={thumbnailSrcSet} alt="thumbnail" />
                         </Box>
                     </Grid>
                 )}
@@ -339,15 +337,10 @@ export const Document = observer(({ onPrev, onNext }) => {
                         .filter((tabData) => tabData.visible)
                         .map((tabData, index) => (
                             <StyledTab key={index} icon={tabData.icon} label={tabData.name} />
-                        ))
-                    }
-                    {data.content.filetype == 'folder' &&
+                        ))}
+                    {data.content.filetype === 'folder' &&
                         !data.content.path.includes('//') &&
-                        process.env.HOOVER_UPLOADS_ENABLED && [
-                            ...emptyTabs,
-                            uploadButton(),
-                        ]
-                    }
+                        process.env.HOOVER_UPLOADS_ENABLED && [...emptyTabs, uploadButton()]}
                 </Tabs>
             )}
 
