@@ -23,7 +23,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
 export const Results: FC = observer(() => {
     const { classes } = useStyles()
     const {
-        query,
+        searchCollections,
         searchResultsStore: { resultsQueryTasks, viewType, setViewType },
     } = useSharedStore().searchStore
 
@@ -52,7 +52,7 @@ export const Results: FC = observer(() => {
                 </Grid>
             </Grid>
 
-            {!query?.collections?.length ? (
+            {!searchCollections.length ? (
                 <i>no collections selected</i>
             ) : (
                 Object.keys(resultsQueryTasks).map((collection) => <ResultsGroup collection={collection} key={collection} />)

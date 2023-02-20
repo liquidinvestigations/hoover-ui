@@ -19,7 +19,7 @@ export interface User {
 }
 
 export interface CollectionData {
-    name: string
+    name: Category
     title: string
     stats: {
         counts: {
@@ -53,7 +53,7 @@ export interface SearchQueryParams {
     q: string
     page: number
     size: number
-    collections: string[]
+    collections: Category[]
     order?: string[][]
     facets?: Record<string, any>
     filters?: Record<string, any>

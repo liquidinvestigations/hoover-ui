@@ -12,7 +12,7 @@ import { useProgressIndicator } from '../ProgressIndicator'
 import { useSharedStore } from '../SharedStoreProvider'
 import { SplitPaneLayout } from '../SplitPaneLayout'
 
-import Categories from './filters/Categories'
+import { Categories } from './filters/Categories/Categories'
 import FiltersChips from './filters/FiltersChips'
 import Histogram from './filters/Histogram'
 import HotKeys from './HotKeys'
