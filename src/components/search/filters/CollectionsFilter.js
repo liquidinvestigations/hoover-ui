@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-function CollectionsFilter({ collections, selected, changeSelection, counts, search }) {
+function CollectionsFilter({ collections, selected, changeSelection, counts, search = '' }) {
     const classes = useStyles()
 
     const handleChange = name => () => {

@@ -42,7 +42,7 @@ export default function BatchSearch({ collections, limits }) {
     const [resultsLoading, setResultsLoading] = useState(false)
 
     const search = (collections = selectedCollections, offset = 0) => {
-        if (!terms.trim() || !selectedCollections) return null
+        if (!terms?.trim() || !selectedCollections) return null
         const allTerms = terms.trim().split('\n')
 
         const searchResults = []
