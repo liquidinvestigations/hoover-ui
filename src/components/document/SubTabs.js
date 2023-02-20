@@ -5,7 +5,7 @@ import { cloneElement } from 'react'
 
 import { createOcrUrl } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
-import Expandable from '../Expandable'
+import { Expandable } from '../Expandable'
 import { useSharedStore } from '../SharedStoreProvider'
 
 import { Email } from './Email'

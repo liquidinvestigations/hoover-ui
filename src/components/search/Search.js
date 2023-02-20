@@ -16,7 +16,7 @@ import Categories from './filters/Categories'
 import FiltersChips from './filters/FiltersChips'
 import Histogram from './filters/Histogram'
 import HotKeys from './HotKeys'
-import QueryChips from './QueryChips'
+import { QueryChips } from './QueryChips'
 import { Results } from './Results'
 import SortingChips from './sorting/SortingChips'
 import SortingMenu from './sorting/SortingMenu'
@@ -54,6 +54,8 @@ export const Search = observer(() => {
     const {
         collectionsData,
         searchStore: {
+            setOpenCategory,
+            drawerPinned,
             search,
             searchText,
             clearSearchText,
@@ -99,22 +101,11 @@ export const Search = observer(() => {
 
     const drawerRef = useRef()
     const [drawerWidth, setDrawerWidth] = useState()
-    const [drawerPinned, setDrawerPinned] = useState(true)
-    const [openCategory, setOpenCategory] = useState('collections')
 
     return (
         <HotKeys inputRef={inputRef}>
             <Grid container>
-                <Categories
-                    collections={collectionsData}
-                    openCategory={openCategory}
-                    setOpenCategory={setOpenCategory}
-                    drawerRef={drawerRef}
-                    drawerWidth={drawerWidth}
-                    setDrawerWidth={setDrawerWidth}
-                    drawerPinned={drawerPinned}
-                    setDrawerPinned={setDrawerPinned}
-                />
+                <Categories collections={collectionsData} drawerRef={drawerRef} drawerWidth={drawerWidth} setDrawerWidth={setDrawerWidth} />
 
                 <Grid item style={{ flex: 1 }}>
                     <SplitPaneLayout

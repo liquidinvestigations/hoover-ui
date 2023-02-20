@@ -1,6 +1,6 @@
 import { Grid, IconButton, Menu, MenuItem, TextField, Toolbar as MuiToolbar, Tooltip } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import cn from 'classnames'
+import cx from 'classnames'
 import { cloneElement, memo, useEffect, useRef, useState } from 'react'
 import screenfull from 'screenfull'
 
@@ -202,13 +202,13 @@ function Toolbar({
                         </Tooltip>
                         <Tooltip title="Scale" PopperProps={popperProps}>
                             <div
-                                className={cn('MuiInputBase-root', 'MuiOutlinedInput-root', 'MuiInputBase-formControl', classes.scaleSelect, {
+                                className={cx('MuiInputBase-root', 'MuiOutlinedInput-root', 'MuiInputBase-formControl', classes.scaleSelect, {
                                     'Mui-disabled': !firstPageData,
                                 })}
                                 onClick={!!firstPageData ? handleScaleMenuClick : null}>
-                                <span className={cn('MuiInputBase-input', 'MuiOutlinedInput-input')}>{Math.round(scale * 100) + '%'}</span>
+                                <span className={cx('MuiInputBase-input', 'MuiOutlinedInput-input')}>{Math.round(scale * 100) + '%'}</span>
                                 {cloneElement(reactIcons.dropDown, {
-                                    className: cn('MuiSelect-icon', 'MuiSelect-iconOutlined'),
+                                    className: cx('MuiSelect-icon', 'MuiSelect-iconOutlined'),
                                 })}
                             </div>
                         </Tooltip>

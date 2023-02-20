@@ -1,4 +1,5 @@
 import { makeStyles } from '@mui/styles'
+import { FC } from 'react'
 
 import IntervalProgress from '../IntervalProgress'
 
@@ -14,7 +15,7 @@ const useStyles = makeStyles(() => ({
     },
 }))
 
-export default function ThinProgress({ eta }) {
+export const ThinProgress: FC<{ eta: number }> = ({ eta }) => {
     const classes = useStyles()
 
     return <IntervalProgress classes={classes} eta={eta} />

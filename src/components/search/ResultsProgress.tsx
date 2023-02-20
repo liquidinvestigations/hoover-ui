@@ -1,8 +1,10 @@
+import { Theme } from '@mui/material'
 import { makeStyles } from '@mui/styles'
+import { FC } from 'react'
 
 import IntervalProgress from '../IntervalProgress'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
     progress: {
         height: 20,
         borderRadius: 5,
@@ -33,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-export default function ResultsProgress({ eta }) {
+export const ResultsProgress: FC<{ eta: number }> = ({ eta }) => {
     const classes = useStyles()
 
     return <IntervalProgress classes={classes} eta={eta} />

@@ -1,6 +1,6 @@
 import { Button, Collapse, Divider, Grid, IconButton, ListItem, Tooltip, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import cn from 'classnames'
+import cx from 'classnames'
 import { cloneElement, memo, useState } from 'react'
 
 import { reactIcons } from '../../constants/icons'
@@ -74,7 +74,7 @@ function Section({ title, toolbarButtons, children, defaultOpen = true, scrollX 
 
                     <Grid item>
                         <IconButton
-                            className={cn(classes.expand, {
+                            className={cx(classes.expand, {
                                 [classes.expandOpen]: open,
                             })}
                             onClick={toggle}
@@ -88,7 +88,7 @@ function Section({ title, toolbarButtons, children, defaultOpen = true, scrollX 
             </ListItem>
 
             <Collapse in={open}>
-                <div className={cn(classes.sectionContent, { [classes.scrollX]: scrollX })}>{children}</div>
+                <div className={cx(classes.sectionContent, { [classes.scrollX]: scrollX })}>{children}</div>
                 <Divider />
             </Collapse>
         </>

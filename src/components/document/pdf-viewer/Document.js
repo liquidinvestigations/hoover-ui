@@ -1,10 +1,10 @@
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import cn from 'classnames'
+import cx from 'classnames'
 import { cloneElement, createRef, useCallback, useEffect, useRef, useState } from 'react'
 
 import { reactIcons } from '../../../constants/icons'
-import Expandable from '../../Expandable'
+import { Expandable } from '../../Expandable'
 import Loading from '../../Loading'
 import { SplitPaneLayout } from '../../SplitPaneLayout'
 
@@ -208,7 +208,7 @@ export default function Document({ initialPageIndex, onPageIndexChange, renderer
                     leftMinSize={194}
                     leftStyle={{ visibility: sidePanelOpen ? 'visible' : 'hidden', overflowY: 'hidden' }}
                     leftResizerStyle={{ visibility: sidePanelOpen ? 'visible' : 'hidden', width: sidePanelOpen ? 11 : 10 }}>
-                    <div className={cn(classes.container, 'pdfViewer')} ref={containerRef}>
+                    <div className={cx(classes.container, 'pdfViewer')} ref={containerRef}>
                         {status === STATUS_LOADING && <Loading variant={percent > 0 ? 'determinate' : 'indeterminate'} value={percent} />}
                         {status === STATUS_ERROR && (
                             <div className={classes.error}>

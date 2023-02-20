@@ -1,7 +1,7 @@
 import { IconButton, InputAdornment, TextField, Toolbar, Tooltip } from '@mui/material'
 import { duration } from '@mui/material/styles'
 import { makeStyles } from '@mui/styles'
-import cn from 'classnames'
+import cx from 'classnames'
 import { cloneElement } from 'react'
 
 import { reactIcons } from '../../../constants/icons'
@@ -102,7 +102,7 @@ export default function CategoryDrawerToolbar({ search, onSearch, drawerPinned, 
                     }>
                     {drawerPinned
                         ? cloneElement(reactIcons.pinned, { className: classes.pinIcon })
-                        : cloneElement(reactIcons.unpinned, { className: cn(classes.pinIcon, classes.unPinned) })}
+                        : cloneElement(reactIcons.unpinned, { className: cx(classes.pinIcon, classes.unPinned) })}
                 </IconButton>
             </Tooltip>
         </Toolbar>

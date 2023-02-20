@@ -238,7 +238,7 @@ export const Document = observer(({ onPrev, onNext }) => {
     // TODO replace with styling
     const emptyTabs = []
     for (let i = 0; i < 10; i++) {
-        emptyTabs.push(<StyledTab disabled />)
+        emptyTabs.push(<StyledTab key={i} disabled />)
     }
 
     const uploadButton = () => {

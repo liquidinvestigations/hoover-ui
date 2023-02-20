@@ -2,7 +2,7 @@ import { makeAutoObservable, runInAction } from 'mobx'
 import qs from 'qs'
 import { ChangeEvent } from 'react'
 
-import { SearchQueryParams } from '../../Types'
+import { Category, SearchQueryParams } from '../../Types'
 import fixLegacyQuery from '../../utils/fixLegacyQuery'
 import { buildSearchQuerystring, defaultSearchTextParams, unwindParams } from '../../utils/queryUtils'
 import { SharedStore } from '../SharedStore'
@@ -10,6 +10,10 @@ import { SharedStore } from '../SharedStore'
 import { SearchResultsStore } from './SearchResultsStore'
 
 export class SearchStore {
+    openCategory: Category | undefined = 'collections'
+
+    drawerPinned: boolean = true
+
     searchText: string | undefined
 
     query: SearchQueryParams | undefined
@@ -63,6 +67,18 @@ export class SearchStore {
     clearSearchText = () => {
         runInAction(() => {
             this.searchText = undefined
+        })
+    }
+
+    setOpenCategory = (category: Category | undefined) => {
+        runInAction(() => {
+            this.openCategory = category
+        })
+    }
+
+    setDrawerPinned = (drawerPinned: boolean) => {
+        runInAction(() => {
+            this.drawerPinned = drawerPinned
         })
     }
 }

@@ -6,7 +6,7 @@ import { aggregationCategories, aggregationFields } from '../../../constants/agg
 import { getLanguageName } from '../../../utils/utils'
 import { useSearch } from '../SearchProvider'
 
-import CategoryDrawer from './CategoryDrawer'
+import { CategoryDrawer } from './CategoryDrawer'
 import CategoryDrawerToolbar from './CategoryDrawerToolbar'
 import DateHistogramFilter from './DateHistogramFilter'
 import TermsAggregationFilter from './TermsAggregationFilter'

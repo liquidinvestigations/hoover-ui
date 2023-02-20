@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { batch } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
 import { createSearchUrl } from '../../utils/queryUtils'
-import Expandable from '../Expandable'
+import { Expandable } from '../Expandable'
 import Loading from '../Loading'
 
 import BatchResults from './BatchResults'

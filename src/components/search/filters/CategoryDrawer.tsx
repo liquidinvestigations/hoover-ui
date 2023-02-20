@@ -1,14 +1,15 @@
-import { ClickAwayListener, Fade, Grid, ListItem, Portal, Slide, Typography } from '@mui/material'
+import { ClickAwayListener, Fade, Grid, ListItem, Portal, Slide, Theme, Typography } from '@mui/material'
 import { duration } from '@mui/material/styles'
 import { makeStyles } from '@mui/styles'
-import cn from 'classnames'
-import { cloneElement, useEffect, useMemo, useState } from 'react'
+import cx from 'classnames'
+import { cloneElement, CSSProperties, FC, ReactNode, RefObject, useEffect, useMemo, useState } from 'react'
 import { Transition } from 'react-transition-group'
 
 import { reactIcons } from '../../../constants/icons'
-import ThinProgress from '../ThinProgress'
+import { Category } from '../../../Types'
+import { ThinProgress } from '../ThinProgress'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
     root: {
         width: '100%',
         overflow: 'hidden',
@@ -62,14 +63,32 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-const hasDisabledClickAway = (element) => {
+const hasDisabledClickAway = (element: HTMLElement): boolean => {
     if (element.dataset?.disableClickAway) {
         return true
     }
-    return element.parentNode && hasDisabledClickAway(element.parentNode)
+    return !!element.parentNode && hasDisabledClickAway(element.parentNode as HTMLElement)
 }
 
-export default function CategoryDrawer({
+interface CategoryDrawerProps {
+    category: Category
+    title: string
+    icon: keyof typeof reactIcons
+    children: ReactNode | ReactNode[]
+    wideFilters: boolean
+    portalRef: RefObject<HTMLDivElement>
+    width: number
+    pinned: boolean
+    toolbar: JSX.Element
+    loading?: boolean
+    loadingETA?: number
+    open: boolean
+    onOpen: (category: Category | undefined) => void
+    greyed?: boolean
+    highlight?: boolean
+}
+
+export const CategoryDrawer: FC<CategoryDrawerProps> = ({
     category,
     title,
     icon,
@@ -85,18 +104,21 @@ export default function CategoryDrawer({
     onOpen,
     greyed = false,
     highlight = true,
-}) {
+}) => {
     const classes = useStyles()
-    const [position, setPosition] = useState({ top: 0, left: 0, width: 0 })
+    const [position, setPosition] = useState<Partial<CSSProperties>>({ top: 0, left: 0, width: 0 })
 
     const updatePosition = () => {
-        const position = portalRef.current.getBoundingClientRect()
+        const position = portalRef.current?.getBoundingClientRect()
+        const scrollTop = portalRef.current?.parentElement?.scrollTop
 
-        setPosition({
-            top: position.top + portalRef.current.parentElement.scrollTop + 'px',
-            left: position.left + 'px',
-            width,
-        })
+        if (position && scrollTop) {
+            setPosition({
+                top: position.top + scrollTop + 'px',
+                left: position.left + 'px',
+                width,
+            })
+        }
     }
 
     useEffect(() => {
@@ -112,10 +134,10 @@ export default function CategoryDrawer({
                 button
                 data-disable-click-away
                 onClick={() => onOpen(category)}
-                className={cn({ [classes.openCollapsed]: !wideFilters && open })}>
+                className={cx({ [classes.openCollapsed]: !wideFilters && open })}>
                 <Fade in={loading} unmountOnExit>
                     <div>
-                        <ThinProgress eta={loadingETA} loading={loading} />
+                        <ThinProgress eta={loadingETA || 0} />
                     </div>
                 </Fade>
 
@@ -129,7 +151,7 @@ export default function CategoryDrawer({
                             noWrap
                             variant="body2"
                             component="div"
-                            className={cn(classes.title, { [classes.bold]: open })}
+                            className={cx(classes.title, { [classes.bold]: open })}
                             color={greyed ? 'textSecondary' : highlight ? 'secondary' : 'initial'}>
                             {title}
                         </Typography>
@@ -164,12 +186,12 @@ export default function CategoryDrawer({
                         onExiting={updatePosition}>
                         <ClickAwayListener
                             onClickAway={(event) => {
-                                !pinned && !hasDisabledClickAway(event.target) && onOpen(null)
+                                !pinned && !hasDisabledClickAway(event.target as HTMLElement) && onOpen(undefined)
                             }}
                             disableReactTree>
                             <div style={!pinned ? position : undefined} className={classes.root}>
                                 <Slide direction="right" in={open}>
-                                    <div className={cn(classes.inner, { [classes.unpinned]: !pinned })} data-test="filters">
+                                    <div className={cx(classes.inner, { [classes.unpinned]: !pinned })} data-test="filters">
                                         {toolbar}
                                         {children}
                                     </div>
