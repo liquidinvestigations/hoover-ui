@@ -1,6 +1,6 @@
 import { IconButton, Toolbar, Tooltip } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import cn from 'classnames'
+import cx from 'classnames'
 import { cloneElement } from 'react'
 
 import { reactIcons } from '../../../constants/icons'
@@ -35,7 +35,7 @@ export default function CategoriesToolbar({ collapsed, onCollapseToggle }) {
             <Tooltip title={collapsed ? 'Expand' : 'Collapse'}>
                 <IconButton size="small" className={classes.collapseButton} onClick={handleCollapse}>
                     {cloneElement(reactIcons.doubleArrow, {
-                        className: cn(classes.collapseIcon, { [classes.expanded]: !collapsed }),
+                        className: cx(classes.collapseIcon, { [classes.expanded]: !collapsed }),
                     })}
                 </IconButton>
             </Tooltip>

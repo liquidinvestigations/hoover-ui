@@ -1,6 +1,6 @@
 import { IconButton, Paper, Popper, TableCell, TableRow, Tooltip } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import cn from 'classnames'
+import cx from 'classnames'
 import { cloneElement, useEffect, useRef, useState } from 'react'
 
 import { createDownloadUrl, createThumbnailSrc } from '../../backend/api'
@@ -173,7 +173,7 @@ export default function ResultsTableRow({ hit, index }) {
     }
 
     return (
-        <TableRow ref={nodeRef} onClick={handleResultClick} className={cn({ [classes.selected]: isPreview })}>
+        <TableRow ref={nodeRef} onClick={handleResultClick} className={cx({ [classes.selected]: isPreview })}>
             <TableCell>{start + index}</TableCell>
             {resultsColumns.map(([field, { align, path, format }]) => (
                 <TableCell key={field} align={align}>

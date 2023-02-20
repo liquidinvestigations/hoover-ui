@@ -1,6 +1,6 @@
 import { ButtonBase, ListItem, ListItemIcon, ListItemText, Theme } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import cn from 'classnames'
+import cx from 'classnames'
 import { useRouter } from 'next/router'
 import { FC, useEffect, useRef } from 'react'
 
@@ -68,7 +68,7 @@ export const FinderItem: FC<FinderItemProps> = ({ pathname, item, active, select
             ref={ref}
             component={ButtonBase as any}
             onClick={handleClick}
-            className={cn(classes.item, { [classes.active]: isActive, [classes.selected]: isSelected && !isActive })}>
+            className={cx(classes.item, { [classes.active]: isActive, [classes.selected]: isSelected && !isActive })}>
             <ListItemIcon classes={{ root: classes.iconRoot }}>{getTypeIcon((item as any).filetype)}</ListItemIcon>
             <ListItemText classes={{ root: classes.itemRoot, primary: classes.itemText }}>{filenameFor(item)}</ListItemText>
         </ListItem>

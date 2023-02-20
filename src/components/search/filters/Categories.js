@@ -1,7 +1,7 @@
 import { Grid } from '@mui/material'
 import { duration } from '@mui/material/styles'
 import { makeStyles } from '@mui/styles'
-import cn from 'classnames'
+import cx from 'classnames'
 import { useEffect, useState } from 'react'
 import { Transition } from 'react-transition-group'
 
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-export default function Categories({ openCategory, setOpenCategory, drawerRef, drawerWidth, setDrawerWidth, drawerPinned, setDrawerPinned }) {
+export default function Categories({ drawerRef, drawerWidth, setDrawerWidth }) {
     const classes = useStyles()
     const [wideFilters, setWideFilters] = useState(true)
 
@@ -42,31 +42,15 @@ export default function Categories({ openCategory, setOpenCategory, drawerRef, d
             {(state) => (
                 <Grid
                     item
-                    className={cn(classes.container, {
+                    className={cx(classes.container, {
                         [classes.wide]: state === 'entering' || state === 'entered',
                     })}
                     data-test="categories">
                     <CategoriesToolbar collapsed={!wideFilters} onCollapseToggle={setWideFilters} />
 
-                    <Collections
-                        openCategory={openCategory}
-                        setOpenCategory={setOpenCategory}
-                        wideFilters={wideFilters}
-                        drawerWidth={drawerWidth}
-                        drawerPinned={drawerPinned}
-                        setDrawerPinned={setDrawerPinned}
-                        drawerPortalRef={drawerRef}
-                    />
+                    <Collections wideFilters={wideFilters} drawerWidth={drawerWidth} drawerPortalRef={drawerRef} />
 
-                    <Filters
-                        openCategory={openCategory}
-                        setOpenCategory={setOpenCategory}
-                        wideFilters={wideFilters}
-                        drawerWidth={drawerWidth}
-                        drawerPinned={drawerPinned}
-                        setDrawerPinned={setDrawerPinned}
-                        drawerPortalRef={drawerRef}
-                    />
+                    <Filters wideFilters={wideFilters} drawerWidth={drawerWidth} drawerPortalRef={drawerRef} />
                 </Grid>
             )}
         </Transition>

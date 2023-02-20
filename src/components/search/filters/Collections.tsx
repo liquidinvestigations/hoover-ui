@@ -1,23 +1,29 @@
 import { observer } from 'mobx-react-lite'
-import { useState } from 'react'
+import { FC, RefObject, useState } from 'react'
 
-import Expandable from '../../Expandable'
+import { Expandable } from '../../Expandable'
 import { useSharedStore } from '../../SharedStoreProvider'
-import { useSearch } from '../SearchProvider'
 
-import CategoryDrawer from './CategoryDrawer'
+import { CategoryDrawer } from './CategoryDrawer'
 import CategoryDrawerToolbar from './CategoryDrawerToolbar'
 import CollectionsFilter from './CollectionsFilter'
 
-export const Collections = observer(({ openCategory, setOpenCategory, wideFilters, drawerWidth, drawerPinned, setDrawerPinned, drawerPortalRef }) => {
-    const { collectionsCount } = useSearch()
+import type { Category } from '../../../Types'
+
+interface CollectionsProps {
+    wideFilters: boolean
+    drawerWidth: number
+    drawerPortalRef: RefObject<HTMLDivElement>
+}
+
+export const Collections: FC<CollectionsProps> = observer(({ wideFilters, drawerWidth, drawerPortalRef }) => {
     const [searchCollections, setSearchCollections] = useState('')
     const {
         collectionsData,
-        searchStore: { query, search },
+        searchStore: { drawerPinned, setDrawerPinned, openCategory, setOpenCategory, query, search },
     } = useSharedStore()
 
-    const handleCollectionsChange = (value) => {
+    const handleCollectionsChange = (value: Category[]) => {
         search({ collections: value })
     }
 
@@ -32,7 +38,6 @@ export const Collections = observer(({ openCategory, setOpenCategory, wideFilter
             wideFilters={wideFilters}
             width={drawerWidth}
             pinned={drawerPinned}
-            setPinned={setDrawerPinned}
             portalRef={drawerPortalRef}
             toolbar={
                 <CategoryDrawerToolbar
@@ -48,7 +53,7 @@ export const Collections = observer(({ openCategory, setOpenCategory, wideFilter
                     collections={collectionsData}
                     selected={query?.collections || []}
                     changeSelection={handleCollectionsChange}
-                    counts={collectionsCount}
+                    counts={collectionsData}
                     search={searchCollections}
                 />
             </Expandable>

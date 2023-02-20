@@ -4,7 +4,7 @@ import isEqual from 'react-fast-compare'
 
 import { aggregationFields } from '../../../constants/aggregationFields'
 import { formatThousands } from '../../../utils/utils'
-import Expandable from '../../Expandable'
+import { Expandable } from '../../Expandable'
 
 import AggregationFilter from './AggregationFilter'
 import useMissingLoader from './useMissingLoader'

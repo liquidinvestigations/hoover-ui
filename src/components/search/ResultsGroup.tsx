@@ -6,7 +6,7 @@ import { useSharedStore } from '../SharedStoreProvider'
 
 import { Pagination } from './Pagination'
 import { ResultsList } from './ResultsList'
-import ResultsProgress from './ResultsProgress'
+import { ResultsProgress } from './ResultsProgress'
 import { ResultsTable } from './ResultsTable'
 
 interface ResultsProps {

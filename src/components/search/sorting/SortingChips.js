@@ -1,6 +1,6 @@
 import { Chip } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import cn from 'classnames'
+import cx from 'classnames'
 import { memo } from 'react'
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 
@@ -82,7 +82,7 @@ function SortingChips() {
                                         onClick={handleClick(field)}
                                         onDelete={handleDelete(field)}
                                         classes={{
-                                            icon: cn(classes.icon, {
+                                            icon: cx(classes.icon, {
                                                 [classes.iconDown]: direction === 'desc',
                                             }),
                                         }}

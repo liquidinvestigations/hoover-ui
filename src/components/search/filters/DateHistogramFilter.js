@@ -4,7 +4,7 @@ import { memo, useCallback, useEffect } from 'react'
 
 import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL } from '../../../constants/general'
 import { formatThousands, getClosestInterval } from '../../../utils/utils'
-import Expandable from '../../Expandable'
+import { Expandable } from '../../Expandable'
 
 import AggregationFilter from './AggregationFilter'
 import DateRangeFilter from './DateRangeFilter'

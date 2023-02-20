@@ -1,5 +1,5 @@
 import { makeStyles } from '@mui/styles'
-import cn from 'classnames'
+import cx from 'classnames'
 import { forwardRef, useEffect, useState } from 'react'
 
 import { useDocument } from './DocumentProvider'
@@ -94,7 +94,7 @@ export default forwardRef(function Thumbnail({ containerRef, pageIndex, rotation
 
     return (
         <div ref={thumbnailRef} className={classes.thumbnail} onClick={handleClick}>
-            <div className={cn(classes.thumbnailSelection, { [classes.selected]: selected })}>
+            <div className={cx(classes.thumbnailSelection, { [classes.selected]: selected })}>
                 {visible && page && (
                     <ThumbnailLayer
                         page={page}

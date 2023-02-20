@@ -1,22 +1,28 @@
-import { Grid, MenuItem, Select, Typography } from '@mui/material'
+import { Grid, MenuItem, Select, Theme, Typography } from '@mui/material'
+import { SelectChangeEvent } from '@mui/material/Select/SelectInput'
 import { makeStyles } from '@mui/styles'
-import { memo } from 'react'
+import { FC } from 'react'
 
 import { SIZE_OPTIONS } from '../../constants/general'
+import { useSharedStore } from '../SharedStoreProvider'
 
-import { useSearch } from './SearchProvider'
-
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
     label: {
         marginRight: theme.spacing(1),
     },
 }))
 
-function SearchSize({ page, size }) {
+interface SearchSizeProps {
+    page: number
+    size: number
+}
+
+export const SearchSize: FC<SearchSizeProps> = ({ page, size }) => {
     const classes = useStyles()
-    const { search } = useSearch()
-    const handleSizeChange = (event) => {
-        const newSize = event.target.value
+    const { search } = useSharedStore().searchStore
+
+    const handleSizeChange = (event: SelectChangeEvent) => {
+        const newSize = parseInt(event.target.value)
         if (newSize > size) {
             search({ size: newSize, page: Math.ceil((page * size) / newSize) })
         } else {
@@ -36,11 +42,13 @@ function SearchSize({ page, size }) {
                     variant="standard"
                     autoWidth
                     disableUnderline
-                    value={size}
+                    value={size.toString()}
                     onChange={handleSizeChange}
-                    MenuProps={{
-                        'data-test': 'size-menu',
-                    }}>
+                    MenuProps={
+                        {
+                            'data-test': 'size-menu',
+                        } as any
+                    }>
                     {SIZE_OPTIONS.map((option) => (
                         <MenuItem key={option} value={option}>
                             {option}
@@ -51,5 +59,3 @@ function SearchSize({ page, size }) {
         </Grid>
     )
 }
-
-export default memo(SearchSize)

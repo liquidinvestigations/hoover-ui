@@ -8,7 +8,7 @@ import { reactIcons } from '../../constants/icons'
 import { formatThousands, numberArray } from '../../utils/utils'
 import { useSharedStore } from '../SharedStoreProvider'
 
-import SearchSize from './SearchSize'
+import { SearchSize } from './SearchSize'
 
 import type { Theme } from '@mui/material'
 

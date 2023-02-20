@@ -1,13 +1,13 @@
-import { CircularProgress, Collapse, Fade, Grid, IconButton, ListItem, Typography } from '@mui/material'
+import { CircularProgress, Collapse, Fade, Grid, IconButton, ListItem, Theme, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import cn from 'classnames'
-import { cloneElement, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import cx from 'classnames'
+import { cloneElement, FC, MouseEvent as ReactMouseEvent, ReactNode, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { reactIcons } from '../constants/icons'
 
-import ThinProgress from './search/ThinProgress'
+import { ThinProgress } from './search/ThinProgress'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
     title: {
         minHeight: 32,
         textTransform: 'uppercase',
@@ -51,22 +51,37 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-let startY, startHeight
+let startY: number, startHeight: number
 
-function Expandable({
+interface ExpandableProps {
+    title: string
+    children: ReactNode | ReactNode[]
+    loading?: boolean
+    loadingETA?: number
+    summary?: string
+    greyed?: boolean
+    defaultOpen?: boolean
+    open?: boolean
+    onToggle?: (open: boolean) => void
+    resizable?: boolean
+    fullHeight?: boolean
+    highlight?: boolean
+}
+
+export const Expandable: FC<ExpandableProps> = ({
     title,
     loading,
     loadingETA,
     summary,
     children,
-    greyed,
-    defaultOpen,
+    greyed = false,
+    defaultOpen = false,
     open,
     onToggle,
     resizable = false,
     fullHeight = true,
     highlight = true,
-}) {
+}) => {
     const classes = useStyles()
 
     let openState = open,
@@ -80,22 +95,24 @@ function Expandable({
 
     const toggle = () => setOpenState && setOpenState(!openState)
 
-    const contentRef = useRef()
+    const contentRef: RefObject<HTMLDivElement> = useRef(null)
 
     useEffect(() => {
-        if (!fullHeight && contentRef.current) {
+        if (!fullHeight && contentRef?.current) {
             contentRef.current.style.height = contentRef.current.offsetHeight + 'px'
         }
     }, [contentRef, fullHeight])
 
-    const handleMouseMove = useCallback((event) => {
+    const handleMouseMove = useCallback((event: MouseEvent) => {
         event.preventDefault()
-        contentRef.current.style.height = startHeight + event.clientY - startY + 'px'
-        contentRef.current.style.maxHeight = 'none'
+        if (contentRef.current) {
+            contentRef.current.style.height = startHeight + event.clientY - startY + 'px'
+            contentRef.current.style.maxHeight = 'none'
+        }
     }, [])
 
     const handleMouseUp = useCallback(
-        (event) => {
+        (event: MouseEvent) => {
             event.preventDefault()
             window.removeEventListener('mouseup', handleMouseUp)
             window.removeEventListener('mousemove', handleMouseMove)
@@ -104,10 +121,10 @@ function Expandable({
     )
 
     const handleMouseDown = useCallback(
-        (event) => {
+        (event: ReactMouseEvent) => {
             event.preventDefault()
             startY = event.clientY
-            startHeight = contentRef.current.offsetHeight
+            startHeight = contentRef.current?.offsetHeight || 0
             window.addEventListener('mouseup', handleMouseUp, { once: true })
             window.addEventListener('mousemove', handleMouseMove)
         },
@@ -119,7 +136,7 @@ function Expandable({
             <ListItem dense button onClick={toggle} className={classes.header}>
                 <Fade in={loading} unmountOnExit>
                     <div>
-                        <ThinProgress eta={loadingETA} loading={loading} />
+                        <ThinProgress eta={loadingETA || 0} />
                     </div>
                 </Fade>
 
@@ -141,7 +158,7 @@ function Expandable({
                         <Grid item>
                             <IconButton
                                 size="small"
-                                className={cn(classes.expand, {
+                                className={cx(classes.expand, {
                                     [classes.expandOpen]: openState,
                                 })}
                                 onClick={toggle}
@@ -176,15 +193,13 @@ function Expandable({
         <>
             {headerBar}
 
-            <Collapse in={openState} classes={{ entered: cn({ [classes.fullHeightCollapseEntered]: fullHeight }) }}>
-                <div ref={contentRef} className={cn(classes.content, { [classes.fullHeightContent]: fullHeight })}>
+            <Collapse in={openState} classes={{ entered: cx({ [classes.fullHeightCollapseEntered]: fullHeight }) }}>
+                <div ref={contentRef} className={cx(classes.content, { [classes.fullHeightContent]: fullHeight })}>
                     {children}
                 </div>
 
-                {resizable && <div role="presentation" className={cn('Resizer horizontal')} onMouseDown={handleMouseDown} />}
+                {resizable && <div role="presentation" className={cx('Resizer horizontal')} onMouseDown={handleMouseDown} />}
             </Collapse>
         </>
     )
 }
-
-export default Expandable

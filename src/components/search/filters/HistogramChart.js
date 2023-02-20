@@ -1,6 +1,6 @@
 import { Tooltip } from '@mui/material'
 import { blue, grey } from '@mui/material/colors'
-import cn from 'classnames'
+import cx from 'classnames'
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 
 import { formatThousands } from '../../../utils/utils'
@@ -98,7 +98,7 @@ export default function HistogramChart({ width, height, axisHeight, data, select
             {data?.map(({ label, value, count, barWidth, barHeight, barPosition, labelPosition }, index) => (
                 <Fragment key={index}>
                     <text
-                        className={cn('label', { selected: selected?.includes(value) })}
+                        className={cx('label', { selected: selected?.includes(value) })}
                         x={labelPosition}
                         y={height - axisHeight / 2}
                         transform={`rotate(-45, ${labelPosition}, ${height - axisHeight / 2})`}
@@ -117,7 +117,7 @@ export default function HistogramChart({ width, height, axisHeight, data, select
                             y={height - axisHeight - barHeight}
                             width={barWidth}
                             height={barHeight}
-                            className={cn('bar', { selected: selected?.includes(value) })}
+                            className={cx('bar', { selected: selected?.includes(value) })}
                             onClick={handleBarClick(value)}
                         />
                     </Tooltip>

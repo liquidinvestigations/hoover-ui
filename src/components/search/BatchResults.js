@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import cn from 'classnames'
+import cx from 'classnames'
 
 const useStyles = makeStyles((theme) => ({
     progress: {
@@ -50,11 +50,11 @@ export default function BatchResults({ loading, results, batchSize, offset, term
             {results && (
                 <ul className={classes.results}>
                     {results.sort(resultsCompareFn).map(({ term, count, url, error }, index) => (
-                        <li key={index} className={cn({ [classes.noHits]: count === 0 })} data-test="result">
+                        <li key={index} className={cx({ [classes.noHits]: count === 0 })} data-test="result">
                             <Typography>
                                 <a href={url} target="_blank" rel="noreferrer" className={classes.resultLink}>
                                     {error ? (
-                                        <span className={cn(classes.result, classes.error)}>error</span>
+                                        <span className={cx(classes.result, classes.error)}>error</span>
                                     ) : (
                                         <span className={classes.result}>{count} hits</span>
                                     )}

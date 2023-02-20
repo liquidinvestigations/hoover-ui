@@ -1,3 +1,5 @@
+import { aggregationCategories } from './constants/aggregationFields'
+
 export interface User {
     admin: boolean
     liquid: {
@@ -239,3 +241,5 @@ export interface RequestError {
     statusText: string
     url: string
 }
+
+export type Category = keyof typeof aggregationCategories | 'collections'

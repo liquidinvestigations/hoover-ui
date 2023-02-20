@@ -1,16 +1,20 @@
-import { Box, Chip, FormControl, Tooltip, Typography } from '@mui/material'
+import { Box, Chip, FormControl, Theme, Tooltip, Typography } from '@mui/material'
 import { blue, red } from '@mui/material/colors'
 import { makeStyles } from '@mui/styles'
-import lucene from 'lucene'
-import { memo, useCallback, useEffect, useState } from 'react'
-
+import lucene, { AST, Node, NodeTerm } from 'lucene'
+import { observer } from 'mobx-react-lite'
+import { FC, useCallback, useEffect, useState } from 'react'
 
 import { shortenName } from '../../utils/utils'
+import { useSharedStore } from '../SharedStoreProvider'
 
-import ChipsTree from './ChipsTree'
-import { useSearch } from './SearchProvider'
+import { ChipsTree } from './ChipsTree'
 
-const useStyles = makeStyles((theme) => ({
+export interface ExtendedNodeTerm extends NodeTerm {
+    proximity: null | number
+}
+
+const useStyles = makeStyles((theme: Theme) => ({
     treeTitle: {
         marginTop: theme.spacing(1),
     },
@@ -35,55 +39,55 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-const replaceNode = (parent, node) => {
-    if (parent.left === node) {
-        if (parent.right) {
-            return { ...parent.right, parenthesized: parent.parenthesized }
+const replaceNode = (parent: AST | Node, node: AST | Node): AST | Node | null => {
+    if ('left' in parent && parent.left === node) {
+        if ('right' in parent && parent.right) {
+            return { ...parent.right, parenthesized: parent.parenthesized } as AST
         } else {
             return null
         }
-    } else if (parent.right === node) {
-        return { ...parent.left, parenthesized: parent.parenthesized }
+    } else if ('right' in parent && parent.right === node) {
+        return { ...parent.left, parenthesized: parent.parenthesized } as AST
     } else {
-        return { ...parent }
+        return { ...parent } as AST
     }
 }
 
-const rebuildTree = (parent, node) => {
+const rebuildTree = (parent: AST | Node, node: AST | Node): AST | Node | null => {
     if (parent === node) {
         return null
     }
     const root = replaceNode(parent, node)
-    if (root?.left) {
-        root.left = rebuildTree(root.left, node)
+    if (root && 'left' in root && root.left) {
+        root.left = rebuildTree(root.left, node) ?? root.left
     }
-    if (root?.right) {
-        root.right = rebuildTree(root.right, node)
+    if (root && 'right' in root && root.right) {
+        root.right = rebuildTree(root.right, node) ?? root.right
     }
     return root
 }
 
-function QueryChips() {
+export const QueryChips: FC = observer(() => {
     const classes = useStyles()
-    const { query, search } = useSearch()
-    const [parsedQuery, setParsedQuery] = useState()
+    const { query, search } = useSharedStore().searchStore
+    const [parsedQuery, setParsedQuery] = useState<AST>()
 
     useEffect(() => {
         try {
-            setParsedQuery(lucene.parse(query.q))
+            query && setParsedQuery(lucene.parse(query.q))
         } catch {
-            setParsedQuery(null)
+            setParsedQuery(undefined)
         }
     }, [query])
 
     const handleDelete = useCallback(
-        (node) => {
-            search({ q: lucene.toString(rebuildTree(parsedQuery, node)), page: 1 })
+        (node: AST | Node) => {
+            parsedQuery && search({ q: lucene.toString(rebuildTree(parsedQuery, node) as AST), page: 1 })
         },
         [parsedQuery, search]
     )
 
-    const getChip = useCallback((q) => {
+    const getChip = useCallback((q: Partial<ExtendedNodeTerm>) => {
         let label,
             prefix = q.prefix,
             className = classes.chip
@@ -106,7 +110,7 @@ function QueryChips() {
                 </span>
             )
         } else {
-            label = lucene.toString(q)
+            label = lucene.toString(q as AST)
         }
 
         if (q.similarity || q.proximity || q.boost) {
@@ -140,9 +144,9 @@ function QueryChips() {
         return <Chip label={label} className={className} />
     }, [])
 
-    const renderMenu = useCallback((isExpression) => `delete selected ${isExpression ? 'expression' : 'term'}`, [])
+    const renderMenu = useCallback((isExpression: boolean) => `delete selected ${isExpression ? 'expression' : 'term'}`, [])
 
-    return query.q && parsedQuery ? (
+    return query?.q && parsedQuery ? (
         <Box>
             <Typography variant="h6" className={classes.treeTitle}>
                 Query
@@ -158,6 +162,4 @@ function QueryChips() {
             </FormControl>
         </Box>
     ) : null
-}
-
-export default memo(QueryChips)
+})

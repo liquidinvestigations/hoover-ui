@@ -1,6 +1,6 @@
 import { Collapse, Grid, IconButton, ListItem, Menu, MenuItem, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import cn from 'classnames'
+import cx from 'classnames'
 import { DateTime } from 'luxon'
 import { cloneElement, memo, useCallback, useEffect, useMemo, useState } from 'react'
 
@@ -200,7 +200,7 @@ function Histogram({ title, field }) {
                     <Grid item>
                         <IconButton
                             size="small"
-                            className={cn(classes.expand, { [classes.expandOpen]: open })}
+                            className={cx(classes.expand, { [classes.expandOpen]: open })}
                             aria-expanded={open}
                             aria-label="Show histogram">
                             {cloneElement(reactIcons.chevronDown, { color: 'action' })}

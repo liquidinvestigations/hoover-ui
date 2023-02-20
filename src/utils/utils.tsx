@@ -116,7 +116,7 @@ export const truncatePath = (str: string) => {
     return [...parts.slice(0, parts.length / 3), '…', ...parts.slice(-(parts.length / 3))].join('/')
 }
 
-export const shortenName = (name: string, length = ELLIPSIS_TERM_LENGTH) =>
+export const shortenName = (name: string | undefined, length = ELLIPSIS_TERM_LENGTH) =>
     name && name.length > length ? (
         <Tooltip title={name}>
             <span>{`${name.substr(0, (2 / 3) * length - 3)}...${name.substr((-1 / 3) * length)}`}</span>

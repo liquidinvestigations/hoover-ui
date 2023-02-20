@@ -1,13 +1,13 @@
 import { Button, Checkbox, CircularProgress, Divider, Fade, Grid, List, ListItem, ListItemText, Typography } from '@mui/material'
 import { makeStyles } from '@mui/styles'
-import cn from 'classnames'
+import cx from 'classnames'
 import { cloneElement, memo } from 'react'
 import isEqual from 'react-fast-compare'
 import Highlighter from 'react-highlight-words'
 
 import { aggregationFields } from '../../../constants/aggregationFields'
 import { formatThousands, getTagIcon, getTypeIcon } from '../../../utils/utils'
-import ThinProgress from '../ThinProgress'
+import { ThinProgress } from '../ThinProgress'
 
 import MoreButton from './MoreButton'
 import Pagination from './Pagination'
@@ -171,7 +171,7 @@ function AggregationFilter({
                 <ListItemText
                     primary={displayLabel}
                     secondary={subLabel}
-                    className={cn({ [classes.labelWithSub]: subLabel, [classes.italic]: italic })}
+                    className={cx({ [classes.labelWithSub]: subLabel, [classes.italic]: italic })}
                     primaryTypographyProps={{
                         className: classes.label,
                     }}
@@ -208,7 +208,7 @@ function AggregationFilter({
 
                 <ListItemText
                     primary="N/A"
-                    className={cn(classes.label, classes.italic, classes.empty)}
+                    className={cx(classes.label, classes.italic, classes.empty)}
                     secondaryTypographyProps={{
                         className: classes.subLabel,
                     }}
