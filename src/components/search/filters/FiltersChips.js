@@ -7,7 +7,7 @@ import { cloneElement, useCallback, useEffect, useState } from 'react'
 import { aggregationFields } from '../../../constants/aggregationFields'
 import { clearQuotedParam } from '../../../utils/queryUtils'
 import { getTagIcon, shortenName } from '../../../utils/utils'
-import ChipsTree from '../ChipsTree'
+import { ChipsTree } from '../ChipsTree'
 import { useSearch } from '../SearchProvider'
 
 const useStyles = makeStyles((theme) => ({

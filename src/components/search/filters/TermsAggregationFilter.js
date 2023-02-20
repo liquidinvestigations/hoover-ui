@@ -6,7 +6,7 @@ import { aggregationFields } from '../../../constants/aggregationFields'
 import { formatThousands } from '../../../utils/utils'
 import { Expandable } from '../../Expandable'
 
-import AggregationFilter from './AggregationFilter'
+import AggregationFilter from './AggregationFilter/AggregationFilter'
 import useMissingLoader from './useMissingLoader'
 
 function TermsAggregationFilter({

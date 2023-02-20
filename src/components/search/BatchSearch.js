@@ -9,7 +9,7 @@ import { Expandable } from '../Expandable'
 import Loading from '../Loading'
 
 import BatchResults from './BatchResults'
-import CollectionsFilter from './filters/CollectionsFilter'
+import { CollectionsFilter } from './filters/CollectionsFilter/CollectionsFilter'
 
 const useStyles = makeStyles((theme) => ({
     main: {
@@ -113,12 +113,7 @@ export default function BatchSearch({ collections, limits }) {
             <Grid item sm={3}>
                 <List dense>
                     <Expandable title="Collections" defaultOpen highlight={false}>
-                        <CollectionsFilter
-                            collections={collections}
-                            selected={selectedCollections}
-                            changeSelection={handleSelectedCollectionsChange}
-                            counts={results?.count_by_index}
-                        />
+                        <CollectionsFilter />
                     </Expandable>
                 </List>
             </Grid>

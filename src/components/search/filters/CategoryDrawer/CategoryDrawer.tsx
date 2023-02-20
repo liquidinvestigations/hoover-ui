@@ -1,67 +1,14 @@
-import { ClickAwayListener, Fade, Grid, ListItem, Portal, Slide, Theme, Typography } from '@mui/material'
+import { ClickAwayListener, Fade, Grid, ListItem, Portal, Slide, Typography } from '@mui/material'
 import { duration } from '@mui/material/styles'
-import { makeStyles } from '@mui/styles'
 import cx from 'classnames'
 import { cloneElement, CSSProperties, FC, ReactNode, RefObject, useEffect, useMemo, useState } from 'react'
 import { Transition } from 'react-transition-group'
 
-import { reactIcons } from '../../../constants/icons'
-import { Category } from '../../../Types'
-import { ThinProgress } from '../ThinProgress'
+import { reactIcons } from '../../../../constants/icons'
+import { Category } from '../../../../Types'
+import { ThinProgress } from '../../ThinProgress'
 
-const useStyles = makeStyles((theme: Theme) => ({
-    root: {
-        width: '100%',
-        overflow: 'hidden',
-        position: 'absolute',
-        height: 'calc(100vh - 56px)',
-
-        '@media (min-width: 0px) and (orientation: landscape)': {
-            height: 'calc(100vh - 48px)',
-        },
-
-        '@media (min-width: 600px)': {
-            height: 'calc(100vh - 64px)',
-        },
-    },
-    inner: {
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: theme.palette.background.paper,
-    },
-    unpinned: {
-        borderRight: '1px solid rgba(0, 0, 0, 0.2)',
-    },
-    title: {
-        minHeight: 32,
-        textTransform: 'uppercase',
-        paddingTop: 6,
-        paddingBottom: 6,
-    },
-    bold: {
-        fontWeight: 'bold',
-    },
-    icon: {
-        display: 'flex',
-        alignSelf: 'center',
-        marginRight: theme.spacing(2),
-    },
-    label: {
-        marginRight: 'auto',
-    },
-    open: {
-        display: 'flex',
-        alignSelf: 'center',
-        marginLeft: theme.spacing(1),
-        [theme.breakpoints.up('sm')]: {
-            marginRight: -8,
-        },
-    },
-    openCollapsed: {
-        borderRight: `3px solid ${theme.palette.grey[700]}`,
-    },
-}))
+import { useStyles } from './CategoryDrawer.styles'
 
 const hasDisabledClickAway = (element: HTMLElement): boolean => {
     if (element.dataset?.disableClickAway) {

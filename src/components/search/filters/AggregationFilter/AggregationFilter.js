@@ -1,47 +1,16 @@
 import { Button, Checkbox, CircularProgress, Divider, Fade, Grid, List, ListItem, ListItemText, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import cx from 'classnames'
 import { cloneElement, memo } from 'react'
 import isEqual from 'react-fast-compare'
 import Highlighter from 'react-highlight-words'
 
-import { aggregationFields } from '../../../constants/aggregationFields'
-import { formatThousands, getTagIcon, getTypeIcon } from '../../../utils/utils'
-import { ThinProgress } from '../ThinProgress'
+import { aggregationFields } from '../../../../constants/aggregationFields'
+import { formatThousands, getTagIcon, getTypeIcon } from '../../../../utils/utils'
+import { ThinProgress } from '../../ThinProgress'
+import MoreButton from '../MoreButton'
+import Pagination from '../Pagination'
 
-import MoreButton from './MoreButton'
-import Pagination from './Pagination'
-
-const useStyles = makeStyles((theme) => ({
-    checkbox: {
-        padding: 5,
-    },
-    label: {
-        overflowX: 'hidden',
-        whiteSpace: 'nowrap',
-        textOverflow: 'ellipsis',
-    },
-    labelWithSub: {
-        margin: 0,
-    },
-    italic: {
-        fontStyle: 'italic',
-    },
-    empty: {
-        color: theme.palette.grey[500],
-    },
-    subLabel: {
-        fontSize: '8.5pt',
-    },
-    loading: {
-        verticalAlign: 'middle',
-        marginLeft: theme.spacing(1),
-    },
-    docCount: {
-        flex: '1 0 auto',
-        paddingLeft: 6,
-    },
-}))
+import { useStyles } from './AggregationFilter.styles'
 
 function AggregationFilter({
     field,

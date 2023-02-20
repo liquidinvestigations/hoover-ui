@@ -4,10 +4,11 @@ import { memo, useCallback, useMemo, useState } from 'react'
 
 import { aggregationCategories, aggregationFields } from '../../../constants/aggregationFields'
 import { getLanguageName } from '../../../utils/utils'
+import { useSharedStore } from '../../SharedStoreProvider'
 import { useSearch } from '../SearchProvider'
 
-import { CategoryDrawer } from './CategoryDrawer'
-import CategoryDrawerToolbar from './CategoryDrawerToolbar'
+import { CategoryDrawer } from './CategoryDrawer/CategoryDrawer'
+import { CategoryDrawerToolbar } from './CategoryDrawerToolbar/CategoryDrawerToolbar'
 import DateHistogramFilter from './DateHistogramFilter'
 import TermsAggregationFilter from './TermsAggregationFilter'
 
@@ -23,8 +24,11 @@ const useStyles = makeStyles((theme) => ({
 
 const formatLang = (bucket) => getLanguageName(bucket.key)
 
-function Filters({ wideFilters, drawerWidth, drawerPinned, setDrawerPinned, drawerPortalRef, openCategory, setOpenCategory }) {
+function Filters({ wideFilters, drawerWidth, drawerPortalRef }) {
     const classes = useStyles()
+    const {
+        searchStore: { drawerPinned, openCategory, setOpenCategory },
+    } = useSharedStore()
     const { query, search, aggregations, aggregationsTasks, aggregationsLoading, aggregationsError, missingAggregations } = useSearch()
 
     const categories = useMemo(
@@ -155,15 +159,7 @@ function Filters({ wideFilters, drawerWidth, drawerPinned, setDrawerPinned, draw
                 width={drawerWidth}
                 pinned={drawerPinned}
                 portalRef={drawerPortalRef}
-                toolbar={
-                    <CategoryDrawerToolbar
-                        search={searchBuckets[category]}
-                        onSearch={handleBucketsSearch(category)}
-                        drawerPinned={drawerPinned}
-                        setDrawerPinned={setDrawerPinned}
-                        setOpenCategory={setOpenCategory}
-                    />
-                }>
+                toolbar={<CategoryDrawerToolbar category={category} />}>
                 {filters.map(({ field, type, buckets, filterLabel }) => {
                     let FilterComponent,
                         filterTypeProps = {}

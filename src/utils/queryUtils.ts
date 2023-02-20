@@ -1,9 +1,8 @@
 import { DateTime } from 'luxon'
 import qs, { ParsedQs } from 'qs'
 
-
 import { aggregationFields } from '../constants/aggregationFields'
-import { SearchQueryParams } from '../Types'
+import { Category, SearchQueryParams } from '../Types'
 
 import { daysInMonth } from './utils'
 
@@ -128,7 +127,7 @@ export const createSearchParams = (field: string, term: string | Term) => {
     return params
 }
 
-export const createSearchUrl = (term: Term | string, field: string, collections: string | string[], hash: Record<string, any>) => {
+export const createSearchUrl = (term: Term | string, field: string, collections: Category | Category[], hash: Record<string, any>) => {
     const params = createSearchParams(field, term)
     const hashParams = hash ? '#' + qs.stringify(rollupParams(hash)) : ''
 

@@ -1,28 +1,22 @@
 import { Grid } from '@mui/material'
 import { duration } from '@mui/material/styles'
-import { makeStyles } from '@mui/styles'
 import cx from 'classnames'
-import { useEffect, useState } from 'react'
+import { FC, RefObject, useEffect, useState } from 'react'
 import { Transition } from 'react-transition-group'
 
-import CategoriesToolbar from './CategoriesToolbar'
-import { Collections } from './Collections'
-import Filters from './Filters'
+import { CategoriesToolbar } from '../CategoriesToolbar/CategoriesToolbar'
+import { Collections } from '../Collections/Collections'
+import Filters from '../Filters'
 
-const useStyles = makeStyles((theme) => ({
-    container: {
-        width: 55,
-        borderRight: '1px solid rgba(0, 0, 0, 0.2)',
-        transition: theme.transitions.create('width', {
-            duration: theme.transitions.duration.shortest,
-        }),
-    },
-    wide: {
-        width: 210,
-    },
-}))
+import { useStyles } from './Categories.styles'
 
-export default function Categories({ drawerRef, drawerWidth, setDrawerWidth }) {
+interface CategoriesProps {
+    drawerWidth: number
+    drawerRef: RefObject<HTMLDivElement>
+    setDrawerWidth: (width: number) => void
+}
+
+export const Categories: FC<CategoriesProps> = ({ drawerRef, drawerWidth, setDrawerWidth }) => {
     const classes = useStyles()
     const [wideFilters, setWideFilters] = useState(true)
 

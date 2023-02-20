@@ -10,9 +10,13 @@ import { SharedStore } from '../SharedStore'
 import { SearchResultsStore } from './SearchResultsStore'
 
 export class SearchStore {
+    categoryQuickFilter: Partial<Record<Category, string>> = {}
+
     openCategory: Category | undefined = 'collections'
 
     drawerPinned: boolean = true
+
+    searchCollections: Category[] = []
 
     searchText: string | undefined
 
@@ -33,15 +37,25 @@ export class SearchStore {
             this.searchText = parsedQuery.q
         }
 
+        if (parsedQuery.collections) {
+            this.searchCollections = parsedQuery.collections
+        }
+
         return parsedQuery
     }
 
-    search = (params: Partial<SearchQueryParams>) => {
-        let mergedParams = { ...this.query, ...params }
+    search = (params?: Partial<SearchQueryParams>) => {
+        let mergedParams = { ...this.query, ...(params || {}) }
+
         if (this.searchText) {
             mergedParams.q = this.searchText
-            mergedParams = { ...defaultSearchTextParams, ...mergedParams }
         }
+
+        if (this.searchCollections) {
+            mergedParams.collections = this.searchCollections
+        }
+
+        mergedParams = { ...defaultSearchTextParams, ...mergedParams }
 
         const queryString = buildSearchQuerystring(mergedParams)
         const query = this.parseSearchParams(queryString)
@@ -51,6 +65,8 @@ export class SearchStore {
                 this.query = query as SearchQueryParams
                 this.searchResultsStore.queryResult(query as SearchQueryParams)
             }
+        } else if (query?.collections?.length) {
+            this.searchCollections = query.collections
         }
 
         if (this.sharedStore.navigation) {
@@ -70,6 +86,12 @@ export class SearchStore {
         })
     }
 
+    setCategoryQuickFilter = (category: Category, filter: string) => {
+        runInAction(() => {
+            this.categoryQuickFilter[category] = filter
+        })
+    }
+
     setOpenCategory = (category: Category | undefined) => {
         runInAction(() => {
             this.openCategory = category
@@ -80,5 +102,33 @@ export class SearchStore {
         runInAction(() => {
             this.drawerPinned = drawerPinned
         })
+    }
+
+    setSearchCollections = (searchCollections: Category[]) => {
+        runInAction(() => {
+            this.searchCollections = searchCollections
+        })
+    }
+
+    handleSearchCollectionsChange = (name: Category) => () => {
+        const selection = new Set(this.searchCollections || [])
+
+        if (selection.has(name)) {
+            selection.delete(name)
+        } else {
+            selection.add(name)
+        }
+
+        this.setSearchCollections(this.sharedStore.collectionsData.map((c) => c.name).filter((name) => selection.has(name)))
+        this.search()
+    }
+
+    handleAllSearchCollectionsToggle = () => {
+        if (this.sharedStore.collectionsData.length === this.setSearchCollections.length) {
+            this.setSearchCollections([])
+        } else {
+            this.setSearchCollections(this.sharedStore.collectionsData.map((c) => c.name))
+        }
+        this.search()
     }
 }
