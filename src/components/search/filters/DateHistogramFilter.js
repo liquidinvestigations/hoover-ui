@@ -30,6 +30,7 @@ export const formatsValue = {
 function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryFacets, aggregations, loading, loadingETA, missing, onChange, search }) {
     const interval = queryFilter?.interval || DEFAULT_INTERVAL
 
+    /*
     const onRangeChange = useCallback(
         (range) => {
             const { from, to, interval, intervals, ...rest } = queryFilter || {}
@@ -53,6 +54,7 @@ function DateHistogramFilter({ title, field, open, onToggle, queryFilter, queryF
         },
         [field, queryFilter, onChange]
     )
+    */
 
     const formatLabel = useCallback((bucket) => DateTime.fromISO(bucket.key_as_string).toFormat(formatsLabel[interval]), [interval])
 

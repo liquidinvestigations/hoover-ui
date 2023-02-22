@@ -13,9 +13,8 @@ import type { Category } from '../../../../Types'
 
 export const CategoryDrawerToolbar: FC<{ category: Category }> = observer(({ category }) => {
     const classes = useStyles()
-    const {
-        searchStore: { drawerPinned, setDrawerPinned, openCategory, setOpenCategory, categoryQuickFilter, setCategoryQuickFilter },
-    } = useSharedStore()
+    const { drawerPinned, setDrawerPinned, openCategory, setOpenCategory, categoryQuickFilter, setCategoryQuickFilter } =
+        useSharedStore().searchStore.searchViewStore
 
     const handleSearch = (event: ChangeEvent<HTMLInputElement>) => setCategoryQuickFilter(category, event.target.value)
     const handleSearchDelete = () => setCategoryQuickFilter(category, '')

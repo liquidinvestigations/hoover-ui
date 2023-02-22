@@ -1,4 +1,4 @@
-import { aggregationCategories } from './constants/aggregationFields'
+import { AggregationCategory } from './constants/aggregationFields'
 
 export interface User {
     admin: boolean
@@ -114,6 +114,7 @@ export type ResultField =
 
 export type SourceField =
     | 'path'
+    | 'path-parts'
     | 'filename'
     | 'url'
     | 'size'
@@ -136,9 +137,11 @@ export type SourceField =
     | 'filetype'
     | 'content-type'
     | 'from'
+    | 'from.keyword'
     | 'lang'
     | 'thread-index'
     | 'to'
+    | 'to.keyword'
     | 'detected-objects.object.keyword'
     | 'image-classes.class.keyword'
     | 'translated-from'
@@ -152,7 +155,7 @@ export type SourceField =
     | 'entity-type.person.keyword'
     | 'entity-type.money.keyword'
     | 'tags'
-    | 'priv-tags.*'
+    | 'priv-tags'
 
 interface HighlightField {
     fragment_size: number
@@ -242,4 +245,4 @@ export interface RequestError {
     url: string
 }
 
-export type Category = keyof typeof aggregationCategories | 'collections'
+export type Category = AggregationCategory | 'collections'

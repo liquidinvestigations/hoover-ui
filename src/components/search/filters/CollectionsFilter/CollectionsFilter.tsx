@@ -13,10 +13,7 @@ export const CollectionsFilter: FC = observer(() => {
     const {
         collectionsData,
         searchStore: {
-            categoryQuickFilter,
-            searchCollections,
-            handleSearchCollectionsChange,
-            handleAllSearchCollectionsToggle,
+            searchViewStore: { categoryQuickFilter, searchCollections, handleSearchCollectionsChange, handleAllSearchCollectionsToggle },
             searchResultsStore: { resultsQueryTasks },
         },
     } = useSharedStore()
