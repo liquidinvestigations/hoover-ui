@@ -23,7 +23,7 @@ const useStyles = makeStyles()((theme: Theme) => ({
 export const Results: FC = observer(() => {
     const { classes } = useStyles()
     const {
-        searchCollections,
+        searchViewStore: { searchCollections },
         searchResultsStore: { resultsQueryTasks, viewType, setViewType },
     } = useSharedStore().searchStore
 

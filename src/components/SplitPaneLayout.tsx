@@ -52,9 +52,9 @@ interface SplitPaneLayoutProps {
     leftStyle?: CSSProperties
     leftResizerStyle?: CSSProperties
     className?: string
-    defaultSizeLeft: string
-    defaultSizeMiddle: string
-    container: boolean
+    defaultSizeLeft?: string
+    defaultSizeMiddle?: string
+    container?: boolean
 }
 
 export const SplitPaneLayout: FC<SplitPaneLayoutProps> = ({

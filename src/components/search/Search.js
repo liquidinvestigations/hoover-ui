@@ -2,7 +2,7 @@ import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Toolt
 import { makeStyles } from '@mui/styles'
 import { observer } from 'mobx-react-lite'
 import Router from 'next/router'
-import { cloneElement, useEffect, useRef, useState } from 'react'
+import { cloneElement, useEffect, useRef } from 'react'
 
 import { tooltips } from '../../constants/help'
 import { reactIcons } from '../../constants/icons'
@@ -15,7 +15,7 @@ import { SplitPaneLayout } from '../SplitPaneLayout'
 import { Categories } from './filters/Categories/Categories'
 import FiltersChips from './filters/FiltersChips'
 import Histogram from './filters/Histogram'
-import HotKeys from './HotKeys'
+import { HotKeys } from './HotKeys'
 import { QueryChips } from './QueryChips'
 import { Results } from './Results'
 import SortingChips from './sorting/SortingChips'
@@ -50,16 +50,20 @@ const useStyles = makeStyles((theme) => ({
 
 export const Search = observer(() => {
     const classes = useStyles()
-    const inputRef = useRef()
     const {
-        collectionsData,
         searchStore: {
-            setOpenCategory,
-            drawerPinned,
             search,
-            searchText,
-            clearSearchText,
-            handleInputChange,
+            searchViewStore: {
+                inputRef,
+                drawerRef,
+                drawerWidth,
+                setDrawerWidth,
+                drawerPinned,
+                setOpenCategory,
+                searchText,
+                clearSearchText,
+                handleInputChange,
+            },
             searchResultsStore: { error, clearResults, resultsLoading, previewNextDoc, previewPreviousDoc },
         },
     } = useSharedStore()
@@ -99,13 +103,10 @@ export const Search = observer(() => {
         }
     }
 
-    const drawerRef = useRef()
-    const [drawerWidth, setDrawerWidth] = useState()
-
     return (
         <HotKeys inputRef={inputRef}>
             <Grid container>
-                <Categories collections={collectionsData} drawerRef={drawerRef} drawerWidth={drawerWidth} setDrawerWidth={setDrawerWidth} />
+                <Categories drawerRef={drawerRef} />
 
                 <Grid item style={{ flex: 1 }}>
                     <SplitPaneLayout
@@ -117,7 +118,7 @@ export const Search = observer(() => {
                                 <Document onPrev={previewPreviousDoc} onNext={previewNextDoc} />
                             </TagsProvider>
                         }>
-                        <div className={classes.main} ref={!drawerPinned ? drawerRef : undefined}>
+                        <div className={classes.main} ref={drawerPinned ? undefined : drawerRef}>
                             <Grid container>
                                 <Grid item sm={12}>
                                     <form onSubmit={handleSubmit}>

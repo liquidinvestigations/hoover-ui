@@ -1,4 +1,16 @@
-export const aggregationCategories = {
+import { reactIcons } from './icons'
+
+import type { SourceField } from '../Types'
+
+export interface AggregationCategoryProps {
+    label: string
+    icon: keyof typeof reactIcons
+    filters: SourceField[]
+}
+
+export type AggregationCategory = 'tags' | 'dates' | 'type' | 'language' | 'email' | 'location' | 'size' | 'ocr' | 'imageAi' | 'tables'
+
+export const aggregationCategories: Record<AggregationCategory, AggregationCategoryProps> = {
     tags: {
         label: 'Tags',
         icon: 'categoryTags',
@@ -61,17 +73,15 @@ export const aggregationCategories = {
     },
 }
 
-export interface AggregationFields {
-    [field: string]: {
-        filterLabel: string
-        chipLabel: string
-        type: string
-        bucketsMax?: boolean
-        buckets?: { key: string; label: string }[]
-    }
+export interface AggregationField {
+    filterLabel: string
+    chipLabel: string
+    type: string
+    bucketsMax?: boolean
+    buckets?: { key: string; label: string }[]
 }
 
-export const aggregationFields: AggregationFields = {
+export const aggregationFields: Partial<Record<SourceField, AggregationField>> = {
     tags: {
         filterLabel: 'Public tags',
         chipLabel: 'Public tag',

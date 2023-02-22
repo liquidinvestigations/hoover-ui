@@ -31,6 +31,7 @@ function AggregationFilter({
     const classes = useStyles()
     const aggregation = aggregations?.values
 
+    /*
     const handleChange = (value) => () => {
         const include = new Set(queryFilter?.include || [])
         const exclude = new Set(queryFilter?.exclude || [])
@@ -73,6 +74,7 @@ function AggregationFilter({
     }
 
     const handleReset = () => onChange(field, [], true)
+    */
 
     const renderBucket = (bucket, handler = handleChange, italic = false) => {
         const label = bucketLabel ? bucketLabel(bucket) : bucket.key_as_string || bucket.key

@@ -1,30 +1,27 @@
-import { makeAutoObservable, runInAction } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import qs from 'qs'
-import { ChangeEvent } from 'react'
 
-import { Category, SearchQueryParams } from '../../Types'
+import { SearchQueryParams } from '../../Types'
 import fixLegacyQuery from '../../utils/fixLegacyQuery'
 import { buildSearchQuerystring, defaultSearchTextParams, unwindParams } from '../../utils/queryUtils'
 import { SharedStore } from '../SharedStore'
 
+import { FiltersStore } from './FiltersStore'
 import { SearchResultsStore } from './SearchResultsStore'
+import { SearchViewStore } from './SearchViewStore'
 
 export class SearchStore {
-    categoryQuickFilter: Partial<Record<Category, string>> = {}
-
-    openCategory: Category | undefined = 'collections'
-
-    drawerPinned: boolean = true
-
-    searchCollections: Category[] = []
-
-    searchText: string | undefined
-
     query: SearchQueryParams | undefined
+
+    filtersStore: FiltersStore
+
+    searchViewStore: SearchViewStore
 
     searchResultsStore: SearchResultsStore
 
-    constructor(public readonly sharedStore: SharedStore) {
+    constructor(private readonly sharedStore: SharedStore) {
+        this.filtersStore = new FiltersStore(this)
+        this.searchViewStore = new SearchViewStore(sharedStore, this)
         this.searchResultsStore = new SearchResultsStore(this)
 
         makeAutoObservable(this)
@@ -34,11 +31,11 @@ export class SearchStore {
         const parsedQuery = fixLegacyQuery(unwindParams(qs.parse(search, { arrayLimit: 100 })))
 
         if (parsedQuery.q) {
-            this.searchText = parsedQuery.q
+            this.searchViewStore.searchText = parsedQuery.q
         }
 
         if (parsedQuery.collections) {
-            this.searchCollections = parsedQuery.collections
+            this.searchViewStore.searchCollections = parsedQuery.collections
         }
 
         return parsedQuery
@@ -47,12 +44,12 @@ export class SearchStore {
     search = (params?: Partial<SearchQueryParams>) => {
         let mergedParams = { ...this.query, ...(params || {}) }
 
-        if (this.searchText) {
-            mergedParams.q = this.searchText
+        if (this.searchViewStore.searchText) {
+            mergedParams.q = this.searchViewStore.searchText
         }
 
-        if (this.searchCollections) {
-            mergedParams.collections = this.searchCollections
+        if (this.searchViewStore.searchCollections) {
+            mergedParams.collections = this.searchViewStore.searchCollections
         }
 
         mergedParams = { ...defaultSearchTextParams, ...mergedParams }
@@ -66,69 +63,11 @@ export class SearchStore {
                 this.searchResultsStore.queryResult(query as SearchQueryParams)
             }
         } else if (query?.collections?.length) {
-            this.searchCollections = query.collections
+            this.searchViewStore.searchCollections = query.collections
         }
 
         if (this.sharedStore.navigation) {
             this.sharedStore.navigation.searchParams.replace(queryString)
         }
-    }
-
-    handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-        runInAction(() => {
-            this.searchText = event.target.value
-        })
-    }
-
-    clearSearchText = () => {
-        runInAction(() => {
-            this.searchText = undefined
-        })
-    }
-
-    setCategoryQuickFilter = (category: Category, filter: string) => {
-        runInAction(() => {
-            this.categoryQuickFilter[category] = filter
-        })
-    }
-
-    setOpenCategory = (category: Category | undefined) => {
-        runInAction(() => {
-            this.openCategory = category
-        })
-    }
-
-    setDrawerPinned = (drawerPinned: boolean) => {
-        runInAction(() => {
-            this.drawerPinned = drawerPinned
-        })
-    }
-
-    setSearchCollections = (searchCollections: Category[]) => {
-        runInAction(() => {
-            this.searchCollections = searchCollections
-        })
-    }
-
-    handleSearchCollectionsChange = (name: Category) => () => {
-        const selection = new Set(this.searchCollections || [])
-
-        if (selection.has(name)) {
-            selection.delete(name)
-        } else {
-            selection.add(name)
-        }
-
-        this.setSearchCollections(this.sharedStore.collectionsData.map((c) => c.name).filter((name) => selection.has(name)))
-        this.search()
-    }
-
-    handleAllSearchCollectionsToggle = () => {
-        if (this.sharedStore.collectionsData.length === this.setSearchCollections.length) {
-            this.setSearchCollections([])
-        } else {
-            this.setSearchCollections(this.sharedStore.collectionsData.map((c) => c.name))
-        }
-        this.search()
     }
 }

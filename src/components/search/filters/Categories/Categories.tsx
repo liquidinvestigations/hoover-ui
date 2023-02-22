@@ -1,30 +1,20 @@
 import { Grid } from '@mui/material'
 import { duration } from '@mui/material/styles'
 import cx from 'classnames'
-import { FC, RefObject, useEffect, useState } from 'react'
+import { observer } from 'mobx-react-lite'
+import { FC } from 'react'
 import { Transition } from 'react-transition-group'
 
+import { useSharedStore } from '../../../SharedStoreProvider'
 import { CategoriesToolbar } from '../CategoriesToolbar/CategoriesToolbar'
 import { Collections } from '../Collections/Collections'
-import Filters from '../Filters'
+import { Filters } from '../Filters'
 
 import { useStyles } from './Categories.styles'
 
-interface CategoriesProps {
-    drawerWidth: number
-    drawerRef: RefObject<HTMLDivElement>
-    setDrawerWidth: (width: number) => void
-}
-
-export const Categories: FC<CategoriesProps> = ({ drawerRef, drawerWidth, setDrawerWidth }) => {
+export const Categories: FC = observer(() => {
     const classes = useStyles()
-    const [wideFilters, setWideFilters] = useState(true)
-
-    useEffect(() => {
-        if (drawerRef.current && !drawerRef.current.className) {
-            setDrawerWidth(drawerRef.current.getBoundingClientRect().width)
-        }
-    }, [drawerRef.current])
+    const { wideFilters } = useSharedStore().searchStore.searchViewStore
 
     return (
         <Transition
@@ -40,13 +30,11 @@ export const Categories: FC<CategoriesProps> = ({ drawerRef, drawerWidth, setDra
                         [classes.wide]: state === 'entering' || state === 'entered',
                     })}
                     data-test="categories">
-                    <CategoriesToolbar collapsed={!wideFilters} onCollapseToggle={setWideFilters} />
-
-                    <Collections wideFilters={wideFilters} drawerWidth={drawerWidth} drawerPortalRef={drawerRef} />
-
-                    <Filters wideFilters={wideFilters} drawerWidth={drawerWidth} drawerPortalRef={drawerRef} />
+                    <CategoriesToolbar />
+                    <Collections />
+                    <Filters />
                 </Grid>
             )}
         </Transition>
     )
-}
+})

@@ -1,26 +1,14 @@
 import { AppBar, Toolbar, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
 
-import { Menu } from './Menu'
-import { useSharedStore } from './SharedStoreProvider'
+import { Menu } from '../Menu'
+import { useSharedStore } from '../SharedStoreProvider'
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        zIndex: theme.zIndex.drawer + 1,
-    },
-    flex: {
-        flexGrow: 1,
-    },
-    noLink: {
-        textDecoration: 'none',
-        color: 'inherit',
-    },
-}))
+import { useStyles } from './Header.styles'
 
 export const Header = observer(() => {
-    const classes = useStyles()
+    const { classes } = useStyles()
     const { user } = useSharedStore()
 
     return (

@@ -1,51 +1,53 @@
-import { useMemo } from 'react'
+import { makeAutoObservable } from 'mobx'
+import { useRef } from 'react'
 
-import { copyMetadata, documentViewUrl } from '../../utils/utils'
-import HotKeysWithHelp from '../HotKeysWithHelp'
-import { useSharedStore } from '../SharedStoreProvider'
+import { copyMetadata, documentViewUrl } from '../utils/utils'
 
-import { useSearch } from './SearchProvider'
+import { DocumentStore } from './DocumentStore'
+import { HashStateStore } from './HashStateStore'
+import { SearchStore } from './search/SearchStore'
 
-export default function HotKeys({ children, inputRef }) {
-    const {
-        hashStore: { hashState },
-        documentStore: { data },
-    } = useSharedStore()
-    const { previewNextDoc, previewPreviousDoc } = useSearch()
-    const isInputFocused = () => inputRef.current === document.activeElement
+export class HotKeysStore {
+    inputRef = useRef<HTMLInputElement>()
 
-    const keys = useMemo(
-        () => ({
+    keys: Record<string, any>
+
+    constructor(private readonly hashStore: HashStateStore, private readonly documentStore: DocumentStore, private readonly searchStore: SearchStore) {
+        makeAutoObservable(this)
+
+        const isInputFocused = () => this.inputRef?.current === document.activeElement
+
+        this.keys = {
             nextItem: {
                 key: 'j',
                 help: 'Preview next result',
-                handler: (event) => {
+                handler: (event: KeyboardEvent) => {
                     event.preventDefault()
                     if (!isInputFocused()) {
-                        previewNextDoc()
+                        searchStore.searchResultsStore.previewNextDoc()
                     }
                 },
             },
             previousItem: {
                 key: 'k',
                 help: 'Preview the previous result',
-                handler: (event) => {
+                handler: (event: KeyboardEvent) => {
                     event.preventDefault()
                     if (!isInputFocused()) {
-                        previewPreviousDoc()
+                        searchStore.searchResultsStore.previewPreviousDoc()
                     }
                 },
             },
             copyMetadata: {
                 key: 'c',
                 help: 'Copy metadata (MD5 and path) of the currently previewed item to the clipboard.',
-                handler: (event, showMessage) => {
+                handler: (event: KeyboardEvent, showMessage: (message: string) => void) => {
                     if (isInputFocused()) {
                         return
                     }
                     event.preventDefault()
-                    if (data?.content) {
-                        showMessage(copyMetadata(data))
+                    if (documentStore.data?.content) {
+                        showMessage(copyMetadata(documentStore.data))
                     } else {
                         showMessage('Unable to copy metadata – no document selected?')
                     }
@@ -56,11 +58,11 @@ export default function HotKeys({ children, inputRef }) {
                 help: 'Open the currently previewed result',
                 handler: () => {
                     isInputFocused() ||
-                        (!!hashState.preview &&
+                        (!!hashStore.hashState.preview &&
                             window.open(
                                 documentViewUrl({
-                                    _collection: hashState.preview.c,
-                                    _id: hashState.preview.i,
+                                    _collection: hashStore.hashState.preview.c,
+                                    _id: hashStore.hashState.preview.i,
                                 }),
                                 '_blank'
                             ))
@@ -69,16 +71,13 @@ export default function HotKeys({ children, inputRef }) {
             focusInputField: {
                 key: '/',
                 help: 'Focus the search field',
-                handler: (event) => {
+                handler: (event: KeyboardEvent) => {
                     if (!isInputFocused()) {
                         event.preventDefault()
-                        inputRef.current?.focus()
+                        this.inputRef?.current?.focus()
                     }
                 },
             },
-        }),
-        [JSON.stringify(hashState?.preview), data, previewNextDoc, previewPreviousDoc]
-    )
-
-    return <HotKeysWithHelp keys={keys}>{children}</HotKeysWithHelp>
+        }
+    }
 }
