@@ -2,12 +2,11 @@ import { Box, Fade, Typography } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 
-import { useSharedStore } from '../SharedStoreProvider'
+import { useSharedStore } from '../../SharedStoreProvider'
+import { ResultsProgress } from '../ResultsProgress'
 
-import { Pagination } from './Pagination'
-import { ResultsList } from './ResultsList'
-import { ResultsProgress } from './ResultsProgress'
-import { ResultsTable } from './ResultsTable'
+import { ResultsList } from './list/ResultsList'
+import { ResultsTable } from './table/ResultsTable/ResultsTable'
 
 interface ResultsProps {
     collection: string
@@ -15,7 +14,8 @@ interface ResultsProps {
 
 export const ResultsGroup: FC<ResultsProps> = observer(({ collection }) => {
     const {
-        searchResultsStore: { resultsQueryTasks, viewType },
+        searchViewStore: { resultsViewType },
+        searchResultsStore: { resultsQueryTasks },
     } = useSharedStore().searchStore
 
     const queryTask = resultsQueryTasks[collection]
@@ -36,8 +36,6 @@ export const ResultsGroup: FC<ResultsProps> = observer(({ collection }) => {
 
             <h2>{collection}</h2>
 
-            {!!queryTask.data?.result?.hits.hits.length && <Pagination collection={collection} />}
-
             <Fade in={queryTask.data?.status === 'pending'} unmountOnExit>
                 <Box display="flex" alignItems="center">
                     <Box width="100%" mr={1}>
@@ -53,9 +51,7 @@ export const ResultsGroup: FC<ResultsProps> = observer(({ collection }) => {
                 </Box>
             </Fade>
 
-            {viewType === 'list' ? <ResultsList queryTask={queryTask} /> : <ResultsTable queryTask={queryTask} />}
-
-            {!!queryTask.data?.result?.hits.hits.length && <Pagination collection={collection} />}
+            {resultsViewType === 'list' ? <ResultsList queryTask={queryTask} /> : <ResultsTable queryTask={queryTask} />}
         </>
     )
 })

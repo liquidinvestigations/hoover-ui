@@ -17,7 +17,7 @@ import FiltersChips from './filters/FiltersChips'
 import Histogram from './filters/Histogram'
 import { HotKeys } from './HotKeys'
 import { QueryChips } from './QueryChips'
-import { Results } from './Results'
+import { Results } from './results/Results'
 import SortingChips from './sorting/SortingChips'
 import SortingMenu from './sorting/SortingMenu'
 

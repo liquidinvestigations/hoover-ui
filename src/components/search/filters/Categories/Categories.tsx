@@ -1,6 +1,5 @@
 import { Grid } from '@mui/material'
 import { duration } from '@mui/material/styles'
-import cx from 'classnames'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 import { Transition } from 'react-transition-group'
@@ -13,7 +12,7 @@ import { Filters } from '../Filters'
 import { useStyles } from './Categories.styles'
 
 export const Categories: FC = observer(() => {
-    const classes = useStyles()
+    const { classes, cx } = useStyles()
     const { wideFilters } = useSharedStore().searchStore.searchViewStore
 
     return (

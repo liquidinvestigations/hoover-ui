@@ -6,6 +6,7 @@ import { cloneElement, memo, useCallback, useEffect, useMemo, useState } from 'r
 
 import { DATE_FORMAT, DEFAULT_INTERVAL } from '../../../constants/general'
 import { reactIcons } from '../../../constants/icons'
+import { defaultSearchParams } from '../../../utils/queryUtils'
 import { daysInMonth, getClosestInterval } from '../../../utils/utils'
 import Loading from '../../Loading'
 import { useSharedStore } from '../../SharedStoreProvider'
@@ -85,9 +86,9 @@ function Histogram({ title, field }) {
         const { intervals, ...restParams } = prevFilter || {}
 
         if (include.length) {
-            search({ filters: { [field]: { intervals: { include }, ...restParams }, ...restFilters }, page: 1 })
+            search({ filters: { [field]: { intervals: { include }, ...restParams }, ...restFilters }, page: defaultSearchParams.page })
         } else {
-            search({ filters: { [field]: restParams, ...restFilters }, page: 1 })
+            search({ filters: { [field]: restParams, ...restFilters }, page: defaultSearchParams.page })
         }
     }
 
@@ -143,7 +144,7 @@ function Histogram({ title, field }) {
         search({
             filters: { [field]: { ...range, interval: getClosestInterval(range) }, ...restFilters },
             facets: { ...restFacets },
-            page: 1,
+            page: defaultSearchParams.page,
         })
     }, [query, search, selectedBars])
 

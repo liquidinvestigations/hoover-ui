@@ -1,59 +1,33 @@
 import { IconButton, Paper, Popper, TableCell, TableRow, Tooltip } from '@mui/material'
-import { makeStyles } from '@mui/styles'
-import cx from 'classnames'
-import { cloneElement, useEffect, useRef, useState } from 'react'
+import { observer } from 'mobx-react-lite'
+import { cloneElement, FC, ReactElement, useEffect, useRef, useState } from 'react'
 
-import { createDownloadUrl, createThumbnailSrc } from '../../backend/api'
-import { reactIcons } from '../../constants/icons'
-import { documentViewUrl, formatDateTime, getPreviewParams, getTagIcon, getTypeIcon, humanFileSize, shortenName } from '../../utils/utils'
-import Loading from '../Loading'
-import { useSharedStore } from '../SharedStoreProvider'
+import { createDownloadUrl, createThumbnailSrc } from '../../../../../backend/api'
+import { ResultColumnFormat } from '../../../../../constants/availableColumns'
+import { reactIcons } from '../../../../../constants/icons'
+import { Hit } from '../../../../../Types'
+import { defaultSearchParams } from '../../../../../utils/queryUtils'
+import { documentViewUrl, formatDateTime, getPreviewParams, getTagIcon, getTypeIcon, humanFileSize, shortenName } from '../../../../../utils/utils'
+import Loading from '../../../../Loading'
+import { useSharedStore } from '../../../../SharedStoreProvider'
 
-import { useSearch } from './SearchProvider'
+import { useStyles } from './ResultsTableRow.styles'
 
-const useStyles = makeStyles((theme) => ({
-    selected: {
-        boxShadow: `inset 0 0 0 2px ${theme.palette.secondary.main}`,
+interface ResultsTableRowProps {
+    hit: Hit
+    index: number
+}
 
-        '& td': {
-            borderBottomColor: theme.palette.secondary.main,
-        },
-    },
-    infoIcon: {
-        fontSize: 20,
-        verticalAlign: 'middle',
-        color: theme.palette.grey[500],
-        marginRight: theme.spacing(0.5),
-    },
-    actionIcon: {
-        fontSize: 20,
-        color: theme.palette.grey[600],
-    },
-    buttonLink: {
-        lineHeight: 0,
-    },
-    tagIcon: {
-        fontSize: 16,
-        verticalAlign: 'middle',
-        marginRight: theme.spacing(0.5),
-    },
-    preview: {
-        padding: theme.spacing(1),
-    },
-    previewImg: {
-        width: 400,
-    },
-    previewImgLoading: {
-        width: 1,
-    },
-}))
+export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index }) => {
+    const { classes, cx } = useStyles()
+    const {
+        query: { page, size } = defaultSearchParams,
+        searchViewStore: { resultsColumns },
+    } = useSharedStore().searchStore
 
-export default function ResultsTableRow({ hit, index }) {
-    const classes = useStyles()
-    const { query, resultsColumns } = useSearch()
-    const start = 1 + (query.page - 1) * query.size
+    const start = 1 + (page - 1) * size
 
-    const nodeRef = useRef()
+    const nodeRef = useRef<HTMLTableRowElement>(null)
     const { hashState, setHashState } = useSharedStore().hashStore
 
     const url = documentViewUrl(hit)
@@ -67,7 +41,7 @@ export default function ResultsTableRow({ hit, index }) {
     }
 
     useEffect(() => {
-        if (isPreview && 'scrollIntoView' in nodeRef.current) {
+        if (nodeRef.current && isPreview && 'scrollIntoView' in nodeRef.current) {
             nodeRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
         }
     }, [isPreview])
@@ -83,17 +57,18 @@ export default function ResultsTableRow({ hit, index }) {
         setShowPreview(false)
     }
 
-    const getValue = (path) => {
+    const getValue = (path: string) => {
         let pathParts = path.split('.'),
             pathPart,
-            value = hit
+            value: any = hit
+
         while ((pathPart = pathParts.shift())) {
-            value = value[pathPart]
+            value = value[pathPart as keyof Hit]
         }
         return value
     }
 
-    const formatField = (field, path, format) => {
+    const formatField = (field: string, path: string, format: ResultColumnFormat) => {
         const value = getValue(path)
 
         switch (format) {
@@ -114,7 +89,7 @@ export default function ResultsTableRow({ hit, index }) {
             case 'array':
                 return !value ? null : (
                     <>
-                        {value.slice(0, 7).map((el) => (
+                        {value.slice(0, 7).map((el: string) => (
                             <>
                                 {shortenName(el)}
                                 <br />
@@ -124,12 +99,12 @@ export default function ResultsTableRow({ hit, index }) {
                     </>
                 )
             case 'tags':
-                const icon = (tag) => getTagIcon(tag, field === 'tags')
+                const icon = (tag: string) => getTagIcon(tag, field === 'tags')
                 return !value ? null : (
                     <>
-                        {value.slice(0, 7).map((el) => (
+                        {value.slice(0, 7).map((el: string) => (
                             <>
-                                {icon(el) && cloneElement(icon(el), { className: classes.tagIcon })}
+                                {icon(el) && cloneElement(icon(el) as ReactElement, { className: classes.tagIcon })}
                                 {shortenName(el)}
                                 <br />
                             </>
@@ -198,4 +173,4 @@ export default function ResultsTableRow({ hit, index }) {
             </TableCell>
         </TableRow>
     )
-}
+})

@@ -1,6 +1,5 @@
 import { IconButton, InputAdornment, TextField, Toolbar, Tooltip } from '@mui/material'
 import { duration } from '@mui/material/styles'
-import cx from 'classnames'
 import { observer } from 'mobx-react-lite'
 import { ChangeEvent, cloneElement, FC } from 'react'
 
@@ -12,7 +11,7 @@ import { useStyles } from './CategoryDrawerToolbar.styles'
 import type { Category } from '../../../../Types'
 
 export const CategoryDrawerToolbar: FC<{ category: Category }> = observer(({ category }) => {
-    const classes = useStyles()
+    const { classes, cx } = useStyles()
     const { drawerPinned, setDrawerPinned, openCategory, setOpenCategory, categoryQuickFilter, setCategoryQuickFilter } =
         useSharedStore().searchStore.searchViewStore
 

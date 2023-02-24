@@ -6,6 +6,7 @@ import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 
 import { SORTABLE_FIELDS } from '../../../constants/general'
 import { reactIcons } from '../../../constants/icons'
+import { defaultSearchParams } from '../../../utils/queryUtils'
 import { titleCase } from '../../../utils/utils'
 import { useSearch } from '../SearchProvider'
 
@@ -33,7 +34,7 @@ function SortingChips() {
 
     const order = query.order
     const changeOrder = (newOrder) => {
-        search({ order: newOrder, page: 1 })
+        search({ order: newOrder, page: defaultSearchParams.page })
     }
 
     const handleClick = (field) => () => {

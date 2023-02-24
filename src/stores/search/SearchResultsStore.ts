@@ -1,29 +1,20 @@
 import { makeAutoObservable, runInAction } from 'mobx'
 
 import { SearchQueryParams } from '../../Types'
-import { getPreviewParams } from '../../utils/utils'
 
 import { AsyncQueryTask, AsyncQueryTaskRunner } from './AsyncTaskRunner'
 import { SearchStore } from './SearchStore'
 
-export type ViewType = 'list' | 'table'
-
 export class SearchResultsStore {
     resultsQueryTasks: Record<string, AsyncQueryTask> = {}
 
-    viewType: ViewType = 'list'
-
     error: any
 
-    searchStore: SearchStore
-
-    constructor(searchStore: SearchStore) {
-        this.searchStore = searchStore
-
+    constructor(private readonly searchStore: SearchStore) {
         makeAutoObservable(this)
     }
 
-    private maskIrrelevantParams = (query: SearchQueryParams): SearchQueryParams => ({
+    maskIrrelevantParams = (query: SearchQueryParams): SearchQueryParams => ({
         ...query,
         facets: undefined,
         filters: {
@@ -40,15 +31,6 @@ export class SearchResultsStore {
             },
         },
     })
-
-    queryDiffer = (query: SearchQueryParams): boolean => {
-        if (!this.searchStore.query) {
-            return true
-        } else if (this.searchStore.query) {
-            return JSON.stringify(this.maskIrrelevantParams(query)) !== JSON.stringify(this.maskIrrelevantParams(this.searchStore.query))
-        }
-        return false
-    }
 
     queryResult = (query: SearchQueryParams) => {
         this.resultsQueryTasks = {}
@@ -88,12 +70,6 @@ export class SearchResultsStore {
 
     get resultsLoading() {
         return Object.entries(this.resultsQueryTasks).find(([_collection, queryTask]) => queryTask.data?.status !== 'done')
-    }
-
-    setViewType = (viewType: ViewType): void => {
-        runInAction(() => {
-            this.viewType = viewType
-        })
     }
 
     clearResults = (): void => {

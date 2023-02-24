@@ -3,45 +3,15 @@ import { observer } from 'mobx-react-lite'
 import { cloneElement, FC, useState, MouseEvent } from 'react'
 import ReactPlaceholder from 'react-placeholder'
 import { TextRow } from 'react-placeholder/lib/placeholders'
-import { makeStyles } from 'tss-react/mui'
 
-import { availableColumns } from '../../constants/availableColumns'
-import { reactIcons } from '../../constants/icons'
-import { AsyncQueryTask } from '../../stores/search/AsyncTaskRunner'
-import { Hit } from '../../Types'
+import { availableColumns } from '../../../../../constants/availableColumns'
+import { reactIcons } from '../../../../../constants/icons'
+import { AsyncQueryTask } from '../../../../../stores/search/AsyncTaskRunner'
+import { defaultSearchParams } from '../../../../../utils/queryUtils'
+import { useSharedStore } from '../../../../SharedStoreProvider'
+import { ResultsTableRow } from '../ResultsTableRow/ResultsTableRow'
 
-import ResultsTableRow from './ResultsTableRow'
-import { useSearch } from './SearchProvider'
-
-import type { Theme } from '@mui/material'
-
-const useStyles = makeStyles()((theme: Theme) => ({
-    table: {
-        '& th': {
-            fontWeight: 'bold',
-            whiteSpace: 'nowrap',
-            '&.sortable': {
-                cursor: 'pointer',
-            },
-        },
-        '& td': {
-            whiteSpace: 'nowrap',
-            cursor: 'pointer',
-        },
-        '& tbody tr:hover': {
-            backgroundColor: theme.palette.grey[100],
-        },
-    },
-    icon: {
-        fontSize: 20,
-        verticalAlign: 'middle',
-        marginLeft: theme.spacing(1),
-        transition: 'transform .2s ease-in-out',
-    },
-    iconDown: {
-        transform: 'rotate(180deg)',
-    },
-}))
+import { useStyles } from './ResultsTable.styles'
 
 interface ResultsTableProps {
     queryTask: AsyncQueryTask
@@ -49,20 +19,28 @@ interface ResultsTableProps {
 
 export const ResultsTable: FC<ResultsTableProps> = observer(({ queryTask }) => {
     const { classes, cx } = useStyles()
-    // @ts-ignore
-    const { query, results, resultsLoading, resultsColumns, setResultsColumns, search } = useSearch()
+    const {
+        query,
+        search,
+        searchViewStore: { resultsColumns, setResultsColumns },
+        searchResultsStore: { resultsLoading },
+    } = useSharedStore().searchStore
 
-    const size = parseInt(query.size || 10)
-    const order = query.order
-    const changeOrder = (newOrder: string[]) => {
-        search({ order: newOrder, page: 1 })
+    if (!queryTask.data?.result) {
+        return null
+    }
+
+    const size = query?.size || defaultSearchParams.size
+    const order = query?.order
+    const changeOrder = (newOrder: string[][]) => {
+        search({ order: newOrder, page: defaultSearchParams.page })
     }
 
     const handleClick = (field: string) => () => {
         const index = order?.findIndex(([v]: string[]) => v === field)
         const newOrder = [...(order || [])]
         if (index !== undefined && index !== -1) {
-            const [, direction] = order[index]
+            const [, direction] = order?.[index] || []
             if (direction) {
                 newOrder[index] = [field]
             } else {
@@ -78,17 +56,19 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ queryTask }) => {
     const handleColumnsMenuClick = (event: MouseEvent) => setAnchorEl(event.currentTarget)
     const handleColumnsMenuClose = () => setAnchorEl(null)
     const handleColumnMenuClick = (field: string) => () => {
-        setResultsColumns((columns: any[]) => {
-            let index = resultsColumns.findIndex(([visibleField]: string[]) => visibleField === field)
-            if (index !== -1) {
-                columns.splice(index, 1)
-                return [...columns]
-            } else {
-                return Object.entries(availableColumns).filter(([availableField]) => {
-                    return !!resultsColumns.find(([visibleField]: string[]) => visibleField === availableField) || availableField === field
-                })
-            }
-        })
+        let resultsColumnsCopy = resultsColumns.slice()
+        let index = resultsColumns.findIndex(([visibleField]) => visibleField === field)
+
+        if (index !== -1) {
+            resultsColumnsCopy.splice(index, 1)
+            resultsColumnsCopy = [...resultsColumnsCopy]
+        } else {
+            resultsColumnsCopy = Object.entries(availableColumns).filter(([availableField]) => {
+                return !!resultsColumns.find(([visibleField]) => visibleField === availableField) || availableField === field
+            })
+        }
+
+        setResultsColumns(resultsColumnsCopy)
     }
 
     return (
@@ -101,7 +81,7 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ queryTask }) => {
                             const index = order?.findIndex(([v]: string[]) => v === field)
                             let orderIcon = null
                             if (index !== undefined && index !== -1) {
-                                const [, direction] = order[index]
+                                const [, direction] = order?.[index] || []
                                 orderIcon = cloneElement(reactIcons.arrowUp, {
                                     className: cx(classes.icon, {
                                         [classes.iconDown]: direction === 'desc',
@@ -129,7 +109,7 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ queryTask }) => {
                                     <MenuItem
                                         key={field}
                                         value={field}
-                                        selected={!!resultsColumns.find(([visibleField]: string[]) => visibleField === field)}
+                                        selected={!!resultsColumns.find(([visibleField]) => visibleField === field)}
                                         onClick={handleColumnMenuClick(field)}>
                                         {label}
                                     </MenuItem>
@@ -153,7 +133,9 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ queryTask }) => {
                                 ))}
                             </>
                         }>
-                        {!results ? null : results.hits.hits.map((hit: Hit, i: number) => <ResultsTableRow key={hit._id} index={i} hit={hit} />)}
+                        {queryTask.data.result.hits.hits.map((hit, i) => (
+                            <ResultsTableRow key={hit._id} index={i} hit={hit} />
+                        ))}
                     </ReactPlaceholder>
                 </TableBody>
             </Table>

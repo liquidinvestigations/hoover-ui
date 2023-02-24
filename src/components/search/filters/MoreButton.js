@@ -2,6 +2,7 @@ import { Button, CircularProgress } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 
 import { DEFAULT_FACET_SIZE } from '../../../constants/general'
+import { defaultSearchParams } from '../../../utils/queryUtils'
 import { useSearch } from '../SearchProvider'
 
 const useStyles = makeStyles((theme) => ({
@@ -20,7 +21,7 @@ export default function MoreButton({ field }) {
 
     const handleLoadMore = () => {
         const facets = query.facets || {}
-        search({ facets: { ...facets, [field]: page + 1 }, page: 1 })
+        search({ facets: { ...facets, [field]: page + 1 }, page: defaultSearchParams.page })
     }
 
     const cardinality = aggregations?.[field]?.count

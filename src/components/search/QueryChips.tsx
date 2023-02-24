@@ -5,6 +5,7 @@ import lucene, { AST, Node, NodeTerm } from 'lucene'
 import { observer } from 'mobx-react-lite'
 import { FC, useCallback, useEffect, useState } from 'react'
 
+import { defaultSearchParams } from '../../utils/queryUtils'
 import { shortenName } from '../../utils/utils'
 import { useSharedStore } from '../SharedStoreProvider'
 
@@ -82,7 +83,7 @@ export const QueryChips: FC = observer(() => {
 
     const handleDelete = useCallback(
         (node: AST | Node) => {
-            parsedQuery && search({ q: lucene.toString(rebuildTree(parsedQuery, node) as AST), page: 1 })
+            parsedQuery && search({ q: lucene.toString(rebuildTree(parsedQuery, node) as AST), page: defaultSearchParams.page })
         },
         [parsedQuery, search]
     )

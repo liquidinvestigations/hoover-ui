@@ -2,7 +2,7 @@ import { DateTime } from 'luxon'
 
 import { aggregationFields } from '../constants/aggregationFields'
 import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL, DEFAULT_OPERATOR, HIGHLIGHT_SETTINGS, PRIVATE_FIELDS } from '../constants/general'
-import { SearchQueryParams, SearchQueryType } from '../Types'
+import { SearchQueryParams, SearchQueryType, SourceField } from '../Types'
 import { daysInMonth } from '../utils/utils'
 
 export interface SearchFields {
@@ -12,17 +12,17 @@ export interface SearchFields {
 }
 
 export interface Terms {
-    include?: string[]
-    exclude?: string[]
+    include?: SourceField[]
+    exclude?: SourceField[]
     missing?: 'false' | 'true'
 }
 
 export interface Field {
     field: string
-    originalField: string
+    originalField: SourceField
     aggregation: {
         terms?: {
-            field: string
+            field: SourceField
             size: number
         }
         range?: {}
@@ -34,14 +34,14 @@ export interface Field {
     filterMissing?: boolean | null
 }
 
-const expandPrivate = (field: string, uuid: string) => {
+const expandPrivate = (field: SourceField, uuid: string) => {
     if (PRIVATE_FIELDS.includes(field)) {
-        return `${field}.${uuid}`
+        return `${field}.${uuid}` as SourceField
     }
     return field
 }
 
-const buildQuery = (q: string, filters: Record<string, any>, searchFields: SearchFields) => {
+const buildQuery = (q: string, filters: Record<SourceField, any>, searchFields: SearchFields) => {
     const qs = {
         query_string: {
             query: q,
@@ -52,7 +52,7 @@ const buildQuery = (q: string, filters: Record<string, any>, searchFields: Searc
     }
 
     const ranges: { range: { [x: string]: { gte: string; lte: string } } }[] = []
-    ;['date', 'date-created'].forEach((field) => {
+    ;(['date', 'date-created'] as SourceField[]).forEach((field: SourceField) => {
         const value = filters[field]
         if (value?.from && value?.to) {
             ranges.push({
@@ -84,12 +84,12 @@ const buildSortQuery = (order: string[][] | undefined) =>
             field.startsWith('_') ? { [field]: { order: direction } } : { [field]: { order: direction, missing: '_last' } }
         ) || []
 
-const buildTermsField = (field: string, uuid: string, terms: Terms, page = 1, size = DEFAULT_FACET_SIZE): Field => {
+const buildTermsField = (field: SourceField, uuid: string, terms: Terms, page = 1, size = DEFAULT_FACET_SIZE): Field => {
     const fieldKey = expandPrivate(field, uuid)
 
     let filterClause = null
     if (terms?.include?.length) {
-        if (aggregationFields[field].type === 'term-and') {
+        if (aggregationFields[field]?.type === 'term-and') {
             filterClause = terms.include.map((term) => ({
                 term: { [fieldKey]: term },
             }))
@@ -171,7 +171,7 @@ interface HistogramParams {
 }
 
 const buildHistogramField = (
-    field: string,
+    field: SourceField,
     uuid: string,
     { interval = DEFAULT_INTERVAL, intervals }: HistogramParams = {},
     page = 1,
@@ -250,7 +250,7 @@ const rangeFormat = (range: string, isFilter = false) => {
     }
 }
 
-const buildRangeField = (field: string, uuid: string, ranges: Terms | undefined): Field => {
+const buildRangeField = (field: SourceField, uuid: string, ranges: Terms | undefined): Field => {
     const fieldKey = expandPrivate(field, uuid)
 
     const rangeFields = (selected: string) => ({
@@ -290,7 +290,7 @@ const buildRangeField = (field: string, uuid: string, ranges: Terms | undefined)
         aggregation: {
             range: {
                 field: fieldKey,
-                ranges: aggregationFields[field].buckets?.map(({ key }) => ({
+                ranges: aggregationFields[field]?.buckets?.map(({ key }) => ({
                     key,
                     ...rangeFormat(key),
                 })),
@@ -302,7 +302,7 @@ const buildRangeField = (field: string, uuid: string, ranges: Terms | undefined)
     }
 }
 
-const buildMissingField = (field: string, uuid: string) => ({
+const buildMissingField = (field: SourceField, uuid: string) => ({
     field: `${field}-missing`,
     originalField: field,
     aggregation: {
@@ -342,7 +342,7 @@ const buildFilter = (fields: Field[]) => {
         const fieldFilter = prepareFilter(field)
 
         if (fieldFilter) {
-            if (aggregationFields[field.originalField].type === 'term-and') {
+            if (aggregationFields[field.originalField]?.type === 'term-and') {
                 filter.push(...fieldFilter)
             } else {
                 filter.push({ bool: { should: fieldFilter } })
@@ -379,7 +379,7 @@ const getAggregationFields = (type: FieldType, fieldList: FieldList) =>
     Object.entries(aggregationFields)
         .filter(([, field]) => field.type.startsWith(type))
         .map(([key]) => key)
-        .filter((field) => fieldList === '*' || (Array.isArray(fieldList) && fieldList.includes(field)))
+        .filter((field) => fieldList === '*' || (Array.isArray(fieldList) && fieldList.includes(field))) as SourceField[]
 
 const buildSearchQuery = (
     { q = '*', page = 1, size = 0, order, collections = [], facets = {}, filters = {} }: Partial<SearchQueryParams> = {},

@@ -2,120 +2,16 @@ import { Box, Card, CardContent, CardHeader, Grid, IconButton, Paper, Popper, To
 import { DateTime } from 'luxon'
 import { observer } from 'mobx-react-lite'
 import { cloneElement, FC, RefObject, useEffect, useRef, useState } from 'react'
-import { makeStyles } from 'tss-react/mui'
 
-import { createDownloadUrl, createThumbnailSrc, createThumbnailSrcSet } from '../../backend/api'
-import { reactIcons } from '../../constants/icons'
-import { specialTags, specialTagsList } from '../../constants/specialTags'
-import { Hit } from '../../Types'
-import { getPreviewParams, getTypeIcon, humanFileSize, makeUnsearchable, truncatePath } from '../../utils/utils'
-import Loading from '../Loading'
-import { useSharedStore } from '../SharedStoreProvider'
+import { createDownloadUrl, createThumbnailSrc, createThumbnailSrcSet } from '../../../../../backend/api'
+import { reactIcons } from '../../../../../constants/icons'
+import { specialTags, specialTagsList } from '../../../../../constants/specialTags'
+import { Hit } from '../../../../../Types'
+import { getPreviewParams, getTypeIcon, humanFileSize, makeUnsearchable, truncatePath } from '../../../../../utils/utils'
+import Loading from '../../../../Loading'
+import { useSharedStore } from '../../../../SharedStoreProvider'
 
-import type { Theme } from '@mui/material'
-
-const useStyles = makeStyles()((theme: Theme) => ({
-    card: {
-        cursor: 'pointer',
-        position: 'relative',
-        marginTop: theme.spacing(1),
-        borderLeft: '3px solid transparent',
-        transition: (theme.transitions as any).create('border', {
-            duration: (theme.transitions as any).duration.short,
-        }),
-    },
-    cardContentRoot: {
-        '&:last-child': {
-            paddingBottom: 32,
-        },
-    },
-    cardHeaderAction: {
-        left: 16,
-        bottom: 4,
-        position: 'absolute',
-    },
-    cardHeaderContent: {
-        width: '100%',
-    },
-    headerText: {
-        overflow: 'hidden',
-    },
-    title: {
-        display: 'block',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-    },
-    index: {
-        color: theme.palette.grey[500],
-    },
-    selected: {
-        border: `2px solid ${theme.palette.secondary.main}`,
-    },
-    spaceBottom: {
-        marginBottom: theme.spacing(1),
-    },
-    spaceTop: {
-        marginTop: theme.spacing(1),
-    },
-    path: {
-        marginTop: theme.spacing(2),
-    },
-    key: {
-        whiteSpace: 'nowrap',
-        fontWeight: 'bold',
-    },
-    text: {
-        cursor: 'text',
-        fontFamily: (theme.typography as any).fontFamilyMono,
-        fontSize: '.7rem',
-        color: '#555',
-    },
-    actionIcon: {
-        fontSize: 20,
-        color: theme.palette.grey[600],
-    },
-    infoBox: {
-        display: 'inline-flex',
-        alignItems: 'center',
-    },
-    infoIcon: {
-        fontSize: 20,
-        color: theme.palette.grey[600],
-        marginRight: theme.spacing(0.3),
-    },
-    collection: {
-        fontSize: 16,
-        color: theme.palette.grey.A200,
-        display: 'inline-flex',
-        alignItems: 'center',
-    },
-    textField: {
-        width: '100%',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        display: 'inline-block',
-    },
-    buttonLink: {
-        lineHeight: 0,
-    },
-    thumbnail: {
-        padding: theme.spacing(1),
-        paddingBottom: 0,
-    },
-    thumbnailImg: {
-        height: 72,
-        maxWidth: 100,
-    },
-    preview: {
-        padding: theme.spacing(1),
-    },
-    previewImg: {
-        width: 400,
-    },
-    previewImgLoading: {
-        width: 1,
-    },
-}))
+import { useStyles } from './ResultItem.styles'
 
 const timeMs = () => new Date().getTime()
 
