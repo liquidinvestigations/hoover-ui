@@ -1,6 +1,5 @@
 import { ClickAwayListener, Fade, Grid, ListItem, Portal, Slide, Typography } from '@mui/material'
 import { duration } from '@mui/material/styles'
-import cx from 'classnames'
 import { observer } from 'mobx-react-lite'
 import { cloneElement, CSSProperties, FC, ReactNode, useEffect, useMemo, useState } from 'react'
 import { Transition } from 'react-transition-group'
@@ -33,7 +32,7 @@ interface CategoryDrawerProps {
 
 export const CategoryDrawer: FC<CategoryDrawerProps> = observer(
     ({ category, title, icon, children, toolbar, loading, loadingETA, greyed = false, highlight = true }) => {
-        const classes = useStyles()
+        const { classes, cx } = useStyles()
         const [position, setPosition] = useState<Partial<CSSProperties>>({ top: 0, left: 0, width: 0 })
         const { drawerPinned, drawerRef, drawerWidth, openCategory, setOpenCategory, wideFilters } = useSharedStore().searchStore.searchViewStore
 

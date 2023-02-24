@@ -2,11 +2,11 @@ import { DateTime } from 'luxon'
 import qs, { ParsedQs } from 'qs'
 
 import { aggregationFields } from '../constants/aggregationFields'
-import { Category, SearchQueryParams } from '../Types'
+import { Category, SearchQueryParams, SourceField } from '../Types'
 
 import { daysInMonth } from './utils'
 
-export const defaultSearchTextParams = {
+export const defaultSearchParams = {
     page: 1,
     size: 10,
 }
@@ -38,7 +38,7 @@ const LEGACY_PARAMS: Record<string, string> = {
 export const rollupParams = (query: Record<string, any>) =>
     Object.fromEntries(
         Object.entries(query).map(([field, value]) => {
-            const key = Object.keys(PARAMS_MAP).find((key) => PARAMS_MAP[key] === field)
+            const key = Object.keys(PARAMS_MAP).find((keyE) => PARAMS_MAP[keyE] === field)
             return key ? [key, value] : [field, value]
         })
     )
@@ -62,14 +62,14 @@ export interface Term {
     interval: number
 }
 
-export const createSearchParams = (field: string, term: string | Term) => {
+export const createSearchParams = (field: SourceField, term: string | Term) => {
     const params: Partial<SearchQueryParams> = {}
 
     if (aggregationFields[field]) {
         params.q = '*'
         params.filters = {}
 
-        if (aggregationFields[field].type === 'date' && typeof term === 'object') {
+        if (aggregationFields[field]?.type === 'date' && typeof term === 'object') {
             switch (term.format) {
                 case 'year':
                     const year = term.term.substring(0, 4)
@@ -127,7 +127,7 @@ export const createSearchParams = (field: string, term: string | Term) => {
     return params
 }
 
-export const createSearchUrl = (term: Term | string, field: string, collections: Category | Category[], hash: Record<string, any>) => {
+export const createSearchUrl = (term: Term | string, field: SourceField, collections: Category | Category[], hash: Record<string, any>) => {
     const params = createSearchParams(field, term)
     const hashParams = hash ? '#' + qs.stringify(rollupParams(hash)) : ''
 

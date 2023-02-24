@@ -3,6 +3,7 @@ import { makeStyles } from '@mui/styles'
 
 import { DEFAULT_FACET_SIZE } from '../../../constants/general'
 import { reactIcons } from '../../../constants/icons'
+import { defaultSearchParams } from '../../../utils/queryUtils'
 import { useSearch } from '../SearchProvider'
 
 const useStyles = makeStyles((theme) => ({
@@ -19,9 +20,9 @@ export default function Pagination({ field }) {
     const handlePagination = (newPage) => {
         const { [field]: prevFacet, ...restFacets } = query.facets || {}
         if (newPage > 1) {
-            search({ facets: { [field]: newPage, ...restFacets, page: 1 } })
+            search({ facets: { [field]: newPage, ...restFacets, page: defaultSearchParams.page } })
         } else {
-            search({ facets: { ...restFacets }, page: 1 })
+            search({ facets: { ...restFacets }, page: defaultSearchParams.page })
         }
     }
 

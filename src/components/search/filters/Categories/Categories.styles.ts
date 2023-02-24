@@ -1,7 +1,7 @@
 import { Theme } from '@mui/material'
-import { makeStyles } from '@mui/styles'
+import { makeStyles } from 'tss-react/mui'
 
-export const useStyles = makeStyles((theme: Theme) => ({
+export const useStyles = makeStyles()((theme: Theme) => ({
     container: {
         width: 55,
         borderRight: '1px solid rgba(0, 0, 0, 0.2)',

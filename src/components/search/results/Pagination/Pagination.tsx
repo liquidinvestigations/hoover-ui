@@ -1,40 +1,19 @@
 import { Grid, IconButton, Typography } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
-import { makeStyles } from 'tss-react/mui'
 
-import { DEFAULT_MAX_RESULTS } from '../../constants/general'
-import { reactIcons } from '../../constants/icons'
-import { formatThousands, numberArray } from '../../utils/utils'
-import { useSharedStore } from '../SharedStoreProvider'
+import { DEFAULT_MAX_RESULTS } from '../../../../constants/general'
+import { reactIcons } from '../../../../constants/icons'
+import { formatThousands, numberArray } from '../../../../utils/utils'
+import { useSharedStore } from '../../../SharedStoreProvider'
+import { SearchSize } from '../../SearchSize'
 
-import { SearchSize } from './SearchSize'
-
-import type { Theme } from '@mui/material'
+import { useStyles } from './Pagination.styles'
 
 const MAX_PREV_PAGES = 3
 const MAX_NEXT_PAGES = 3
 
-const useStyles = makeStyles()((theme: Theme) => ({
-    pageLink: {
-        cursor: 'pointer',
-        margin: theme.spacing(1),
-        '&:hover': {
-            textDecoration: 'underline',
-        },
-    },
-    pageLinkCurrent: {
-        cursor: 'default',
-        fontWeight: 'bold',
-        textDecoration: 'underline',
-    },
-}))
-
-interface PaginationProps {
-    collection: string
-}
-
-export const Pagination: FC<PaginationProps> = observer(({ collection }) => {
+export const Pagination: FC = observer(() => {
     const { classes, cx } = useStyles()
     const {
         collectionsData,
@@ -49,17 +28,15 @@ export const Pagination: FC<PaginationProps> = observer(({ collection }) => {
         return null
     }
 
-    const queryTask = resultsQueryTasks[collection]
-
-    const maxResultWindow = collectionsData.find((collectionData) => collectionData.name === collection)?.max_result_window
+    const maxResultWindow = Math.max(...collectionsData.map((collectionData) => collectionData.max_result_window))
     const maxCount = maxResultWindow && !isNaN(maxResultWindow) && maxResultWindow < DEFAULT_MAX_RESULTS ? maxResultWindow : DEFAULT_MAX_RESULTS
 
-    const total = queryTask.data?.result?.hits.total || 0
+    const total = Math.max(...Object.entries(resultsQueryTasks).map(([_collection, { data }]) => data?.result?.hits.total || 0))
     const { size, page } = query
 
     const handleNext = () => search({ page: page + 1 })
     const handlePrev = () => search({ page: page - 1 })
-    const handleSet = (page: number) => () => search({ page })
+    const handleSet = (pageE: number) => () => search({ page: pageE })
 
     const pageCount = Math.ceil(Math.min(total, maxCount) / size)
 

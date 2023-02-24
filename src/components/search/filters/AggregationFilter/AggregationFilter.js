@@ -28,7 +28,7 @@ function AggregationFilter({
     bucketValue,
     search,
 }) {
-    const classes = useStyles()
+    const { classes } = useStyles()
     const aggregation = aggregations?.values
 
     /*

@@ -1,7 +1,7 @@
 import { Theme } from '@mui/material'
-import { makeStyles } from '@mui/styles'
+import { makeStyles } from 'tss-react/mui'
 
-export const useStyles = makeStyles((theme: Theme) => ({
+export const useStyles = makeStyles()((theme: Theme) => ({
     toolbar: {
         backgroundColor: theme.palette.grey[100],
         borderBottomColor: theme.palette.grey[400],

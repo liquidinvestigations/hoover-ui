@@ -1,10 +1,14 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
 import { ChangeEvent, useRef } from 'react'
+import { Entry } from 'type-fest'
 
+import { availableColumns } from '../../constants/availableColumns'
 import { Category } from '../../Types'
 import { SharedStore } from '../SharedStore'
 
 import { SearchStore } from './SearchStore'
+
+export type ResultsViewType = 'list' | 'table'
 
 export class SearchViewStore {
     readonly drawerRef = useRef<HTMLDivElement>()
@@ -22,6 +26,10 @@ export class SearchViewStore {
     searchText: string | undefined
 
     wideFilters: boolean = true
+
+    resultsViewType: ResultsViewType = 'list'
+
+    resultsColumns = Object.entries(availableColumns).filter(([, { hidden }]) => !hidden)
 
     constructor(private readonly sharedStore: SharedStore, private readonly searchStore: SearchStore) {
         makeAutoObservable(this)
@@ -101,6 +109,18 @@ export class SearchViewStore {
     setWideFilters = (wideFilters: boolean) => {
         runInAction(() => {
             this.wideFilters = wideFilters
+        })
+    }
+
+    setResultsViewType = (resultsViewType: ResultsViewType) => {
+        runInAction(() => {
+            this.resultsViewType = resultsViewType
+        })
+    }
+
+    setResultsColumns = (resultsColumns: Entry<typeof availableColumns>[]) => {
+        runInAction(() => {
+            this.resultsColumns = resultsColumns
         })
     }
 }

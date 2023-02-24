@@ -1,6 +1,7 @@
 import { FormControl, FormHelperText, MenuItem, Select } from '@mui/material'
 
 import { DEFAULT_INTERVAL } from '../../../constants/general'
+import { defaultSearchParams } from '../../../utils/queryUtils'
 import { useSearch } from '../SearchProvider'
 
 export default function IntervalSelect({ field }) {
@@ -14,9 +15,9 @@ export default function IntervalSelect({ field }) {
         const newFilter = { interval: event.target.value, ...rest }
 
         if (event.target.value !== DEFAULT_INTERVAL) {
-            search({ filters: { [field]: newFilter, ...restFilters }, facets: { ...restFacets }, page: 1 })
+            search({ filters: { [field]: newFilter, ...restFilters }, facets: { ...restFacets }, page: defaultSearchParams.page })
         } else {
-            search({ filters: { ...restFilters }, facets: { ...restFacets }, page: 1 })
+            search({ filters: { ...restFilters }, facets: { ...restFacets }, page: defaultSearchParams.page })
         }
     }
 

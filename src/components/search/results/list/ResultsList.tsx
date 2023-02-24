@@ -2,10 +2,10 @@ import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 import ReactPlaceholder from 'react-placeholder'
 
-import { AsyncQueryTask } from '../../stores/search/AsyncTaskRunner'
-import { documentViewUrl } from '../../utils/utils'
+import { AsyncQueryTask } from '../../../../stores/search/AsyncTaskRunner'
+import { documentViewUrl } from '../../../../utils/utils'
 
-import { ResultItem } from './ResultItem'
+import { ResultItem } from './ResultItem/ResultItem'
 
 interface ResultsListProps {
     queryTask: AsyncQueryTask

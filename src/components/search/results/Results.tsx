@@ -1,30 +1,19 @@
 import { Fab, Grid } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
-import { makeStyles } from 'tss-react/mui'
 
-import { reactIcons } from '../../constants/icons'
-import { useSharedStore } from '../SharedStoreProvider'
+import { reactIcons } from '../../../constants/icons'
+import { useSharedStore } from '../../SharedStoreProvider'
 
+import { Pagination } from './Pagination/Pagination'
+import { useStyles } from './Results.styles'
 import { ResultsGroup } from './ResultsGroup'
-
-import type { Theme } from '@mui/material'
-
-const useStyles = makeStyles()((theme: Theme) => ({
-    viewTypeIcon: {
-        flex: 'none',
-        boxShadow: 'none',
-        marginLeft: theme.spacing(2),
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(2),
-    },
-}))
 
 export const Results: FC = observer(() => {
     const { classes } = useStyles()
     const {
-        searchViewStore: { searchCollections },
-        searchResultsStore: { resultsQueryTasks, viewType, setViewType },
+        searchViewStore: { searchCollections, resultsViewType, setResultsViewType },
+        searchResultsStore: { resultsQueryTasks, resultsLoading },
     } = useSharedStore().searchStore
 
     return (
@@ -34,28 +23,35 @@ export const Results: FC = observer(() => {
                     <Grid item>
                         <Fab
                             size="small"
-                            color={viewType === 'list' ? 'primary' : 'default'}
+                            color={resultsViewType === 'list' ? 'primary' : 'default'}
                             className={classes.viewTypeIcon}
-                            onClick={() => setViewType('list')}>
+                            onClick={() => setResultsViewType('list')}>
                             {reactIcons.listView}
                         </Fab>
                     </Grid>
                     <Grid item>
                         <Fab
                             size="small"
-                            color={viewType === 'table' ? 'primary' : 'default'}
+                            color={resultsViewType === 'table' ? 'primary' : 'default'}
                             className={classes.viewTypeIcon}
-                            onClick={() => setViewType('table')}>
+                            onClick={() => setResultsViewType('table')}>
                             {reactIcons.tableView}
                         </Fab>
                     </Grid>
                 </Grid>
             </Grid>
 
+            <Pagination />
+
             {!searchCollections.length ? (
                 <i>no collections selected</i>
             ) : (
-                Object.keys(resultsQueryTasks).map((collection) => <ResultsGroup collection={collection} key={collection} />)
+                <>
+                    {Object.keys(resultsQueryTasks).map((collection) => (
+                        <ResultsGroup collection={collection} key={collection} />
+                    ))}
+                    {!resultsLoading && <Pagination />}
+                </>
             )}
         </>
     )
