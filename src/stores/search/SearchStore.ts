@@ -7,6 +7,7 @@ import { buildSearchQuerystring, defaultSearchParams, unwindParams } from '../..
 import { SharedStore } from '../SharedStore'
 
 import { FiltersStore } from './FiltersStore'
+import { SearchAggregationsStore } from './SearchAggregationsStore'
 import { SearchResultsStore } from './SearchResultsStore'
 import { SearchViewStore } from './SearchViewStore'
 
@@ -17,11 +18,14 @@ export class SearchStore {
 
     searchViewStore: SearchViewStore
 
+    searchAggregationsStore: SearchAggregationsStore
+
     searchResultsStore: SearchResultsStore
 
     constructor(private readonly sharedStore: SharedStore) {
         this.filtersStore = new FiltersStore(this)
         this.searchViewStore = new SearchViewStore(sharedStore, this)
+        this.searchAggregationsStore = new SearchAggregationsStore(this)
         this.searchResultsStore = new SearchResultsStore(this)
 
         makeAutoObservable(this)
@@ -66,6 +70,10 @@ export class SearchStore {
         if (query.q && query.page && query.size && query.collections?.length) {
             if (this.queryDiffer(query as SearchQueryParams, this.searchResultsStore.maskIrrelevantParams)) {
                 this.searchResultsStore.queryResult(query as SearchQueryParams)
+            }
+
+            if (this.queryDiffer(query as SearchQueryParams, this.searchAggregationsStore.maskIrrelevantParams)) {
+                this.searchAggregationsStore.queryResult(query as SearchQueryParams)
             }
 
             this.query = query as SearchQueryParams

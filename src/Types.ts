@@ -191,12 +191,20 @@ export interface Hit {
     _url_rel: string
 }
 
+export interface Bucket {
+    key: string
+    key_as_string: string
+    doc_count: number
+}
+
 export interface Result {
     aggregations: {
-        count_by_index: {
-            buckets: { key: string; doc_count: number }[]
-            doc_count_error_upper_bound: number
-            sum_other_doc_count: number
+        [field in SourceField | 'count_by_index']: {
+            values: {
+                buckets: Bucket[]
+                doc_count_error_upper_bound: number
+                sum_other_doc_count: number
+            }
         }
     }
     count_by_index: Record<string, number>
