@@ -3,15 +3,17 @@ import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 import { Entries } from 'type-fest'
 
+import { AsyncQueryTask } from '../../../stores/search/AsyncTaskRunner'
 import { getLanguageName } from '../../../utils/utils'
 import { useSharedStore } from '../../SharedStoreProvider'
-import { useSearch } from '../SearchProvider'
 
 import { CategoryDrawer } from './CategoryDrawer/CategoryDrawer'
 import { CategoryDrawerToolbar } from './CategoryDrawerToolbar/CategoryDrawerToolbar'
 import DateHistogramFilter from './DateHistogramFilter'
 import { useStyles } from './Filters.styles'
 import TermsAggregationFilter from './TermsAggregationFilter'
+
+import type { Bucket } from '../../../Types'
 
 export const Filters: FC = observer(() => {
     const classes = useStyles()
@@ -20,15 +22,14 @@ export const Filters: FC = observer(() => {
             query,
             filtersStore: { categories, expandedFilters, onExpandToggle, handleChange, isHighlighted },
             searchViewStore: { categoryQuickFilter },
+            searchAggregationsStore: { aggregationsQueryTasks, aggregationsLoading, error, missingAggregationsQueryTasks },
         },
     } = useSharedStore()
 
-    const { aggregations, aggregationsTasks, aggregationsLoading, aggregationsError, missingAggregations } = useSearch()
-
-    if (aggregationsError) {
+    if (error) {
         return (
             <Typography color="error" className={classes.error}>
-                {aggregationsError}
+                {error}
             </Typography>
         )
     }
@@ -37,19 +38,23 @@ export const Filters: FC = observer(() => {
         <>
             {(Object.entries(categories) as Entries<typeof categories>).map(([category, { label, icon, filters }]) => {
                 const greyed = filters.every(({ field }) => {
-                    return aggregations?.[field]?.values?.buckets?.length === 0
+                    return Object.entries(aggregationsQueryTasks).every(
+                        ([_collection, task]) => task.data?.result?.aggregations?.[field]?.values?.buckets?.length === 0
+                    )
                 })
 
-                const loading = filters.some(({ field }) => aggregationsLoading[field])
+                const loading = filters.some(({ field }) => aggregationsLoading?.[1].data?.result?.aggregations[field])
 
-                const loadingTask = Object.entries(aggregationsTasks).find(([fields]) => fields.split(',').includes(filters[0].field))
+                const loadingTask = Object.entries(aggregationsQueryTasks).find(
+                    ([_collection, task]) => task.data?.result && Object.keys(task.data?.result?.aggregations).includes(filters[0].field)
+                )
                 let loadingETA = Number.MAX_SAFE_INTEGER
                 if (loadingTask) {
-                    const taskData = loadingTask[1]
-                    if (taskData.status === 'done') {
+                    const task = Object.entries(loadingTask)[0][1] as AsyncQueryTask
+                    if (task.data?.status === 'done') {
                         loadingETA = 0
                     } else {
-                        loadingETA = Math.min(taskData.initialEta, taskData.eta.total_sec)
+                        loadingETA = Math.min(task?.initialEta || 0, task.data?.eta.total_sec || 0)
                     }
                 }
 
@@ -71,7 +76,7 @@ export const Filters: FC = observer(() => {
                         toolbar={<CategoryDrawerToolbar category={category} />}>
                         {filters.map(({ field, type, buckets, filterLabel }) => {
                             let FilterComponent,
-                                filterTypeProps = {}
+                                filterTypeProps: { bucketLabel?: (bucket: Bucket) => string } = {}
 
                             if (type === 'date') {
                                 FilterComponent = DateHistogramFilter
@@ -97,10 +102,10 @@ export const Filters: FC = observer(() => {
                                     field={field}
                                     queryFilter={query?.filters?.[field]}
                                     queryFacets={query?.facets?.[field]}
-                                    aggregations={aggregations?.[field]}
-                                    loading={aggregationsLoading[field]}
+                                    aggregations={aggregationsQueryTasks?.[1].data?.result?.aggregations[field]}
+                                    loading={aggregationsLoading?.[1].data?.result?.aggregations[field]}
                                     loadingETA={loadingETA}
-                                    missing={missingAggregations?.[`${field}-missing`]}
+                                    missing={missingAggregationsQueryTasks?.[1].data?.result?.aggregations[`${field}-missing`]}
                                     open={expandedFilters[category] === field}
                                     onToggle={filters.length > 1 && expandedFilters[category] !== field ? onExpandToggle(category, field) : null}
                                     onChange={handleChange}
