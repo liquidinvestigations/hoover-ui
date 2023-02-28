@@ -9,9 +9,9 @@ import { useSharedStore } from '../../SharedStoreProvider'
 
 import { CategoryDrawer } from './CategoryDrawer/CategoryDrawer'
 import { CategoryDrawerToolbar } from './CategoryDrawerToolbar/CategoryDrawerToolbar'
-import DateHistogramFilter from './DateHistogramFilter'
+import { DateHistogramFilter } from './DateHistogramFilter'
 import { useStyles } from './Filters.styles'
-import TermsAggregationFilter from './TermsAggregationFilter'
+import { TermsAggregationFilter } from './TermsAggregationFilter'
 
 import type { Bucket } from '../../../Types'
 
@@ -20,8 +20,8 @@ export const Filters: FC = observer(() => {
     const {
         searchStore: {
             query,
-            filtersStore: { categories, expandedFilters, onExpandToggle, handleChange, isHighlighted },
             searchViewStore: { categoryQuickFilter },
+            filtersStore: { categories, expandedFilters, onExpandToggle, isHighlighted },
             searchAggregationsStore: { aggregationsQueryTasks, aggregationsLoading, error, missingAggregationsQueryTasks },
         },
     } = useSharedStore()
@@ -102,14 +102,15 @@ export const Filters: FC = observer(() => {
                                     field={field}
                                     queryFilter={query?.filters?.[field]}
                                     queryFacets={query?.facets?.[field]}
-                                    aggregations={aggregationsQueryTasks?.[1].data?.result?.aggregations[field]}
-                                    loading={aggregationsLoading?.[1].data?.result?.aggregations[field]}
+                                    aggregations={aggregationsQueryTasks?.[1]?.data?.result?.aggregations[field]}
+                                    loading={!!aggregationsLoading?.[1]?.data?.result?.aggregations[field]}
                                     loadingETA={loadingETA}
-                                    missing={missingAggregationsQueryTasks?.[1].data?.result?.aggregations[`${field}-missing`]}
+                                    missing={missingAggregationsQueryTasks?.[1]?.data?.result?.aggregations[`${field}-missing`]}
+                                    missingLoading={false}
+                                    missingLoadingETA={0}
                                     open={expandedFilters[category] === field}
-                                    onToggle={filters.length > 1 && expandedFilters[category] !== field ? onExpandToggle(category, field) : null}
-                                    onChange={handleChange}
-                                    search={categoryQuickFilter[category]}
+                                    onToggle={filters.length > 1 && expandedFilters[category] !== field ? onExpandToggle(category, field) : undefined}
+                                    quickFilter={categoryQuickFilter[category]}
                                     {...filterTypeProps}
                                 />
                             )

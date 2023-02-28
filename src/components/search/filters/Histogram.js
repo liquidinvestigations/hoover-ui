@@ -15,7 +15,7 @@ import { useSearch } from '../SearchProvider'
 import { formatsLabel, formatsValue } from './DateHistogramFilter'
 import HistogramChart from './HistogramChart'
 import IntervalSelect from './IntervalSelect'
-import Pagination from './Pagination'
+import { Pagination } from './Pagination/Pagination'
 
 const chartWidth = 300
 const chartHeight = 100

@@ -7,10 +7,10 @@ import { makeStyles } from 'tss-react/mui'
 
 import Error from '../../../pages/_error'
 import { copyMetadata, shortenName } from '../../utils/utils'
+import { SplitPaneLayout } from '../common/SplitPaneLayout/SplitPaneLayout'
 import HotKeysWithHelp from '../HotKeysWithHelp'
 import Locations from '../Locations'
 import { useSharedStore } from '../SharedStoreProvider'
-import { SplitPaneLayout } from '../SplitPaneLayout'
 
 import { Document } from './Document'
 import { Finder } from './finder/Finder'

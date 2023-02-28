@@ -1,9 +1,8 @@
-import { Box, Fade, Typography } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 
+import { Expandable } from '../../common/Expandable/Expandable'
 import { useSharedStore } from '../../SharedStoreProvider'
-import { ResultsProgress } from '../ResultsProgress'
 
 import { ResultsList } from './list/ResultsList'
 import { ResultsTable } from './table/ResultsTable/ResultsTable'
@@ -31,27 +30,8 @@ export const ResultsGroup: FC<ResultsProps> = observer(({ collection }) => {
     }
 
     return (
-        <>
-            <hr />
-
-            <h2>{collection}</h2>
-
-            <Fade in={queryTask.data?.status === 'pending'} unmountOnExit>
-                <Box display="flex" alignItems="center">
-                    <Box width="100%" mr={1}>
-                        <ResultsProgress eta={loadingETA} />
-                    </Box>
-                    <Box minWidth={35}>
-                        {queryTask.data?.eta && (
-                            <Typography variant="body2" color="textSecondary">
-                                ETA:&nbsp;{queryTask.data.eta.total_sec}s
-                            </Typography>
-                        )}
-                    </Box>
-                </Box>
-            </Fade>
-
+        <Expandable resizable defaultOpen highlight={false} title={collection} loading={queryTask.data?.status === 'pending'} loadingETA={loadingETA}>
             {resultsViewType === 'list' ? <ResultsList queryTask={queryTask} /> : <ResultsTable queryTask={queryTask} />}
-        </>
+        </Expandable>
     )
 })

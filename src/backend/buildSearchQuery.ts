@@ -165,9 +165,11 @@ const intervalFormat = (interval: Interval, param: string) => {
     }
 }
 
-interface HistogramParams {
+export interface HistogramParams {
     interval?: Interval
     intervals?: Terms
+    from?: string
+    to?: string
 }
 
 const buildHistogramField = (

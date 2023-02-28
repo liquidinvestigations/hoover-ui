@@ -6,11 +6,11 @@ import { cloneElement, useEffect, useRef } from 'react'
 
 import { tooltips } from '../../constants/help'
 import { reactIcons } from '../../constants/icons'
+import { SplitPaneLayout } from '../common/SplitPaneLayout/SplitPaneLayout'
 import { Document } from '../document/Document'
 import { TagsProvider } from '../document/TagsProvider'
 import { useProgressIndicator } from '../ProgressIndicator'
 import { useSharedStore } from '../SharedStoreProvider'
-import { SplitPaneLayout } from '../SplitPaneLayout'
 
 import { Categories } from './filters/Categories/Categories'
 import FiltersChips from './filters/FiltersChips'

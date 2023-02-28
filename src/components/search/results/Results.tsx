@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 
 import { reactIcons } from '../../../constants/icons'
+import { Expandable } from '../../common/Expandable/Expandable'
 import { useSharedStore } from '../../SharedStoreProvider'
 
 import { Pagination } from './Pagination/Pagination'
@@ -48,7 +49,7 @@ export const Results: FC = observer(() => {
             ) : (
                 <>
                     {Object.keys(resultsQueryTasks).map((collection) => (
-                        <ResultsGroup collection={collection} key={collection} />
+                        <ResultsGroup key={collection} collection={collection} />
                     ))}
                     {!resultsLoading && <Pagination />}
                 </>

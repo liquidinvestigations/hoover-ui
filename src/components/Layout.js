@@ -1,7 +1,7 @@
 import Head from 'next/head'
 
+import { Header } from './common/Header/Header'
 import ErrorBoundary from './ErrorBoundary'
-import { Header } from './Header/Header'
 import ProgressIndicator, { ProgressIndicatorProvider } from './ProgressIndicator'
 
 export default function Layout({ children }) {

@@ -4,9 +4,9 @@ import cx from 'classnames'
 import { cloneElement, createRef, useCallback, useEffect, useRef, useState } from 'react'
 
 import { reactIcons } from '../../../constants/icons'
-import { Expandable } from '../../Expandable'
+import { Expandable } from '../../common/Expandable/Expandable'
+import { SplitPaneLayout } from '../../common/SplitPaneLayout/SplitPaneLayout'
 import Loading from '../../Loading'
-import { SplitPaneLayout } from '../../SplitPaneLayout'
 
 import AttachmentsView from './AttachmentsView'
 import BookmarksView from './BookmarksView'
