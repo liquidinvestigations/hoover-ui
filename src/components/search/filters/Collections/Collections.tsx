@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 
-import { Expandable } from '../../../Expandable'
+import { Expandable } from '../../../common/Expandable/Expandable'
 import { useSharedStore } from '../../../SharedStoreProvider'
 import { CategoryDrawer } from '../CategoryDrawer/CategoryDrawer'
 import { CategoryDrawerToolbar } from '../CategoryDrawerToolbar/CategoryDrawerToolbar'

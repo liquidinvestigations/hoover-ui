@@ -2,8 +2,8 @@ import { AppBar, Toolbar, Typography } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
 
-import { Menu } from '../Menu'
-import { useSharedStore } from '../SharedStoreProvider'
+import { Menu } from '../../Menu'
+import { useSharedStore } from '../../SharedStoreProvider'
 
 import { useStyles } from './Header.styles'
 

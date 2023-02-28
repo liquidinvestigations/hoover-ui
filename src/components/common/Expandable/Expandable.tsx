@@ -1,55 +1,10 @@
-import { CircularProgress, Collapse, Fade, Grid, IconButton, ListItem, Theme, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
-import cx from 'classnames'
+import { CircularProgress, Collapse, Fade, Grid, IconButton, ListItem, Typography } from '@mui/material'
 import { cloneElement, FC, MouseEvent as ReactMouseEvent, ReactNode, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { reactIcons } from '../constants/icons'
+import { reactIcons } from '../../../constants/icons'
+import { ThinProgress } from '../../search/ThinProgress'
 
-import { ThinProgress } from './search/ThinProgress'
-
-const useStyles = makeStyles((theme: Theme) => ({
-    title: {
-        minHeight: 32,
-        textTransform: 'uppercase',
-        paddingTop: 6,
-        paddingBottom: 6,
-    },
-    expand: {
-        transform: 'rotate(0deg)',
-        transition: theme.transitions.create('transform', {
-            duration: theme.transitions.duration.shortest,
-        }),
-        marginLeft: 'auto',
-        [theme.breakpoints.up('sm')]: {
-            marginRight: -8,
-        },
-    },
-    expandOpen: {
-        transform: 'rotate(180deg)',
-    },
-    header: {
-        backgroundColor: theme.palette.grey[100],
-        '&:hover': {
-            backgroundColor: theme.palette.grey[200],
-        },
-    },
-    loading: {
-        verticalAlign: 'middle',
-        marginLeft: theme.spacing(1),
-    },
-    content: {
-        maxHeight: 435,
-        overflow: 'auto',
-    },
-    fullHeightCollapseEntered: {
-        overflow: 'auto',
-    },
-    fullHeightContent: {
-        height: '100%',
-        maxHeight: 'none',
-        overflow: 'hidden',
-    },
-}))
+import { useStyles } from './Expandable.styles'
 
 let startY: number, startHeight: number
 
@@ -82,7 +37,7 @@ export const Expandable: FC<ExpandableProps> = ({
     fullHeight = true,
     highlight = true,
 }) => {
-    const classes = useStyles()
+    const { classes, cx } = useStyles()
 
     let openState = open,
         setOpenState = onToggle

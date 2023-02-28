@@ -193,21 +193,27 @@ export interface Hit {
 
 export interface Bucket {
     key: string
-    key_as_string: string
     doc_count: number
+    key_as_string?: string
+}
+
+export interface Aggregation {
+    count: { value: number }
+    doc_count: number
+    meta: any
+    values: AggregationValues
+}
+
+export interface AggregationValues {
+    buckets?: Bucket[]
+    doc_count?: number
+    doc_count_error_upper_bound?: number
+    sum_other_doc_count?: number
 }
 
 export interface Result {
-    aggregations: {
-        [field in SourceField | 'count_by_index']: {
-            values: {
-                buckets: Bucket[]
-                doc_count_error_upper_bound: number
-                sum_other_doc_count: number
-            }
-        }
-    }
-    count_by_index: Record<string, number>
+    aggregations: Partial<Record<SourceField | `${SourceField}-missing`, Aggregation>>
+    count_by_index: Partial<Record<Category, number>>
     hits: {
         hits: Hit[]
         max_score: number

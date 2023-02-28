@@ -1,6 +1,6 @@
 import { makeStyles } from 'tss-react/mui'
 
-export const useStyles = makeStyles()((theme) => ({
+export const useStyles = makeStyles()(() => ({
     checkbox: {
         padding: 5,
     },
@@ -11,24 +11,17 @@ export const useStyles = makeStyles()((theme) => ({
         textOverflow: 'ellipsis',
     },
 
-    italic: {
-        fontStyle: 'italic',
-    },
-
-    empty: {
-        color: theme.palette.grey[500],
+    labelWithSub: {
+        margin: 0,
     },
 
     subLabel: {
         fontSize: '8.5pt',
     },
 
-    loading: {
-        verticalAlign: 'middle',
-        marginLeft: theme.spacing(1),
-    },
-
-    right: {
+    docCount: {
+        flex: '1 0 auto',
+        paddingLeft: 6,
         alignSelf: 'flex-end',
     },
 }))

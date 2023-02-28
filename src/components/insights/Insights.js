@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 
 import { collectionsInsights } from '../../backend/api'
 import { humanFileSize } from '../../utils/utils'
+import { SplitPaneLayout } from '../common/SplitPaneLayout/SplitPaneLayout'
 import { useSearch } from '../search/SearchProvider'
-import { SplitPaneLayout } from '../SplitPaneLayout'
 
 import AggregationsTable from './AggregationsTable'
 import Histogram from './Histogram'
