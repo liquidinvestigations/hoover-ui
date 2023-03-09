@@ -1,43 +1,27 @@
 import { Chip } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import cx from 'classnames'
-import { memo } from 'react'
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
+import { observer } from 'mobx-react-lite'
+import { FC } from 'react'
+import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
 
-import { SORTABLE_FIELDS } from '../../../constants/general'
-import { reactIcons } from '../../../constants/icons'
-import { defaultSearchParams } from '../../../utils/queryUtils'
-import { titleCase } from '../../../utils/utils'
-import { useSearch } from '../SearchProvider'
+import { SORTABLE_FIELDS } from '../../../../constants/general'
+import { reactIcons } from '../../../../constants/icons'
+import { defaultSearchParams } from '../../../../utils/queryUtils'
+import { titleCase } from '../../../../utils/utils'
+import { useSharedStore } from '../../../SharedStoreProvider'
 
-const useStyles = makeStyles((theme) => ({
-    icon: {
-        transition: 'transform .2s ease-in-out',
-    },
-    iconDown: {
-        transform: 'rotate(180deg)',
-    },
-    chips: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'flex-end',
-        '& > *': {
-            marginRight: theme.spacing(0.5),
-            marginBottom: theme.spacing(0.5),
-        },
-    },
-}))
+import { useStyles } from './SortingChips.styles'
 
-function SortingChips() {
-    const classes = useStyles()
-    const { query, search } = useSearch()
+export const SortingChips: FC = observer(() => {
+    const { classes } = useStyles()
+    const { query, search } = useSharedStore().searchStore
 
-    const order = query.order
-    const changeOrder = (newOrder) => {
+    const order = query?.order || []
+    const changeOrder = (newOrder: string[][]) => {
         search({ order: newOrder, page: defaultSearchParams.page })
     }
 
-    const handleClick = (field) => () => {
+    const handleClick = (field: string) => () => {
         const index = order.findIndex(([v]) => v === field)
         const [, direction] = order[index]
         const newOrder = [...order]
@@ -49,14 +33,14 @@ function SortingChips() {
         changeOrder(newOrder)
     }
 
-    const handleDelete = (field) => () => {
+    const handleDelete = (field: string) => () => {
         const index = order.findIndex(([v]) => v === field)
         const newOrder = [...order]
         newOrder.splice(index, 1)
         changeOrder(newOrder)
     }
 
-    const handleDragEnd = (result) => {
+    const handleDragEnd = (result: DropResult) => {
         if (result.destination) {
             const newOrder = [...order]
             const [reorderedItem] = newOrder.splice(result.source.index, 1)
@@ -68,15 +52,15 @@ function SortingChips() {
     return (
         <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="sorting" direction="horizontal">
-                {(provided) => (
-                    <div {...provided.droppableProps} ref={provided.innerRef} className={classes.chips}>
+                {(droppableProvided) => (
+                    <div {...droppableProvided.droppableProps} ref={droppableProvided.innerRef} className={classes.chips}>
                         {order?.map(([field, direction = 'asc'], index) => (
                             <Draggable key={field} draggableId={field} index={index}>
-                                {(provided) => (
+                                {(draggableProvided) => (
                                     <Chip
-                                        ref={provided.innerRef}
-                                        {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
+                                        ref={draggableProvided.innerRef}
+                                        {...draggableProvided.draggableProps}
+                                        {...draggableProvided.dragHandleProps}
                                         size="small"
                                         icon={reactIcons.arrowUp}
                                         label={SORTABLE_FIELDS[field] || titleCase(field)}
@@ -91,12 +75,10 @@ function SortingChips() {
                                 )}
                             </Draggable>
                         ))}
-                        {provided.placeholder}
+                        {droppableProvided.placeholder}
                     </div>
                 )}
             </Droppable>
         </DragDropContext>
     )
-}
-
-export default memo(SortingChips)
+})

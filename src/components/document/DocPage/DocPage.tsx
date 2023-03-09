@@ -3,52 +3,18 @@ import { observer } from 'mobx-react-lite'
 import Head from 'next/head'
 import { FC } from 'react'
 import SplitPane from 'react-split-pane'
-import { makeStyles } from 'tss-react/mui'
 
-import Error from '../../../pages/_error'
-import { copyMetadata, shortenName } from '../../utils/utils'
-import { SplitPaneLayout } from '../common/SplitPaneLayout/SplitPaneLayout'
-import HotKeysWithHelp from '../common/HotKeysWithHelp/HotKeysWithHelp'
-import Locations from '../Locations'
-import { useSharedStore } from '../SharedStoreProvider'
+import Error from '../../../../pages/_error'
+import { copyMetadata, shortenName } from '../../../utils/utils'
+import { HotKeysWithHelp } from '../../common/HotKeysWithHelp/HotKeysWithHelp'
+import { SplitPaneLayout } from '../../common/SplitPaneLayout/SplitPaneLayout'
+import { Finder } from '../../finder/Finder'
+import Locations from '../../Locations'
+import { useSharedStore } from '../../SharedStoreProvider'
+import { Document } from '../Document'
+import { TagsProvider } from '../TagsProvider'
 
-import { Document } from './Document'
-import { Finder } from './finder/Finder'
-import { TagsProvider } from './TagsProvider'
-
-import type { Theme } from '@mui/material'
-
-const useStyles = makeStyles()((theme: Theme) => ({
-    splitPane: {
-        overflow: 'hidden',
-        position: 'relative',
-        backfaceVisibility: 'hidden',
-        willChange: 'overflow',
-
-        height: 'calc(100vh - 96px)',
-
-        '@media (min-width: 0px) and (orientation: landscape)': {
-            height: 'calc(100vh - 88px)',
-        },
-
-        '@media (min-width: 600px)': {
-            height: 'calc(100vh - 104px)',
-        },
-    },
-    horizontalSplitPane: {
-        overflowX: 'hidden',
-        overflowY: 'auto',
-        height: 'auto',
-    },
-    title: {
-        height: '40px',
-        padding: '10px',
-        backgroundColor: theme.palette.grey['100'],
-        borderBottomColor: theme.palette.grey['400'],
-        borderBottomWidth: '1px',
-        borderBottomStyle: 'solid',
-    },
-}))
+import { useStyles } from './DocPage.styles'
 
 export const DocPage: FC = observer(() => {
     const { classes } = useStyles()

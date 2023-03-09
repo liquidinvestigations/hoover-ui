@@ -9,9 +9,8 @@ import { cloneElement } from 'react'
 import { ELLIPSIS_TERM_LENGTH } from '../constants/general'
 import { reactIcons } from '../constants/icons'
 import { specialTags } from '../constants/specialTags'
-import { DocumentData } from '../stores/DocumentStore'
 
-import type { Hit } from '../Types'
+import type { DocumentData, Hit } from '../Types'
 
 const typeIconsMap: Record<string, string> = {
     archive: 'typeArchive',

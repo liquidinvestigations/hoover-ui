@@ -1,9 +1,9 @@
 import { makeStyles } from '@mui/styles'
 import { memo } from 'react'
 
+import PDFViewer from '../pdf-viewer/Dynamic'
 import { useSharedStore } from '../SharedStoreProvider'
 
-import PDFViewer from './pdf-viewer/Dynamic'
 import TIFFViewer from './TIFFViewer'
 
 // List copy/pasted from https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types

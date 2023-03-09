@@ -4,7 +4,8 @@ import { FC } from 'react'
 
 import { DEFAULT_FACET_SIZE } from '../../../../constants/general'
 import { reactIcons } from '../../../../constants/icons'
-import { SearchQueryTypes, SourceField } from '../../../../Types'
+import { SearchType } from '../../../../stores/search/SearchStore'
+import { SourceField } from '../../../../Types'
 import { defaultSearchParams } from '../../../../utils/queryUtils'
 import { useSharedStore } from '../../../SharedStoreProvider'
 
@@ -23,9 +24,9 @@ export const Pagination: FC<{ field: SourceField }> = observer(({ field }) => {
     const handlePagination = (newPage: number) => {
         const { [field]: prevFacet, ...restFacets } = query?.facets || {}
         if (newPage > 1) {
-            search({ facets: { [field]: newPage, ...restFacets, page: defaultSearchParams.page } }, SearchQueryTypes.Aggregations)
+            search({ facets: { [field]: newPage, ...restFacets, page: defaultSearchParams.page } }, SearchType.Aggregations)
         } else {
-            search({ facets: { ...restFacets }, page: defaultSearchParams.page }, SearchQueryTypes.Aggregations)
+            search({ facets: { ...restFacets }, page: defaultSearchParams.page }, SearchType.Aggregations)
         }
     }
 

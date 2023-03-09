@@ -4,7 +4,7 @@ import { FC } from 'react'
 
 import { collections as collectionsAPI } from '../../../src/backend/api'
 import getAuthorizationHeaders from '../../../src/backend/getAuthorizationHeaders'
-import { DocPage } from '../../../src/components/document/DocPage'
+import { DocPage } from '../../../src/components/document/DocPage/DocPage'
 import { useSharedStore } from '../../../src/components/SharedStoreProvider'
 import { CollectionData } from '../../../src/Types'
 

@@ -2,7 +2,7 @@ import { TreeView } from '@mui/lab'
 import { makeStyles } from '@mui/styles'
 import { memo } from 'react'
 
-import { reactIcons } from '../../../constants/icons'
+import { reactIcons } from '../../constants/icons'
 
 import Bookmarks from './Bookmarks'
 

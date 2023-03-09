@@ -1,4 +1,4 @@
-import { ChildDocument, DocumentData } from '../../../stores/DocumentStore'
+import { ChildDocument, DocumentData } from '../../Types'
 
 export interface LocalDocumentData extends DocumentData {
     parent?: LocalDocumentData

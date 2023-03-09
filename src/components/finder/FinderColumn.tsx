@@ -2,8 +2,8 @@ import { ButtonBase, CircularProgress, List, ListItem, ListItemIcon } from '@mui
 import { makeStyles } from '@mui/styles'
 import { FC, useState } from 'react'
 
-import { doc as docAPI } from '../../../backend/api'
-import { reactIcons } from '../../../constants/icons'
+import { doc as docAPI } from '../../backend/api'
+import { reactIcons } from '../../constants/icons'
 
 import { FinderItem } from './FinderItem'
 import { ColumnItem, LocalDocumentData } from './Types'

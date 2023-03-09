@@ -47,12 +47,6 @@ export interface CollectionData {
     max_result_window: number
 }
 
-export enum SearchQueryTypes {
-    Aggregations = 1 << 0, // 0001
-    Results = 1 << 1, // 0010
-    Missing = 1 << 2, // 0100
-}
-
 export type SearchQueryType = 'aggregations' | 'results'
 
 export interface SearchQueryParams {
@@ -270,3 +264,67 @@ export interface RequestError {
 }
 
 export type Category = AggregationCategory | 'collections'
+
+export interface OcrData {
+    tag: string
+    text: string
+}
+
+export interface ChildDocument {
+    id: string
+    filename: string
+    filetype: string
+    content_type: string
+    digest?: string
+    file?: string
+    size?: number
+}
+
+export interface DocumentContent {
+    id: string
+    filename: string
+    filetype: string
+    'has-pdf-preview': boolean
+    'has-thumbnails': boolean
+    'content-type': string
+    'date-created': string
+    date: string
+    lang: string
+    ocr: boolean
+    ocrpdf: boolean
+    md5: string
+    sha1: string
+    'sha1-256': string
+    size: number
+    skipped: boolean
+    text: string
+    ocrtext: Record<string, string>
+    attachments: []
+    entity: string[]
+    'entity-type.location': string[]
+    'entity-type.organization': string[]
+    'entity-type.person': string[]
+    path: string
+    'path-parts': string[]
+    'path-text': string
+    tika: string[]
+    'tika-key': string[]
+    'translated-from': string[]
+    'translated-to': string[]
+    'word-count': number
+}
+
+export interface DocumentData {
+    id: string
+    digest?: string
+    parent_id: string
+    parent_children_page: number
+    children: ChildDocument[]
+    children_count: number
+    children_has_next_page: boolean
+    children_page: number
+    children_page_count: number
+    content: DocumentContent
+    has_locations: boolean
+    version: string
+}

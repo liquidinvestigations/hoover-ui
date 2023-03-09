@@ -1,11 +1,10 @@
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 
-import { Expandable } from '../../common/Expandable/Expandable'
-import { useSharedStore } from '../../SharedStoreProvider'
-
-import { ResultsList } from './list/ResultsList'
-import { ResultsTable } from './table/ResultsTable/ResultsTable'
+import { Expandable } from '../../../common/Expandable/Expandable'
+import { useSharedStore } from '../../../SharedStoreProvider'
+import { ResultsList } from '../resultsList/ResultsList'
+import { ResultsTable } from '../resultsTable/ResultsTable/ResultsTable'
 
 interface ResultsProps {
     collection: string

@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import qs from 'qs'
 
-import { SearchQueryParams, SearchQueryTypes } from '../../Types'
+import { SearchQueryParams } from '../../Types'
 import fixLegacyQuery from '../../utils/fixLegacyQuery'
 import { buildSearchQuerystring, defaultSearchParams, unwindParams } from '../../utils/queryUtils'
 import { SharedStore } from '../SharedStore'
@@ -10,6 +10,12 @@ import { FiltersStore } from './FiltersStore'
 import { SearchAggregationsStore } from './SearchAggregationsStore'
 import { SearchResultsStore } from './SearchResultsStore'
 import { SearchViewStore } from './SearchViewStore'
+
+export enum SearchType {
+    Aggregations = 1 << 0, // 0001
+    Results = 1 << 1, // 0010
+    Missing = 1 << 2, // 0100
+}
 
 export class SearchStore {
     query: SearchQueryParams | undefined
@@ -45,7 +51,7 @@ export class SearchStore {
         return parsedQuery
     }
 
-    search = (params: Partial<SearchQueryParams> = {}, searchType: SearchQueryTypes = SearchQueryTypes.Aggregations | SearchQueryTypes.Results) => {
+    search = (params: Partial<SearchQueryParams> = {}, searchType: SearchType = SearchType.Aggregations | SearchType.Results) => {
         const { searchText, searchCollections } = this.searchViewStore
 
         const mergedParams = {
@@ -59,11 +65,11 @@ export class SearchStore {
         const query = this.parseSearchParams(queryString)
 
         if (query.q && query.page && query.size && query.collections?.length) {
-            if (searchType & SearchQueryTypes.Aggregations) {
+            if (searchType & SearchType.Aggregations) {
                 this.searchAggregationsStore.queryResult(query as SearchQueryParams)
             }
 
-            if (searchType & SearchQueryTypes.Results) {
+            if (searchType & SearchType.Results) {
                 this.searchResultsStore.queryResult(query as SearchQueryParams)
             }
 
