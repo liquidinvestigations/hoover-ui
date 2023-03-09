@@ -3,7 +3,7 @@ import { Entries } from 'type-fest'
 
 import { aggregationCategories, AggregationField, aggregationFields } from '../../constants/aggregationFields'
 import { reactIcons } from '../../constants/icons'
-import { Category, SearchQueryParams, SourceField } from '../../Types'
+import { Category, SearchQueryParams, SearchQueryTypes, SourceField } from '../../Types'
 import { defaultSearchParams } from '../../utils/queryUtils'
 import { getClosestInterval } from '../../utils/utils'
 
@@ -113,7 +113,7 @@ export class FiltersStore {
         })
 
     triggerSearch = (params: Partial<SearchQueryParams>) => {
-        this.searchStore.search({ ...params, page: defaultSearchParams.page })
+        this.searchStore.search({ ...params, page: defaultSearchParams.page }, SearchQueryTypes.Results)
     }
 
     handleChange = (key: string, value: any, resetPage: boolean = false) => {

@@ -11,7 +11,9 @@ import { SearchStore } from './SearchStore'
 export type ResultsViewType = 'list' | 'table'
 
 export class SearchViewStore {
-    readonly drawerRef = useRef<HTMLDivElement>()
+    readonly inputRef = useRef<HTMLInputElement>()
+
+    drawerRef: HTMLDivElement | undefined = undefined
 
     drawerWidth: number | undefined
 
@@ -23,7 +25,7 @@ export class SearchViewStore {
 
     searchCollections: Category[] = []
 
-    searchText: string | undefined
+    searchText: string = ''
 
     wideFilters: boolean = true
 
@@ -35,11 +37,17 @@ export class SearchViewStore {
         makeAutoObservable(this)
 
         reaction(
-            () => this.drawerRef?.current,
-            (drawerPortal) => {
-                this.drawerWidth = drawerPortal?.getBoundingClientRect().width
+            () => this.drawerRef,
+            (drawerRef) => {
+                this.drawerWidth = drawerRef?.getBoundingClientRect().width
             }
         )
+    }
+
+    setDrawerRef = (drawerRef: HTMLDivElement) => {
+        runInAction(() => {
+            this.drawerRef = drawerRef
+        })
     }
 
     setDrawerWidth = (width: number) => {
@@ -56,7 +64,7 @@ export class SearchViewStore {
 
     clearSearchText = () => {
         runInAction(() => {
-            this.searchText = undefined
+            this.searchText = ''
         })
     }
 

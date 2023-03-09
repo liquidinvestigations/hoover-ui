@@ -3,6 +3,7 @@ import { useState } from 'react'
 
 import { SORTABLE_FIELDS } from '../../../constants/general'
 import { reactIcons } from '../../../constants/icons'
+import { SearchQueryTypes } from '../../../Types'
 import { defaultSearchParams } from '../../../utils/queryUtils'
 import { useSearch } from '../SearchProvider'
 
@@ -17,7 +18,7 @@ export default function SortingMenu() {
     const handleSortingClick = (field) => () => {
         const index = order.findIndex(([v]) => v === field)
         if (!index || index < 0) {
-            search({ order: [[field, 'desc'], ...order], page: defaultSearchParams.page })
+            search({ order: [[field, 'desc'], ...order], page: defaultSearchParams.page }, SearchQueryTypes.Results)
         }
     }
 

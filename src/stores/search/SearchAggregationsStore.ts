@@ -1,13 +1,17 @@
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, reaction } from 'mobx'
+import { Entries } from 'type-fest'
 
-import { SearchQueryParams } from '../../Types'
+import { Aggregations, SearchQueryParams } from '../../Types'
 import { defaultSearchParams } from '../../utils/queryUtils'
 
 import { AsyncQueryTask, AsyncQueryTaskRunner } from './AsyncTaskRunner'
 import { SearchStore } from './SearchStore'
 
 export class SearchAggregationsStore {
-    aggregationsQueryTasks: Record<string, AsyncQueryTask> = {}
+    /*private*/ aggregationsQueryTasks: Record<string, AsyncQueryTask> = {}
+    private aggregatedCollections: string[] = []
+
+    aggregations: Aggregations = {}
 
     missingAggregationsQueryTasks: any
 
@@ -15,18 +19,25 @@ export class SearchAggregationsStore {
 
     constructor(private readonly searchStore: SearchStore) {
         makeAutoObservable(this)
+
+        reaction(
+            () =>
+                Object.entries(this.aggregationsQueryTasks).map(([collection, { data }]) => ({ collection, aggregations: data?.result?.aggregations })),
+            (results) => {
+                results.forEach(({ collection, aggregations }) => {
+                    if (aggregations && !this.aggregatedCollections.includes(collection)) {
+                        this.aggregatedCollections.push(collection)
+                        this.combineAggregations(aggregations)
+                    }
+                })
+            }
+        )
     }
 
-    maskIrrelevantParams = (query: SearchQueryParams): SearchQueryParams => ({
-        ...query,
-        facets: undefined,
-        page: defaultSearchParams.page,
-        size: defaultSearchParams.size,
-        order: undefined,
-    })
-
-    queryResult = (query: SearchQueryParams) => {
+    queryResult(query: SearchQueryParams) {
         this.aggregationsQueryTasks = {}
+        this.aggregatedCollections = []
+        this.aggregations = {}
 
         for (const collection of query.collections) {
             const { collections, ...queryParams } = query
@@ -37,5 +48,22 @@ export class SearchAggregationsStore {
 
     get aggregationsLoading() {
         return Object.entries(this.aggregationsQueryTasks).find(([_collection, queryTask]) => queryTask.data?.status !== 'done')
+    }
+
+    private combineAggregations(aggregations: Aggregations) {
+        ;(Object.entries(aggregations) as Entries<typeof aggregations>).forEach(([field, aggregation]) => {
+            if (!this.aggregations[field]) {
+                this.aggregations[field] = aggregation
+            } else {
+                aggregation?.values?.buckets?.forEach((newBucket) => {
+                    const existingBucket = this.aggregations[field]?.values.buckets?.find((exBucket) => exBucket.key === newBucket.key)
+                    if (!existingBucket) {
+                        this.aggregations[field]?.values.buckets?.push(newBucket)
+                    } else {
+                        existingBucket.doc_count += newBucket.doc_count
+                    }
+                })
+            }
+        })
     }
 }

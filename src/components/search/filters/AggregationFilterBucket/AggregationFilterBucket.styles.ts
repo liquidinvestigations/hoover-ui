@@ -23,5 +23,6 @@ export const useStyles = makeStyles()(() => ({
         flex: '1 0 auto',
         paddingLeft: 6,
         alignSelf: 'flex-end',
+        textAlign: 'right',
     },
 }))

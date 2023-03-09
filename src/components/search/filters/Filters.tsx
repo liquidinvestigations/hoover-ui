@@ -22,7 +22,7 @@ export const Filters: FC = observer(() => {
             query,
             searchViewStore: { categoryQuickFilter },
             filtersStore: { categories, expandedFilters, onExpandToggle, isHighlighted },
-            searchAggregationsStore: { aggregationsQueryTasks, aggregationsLoading, error, missingAggregationsQueryTasks },
+            searchAggregationsStore: { aggregations, aggregationsQueryTasks, aggregationsLoading, error, missingAggregationsQueryTasks },
         },
     } = useSharedStore()
 
@@ -37,11 +37,7 @@ export const Filters: FC = observer(() => {
     return (
         <>
             {(Object.entries(categories) as Entries<typeof categories>).map(([category, { label, icon, filters }]) => {
-                const greyed = filters.every(({ field }) => {
-                    return Object.entries(aggregationsQueryTasks).every(
-                        ([_collection, task]) => task.data?.result?.aggregations?.[field]?.values?.buckets?.length === 0
-                    )
-                })
+                const greyed = filters.every(({ field }) => aggregations?.[field]?.values?.buckets?.length === 0)
 
                 const loading = filters.some(({ field }) => aggregationsLoading?.[1].data?.result?.aggregations[field])
 
@@ -102,10 +98,14 @@ export const Filters: FC = observer(() => {
                                     field={field}
                                     queryFilter={query?.filters?.[field]}
                                     queryFacets={query?.facets?.[field]}
-                                    aggregations={aggregationsQueryTasks?.[1]?.data?.result?.aggregations[field]}
+                                    aggregations={aggregations?.[field]}
                                     loading={!!aggregationsLoading?.[1]?.data?.result?.aggregations[field]}
                                     loadingETA={loadingETA}
-                                    missing={missingAggregationsQueryTasks?.[1]?.data?.result?.aggregations[`${field}-missing`]}
+                                    missing={
+                                        missingAggregationsQueryTasks?.[Object.keys(aggregationsQueryTasks)[0]]?.data?.result?.aggregations[
+                                            `${field}-missing`
+                                        ]
+                                    }
                                     missingLoading={false}
                                     missingLoadingETA={0}
                                     open={expandedFilters[category] === field}

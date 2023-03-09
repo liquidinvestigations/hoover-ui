@@ -33,27 +33,27 @@ interface CategoryDrawerProps {
 export const CategoryDrawer: FC<CategoryDrawerProps> = observer(
     ({ category, title, icon, children, toolbar, loading, loadingETA, greyed = false, highlight = true }) => {
         const { classes, cx } = useStyles()
-        const [position, setPosition] = useState<Partial<CSSProperties>>({ top: 0, left: 0, width: 0 })
+        const [position, setPosition] = useState<Partial<CSSProperties>>({ top: 0, left: 0, width: 100 })
         const { drawerPinned, drawerRef, drawerWidth, openCategory, setOpenCategory, wideFilters } = useSharedStore().searchStore.searchViewStore
 
         const updatePosition = () => {
-            const position = drawerRef?.current?.getBoundingClientRect()
-            const scrollTop = drawerRef?.current?.parentElement?.scrollTop
+            const clientRect = drawerRef?.getBoundingClientRect()
+            const scrollTop = drawerRef?.parentElement?.scrollTop
 
-            if (position && scrollTop) {
+            if (clientRect && scrollTop !== undefined) {
                 setPosition({
-                    top: position.top + scrollTop + 'px',
-                    left: position.left + 'px',
+                    top: clientRect.top + scrollTop + 'px',
+                    left: clientRect.left + 'px',
                     width: drawerWidth,
                 })
             }
         }
 
         useEffect(() => {
-            if (drawerRef?.current) {
+            if (drawerRef) {
                 updatePosition()
             }
-        }, [drawerRef?.current, drawerWidth, wideFilters, drawerPinned])
+        }, [drawerRef, drawerWidth, wideFilters, drawerPinned])
 
         const titleBar = useMemo(
             () => (
@@ -100,8 +100,8 @@ export const CategoryDrawer: FC<CategoryDrawerProps> = observer(
             <>
                 {titleBar}
 
-                {(!drawerPinned || (drawerPinned && drawerRef?.current)) && (
-                    <Portal container={typeof document !== 'undefined' && drawerPinned ? drawerRef?.current : undefined}>
+                {(!drawerPinned || (drawerPinned && drawerRef)) && (
+                    <Portal container={typeof document !== 'undefined' && drawerPinned ? drawerRef : undefined}>
                         <Transition
                             in={openCategory === category}
                             timeout={{

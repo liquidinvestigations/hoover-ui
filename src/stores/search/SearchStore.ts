@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import qs from 'qs'
 
-import { SearchQueryParams } from '../../Types'
+import { SearchQueryParams, SearchQueryTypes } from '../../Types'
 import fixLegacyQuery from '../../utils/fixLegacyQuery'
 import { buildSearchQuerystring, defaultSearchParams, unwindParams } from '../../utils/queryUtils'
 import { SharedStore } from '../SharedStore'
@@ -45,16 +45,7 @@ export class SearchStore {
         return parsedQuery
     }
 
-    queryDiffer = (query: SearchQueryParams, maskIrrelevantParams: (query: SearchQueryParams) => SearchQueryParams): boolean => {
-        if (!this.query) {
-            return true
-        } else if (this.query) {
-            return JSON.stringify(maskIrrelevantParams(query)) !== JSON.stringify(maskIrrelevantParams(this.query))
-        }
-        return false
-    }
-
-    search = (params: Partial<SearchQueryParams> = {}) => {
+    search = (params: Partial<SearchQueryParams> = {}, searchType: SearchQueryTypes = SearchQueryTypes.Aggregations | SearchQueryTypes.Results) => {
         const { searchText, searchCollections } = this.searchViewStore
 
         const mergedParams = {
@@ -68,16 +59,18 @@ export class SearchStore {
         const query = this.parseSearchParams(queryString)
 
         if (query.q && query.page && query.size && query.collections?.length) {
-            if (this.queryDiffer(query as SearchQueryParams, this.searchResultsStore.maskIrrelevantParams)) {
-                this.searchResultsStore.queryResult(query as SearchQueryParams)
-            }
-
-            if (this.queryDiffer(query as SearchQueryParams, this.searchAggregationsStore.maskIrrelevantParams)) {
+            if (searchType & SearchQueryTypes.Aggregations) {
                 this.searchAggregationsStore.queryResult(query as SearchQueryParams)
             }
 
+            if (searchType & SearchQueryTypes.Results) {
+                this.searchResultsStore.queryResult(query as SearchQueryParams)
+            }
+
             this.query = query as SearchQueryParams
-        } else if (query?.collections?.length) {
+        }
+
+        if (query?.collections?.length) {
             this.searchViewStore.searchCollections = query.collections
         }
 

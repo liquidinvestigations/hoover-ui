@@ -1,6 +1,6 @@
-import { FC, ReactNode, RefObject } from 'react'
+import { FC, ReactNode } from 'react'
 
-import HotKeysWithHelp from '../HotKeysWithHelp'
+import { HotKeysWithHelp } from '../common/HotKeysWithHelp/HotKeysWithHelp'
 import { useSharedStore } from '../SharedStoreProvider'
 
 interface HotKeysProps {

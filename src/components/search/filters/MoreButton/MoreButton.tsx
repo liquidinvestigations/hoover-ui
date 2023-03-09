@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 
 import { DEFAULT_FACET_SIZE } from '../../../../constants/general'
-import { SourceField } from '../../../../Types'
+import { SearchQueryTypes, SourceField } from '../../../../Types'
 import { defaultSearchParams } from '../../../../utils/queryUtils'
 import { useSharedStore } from '../../../SharedStoreProvider'
 
@@ -15,7 +15,7 @@ export const MoreButton: FC<{ field: SourceField }> = observer(({ field }) => {
         searchStore: {
             query,
             search,
-            searchAggregationsStore: { aggregationsQueryTasks, aggregationsLoading },
+            searchAggregationsStore: { aggregations, aggregationsLoading },
         },
     } = useSharedStore()
 
@@ -24,10 +24,10 @@ export const MoreButton: FC<{ field: SourceField }> = observer(({ field }) => {
 
     const handleLoadMore = () => {
         const facets = query?.facets || {}
-        search({ facets: { ...facets, [field]: page + 1 }, page: defaultSearchParams.page })
+        search({ facets: { ...facets, [field]: page + 1 }, page: defaultSearchParams.page }, SearchQueryTypes.Aggregations)
     }
 
-    const cardinality = aggregationsQueryTasks?.[1]?.data?.result?.aggregations?.[field]?.count
+    const cardinality = aggregations?.[field]?.count
     const hasMore = cardinality?.value || 1 > page * DEFAULT_FACET_SIZE
 
     return hasMore ? (

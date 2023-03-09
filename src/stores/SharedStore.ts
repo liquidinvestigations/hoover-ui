@@ -19,8 +19,6 @@ export class SharedStore {
 
     navigation: ObservableHistory | undefined
 
-    user
-
     hashStore
 
     searchStore
@@ -29,12 +27,11 @@ export class SharedStore {
 
     hotKeysStore
 
-    constructor(user: User) {
+    constructor(readonly user: User) {
         if (typeof window !== 'undefined') {
             this.navigation = createObservableHistory()
         }
 
-        this.user = user
         this.hashStore = new HashStateStore(this)
         this.searchStore = new SearchStore(this)
         this.documentStore = new DocumentStore(this.hashStore)

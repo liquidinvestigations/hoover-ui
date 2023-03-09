@@ -1,5 +1,4 @@
 import { makeAutoObservable } from 'mobx'
-import { useRef } from 'react'
 
 import { copyMetadata, documentViewUrl } from '../utils/utils'
 
@@ -8,14 +7,12 @@ import { HashStateStore } from './HashStateStore'
 import { SearchStore } from './search/SearchStore'
 
 export class HotKeysStore {
-    inputRef = useRef<HTMLInputElement>()
-
     keys: Record<string, any>
 
     constructor(private readonly hashStore: HashStateStore, private readonly documentStore: DocumentStore, private readonly searchStore: SearchStore) {
         makeAutoObservable(this)
 
-        const isInputFocused = () => this.inputRef?.current === document.activeElement
+        const isInputFocused = () => searchStore.searchViewStore.inputRef.current === document.activeElement
 
         this.keys = {
             nextItem: {
@@ -74,7 +71,7 @@ export class HotKeysStore {
                 handler: (event: KeyboardEvent) => {
                     if (!isInputFocused()) {
                         event.preventDefault()
-                        this.inputRef?.current?.focus()
+                        searchStore.searchViewStore.inputRef?.current?.focus()
                     }
                 },
             },

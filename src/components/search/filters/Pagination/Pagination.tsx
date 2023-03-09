@@ -4,7 +4,7 @@ import { FC } from 'react'
 
 import { DEFAULT_FACET_SIZE } from '../../../../constants/general'
 import { reactIcons } from '../../../../constants/icons'
-import { SourceField } from '../../../../Types'
+import { SearchQueryTypes, SourceField } from '../../../../Types'
 import { defaultSearchParams } from '../../../../utils/queryUtils'
 import { useSharedStore } from '../../../SharedStoreProvider'
 
@@ -16,16 +16,16 @@ export const Pagination: FC<{ field: SourceField }> = observer(({ field }) => {
         searchStore: {
             query,
             search,
-            searchAggregationsStore: { aggregationsQueryTasks, aggregationsLoading },
+            searchAggregationsStore: { aggregations, aggregationsLoading },
         },
     } = useSharedStore()
 
     const handlePagination = (newPage: number) => {
         const { [field]: prevFacet, ...restFacets } = query?.facets || {}
         if (newPage > 1) {
-            search({ facets: { [field]: newPage, ...restFacets, page: defaultSearchParams.page } })
+            search({ facets: { [field]: newPage, ...restFacets, page: defaultSearchParams.page } }, SearchQueryTypes.Aggregations)
         } else {
-            search({ facets: { ...restFacets }, page: defaultSearchParams.page })
+            search({ facets: { ...restFacets }, page: defaultSearchParams.page }, SearchQueryTypes.Aggregations)
         }
     }
 
@@ -35,7 +35,7 @@ export const Pagination: FC<{ field: SourceField }> = observer(({ field }) => {
     const handlePrev = () => handlePagination(page - 1)
     const handleNext = () => handlePagination(page + 1)
 
-    const hasNext = aggregationsQueryTasks?.[1]?.data?.result?.aggregations?.[field]?.values?.buckets?.length || 0 >= DEFAULT_FACET_SIZE
+    const hasNext = aggregations?.[field]?.values?.buckets?.length || 0 >= DEFAULT_FACET_SIZE
     const hasPrev = page > 1
 
     return hasPrev || hasNext ? (
