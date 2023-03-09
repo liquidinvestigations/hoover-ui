@@ -4,6 +4,7 @@ import { FC } from 'react'
 
 import { DEFAULT_MAX_RESULTS } from '../../../../constants/general'
 import { reactIcons } from '../../../../constants/icons'
+import { SearchQueryTypes } from '../../../../Types'
 import { formatThousands, numberArray } from '../../../../utils/utils'
 import { useSharedStore } from '../../../SharedStoreProvider'
 import { SearchSize } from '../../SearchSize'
@@ -34,9 +35,9 @@ export const Pagination: FC = observer(() => {
     const total = Math.max(...Object.entries(resultsQueryTasks).map(([_collection, { data }]) => data?.result?.hits.total || 0))
     const { size, page } = query
 
-    const handleNext = () => search({ page: page + 1 })
-    const handlePrev = () => search({ page: page - 1 })
-    const handleSet = (pageE: number) => () => search({ page: pageE })
+    const handleNext = () => search({ page: page + 1 }, SearchQueryTypes.Results)
+    const handlePrev = () => search({ page: page - 1 }, SearchQueryTypes.Results)
+    const handleSet = (pageE: number) => () => search({ page: pageE }, SearchQueryTypes.Results)
 
     const pageCount = Math.ceil(Math.min(total, maxCount) / size)
 

@@ -8,7 +8,7 @@ import { makeStyles } from 'tss-react/mui'
 import Error from '../../../pages/_error'
 import { copyMetadata, shortenName } from '../../utils/utils'
 import { SplitPaneLayout } from '../common/SplitPaneLayout/SplitPaneLayout'
-import HotKeysWithHelp from '../HotKeysWithHelp'
+import HotKeysWithHelp from '../common/HotKeysWithHelp/HotKeysWithHelp'
 import Locations from '../Locations'
 import { useSharedStore } from '../SharedStoreProvider'
 

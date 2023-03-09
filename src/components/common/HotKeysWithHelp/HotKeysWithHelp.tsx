@@ -1,33 +1,32 @@
 import { List, ListItem, ListItemText, Modal, Snackbar, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
-import { useState } from 'react'
+import { FC, ReactNode, useState } from 'react'
 import { HotKeys } from 'react-hotkeys'
 
-const useStyles = makeStyles((theme) => ({
-    keyHelp: {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        backgroundColor: theme.palette.background.paper,
-        boxShadow: theme.shadows[5],
-        padding: theme.spacing(4),
-    },
-    helpDescription: {
-        marginLeft: theme.spacing(2),
-    },
-}))
+import { useStyles } from './HotKeysWithHelp.styles'
 
-export default function HotKeysWithHelp({ keys, children }) {
-    const classes = useStyles()
+type KeyWithHelpHandler = (keyEvent?: KeyboardEvent, showMessage?: (message: string) => void) => void
+
+interface KeyWithHelp {
+    key: string | string[]
+    help: string
+    handler: KeyWithHelpHandler
+}
+
+interface HotKeysWithHelpProps {
+    keys: Record<string, any>
+    children: ReactNode | ReactNode[]
+}
+
+export const HotKeysWithHelp: FC<HotKeysWithHelpProps> = ({ keys, children }) => {
+    const { classes } = useStyles()
     const [keyHelpOpen, setKeyHelpOpen] = useState(false)
     const openHelp = () => setKeyHelpOpen(true)
     const hideKeyHelp = () => setKeyHelpOpen(false)
 
-    const [snackbarMessage, setSnackbarMessage] = useState(null)
-    const handleSnackbarClose = () => setSnackbarMessage(null)
+    const [snackbarMessage, setSnackbarMessage] = useState<string | undefined>(undefined)
+    const handleSnackbarClose = () => setSnackbarMessage(undefined)
 
-    const keysWithHelp = {
+    const keysWithHelp: Record<string, KeyWithHelp> = {
         ...keys,
         openHelp: {
             key: ['?', 'h'],
@@ -36,8 +35,10 @@ export default function HotKeysWithHelp({ keys, children }) {
         },
     }
 
-    const keyMap = {}
-    const handlers = {}
+    const keyMap: Record<string, any> = {}
+    const handlers: {
+        [key: string]: KeyWithHelpHandler
+    } = {}
 
     Object.entries(keysWithHelp).forEach(([name, { key, handler }]) => {
         keyMap[name] = key
@@ -56,7 +57,7 @@ export default function HotKeysWithHelp({ keys, children }) {
 
                     <List dense>
                         {Object.entries(keysWithHelp).map(([name, { key, help }]) => (
-                            <ListItem key={key}>
+                            <ListItem key={Array.isArray(key) ? key.join() : key}>
                                 <span className="mono">{Array.isArray(key) ? key.join(' or ') : key}</span>
                                 <ListItemText primary={help} className={classes.helpDescription} />
                             </ListItem>
@@ -70,7 +71,7 @@ export default function HotKeysWithHelp({ keys, children }) {
                     vertical: 'bottom',
                     horizontal: 'left',
                 }}
-                open={Boolean(snackbarMessage)}
+                open={!!snackbarMessage}
                 autoHideDuration={6000}
                 onClose={handleSnackbarClose}
                 ContentProps={{

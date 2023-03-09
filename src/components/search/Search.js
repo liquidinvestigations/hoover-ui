@@ -2,7 +2,7 @@ import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Toolt
 import { makeStyles } from '@mui/styles'
 import { observer } from 'mobx-react-lite'
 import Router from 'next/router'
-import { cloneElement, useEffect, useRef } from 'react'
+import { cloneElement, useEffect } from 'react'
 
 import { tooltips } from '../../constants/help'
 import { reactIcons } from '../../constants/icons'
@@ -55,7 +55,7 @@ export const Search = observer(() => {
             search,
             searchViewStore: {
                 inputRef,
-                drawerRef,
+                setDrawerRef,
                 drawerWidth,
                 setDrawerWidth,
                 drawerPinned,
@@ -80,12 +80,13 @@ export const Search = observer(() => {
             setOpenCategory('collections')
         }
     }
+
     useEffect(() => {
         Router.events.on('routeChangeStart', clearSearchResults)
         return () => {
             Router.events.off('routeChangeStart', clearSearchResults)
         }
-    }, [clearSearchResults])
+    })
 
     const { setLoading } = useProgressIndicator()
     useEffect(() => {
@@ -104,13 +105,13 @@ export const Search = observer(() => {
     }
 
     return (
-        <HotKeys inputRef={inputRef}>
+        <HotKeys>
             <Grid container>
-                <Categories drawerRef={drawerRef} />
+                <Categories />
 
                 <Grid item style={{ flex: 1 }}>
                     <SplitPaneLayout
-                        left={drawerPinned && <div ref={drawerRef} />}
+                        left={drawerPinned && <div ref={setDrawerRef} />}
                         onLeftChange={(size) => setDrawerWidth(size)}
                         defaultSizeLeft={drawerWidth}
                         right={
@@ -118,7 +119,7 @@ export const Search = observer(() => {
                                 <Document onPrev={previewPreviousDoc} onNext={previewNextDoc} />
                             </TagsProvider>
                         }>
-                        <div className={classes.main} ref={drawerPinned ? undefined : drawerRef}>
+                        <div className={classes.main} ref={drawerPinned ? undefined : setDrawerRef}>
                             <Grid container>
                                 <Grid item sm={12}>
                                     <form onSubmit={handleSubmit}>

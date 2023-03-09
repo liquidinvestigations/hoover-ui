@@ -47,6 +47,12 @@ export interface CollectionData {
     max_result_window: number
 }
 
+export enum SearchQueryTypes {
+    Aggregations = 1 << 0, // 0001
+    Results = 1 << 1, // 0010
+    Missing = 1 << 2, // 0100
+}
+
 export type SearchQueryType = 'aggregations' | 'results'
 
 export interface SearchQueryParams {
@@ -197,13 +203,6 @@ export interface Bucket {
     key_as_string?: string
 }
 
-export interface Aggregation {
-    count: { value: number }
-    doc_count: number
-    meta: any
-    values: AggregationValues
-}
-
 export interface AggregationValues {
     buckets?: Bucket[]
     doc_count?: number
@@ -211,8 +210,19 @@ export interface AggregationValues {
     sum_other_doc_count?: number
 }
 
+export interface Aggregation {
+    count: { value: number }
+    doc_count: number
+    meta: any
+    values: AggregationValues
+}
+
+export type AggregationsKey = SourceField | `${SourceField}-missing`
+
+export type Aggregations = Partial<Record<AggregationsKey, Aggregation>>
+
 export interface Result {
-    aggregations: Partial<Record<SourceField | `${SourceField}-missing`, Aggregation>>
+    aggregations: Aggregations
     count_by_index: Partial<Record<Category, number>>
     hits: {
         hits: Hit[]

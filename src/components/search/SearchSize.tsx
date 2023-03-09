@@ -4,6 +4,7 @@ import { makeStyles } from '@mui/styles'
 import { FC } from 'react'
 
 import { SIZE_OPTIONS } from '../../constants/general'
+import { SearchQueryTypes } from '../../Types'
 import { useSharedStore } from '../SharedStoreProvider'
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -24,9 +25,9 @@ export const SearchSize: FC<SearchSizeProps> = ({ page, size }) => {
     const handleSizeChange = (event: SelectChangeEvent) => {
         const newSize = parseInt(event.target.value)
         if (newSize > size) {
-            search({ size: newSize, page: Math.ceil((page * size) / newSize) })
+            search({ size: newSize, page: Math.ceil((page * size) / newSize) }, SearchQueryTypes.Results)
         } else {
-            search({ size: newSize, page: Math.floor(((page - 1) * size) / newSize) + 1 })
+            search({ size: newSize, page: Math.floor(((page - 1) * size) / newSize) + 1 }, SearchQueryTypes.Results)
         }
     }
 
