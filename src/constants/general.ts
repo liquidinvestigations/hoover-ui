@@ -1,5 +1,5 @@
 export const SIZE_OPTIONS = [10, 50, 200, 1000]
-export const SORTABLE_FIELDS = {
+export const SORTABLE_FIELDS: Record<string, string> = {
     _score: 'Relevance',
     date: 'Date modified',
     'date-created': 'Date created',

@@ -4,8 +4,8 @@ import cx from 'classnames'
 import { useRouter } from 'next/router'
 import { FC, useEffect, useRef } from 'react'
 
-import { ChildDocument, DocumentData } from '../../../stores/DocumentStore'
-import { getBasePath, getTypeIcon } from '../../../utils/utils'
+import { ChildDocument, DocumentData } from '../../Types'
+import { getBasePath, getTypeIcon } from '../../utils/utils'
 
 import { filenameFor } from './utils'
 

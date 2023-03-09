@@ -1,4 +1,4 @@
-import { ChildDocument } from '../../../stores/DocumentStore'
+import { ChildDocument } from '../../Types'
 
 import { ColumnItem, LocalDocumentData } from './Types'
 

@@ -1,74 +1,10 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
 
 import { createDownloadUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI } from '../backend/api'
-import { RequestError } from '../Types'
+import { DocumentData, OcrData, RequestError } from '../Types'
 import { collectionUrl, documentViewUrl } from '../utils/utils'
 
 import { HashStateStore } from './HashStateStore'
-
-export interface OcrData {
-    tag: string
-    text: string
-}
-
-export interface ChildDocument {
-    id: string
-    filename: string
-    filetype: string
-    content_type: string
-    digest?: string
-    file?: string
-    size?: number
-}
-
-export interface DocumentContent {
-    id: string
-    filename: string
-    filetype: string
-    'has-pdf-preview': boolean
-    'has-thumbnails': boolean
-    'content-type': string
-    'date-created': string
-    date: string
-    lang: string
-    ocr: boolean
-    ocrpdf: boolean
-    md5: string
-    sha1: string
-    'sha1-256': string
-    size: number
-    skipped: boolean
-    text: string
-    ocrtext: Record<string, string>
-    attachments: []
-    entity: string[]
-    'entity-type.location': string[]
-    'entity-type.organization': string[]
-    'entity-type.person': string[]
-    path: string
-    'path-parts': string[]
-    'path-text': string
-    tika: string[]
-    'tika-key': string[]
-    'translated-from': string[]
-    'translated-to': string[]
-    'word-count': number
-}
-
-export interface DocumentData {
-    id: string
-    digest?: string
-    parent_id: string
-    parent_children_page: number
-    children: ChildDocument[]
-    children_count: number
-    children_has_next_page: boolean
-    children_page: number
-    children_page_count: number
-    content: DocumentContent
-    has_locations: boolean
-    version: string
-}
 
 export class DocumentStore {
     id: string | undefined

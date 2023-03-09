@@ -2,13 +2,12 @@ import { Fab, Grid } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 
-import { reactIcons } from '../../../constants/icons'
-import { Expandable } from '../../common/Expandable/Expandable'
-import { useSharedStore } from '../../SharedStoreProvider'
+import { reactIcons } from '../../../../constants/icons'
+import { useSharedStore } from '../../../SharedStoreProvider'
+import { Pagination } from '../Pagination/Pagination'
+import { ResultsGroup } from '../ResultsGroup/ResultsGroup'
 
-import { Pagination } from './Pagination/Pagination'
 import { useStyles } from './Results.styles'
-import { ResultsGroup } from './ResultsGroup'
 
 export const Results: FC = observer(() => {
     const { classes } = useStyles()

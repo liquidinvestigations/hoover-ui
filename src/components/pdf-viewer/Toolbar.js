@@ -4,7 +4,7 @@ import cx from 'classnames'
 import { cloneElement, memo, useEffect, useRef, useState } from 'react'
 import screenfull from 'screenfull'
 
-import { reactIcons } from '../../../constants/icons'
+import { reactIcons } from '../../constants/icons'
 
 import { zoomIn, zoomOut } from './zooming'
 

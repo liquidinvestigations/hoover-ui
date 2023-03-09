@@ -2,8 +2,8 @@ import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material'
 import { makeStyles } from '@mui/styles'
 import { memo, useEffect, useState } from 'react'
 
-import { reactIcons } from '../../../constants/icons'
-import { downloadFile } from '../../../utils/utils'
+import { reactIcons } from '../../constants/icons'
+import { downloadFile } from '../../utils/utils'
 
 import { useDocument } from './DocumentProvider'
 
