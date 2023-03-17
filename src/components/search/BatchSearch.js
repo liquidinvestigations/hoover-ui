@@ -147,7 +147,7 @@ export default function BatchSearch({ collections, limits }) {
 
                     <Typography className={classes.rateLimit}>
                         {'rate limit: '}
-                        {limits.batch * limits.requests.limit}
+                        {limits.batch}
                         {' terms every '}
                         {limits.requests.interval}
                         {' seconds'}
