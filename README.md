@@ -46,7 +46,7 @@ You can set environment variables in your OS shell or as a part of the startup s
     }
 
 In order to get authorized just copy `_oauth2_proxy_hoover_your.server.url` cookie using browser's development tools
-(`Application -> Cookies` in Chrome DevTools, `Data -> Cookies` in Firefox Firebug).
+(`Application -> Cookies` in Chrome DevTools, `Storage -> Cookies` in Firefox Firebug).
 
 1. Login to `https://your.server.url` and go to `Hoover`
 2. Open `Cookies` in development tools, find `_oauth2_proxy...` cookie under `https://your.server.url`, copy cookie name
@@ -54,6 +54,7 @@ In order to get authorized just copy `_oauth2_proxy_hoover_your.server.url` cook
 4. Copy & paste cookie value repeating steps 2-3
 
 ![image](https://user-images.githubusercontent.com/44607878/225839063-96e9b4e4-2ce4-42aa-a3c9-6ab613fb46d0.png)
+![image](https://user-images.githubusercontent.com/44607878/225900225-fb7b8ab9-7690-46c7-a03a-749bfc4c889c.png)
 
 
 #### Run npm using Docker
