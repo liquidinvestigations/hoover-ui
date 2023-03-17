@@ -46,12 +46,15 @@ You can set environment variables in your OS shell or as a part of the startup s
     }
 
 In order to get authorized just copy `_oauth2_proxy_hoover_your.server.url` cookie using browser's development tools
-(`Application -> Cookies` in Chrome DevTools, `Data -> Cookies` in Firefox Firebug).
+(`Application -> Cookies` in Chrome DevTools, `Storage -> Cookies` in Firefox Firebug).
 
 1. Login to `https://your.server.url` and go to `Hoover`
 2. Open `Cookies` in development tools, find `_oauth2_proxy...` cookie under `https://your.server.url`, copy cookie name
 3. Start your dev server, open development tools for it, go to `Cookies`, paste cookie name in `http://localhost:8000`
 4. Copy & paste cookie value repeating steps 2-3
+
+![image](https://user-images.githubusercontent.com/44607878/225839063-96e9b4e4-2ce4-42aa-a3c9-6ab613fb46d0.png)
+![image](https://user-images.githubusercontent.com/44607878/225900225-fb7b8ab9-7690-46c7-a03a-749bfc4c889c.png)
 
 
 #### Run npm using Docker
@@ -61,6 +64,12 @@ machine. This will run a docker image as your user and run `npm` on its
 arguments.
 
 Example usage: `./npm.docker.sh test -- -u`
+
+#### Troubleshooting on M1 chip architecture
+
+If you're running on a Mac with an M1 chip architecture and you encounter segfault errors while setting up the project, it may be due to an incompatibility issue with the node version you're using. Node.js versions prior to v16 may not have official support for M1 chip architecture, causing errors such as "qemu: uncaught target signal 11 (Segmentation fault) - core dumped".
+
+To solve this problem, you can try upgrading to a version of Node.js that has official support for M1 chip architecture. As of writing, Node.js v16 is the first version to have official support, but it's always recommended to use the latest version available. You can download the latest version from the official Node.js website or by using Node Version Manager (NVM).
 
 
 ### Run the whole stack locally
