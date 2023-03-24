@@ -34,18 +34,23 @@ const useStyles = makeStyles((theme) => ({
             textAlign: 'right',
             padding: '5px 8px',
         },
+        '& .MuiOutlinedInput-input': {
+            padding: '5.5px 14px',
+        },
     },
     scaleSelect: {
-        width: 120,
+        width: 80,
         paddingRight: 4,
         cursor: 'pointer',
         border: '1px solid rgba(0, 0, 0, 0.23)',
         backgroundColor: theme.palette.background.default,
+        display: 'flex',
+        alignItems: 'center',
         '&:hover': {
             border: '1px solid rgba(0, 0, 0, 0.87)',
         },
         '& .MuiOutlinedInput-input': {
-            width: 80,
+            width: 50,
             textAlign: 'right',
             display: 'inline-block',
             padding: '5px 0 5px 8px',
@@ -134,8 +139,8 @@ function Toolbar({
     return (
         <>
             <MuiToolbar variant="dense" classes={{ root: classes.toolbar }}>
-                <Grid container justifyContent="space-between">
-                    <Grid item>
+                <Grid container justifyContent="space-between" gap={0.5}>
+                    <Grid item display="flex" alignItems="center">
                         <Tooltip title="Side panel" PopperProps={popperProps}>
                             <span>
                                 <IconButton size="small" onClick={toggleSidePanel} className={classes.toolbarIcon} style={{ marginRight: 50 }}>
@@ -185,7 +190,7 @@ function Toolbar({
                             <span>{numPages}</span>
                         </div>
                     </Grid>
-                    <Grid item>
+                    <Grid item display='flex' alignItems='center'>
                         <Tooltip title="Zoom out" PopperProps={popperProps}>
                             <span>
                                 <IconButton size="small" onClick={onZoomOut} className={classes.toolbarIcon} disabled={!firstPageData}>
