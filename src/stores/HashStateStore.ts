@@ -12,6 +12,7 @@ export interface HashState {
     }
     tab?: string
     subTab?: string
+    previewPage?: string
 }
 
 export class HashStateStore {
