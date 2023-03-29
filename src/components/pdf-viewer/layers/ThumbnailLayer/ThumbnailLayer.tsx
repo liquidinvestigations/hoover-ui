@@ -1,18 +1,7 @@
 import { makeStyles } from '@mui/styles'
 import { useEffect, useRef, useState } from 'react'
 
-const useStyles = makeStyles((theme) => ({
-    thumbnailImage: {
-        opacity: 0.8,
-        border: '1px solid rgba(0, 0, 0, 0)',
-        boxShadow: '0 0 0 1px rgb(0 0 0 / 50%), 0 2px 8px rgb(0 0 0 / 30%)',
-        backgroundColor: '#fff',
-        backgroundClip: 'content-box',
-        boxSizing: 'border-box',
-    },
-}))
-
-export default function ThumbnailLayer({ page, pageWidth, pageHeight, rotation, thumbnailWidth, thumbnailHeight }) {
+export const function ThumbnailLayer({ page, pageWidth, pageHeight, rotation, thumbnailWidth, thumbnailHeight }) {
     const classes = useStyles()
     const renderTask = useRef()
     const [src, setSrc] = useState('')

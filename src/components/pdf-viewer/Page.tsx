@@ -56,7 +56,7 @@ export default forwardRef(function Page(
         return () => {
             observer.unobserve(ref)
         }
-    }, [])
+    })
 
     const { page, width: pageWidth, height: pageHeight } = pageData
 

@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-function ThumbnailsView({ containerRef, thumbnailsRefs, rotation, currentPageIndex, shouldScroll, onSelect }) {
+function ThumbnailsView({ containerRef, thumbnailsRefs, rotation, currentPageIndex, onSelect }) {
     const classes = useStyles()
     const { doc } = useDocument()
 
@@ -27,7 +27,6 @@ function ThumbnailsView({ containerRef, thumbnailsRefs, rotation, currentPageInd
                         pageIndex={index}
                         rotation={rotation}
                         selected={index === currentPageIndex}
-                        shouldScroll={shouldScroll}
                         onSelect={onSelect}
                     />
                 ))}
