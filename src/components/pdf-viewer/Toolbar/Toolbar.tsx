@@ -1,139 +1,46 @@
 import { Grid, IconButton, Menu, MenuItem, TextField, Toolbar as MuiToolbar, Tooltip } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import cx from 'classnames'
-import { cloneElement, memo, useEffect, useRef, useState } from 'react'
+import { observer } from 'mobx-react-lite'
+import { cloneElement, FC } from 'react'
 import screenfull from 'screenfull'
 
-import { reactIcons } from '../../constants/icons'
+import { reactIcons } from '../../../constants/icons'
+import { useSharedStore } from '../../SharedStoreProvider'
 
-import { zoomIn, zoomOut } from './zooming'
+import { useStyles } from './Toolbar.styles'
 
-const useStyles = makeStyles((theme) => ({
-    toolbar: {
-        backgroundColor: theme.palette.grey[100],
-        borderColor: theme.palette.grey[400],
-        borderWidth: 1,
-        borderTopStyle: 'solid',
-        borderBottomStyle: 'solid',
-        justifyContent: 'space-between',
-    },
-    toolbarIcon: {
-        marginRight: theme.spacing(1),
-    },
-    pageInfo: {
-        display: 'inline-flex',
-        alignItems: 'center',
-        '& span': {
-            marginLeft: theme.spacing(0.5),
-        },
-    },
-    pageNumber: {
-        width: 60,
-        backgroundColor: theme.palette.background.default,
-        '& .MuiOutlinedInput-inputMarginDense': {
-            textAlign: 'right',
-            padding: '5px 8px',
-        },
-        '& .MuiOutlinedInput-input': {
-            padding: '5.5px 14px',
-        },
-    },
-    scaleSelect: {
-        width: 80,
-        paddingRight: 4,
-        cursor: 'pointer',
-        border: '1px solid rgba(0, 0, 0, 0.23)',
-        backgroundColor: theme.palette.background.default,
-        display: 'flex',
-        alignItems: 'center',
-        '&:hover': {
-            border: '1px solid rgba(0, 0, 0, 0.87)',
-        },
-        '& .MuiOutlinedInput-input': {
-            width: 50,
-            textAlign: 'right',
-            display: 'inline-block',
-            padding: '5px 0 5px 8px',
-        },
-    },
-}))
+interface ToolbarProps {
+    fullscreenClass: string
+    fullscreenExitClass: string
+}
 
-function Toolbar({
-    viewerRef,
-    containerRef,
-    pagesRefs,
-    initialPageIndex,
-    numPages,
-    firstPageData,
-    pageMargin,
-    scale,
-    setScale,
-    toggleSidePanel,
-    fullscreenClass,
-    fullscreenExitClass,
-}) {
-    const classes = useStyles()
-    const pageInputRef = useRef()
-
-    const [anchorEl, setAnchorEl] = useState(null)
-    const handleScaleMenuClick = (event) => setAnchorEl(event.currentTarget)
-    const handleScaleMenuClose = () => setAnchorEl(null)
-    const handleScaleSet = (newScale) => () => {
-        handleScaleMenuClose()
-        const containerWidth = containerRef.current.clientWidth - pageMargin
-        const containerHeight = containerRef.current.clientHeight - pageMargin
-        if (newScale === 'page') {
-            setScale(Math.min(containerWidth / firstPageData.width, containerHeight / firstPageData.height))
-        } else if (newScale === 'width') {
-            setScale(containerWidth / firstPageData.width)
-        } else {
-            setScale(newScale)
-        }
-        const pageSpaces = initialPageIndex * 27
-        const scrollTopPages = ((containerRef.current.scrollTop - pageSpaces) * newScale) / scale
-        containerRef.current.scrollTop = scrollTopPages + pageSpaces
-    }
-
-    const scrollToPage = (index) => (containerRef.current.scrollTop = pagesRefs[index].current.offsetTop)
-
-    const onPrevPage = () => scrollToPage(initialPageIndex - 1)
-    const onNextPage = () => scrollToPage(initialPageIndex + 1)
-    const onPageFocus = () => pageInputRef.current.select()
-    const onPageBlur = () => onPageChange()
-    const onPageKey = (event) => {
-        if (event.keyCode === 13) {
-            onPageChange()
-            pageInputRef.current.blur()
-        }
-        if (
-            !Array(10)
-                .fill()
-                .map((_, i) => '' + i)
-                .includes(event.key)
-        ) {
-            event.preventDefault()
-        }
-    }
-    const onPageChange = () => {
-        const page = parseInt(pageInputRef.current.value)
-        if (!isNaN(page) && page > 0 && page <= numPages) {
-            scrollToPage(page - 1)
-        } else {
-            pageInputRef.current.value = initialPageIndex + 1
-        }
-    }
-    useEffect(() => {
-        pageInputRef.current.value = initialPageIndex + 1
-    }, [initialPageIndex])
-
-    const onZoomOut = () => handleScaleSet(zoomOut(scale))()
-    const onZoomIn = () => handleScaleSet(zoomIn(scale))()
-
-    const onFullScreen = () => screenfull.request(viewerRef.current)
-    const onFullScreenExit = () => screenfull.exit()
+export const Toolbar: FC<ToolbarProps> = observer(({ fullscreenClass, fullscreenExitClass }) => {
+    const { classes } = useStyles()
+    const {
+        viewerRef,
+        pageInputRef,
+        scaleMenuAnchorEl,
+        handleScaleMenuClick,
+        handleScaleMenuClose,
+        sidebarToggle,
+        handlePrevPage,
+        handleNextPage,
+        handlePageInputFocus,
+        handlePageInputBlur,
+        handlePageInputKey,
+        handleZoomOut,
+        handleZoomIn,
+        handleFullScreen,
+        handleFullScreenExit,
+        handleScaleSet,
+        doc,
+        firstPageProps,
+        pageIndex,
+        scale,
+    } = useSharedStore().pdfViewerStore
 
     const popperProps = {
-        container: viewerRef.current,
+        container: viewerRef,
     }
 
     return (
@@ -143,7 +50,7 @@ function Toolbar({
                     <Grid item display="flex" alignItems="center">
                         <Tooltip title="Side panel" PopperProps={popperProps}>
                             <span>
-                                <IconButton size="small" onClick={toggleSidePanel} className={classes.toolbarIcon} style={{ marginRight: 50 }}>
+                                <IconButton size="small" onClick={sidebarToggle} className={classes.toolbarIcon} style={{ marginRight: 50 }}>
                                     {reactIcons.viewerSidePanel}
                                 </IconButton>
                             </span>
@@ -152,8 +59,8 @@ function Toolbar({
                             <span>
                                 <IconButton
                                     size="small"
-                                    onClick={onPrevPage}
-                                    disabled={!firstPageData || initialPageIndex === 0}
+                                    onClick={handlePrevPage}
+                                    disabled={!firstPageProps || pageIndex === 0}
                                     className={classes.toolbarIcon}>
                                     {reactIcons.arrowUp}
                                 </IconButton>
@@ -163,8 +70,8 @@ function Toolbar({
                             <span>
                                 <IconButton
                                     size="small"
-                                    onClick={onNextPage}
-                                    disabled={!firstPageData || initialPageIndex === numPages - 1}
+                                    onClick={handleNextPage}
+                                    disabled={!firstPageProps || pageIndex === (doc?.numPages || 0) - 1}
                                     className={classes.toolbarIcon}>
                                     {reactIcons.arrowDown}
                                 </IconButton>
@@ -177,30 +84,30 @@ function Toolbar({
                                         size="small"
                                         variant="outlined"
                                         inputRef={pageInputRef}
-                                        defaultValue={initialPageIndex + 1}
+                                        defaultValue={pageIndex + 1}
                                         className={classes.pageNumber}
-                                        onFocus={onPageFocus}
-                                        onBlur={onPageBlur}
-                                        onKeyDown={onPageKey}
-                                        disabled={!firstPageData}
+                                        onFocus={handlePageInputFocus}
+                                        onBlur={handlePageInputBlur}
+                                        onKeyDown={handlePageInputKey}
+                                        disabled={!firstPageProps}
                                     />
                                 </span>
                             </Tooltip>
                             <span>of</span>
-                            <span>{numPages}</span>
+                            <span>{doc?.numPages}</span>
                         </div>
                     </Grid>
                     <Grid item display='flex' alignItems='center'>
                         <Tooltip title="Zoom out" PopperProps={popperProps}>
                             <span>
-                                <IconButton size="small" onClick={onZoomOut} className={classes.toolbarIcon} disabled={!firstPageData}>
+                                <IconButton size="small" onClick={handleZoomOut} className={classes.toolbarIcon} disabled={!firstPageProps}>
                                     {reactIcons.zoomOut}
                                 </IconButton>
                             </span>
                         </Tooltip>
                         <Tooltip title="Zoom in" PopperProps={popperProps}>
                             <span>
-                                <IconButton size="small" onClick={onZoomIn} className={classes.toolbarIcon} disabled={!firstPageData}>
+                                <IconButton size="small" onClick={handleZoomIn} className={classes.toolbarIcon} disabled={!firstPageProps}>
                                     {reactIcons.zoomIn}
                                 </IconButton>
                             </span>
@@ -208,9 +115,9 @@ function Toolbar({
                         <Tooltip title="Scale" PopperProps={popperProps}>
                             <div
                                 className={cx('MuiInputBase-root', 'MuiOutlinedInput-root', 'MuiInputBase-formControl', classes.scaleSelect, {
-                                    'Mui-disabled': !firstPageData,
+                                    'Mui-disabled': !firstPageProps,
                                 })}
-                                onClick={!!firstPageData ? handleScaleMenuClick : null}>
+                                onClick={!!firstPageProps ? handleScaleMenuClick : undefined}>
                                 <span className={cx('MuiInputBase-input', 'MuiOutlinedInput-input')}>{Math.round(scale * 100) + '%'}</span>
                                 {cloneElement(reactIcons.dropDown, {
                                     className: cx('MuiSelect-icon', 'MuiSelect-iconOutlined'),
@@ -221,12 +128,12 @@ function Toolbar({
                     {screenfull.isEnabled && (
                         <Grid item>
                             <Tooltip title="Full screen" PopperProps={popperProps}>
-                                <IconButton size="small" onClick={onFullScreen} className={fullscreenClass}>
+                                <IconButton size="small" onClick={handleFullScreen} className={fullscreenClass}>
                                     {reactIcons.fullscreen}
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title="Exit full screen" PopperProps={popperProps}>
-                                <IconButton size="small" onClick={onFullScreenExit} className={fullscreenExitClass}>
+                                <IconButton size="small" onClick={handleFullScreenExit} className={fullscreenExitClass}>
                                     {reactIcons.fullscreenExit}
                                 </IconButton>
                             </Tooltip>
@@ -235,7 +142,12 @@ function Toolbar({
                 </Grid>
             </MuiToolbar>
 
-            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleScaleMenuClose} disableScrollLock={true} {...popperProps}>
+            <Menu
+                anchorEl={scaleMenuAnchorEl}
+                open={Boolean(scaleMenuAnchorEl)}
+                onClose={handleScaleMenuClose}
+                disableScrollLock={true}
+                {...popperProps}>
                 <MenuItem onClick={handleScaleSet(1)}>Original</MenuItem>
                 <MenuItem onClick={handleScaleSet('page')}>Page fit</MenuItem>
                 <MenuItem onClick={handleScaleSet('width')}>Page width</MenuItem>
@@ -250,6 +162,4 @@ function Toolbar({
             </Menu>
         </>
     )
-}
-
-export default memo(Toolbar)
+})

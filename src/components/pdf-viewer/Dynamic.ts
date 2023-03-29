@@ -1,5 +1,3 @@
 import dynamic from 'next/dynamic'
 
-const Dynamic = dynamic(() => import('./Viewer'), { ssr: false })
-
-export default Dynamic
+export const PDFViewer = dynamic(() => import('./PDFViewer'), { ssr: false })

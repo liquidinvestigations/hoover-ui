@@ -1,16 +1,30 @@
-import { forwardRef, useEffect, useState } from 'react'
+import { observer } from 'mobx-react-lite'
+import { FC, useEffect, useState } from 'react'
 
-import AnnotationLayer from './layers/AnnotationLayer'
-import CanvasLayer from './layers/CanvasLayer'
-import SVGLayer from './layers/SVGLayer'
-import TextLayer from './layers/TextLayer'
+import { PDFPageData } from '../../stores/PDFViewerStore'
+import { useSharedStore } from '../SharedStoreProvider'
 
-export default forwardRef(function Page(
-    { doc, containerRef, pagesRefs, renderer, pageIndex, width, height, rotation, scale, onVisibilityChanged },
-    pageRef
-) {
-    const [pageData, setPageData] = useState({
-        page: null,
+import { AnnotationLayer } from './layers/AnnotationLayer'
+import { CanvasLayer } from './layers/CanvasLayer'
+import { SVGLayer } from './layers/SVGLayer'
+import { TextLayer } from './layers/TextLayer'
+
+interface PageProps {
+    renderer: 'canvas' | 'svg'
+    index: number
+}
+
+export const Page: FC<PageProps> = observer(({ renderer, index }) => {
+    const { containerRef, pagesRefs, setPageRef, doc, firstPageProps, rotation, scale, handlePageVisibilityChange } = useSharedStore().pdfViewerStore
+
+    if (!doc || !firstPageProps) {
+        return null
+    }
+
+    const { width, height } = firstPageProps
+
+    const [pageData, setPageData] = useState<PDFPageData>({
+        page: undefined,
         width,
         height,
         rotation,
@@ -19,7 +33,7 @@ export default forwardRef(function Page(
     const [visible, setVisible] = useState(false)
 
     const getPageData = () => {
-        doc.getPage(pageIndex + 1).then((page) => {
+        doc.getPage(index + 1).then((page) => {
             const { width, height, rotation } = page.getViewport({ scale: 1 })
 
             setPageData({
@@ -41,16 +55,16 @@ export default forwardRef(function Page(
                         }
                     }
                     setVisible(entry.isIntersecting)
-                    onVisibilityChanged(pageIndex, entry.isIntersecting ? entry.intersectionRatio : -1)
+                    handlePageVisibilityChange(index, entry.isIntersecting ? entry.intersectionRatio : -1)
                 })
             },
             {
                 threshold: Array(10)
-                    .fill()
+                    .fill(0)
                     .map((_, i) => i / 10),
             }
         )
-        const ref = pageRef.current
+        const ref = pagesRefs[index]
         observer.observe(ref)
 
         return () => {
@@ -60,8 +74,8 @@ export default forwardRef(function Page(
 
     const { page, width: pageWidth, height: pageHeight } = pageData
 
-    const scaledWidth = pageWidth * scale
-    const scaledHeight = pageHeight * scale
+    const scaledWidth = (pageWidth || width) * scale
+    const scaledHeight = (pageHeight || height) * scale
 
     const isVertical = Math.abs(rotation) % 180 === 0
     const elementWidth = isVertical ? scaledWidth : scaledHeight
@@ -71,13 +85,13 @@ export default forwardRef(function Page(
 
     return (
         <div
-            ref={pageRef}
+            ref={setPageRef(index)}
             className="page"
             style={{
                 width: elementWidth,
                 height: elementHeight,
             }}>
-            {!page || !visible ? (
+            {!page || !visible || !containerRef ? (
                 <span className="loadingIcon" />
             ) : (
                 <>
@@ -90,7 +104,7 @@ export default forwardRef(function Page(
                     <TextLayer page={page} rotation={normalizedRotation} scale={scale} />
                     <AnnotationLayer
                         page={page}
-                        pageIndex={pageIndex}
+                        pageIndex={index}
                         containerRef={containerRef}
                         pagesRefs={pagesRefs}
                         rotation={normalizedRotation}

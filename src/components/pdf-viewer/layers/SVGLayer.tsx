@@ -1,8 +1,16 @@
-import { SVGGraphics } from 'pdfjs-dist/build/pdf'
-import { useEffect, useRef } from 'react'
+import { PDFPageProxy, SVGGraphics } from 'pdfjs-dist'
+import { FC, RefObject, useEffect, useRef } from 'react'
 
-export default function SVGLayer({ page, width, height, rotation, scale }) {
-    const containerRef = useRef()
+interface SVGLayerProps {
+    page: PDFPageProxy
+    width: number
+    height: number
+    rotation: number
+    scale: number
+}
+
+export const SVGLayer: FC<SVGLayerProps> = ({ page, width, height, rotation, scale }) => {
+    const containerRef: RefObject<HTMLDivElement> = useRef(null)
 
     const clear = () => {
         const container = containerRef.current
@@ -16,14 +24,19 @@ export default function SVGLayer({ page, width, height, rotation, scale }) {
 
     useEffect(() => {
         const container = containerRef.current
+
+        if (!container) {
+            return
+        }
+
         const viewport = page.getViewport({ rotation, scale })
 
         page.getOperatorList().then((operatorList) => {
             clear()
             const graphic = new SVGGraphics(page.commonObjs, page.objs)
-            graphic.getSVG(operatorList, viewport).then((svg) => {
-                svg.style.height = height
-                svg.style.width = width
+            graphic.getSVG(operatorList, viewport).then((svg: SVGElement) => {
+                svg.style.width = `${width}px`
+                svg.style.height = `${height}px`
 
                 container.appendChild(svg)
             })

@@ -1,9 +1,15 @@
-import { renderTextLayer } from 'pdfjs-dist/build/pdf'
-import { useEffect, useRef } from 'react'
+import { PDFPageProxy, TextLayerRenderTask, renderTextLayer } from 'pdfjs-dist'
+import { FC, RefObject, useEffect, useRef } from 'react'
 
-export default function TextLayer({ page, rotation, scale }) {
-    const containerRef = useRef()
-    const renderTask = useRef()
+interface TextLayerProps {
+    page: PDFPageProxy
+    rotation: number
+    scale: number
+}
+
+export const TextLayer: FC<TextLayerProps> = ({ page, rotation, scale }) => {
+    const containerRef: RefObject<HTMLDivElement> = useRef(null)
+    const renderTask = useRef<TextLayerRenderTask>()
 
     const clear = () => {
         const container = containerRef.current
@@ -25,6 +31,11 @@ export default function TextLayer({ page, rotation, scale }) {
         cancelTask()
 
         const container = containerRef.current
+
+        if (!container) {
+            return
+        }
+
         const viewport = page.getViewport({ rotation, scale })
 
         page.getTextContent().then((textContent) => {

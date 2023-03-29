@@ -10,41 +10,32 @@ import { SplitPaneLayout } from '../common/SplitPaneLayout/SplitPaneLayout'
 import Loading from '../Loading'
 import { useSharedStore } from '../SharedStoreProvider'
 
-import AttachmentsView from './AttachmentsView'
+import { AttachmentsView } from './AttachmentsView/AttachmentsView'
 import { BookmarksView } from './BookmarksView/BookmarksView'
-import Page from './Page'
+import { Page } from './Page'
 import { useStyles } from './PDFViever.styles'
 import { SideToolbar } from './SideToolbar/SideToolbar'
 import { ThumbnailsView } from './ThumbnailsView/ThumbnailsView'
 import { Toolbar } from './Toolbar/Toolbar'
-
-const pageMargin = 20
 
 export const PDFViewer: FC<{ url: string }> = observer(({ url }) => {
     const { classes } = useStyles()
     const {
         setViewerRef,
         setContainerRef,
-        sidebarRef,
         setSidebarRef,
         sidebarTab,
         sidebarOpen,
-        thumbnailsRefs,
         loadDocument,
         doc,
-        firstPageProps,
-        pageIndex,
         goToPage,
         status,
         error,
         percent,
         externalLinks,
-        rotation,
-        scale,
-        setScale,
-        expandedBookmarks,
-        setExpandedBookmarks,
     } = useSharedStore().pdfViewerStore
+
+    loadDocument(url)
 
     return (
         <>
@@ -78,22 +69,7 @@ export const PDFViewer: FC<{ url: string }> = observer(({ url }) => {
                             Array(doc?.numPages)
                                 .fill(0)
                                 .map((_, index) => {
-                                    return (
-                                        <Page
-                                            key={index}
-                                            ref={pagesRefs[index]}
-                                            doc={doc}
-                                            containerRef={containerRef}
-                                            pagesRefs={pagesRefs}
-                                            renderer="canvas"
-                                            pageIndex={index}
-                                            width={firstPageProps?.width}
-                                            height={firstPageProps?.height}
-                                            rotation={rotation}
-                                            scale={scale}
-                                            onVisibilityChanged={onPageVisibilityChange}
-                                        />
-                                    )
+                                    return <Page key={index} renderer="canvas" index={index} />
                                 })}
                     </div>
                 </SplitPaneLayout>
@@ -151,3 +127,5 @@ export const PDFViewer: FC<{ url: string }> = observer(({ url }) => {
         </>
     )
 })
+
+export default PDFViewer

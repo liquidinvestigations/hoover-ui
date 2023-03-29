@@ -3,12 +3,12 @@ const LEVELS = [
     10,
 ]
 
-export const zoomIn = (currentLevel) => {
+export const zoomIn = (currentLevel: number) => {
     const found = LEVELS.find((item) => item > currentLevel)
     return found || currentLevel
 }
 
-export const zoomOut = (currentLevel) => {
+export const zoomOut = (currentLevel: number) => {
     const found = LEVELS.findIndex((item) => item >= currentLevel)
     return found === -1 || found === 0 ? currentLevel : LEVELS[found - 1]
 }

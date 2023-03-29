@@ -13,7 +13,7 @@ export const STATUS_INCORRECT_PASSWORD = 'incorrect-password'
 
 const DocumentContext = createContext(null)
 
-export default function DocumentProvider({ url, cMaps, cMapsPacked, withCredentials, children }) {
+export default function DocumentProvider({ url, cMapUrl, cMapPacked, withCredentials, children }) {
     const [doc, setDoc] = useState(null)
     const [firstPageData, setFirstPageData] = useState({
         width: 0,
@@ -32,8 +32,8 @@ export default function DocumentProvider({ url, cMaps, cMapsPacked, withCredenti
         const worker = new PDFWorker({ name: `PDFWorker_${Date.now()}` })
         const loadingTask = getDocument({
             url,
-            cMaps,
-            cMapsPacked,
+            cMapUrl,
+            cMapPacked,
             withCredentials,
             worker,
         })

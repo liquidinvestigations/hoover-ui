@@ -6,7 +6,7 @@ import { cloneElement } from 'react'
 import { createOcrUrl } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
 import { Expandable } from '../common/Expandable/Expandable'
-import PDFViewer from '../pdf-viewer/Dynamic'
+import { PDFViewer } from '../pdf-viewer/Dynamic'
 import { useSharedStore } from '../SharedStoreProvider'
 
 import { Email } from './Email'

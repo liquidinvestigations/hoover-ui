@@ -1,42 +1,43 @@
 import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material'
-import { makeStyles } from '@mui/styles'
-import { memo, useEffect, useState } from 'react'
+import { observer } from 'mobx-react-lite'
+import { FC, useEffect, useState } from 'react'
 
-import { reactIcons } from '../../constants/icons'
-import { downloadFile } from '../../utils/utils'
+import { reactIcons } from '../../../constants/icons'
+import { downloadFile } from '../../../utils/utils'
+import { useSharedStore } from '../../SharedStoreProvider'
+import { useStyles } from '../PDFViever.styles'
 
-import { useDocument } from './DocumentProvider'
+interface Attachments {
+    fileName: string
+    data: any
+}
 
-const useStyles = makeStyles((theme) => ({
-    container: {
-        backgroundColor: theme.palette.grey[100],
-    },
-}))
-
-function AttachmentsView() {
-    const classes = useStyles()
-    const { doc } = useDocument()
-    const [attachments, setAttachments] = useState([])
+export const AttachmentsView: FC = observer(() => {
+    const { classes } = useStyles()
+    const { doc } = useSharedStore().pdfViewerStore
+    const [attachments, setAttachments] = useState<Attachments[]>([])
 
     useEffect(() => {
         ;(async () => {
-            const files = await new Promise((resolve) => {
-                doc.getAttachments().then((response) => {
-                    resolve(
-                        !response
-                            ? []
-                            : Object.keys(response).map((file) => ({
-                                  data: response[file].content,
-                                  fileName: response[file].filename,
-                              }))
-                    )
+            if (doc) {
+                const files = await new Promise((resolve) => {
+                    doc.getAttachments().then((response) => {
+                        resolve(
+                            !response
+                                ? []
+                                : Object.keys(response).map((file) => ({
+                                      data: response[file].content,
+                                      fileName: response[file].filename,
+                                  }))
+                        )
+                    })
                 })
-            })
-            setAttachments(files)
+                setAttachments(files as Attachments[])
+            }
         })()
     }, [doc])
 
-    const handleFileDownload = (fileName, data) => () => downloadFile(fileName, data)
+    const handleFileDownload = (fileName: string, data: any) => () => downloadFile(fileName, data)
 
     return (
         <div className={classes.container}>
@@ -56,6 +57,4 @@ function AttachmentsView() {
             </List>
         </div>
     )
-}
-
-export default memo(AttachmentsView)
+})

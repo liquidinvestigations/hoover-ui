@@ -1,9 +1,20 @@
-import { makeStyles } from '@mui/styles'
-import { useEffect, useRef, useState } from 'react'
+import { PDFPageProxy, RenderTask } from 'pdfjs-dist'
+import { FC, useEffect, useRef, useState } from 'react'
 
-export const function ThumbnailLayer({ page, pageWidth, pageHeight, rotation, thumbnailWidth, thumbnailHeight }) {
-    const classes = useStyles()
-    const renderTask = useRef()
+import { useStyles } from './ThumbnailLayer.styles'
+
+interface ThumbnailLayerProps {
+    page: PDFPageProxy
+    pageWidth: number
+    pageHeight: number
+    rotation: number
+    thumbnailWidth: number
+    thumbnailHeight: number
+}
+
+export const ThumbnailLayer: FC<ThumbnailLayerProps> = ({ page, pageWidth, pageHeight, rotation, thumbnailWidth, thumbnailHeight }) => {
+    const { classes } = useStyles()
+    const renderTask = useRef<RenderTask>()
     const [src, setSrc] = useState('')
 
     const cancelTask = () => {
@@ -17,6 +28,10 @@ export const function ThumbnailLayer({ page, pageWidth, pageHeight, rotation, th
 
         const canvas = document.createElement('canvas')
         const canvasContext = canvas.getContext('2d', { alpha: false })
+
+        if (!canvasContext) {
+            return
+        }
 
         const w = thumbnailWidth
         const h = w / (pageWidth / pageHeight)

@@ -1,23 +1,28 @@
 import { TreeItem } from '@mui/lab'
-import { useCallback, useEffect } from 'react'
+import { observer } from 'mobx-react-lite'
+import { FC, useCallback, useEffect, MouseEvent } from 'react'
 
-import { useDocument } from './DocumentProvider'
+import { BookmarksTreeItem } from '../../stores/PDFViewerStore'
+import { useSharedStore } from '../SharedStoreProvider'
 
-export default function Bookmarks({ onSelect }) {
-    const { doc, bookmarks, setBookmarks } = useDocument()
+export const Bookmarks: FC = observer(() => {
+    const { doc, bookmarks, setBookmarks, goToPage } = useSharedStore().pdfViewerStore
 
-    const createItemsTree = async (items) => {
-        const elements = []
+    if (!doc) {
+        return null
+    }
+
+    const createBookmarksTree = async (items: BookmarksTreeItem[]) => {
+        const elements: BookmarksTreeItem[] = []
         if (items?.length) {
             for (const element of items) {
                 const { title, dest, items: subItems } = element
-                const index = await new Promise((resolve) => {
+                const index = await new Promise((resolve: (index: number) => void) => {
                     doc.getDestination(dest).then((dest) => {
-                        const ref = dest[0]
-                        doc.getPageIndex(ref).then(resolve)
+                        doc.getPageIndex(dest?.[0]).then(resolve)
                     })
                 })
-                elements.push({ title, index, items: await createItemsTree(subItems) })
+                elements.push({ title, dest, index, items: await createBookmarksTree(subItems) })
             }
         }
         return elements
@@ -28,28 +33,28 @@ export default function Bookmarks({ onSelect }) {
             const outline = await new Promise((resolve) => {
                 doc.getOutline().then(resolve)
             })
-            const tree = await createItemsTree(outline)
+            const tree = await createBookmarksTree(outline as BookmarksTreeItem[])
             setBookmarks(tree)
         })()
-    }, [doc, createItemsTree, setBookmarks])
+    }, [doc, createBookmarksTree, setBookmarks])
 
-    const handleItemClick = (index) => (event) => {
+    const handleItemClick = (index: number) => (event: MouseEvent) => {
         event.preventDefault()
-        onSelect(index)
+        goToPage(index)
     }
 
     let id = 1
     const renderTree = useCallback(
-        (items) =>
+        (items: BookmarksTreeItem[]) =>
             !items?.length
                 ? null
                 : items.map(({ title, index, items: subItems }) => (
-                      <TreeItem key={id} nodeId={title} label={title} onLabelClick={handleItemClick(index)}>
+                      <TreeItem key={id} nodeId={title} label={title} onClick={handleItemClick(index)}>
                           {renderTree(subItems)}
                       </TreeItem>
                   )),
         [bookmarks, handleItemClick, id]
     )
 
-    return !bookmarks.length ? <TreeItem nodeId="0" label="No bookmarks" /> : renderTree(bookmarks)
-}
+    return !bookmarks.length ? <TreeItem nodeId="0" label="No bookmarks" /> : <>{renderTree(bookmarks)}</>
+})

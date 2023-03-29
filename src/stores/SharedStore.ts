@@ -4,6 +4,7 @@ import { createObservableHistory, ObservableHistory } from 'mobx-observable-hist
 import { DocumentStore } from './DocumentStore'
 import { HashStateStore } from './HashStateStore'
 import { HotKeysStore } from './HotKeysStore'
+import { PDFViewerStore } from './PDFViewerStore'
 import { SearchStore } from './search/SearchStore'
 
 import type { CollectionData, User } from '../Types'
@@ -25,6 +26,8 @@ export class SharedStore {
 
     documentStore
 
+    pdfViewerStore
+
     hotKeysStore
 
     constructor(readonly user: User) {
@@ -35,6 +38,7 @@ export class SharedStore {
         this.hashStore = new HashStateStore(this)
         this.searchStore = new SearchStore(this)
         this.documentStore = new DocumentStore(this.hashStore)
+        this.pdfViewerStore = new PDFViewerStore(this.hashStore)
         this.hotKeysStore = new HotKeysStore(this.hashStore, this.documentStore, this.searchStore)
 
         makeAutoObservable(this)

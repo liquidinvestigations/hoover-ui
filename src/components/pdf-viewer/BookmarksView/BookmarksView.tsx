@@ -1,37 +1,31 @@
 import { TreeView } from '@mui/lab'
-import { makeStyles } from '@mui/styles'
-import { memo } from 'react'
+import { observer } from 'mobx-react-lite'
+import { FC, SyntheticEvent } from 'react'
 
-import { reactIcons } from '../../constants/icons'
+import { reactIcons } from '../../../constants/icons'
+import { useSharedStore } from '../../SharedStoreProvider'
+import { Bookmarks } from '../Bookmarks'
 
-import Bookmarks from './Bookmarks'
+import { useStyles } from './BookmarksView.styles'
 
-const useStyles = makeStyles((theme) => ({
-    container: {
-        padding: theme.spacing(1),
-        backgroundColor: theme.palette.grey[100],
-    },
-}))
+export const BookmarksView: FC = observer(() => {
+    const { classes } = useStyles()
+    const { expandedBookmarks, setExpandedBookmarks } = useSharedStore().pdfViewerStore
 
-function BookmarksView({ expanded, onSetExpanded, onSelect }) {
-    const classes = useStyles()
-
-    const handleToggle = (event, nodeIds) => {
-        onSetExpanded(nodeIds)
+    const handleToggle = (event: SyntheticEvent, nodeIds: string[]) => {
+        setExpandedBookmarks(nodeIds)
     }
 
     return (
         <div className={classes.container}>
             <TreeView
-                expanded={expanded}
+                expanded={expandedBookmarks}
                 onNodeToggle={handleToggle}
                 disableSelection={true}
                 defaultCollapseIcon={reactIcons.chevronDown}
                 defaultExpandIcon={reactIcons.chevronRight}>
-                <Bookmarks onSelect={onSelect} />
+                <Bookmarks />
             </TreeView>
         </div>
     )
-}
-
-export default memo(BookmarksView)
+})

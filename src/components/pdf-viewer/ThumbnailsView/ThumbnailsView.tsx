@@ -1,38 +1,23 @@
-import { makeStyles } from '@mui/styles'
-import { memo } from 'react'
+import { observer } from 'mobx-react-lite'
+import { FC } from 'react'
 
-import { useDocument } from './DocumentProvider'
-import Thumbnail from './Thumbnail'
+import { useSharedStore } from '../../SharedStoreProvider'
+import { Thumbnail } from '../Thumbnail/Thumbnail'
 
-const useStyles = makeStyles((theme) => ({
-    container: {
-        padding: '10px 30px 0',
-        backgroundColor: 'rgba(0, 0, 0, 0.1)',
-    },
-}))
+import { useStyles } from './ThumbnailsView.styles'
 
-function ThumbnailsView({ containerRef, thumbnailsRefs, rotation, currentPageIndex, onSelect }) {
-    const classes = useStyles()
-    const { doc } = useDocument()
+export const ThumbnailsView: FC = observer(() => {
+    const { classes } = useStyles()
+    const { doc } = useSharedStore().pdfViewerStore
 
     return (
         <div className={classes.container}>
-            {Array(doc.numPages)
-                .fill()
+            {Array(doc?.numPages)
+                .fill(0)
                 .map((_, index) => (
-                    <Thumbnail
-                        key={index}
-                        ref={thumbnailsRefs[index]}
-                        containerRef={containerRef}
-                        pageIndex={index}
-                        rotation={rotation}
-                        selected={index === currentPageIndex}
-                        onSelect={onSelect}
-                    />
+                    <Thumbnail key={index} thumbnailIndex={index} />
                 ))}
             <div style={{ clear: 'left' }} />
         </div>
     )
-}
-
-export default memo(ThumbnailsView)
+})

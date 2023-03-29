@@ -1,28 +1,18 @@
-import { Grid, IconButton, Toolbar as MuiToolbar, Tooltip } from '@mui/material'
-import { makeStyles } from '@mui/styles'
+import { Grid, IconButton, Theme, Toolbar as MuiToolbar, Tooltip } from '@mui/material'
+import { observer } from 'mobx-react-lite'
+import { FC } from 'react'
 
 import { reactIcons } from '../../../constants/icons'
+import { useSharedStore } from '../../SharedStoreProvider'
 
-const useStyles = makeStyles((theme) => ({
-    toolbar: {
-        borderColor: theme.palette.grey[400],
-        borderBottomStyle: 'solid',
-        borderWidth: 1,
-    },
-    toolbarIcon: {
-        marginRight: theme.spacing(2.3),
-    },
-}))
+import { useStyles } from './SideToolbar.styles'
 
-export default function SideToolbar({ viewerRef, currentTab, onTabSwitch }) {
-    const classes = useStyles()
-
-    const openTab = (tab) => () => {
-        onTabSwitch(tab)
-    }
+export const SideToolbar: FC = observer(() => {
+    const { classes } = useStyles()
+    const { setSidebarTab, viewerRef } = useSharedStore().pdfViewerStore
 
     const popperProps = {
-        container: viewerRef.current,
+        container: viewerRef,
     }
 
     return (
@@ -31,7 +21,7 @@ export default function SideToolbar({ viewerRef, currentTab, onTabSwitch }) {
                 <Grid item>
                     <Tooltip title="Thumbnails" PopperProps={popperProps}>
                         <span>
-                            <IconButton size="small" className={classes.toolbarIcon} onClick={openTab('thumbnails')}>
+                            <IconButton size="small" className={classes.toolbarIcon} onClick={setSidebarTab('thumbnails')}>
                                 {reactIcons.thumbnails}
                             </IconButton>
                         </span>
@@ -40,7 +30,7 @@ export default function SideToolbar({ viewerRef, currentTab, onTabSwitch }) {
                 <Grid item>
                     <Tooltip title="Bookmarks" PopperProps={popperProps}>
                         <span>
-                            <IconButton size="small" className={classes.toolbarIcon} onClick={openTab('bookmarks')}>
+                            <IconButton size="small" className={classes.toolbarIcon} onClick={setSidebarTab('bookmarks')}>
                                 {reactIcons.contentTab}
                             </IconButton>
                         </span>
@@ -49,7 +39,7 @@ export default function SideToolbar({ viewerRef, currentTab, onTabSwitch }) {
                 <Grid item>
                     <Tooltip title="Attachments" PopperProps={popperProps}>
                         <span>
-                            <IconButton size="small" className={classes.toolbarIcon} onClick={openTab('attachments')}>
+                            <IconButton size="small" className={classes.toolbarIcon} onClick={setSidebarTab('attachments')}>
                                 {reactIcons.attachment}
                             </IconButton>
                         </span>
@@ -58,4 +48,4 @@ export default function SideToolbar({ viewerRef, currentTab, onTabSwitch }) {
             </Grid>
         </MuiToolbar>
     )
-}
+})

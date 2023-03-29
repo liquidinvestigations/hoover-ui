@@ -1,46 +1,31 @@
-import { makeStyles } from '@mui/styles'
-import cx from 'classnames'
-import { forwardRef, useEffect, useState } from 'react'
+import { observer } from 'mobx-react-lite'
+import { FC, useEffect, useState } from 'react'
 
-import { useDocument } from './DocumentProvider'
-import ThumbnailLayer from './layers/ThumbnailLayer'
+import { PDFPageData } from '../../../stores/PDFViewerStore'
+import { useSharedStore } from '../../SharedStoreProvider'
+import { ThumbnailLayer } from '../layers/ThumbnailLayer/ThumbnailLayer'
 
-const thumbnailWidth = 100
-const thumbnailHeight = 150
+import { useStyles, thumbnailWidth, thumbnailHeight } from './Thumbnail.styles'
 
-const useStyles = makeStyles((theme) => ({
-    thumbnail: {
-        float: 'left',
-        margin: '0 10px 5px',
-    },
-    thumbnailSelection: {
-        padding: 7,
-        borderRadius: 2,
-        width: `${thumbnailWidth}px`,
-        height: `${thumbnailHeight}px`,
-        '&$selected': {
-            backgroundColor: 'rgba(0, 0, 0, 0.15)',
-            backgroundClip: 'padding-box',
-        },
-    },
-    selected: {},
-}))
+export const Thumbnail: FC<{ thumbnailIndex: number }> = observer(({ thumbnailIndex }) => {
+    const { classes, cx } = useStyles()
+    const { containerRef, doc, pageIndex, firstPageProps, thumbnailsRefs, setThumbnailRef, rotation, goToPage } = useSharedStore().pdfViewerStore
 
-export default forwardRef(function Thumbnail({ containerRef, pageIndex, rotation, selected, onSelect }, thumbnailRef) {
-    const classes = useStyles()
-    const { doc, firstPageData } = useDocument()
     const [shouldScroll, setShouldScroll] = useState(true)
-    const [pageData, setPageData] = useState({
-        page: null,
-        width: firstPageData.width,
-        height: firstPageData.height,
+    const [pageData, setPageData] = useState<PDFPageData>({
+        page: undefined,
+        width: firstPageProps?.width,
+        height: firstPageProps?.height,
         rotation,
     })
 
     const [visible, setVisible] = useState(false)
 
+    const thumbnailRef = thumbnailsRefs[thumbnailIndex]
+    const selected = pageIndex === thumbnailIndex
+
     const getPageData = () => {
-        doc.getPage(pageIndex + 1).then((page) => {
+        doc?.getPage(thumbnailIndex + 1).then((page) => {
             const { width, height, rotation } = page.getViewport({ scale: 1 })
 
             setPageData({
@@ -66,40 +51,40 @@ export default forwardRef(function Thumbnail({ containerRef, pageIndex, rotation
             },
             {
                 threshold: Array(10)
-                    .fill()
+                    .fill(0)
                     .map((_, i) => i / 10),
             }
         )
-        const ref = thumbnailRef.current
-        observer.observe(ref)
+
+        observer.observe(thumbnailRef)
 
         return () => {
-            observer.unobserve(ref)
+            observer.unobserve(thumbnailRef)
         }
-    }, [])
+    })
 
     useEffect(() => {
-        if (selected && shouldScroll) {
-            containerRef.current.scrollTop = thumbnailRef.current.offsetTop - 48
+        if (selected && shouldScroll && containerRef) {
+            containerRef.scrollTop = thumbnailRef.offsetTop - 48
             setShouldScroll(false)
         }
-    }, [selected])
+    }, [containerRef, selected, shouldScroll, thumbnailRef.offsetTop])
 
     const handleClick = () => {
         setShouldScroll(false)
-        onSelect(pageIndex)
+        goToPage(thumbnailIndex)
     }
 
     const { page, width: pageWidth, height: pageHeight } = pageData
 
     return (
-        <div ref={thumbnailRef} className={classes.thumbnail} onClick={handleClick}>
+        <div ref={setThumbnailRef(thumbnailIndex)} className={classes.thumbnail} onClick={handleClick}>
             <div className={cx(classes.thumbnailSelection, { [classes.selected]: selected })}>
                 {visible && page && (
                     <ThumbnailLayer
                         page={page}
-                        pageWidth={pageWidth}
-                        pageHeight={pageHeight}
+                        pageWidth={pageWidth as number}
+                        pageHeight={pageHeight as number}
                         rotation={rotation}
                         thumbnailWidth={thumbnailWidth}
                         thumbnailHeight={thumbnailHeight}

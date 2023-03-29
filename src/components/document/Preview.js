@@ -1,7 +1,7 @@
 import { makeStyles } from '@mui/styles'
 import { memo } from 'react'
 
-import PDFViewer from '../pdf-viewer/Dynamic'
+import { PDFViewer } from '../pdf-viewer/Dynamic'
 import { useSharedStore } from '../SharedStoreProvider'
 
 import TIFFViewer from './TIFFViewer'
