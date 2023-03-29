@@ -84,7 +84,7 @@ export class DocumentStore {
         this.data = undefined
         this.error = undefined
         this.loading = true
-        this.tab = this.hashStore.hashState.tab ? parseInt(this.hashStore.hashState.tab) : 0
+        this.tab = parseInt(this.hashStore.hashState.tab || '0')
 
         if (this.pathname && !this.pathname.includes('_file_') && !this.pathname.includes('_directory_')) {
             this.digestUrl = this.pathname

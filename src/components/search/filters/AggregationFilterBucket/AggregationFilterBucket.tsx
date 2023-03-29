@@ -95,7 +95,6 @@ export const AggregationFilterBucket: FC<AggregationFilterBucketProps> = ({
                 indeterminate={triState && excluded}
                 classes={{ root: classes.checkbox }}
                 disabled={loading || !bucket.doc_count}
-                onChange={onChange(field, value)}
             />
 
             <ListItemText

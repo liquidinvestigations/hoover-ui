@@ -113,7 +113,7 @@ export class FiltersStore {
         })
 
     triggerSearch = (params: Partial<SearchQueryParams>) => {
-        this.searchStore.search({ ...params, page: defaultSearchParams.page }, SearchType.Results)
+        this.searchStore.search({ ...params, page: defaultSearchParams.page })
     }
 
     handleChange = (key: string, value: any, resetPage: boolean = false) => {

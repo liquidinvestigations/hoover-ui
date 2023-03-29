@@ -9,7 +9,7 @@ import { useStyles } from './Expandable.styles'
 let startY: number, startHeight: number
 
 interface ExpandableProps {
-    title: string
+    title: ReactNode
     children: ReactNode | ReactNode[]
     loading?: boolean
     loadingETA?: number
