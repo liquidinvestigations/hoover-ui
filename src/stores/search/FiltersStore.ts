@@ -127,52 +127,63 @@ export class FiltersStore {
         }
     }
 
+    private processFilterParams = (queryFilter: any, value: any, triState: boolean = false) => {
+        const include = new Set(queryFilter?.include || [])
+        const exclude = new Set(queryFilter?.exclude || [])
+
+        if (include.has(value)) {
+            include.delete(value)
+            if (triState) {
+                exclude.add(value)
+            }
+        } else if (exclude.has(value)) {
+            exclude.delete(value)
+        } else {
+            include.add(value)
+        }
+
+        return {
+            include: Array.from(include),
+            exclude: Array.from(exclude),
+        }
+    }
+
+    private processFilterMissing = (queryFilter: any) => {
+        let missing
+
+        if (queryFilter?.missing === 'true') {
+            missing = false
+        } else if (queryFilter?.missing === 'false') {
+            missing = undefined
+        } else {
+            missing = true
+        }
+
+        return { missing }
+    }
+
     handleAggregationChange =
         (field: SourceField, value: any, triState: boolean = false) =>
         () => {
             const queryFilter = this.searchStore.query?.filters?.[field]
-            const include = new Set(queryFilter?.include || [])
-            const exclude = new Set(queryFilter?.exclude || [])
-
-            if (include.has(value)) {
-                include.delete(value)
-                if (triState) {
-                    exclude.add(value)
-                }
-            } else if (exclude.has(value)) {
-                exclude.delete(value)
-            } else {
-                include.add(value)
-            }
+            const { include, exclude } = this.processFilterParams(queryFilter, value, triState)
 
             this.handleChange(field, {
                 ...queryFilter,
-                include: Array.from(include),
-                exclude: Array.from(exclude),
+                include,
+                exclude,
             })
         }
 
     handleMissingChange = (field: SourceField) => () => {
         const queryFilter = this.searchStore.query?.filters?.[field]
-        if (queryFilter?.missing === 'true') {
-            this.handleChange(field, {
-                ...queryFilter,
-                missing: 'false',
-            })
-        } else if (queryFilter?.missing === 'false') {
-            this.handleChange(field, {
-                ...queryFilter,
-                missing: undefined,
-            })
-        } else {
-            this.handleChange(field, {
-                ...queryFilter,
-                missing: 'true',
-            })
-        }
+        this.handleChange(field, {
+            ...queryFilter,
+            missing: this.processFilterMissing(queryFilter),
+        })
     }
 
-    handleDateRangeChange = (field: SourceField) => (range: any) => {
+    handleDateRangeChange = (field: SourceField) => (range?: { from?: string; to?: string }) => {
         const queryFilter = this.searchStore.query?.filters?.[field]
         const { from, to, interval, intervals, ...rest } = queryFilter || {}
         if (range?.from && range?.to) {
@@ -182,10 +193,11 @@ export class FiltersStore {
         }
     }
 
-    handleDateSelectionChange = (field: SourceField, newIntervals: any, resetPage: boolean) => () => {
+    handleDateSelectionChange = (field: SourceField, value: string, resetPage: boolean) => () => {
         const queryFilter = this.searchStore.query?.filters?.[field]
+        const newIntervals = this.processFilterParams(queryFilter.intervals, value)
         const { intervals, missing, ...rest } = queryFilter || {}
-        if (newIntervals.include?.length || newIntervals.missing) {
+        if (newIntervals.include?.length /*|| newIntervals.missing*/) {
             this.handleChange(field, { intervals: newIntervals, ...rest }, resetPage)
         } else {
             this.handleChange(field, rest, resetPage)

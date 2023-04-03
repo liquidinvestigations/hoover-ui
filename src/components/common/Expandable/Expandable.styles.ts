@@ -44,7 +44,7 @@ export const useStyles = makeStyles()((theme: Theme) => ({
     },
 
     fullHeightCollapseEntered: {
-        overflow: 'unset',
+        overflow: 'auto',
     },
 
     fullHeightContent: {

@@ -10,8 +10,8 @@ import { Expandable } from '../../common/Expandable/Expandable'
 import { useSharedStore } from '../../SharedStoreProvider'
 
 import { AggregationFilter } from './AggregationFilter/AggregationFilter'
-import DateRangeFilter from './DateRangeFilter'
-import IntervalSelect from './IntervalSelect'
+import { DateRangeFilter } from './DateRangeFilter'
+import { IntervalSelect } from './IntervalSelect'
 
 import type { Aggregation, Bucket, SourceField } from '../../../Types'
 
@@ -100,7 +100,12 @@ export const DateHistogramFilter: FC<DateHistogramFilterProps> = observer(
                           ) as unknown as string)
                         : undefined
                 }>
-                <DateRangeFilter defaultFrom={queryFilter?.from} defaultTo={queryFilter?.to} onChange={handleDateRangeChange} loading={loading} />
+                <DateRangeFilter
+                    defaultFrom={queryFilter?.from}
+                    defaultTo={queryFilter?.to}
+                    onChange={handleDateRangeChange(field)}
+                    loading={loading}
+                />
 
                 <ListItem>
                     <IntervalSelect field={field} />

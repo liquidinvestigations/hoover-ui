@@ -85,7 +85,7 @@ export const AggregationFilterBucket: FC<AggregationFilterBucketProps> = ({
     }
 
     return (
-        <ListItem key={bucket.key} role={undefined} dense button onClick={onChange(field, value)}>
+        <ListItem key={bucket.key} role={undefined} dense button onClick={onChange(field, value, triState)}>
             <Checkbox
                 size="small"
                 tabIndex={-1}

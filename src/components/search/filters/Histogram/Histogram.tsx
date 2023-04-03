@@ -1,50 +1,40 @@
 import { Collapse, Grid, IconButton, ListItem, Menu, MenuItem, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import cx from 'classnames'
-import { DateTime } from 'luxon'
-import { cloneElement, memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { DateTime, DurationUnit } from 'luxon'
+import { observer } from 'mobx-react-lite'
+import { cloneElement, FC, useCallback, useEffect, useMemo, useState } from 'react'
 
-import { DATE_FORMAT, DEFAULT_INTERVAL } from '../../../constants/general'
-import { reactIcons } from '../../../constants/icons'
-import { defaultSearchParams } from '../../../utils/queryUtils'
-import { daysInMonth, getClosestInterval } from '../../../utils/utils'
-import Loading from '../../Loading'
-import { useSharedStore } from '../../SharedStoreProvider'
-import { useSearch } from '../SearchProvider'
+import { DATE_FORMAT, DEFAULT_INTERVAL } from '../../../../constants/general'
+import { reactIcons } from '../../../../constants/icons'
+import { SourceField } from '../../../../Types'
+import { defaultSearchParams } from '../../../../utils/queryUtils'
+import { daysInMonth, getClosestInterval } from '../../../../utils/utils'
+import Loading from '../../../Loading'
+import { useSharedStore } from '../../../SharedStoreProvider'
+import { formatsLabel, formatsValue } from '../DateHistogramFilter'
+import { IntervalSelect } from '../IntervalSelect'
+import { Pagination } from '../Pagination/Pagination'
 
-import { formatsLabel, formatsValue } from './DateHistogramFilter'
-import HistogramChart from './HistogramChart'
-import IntervalSelect from './IntervalSelect'
-import { Pagination } from './Pagination/Pagination'
+import { useStyles } from './Histogram.styles'
+import { HistogramBar, HistogramChart } from './HistogramChart'
 
 const chartWidth = 300
 const chartHeight = 100
 const barWidth = 10
 const barMargin = 1
 
-const useStyles = makeStyles((theme) => ({
-    expand: {
-        marginLeft: theme.spacing(2),
-        transform: 'rotate(90deg)',
-        transition: theme.transitions.create('transform', {
-            duration: theme.transitions.duration.shortest,
-        }),
-    },
-    expandOpen: {
-        transform: 'rotate(0deg)',
-    },
-    histogramTitle: {
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-    },
-    chartBox: {
-        marginBottom: theme.spacing(1),
-    },
-}))
+interface HistogramProps {
+    title: string
+    field: SourceField
+}
 
-function Histogram({ title, field }) {
-    const classes = useStyles()
-    const { aggregations, query, search, aggregationsLoading } = useSearch()
+export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
+    const { classes } = useStyles()
+    const {
+        query,
+        search,
+        searchAggregationsStore: { aggregations, aggregationsLoading },
+    } = useSharedStore().searchStore
 
     const { hashState, setHashState } = useSharedStore().hashStore
     const [open, setOpen] = useState(false)
@@ -67,22 +57,22 @@ function Histogram({ title, field }) {
         }
     }
 
-    const [anchorPosition, setAnchorPosition] = useState(null)
-    const [selectedBars, setSelectedBars] = useState(null)
+    const [anchorPosition, setAnchorPosition] = useState<{ left: number; top: number } | undefined>()
+    const [selectedBars, setSelectedBars] = useState<string[]>()
 
-    const handleSelect = (event, bars) => {
+    const handleSelect = (event: MouseEvent, bars: string[]) => {
         if (bars.length) {
             setSelectedBars(bars)
             setAnchorPosition({ left: event.clientX, top: event.clientY })
         }
     }
 
-    const handleBarMenuClose = () => setAnchorPosition(null)
+    const handleBarMenuClose = () => setAnchorPosition(undefined)
 
-    const handleIntervalsChange = (include) => {
+    const handleIntervalsChange = (include: string[]) => {
         handleBarMenuClose()
 
-        const { [field]: prevFilter, ...restFilters } = query.filters || {}
+        const { [field]: prevFilter, ...restFilters } = query?.filters || {}
         const { intervals, ...restParams } = prevFilter || {}
 
         if (include.length) {
@@ -93,26 +83,26 @@ function Histogram({ title, field }) {
     }
 
     const handleIntervalsAdd = useCallback(() => {
-        const { [field]: prevFilter } = query.filters || {}
+        const { [field]: prevFilter } = query?.filters || {}
         const { intervals } = prevFilter || {}
 
-        handleIntervalsChange(Array.from(new Set([...(intervals?.include || []), ...selectedBars])))
+        handleIntervalsChange(Array.from(new Set([...(intervals?.include || []), ...(selectedBars || [])])))
     }, [query, search, selectedBars])
 
     const handleIntervalsRemove = useCallback(() => {
-        const { [field]: prevFilter } = query.filters || {}
+        const { [field]: prevFilter } = query?.filters || {}
         const { intervals } = prevFilter || {}
 
         handleIntervalsChange(
-            (intervals?.include || []).filter((v) => {
-                return !selectedBars.includes(v)
+            (intervals?.include || []).filter((v: string) => {
+                return !selectedBars?.includes(v)
             })
         )
     }, [query, search, selectedBars])
 
     const getDatesRange = () => {
-        let first = selectedBars[selectedBars.length - 1]
-        let last = selectedBars[0]
+        let first = selectedBars?.[selectedBars.length - 1] as string
+        let last = selectedBars?.[0] as string
 
         switch (interval) {
             case 'year':
@@ -138,8 +128,8 @@ function Histogram({ title, field }) {
     const handleFilterRange = useCallback(() => {
         handleBarMenuClose()
         const range = getDatesRange()
-        const { [field]: prevFilter, ...restFilters } = query.filters || {}
-        const { [field]: prevFacet, ...restFacets } = query.facets || {}
+        const { [field]: prevFilter, ...restFilters } = query?.filters || {}
+        const { [field]: prevFacet, ...restFacets } = query?.facets || {}
 
         search({
             filters: { [field]: { ...range, interval: getClosestInterval(range) }, ...restFilters },
@@ -148,29 +138,28 @@ function Histogram({ title, field }) {
         })
     }, [query, search, selectedBars])
 
-    const interval = query.filters?.[field]?.interval || DEFAULT_INTERVAL
-    const selected = query.filters?.[field]?.intervals?.include
+    const interval = query?.filters?.[field]?.interval || DEFAULT_INTERVAL
+    const selected = query?.filters?.[field]?.intervals?.include
     const axisHeight = interval === 'year' ? 20 : 40
 
-    const formatLabel = (value) => DateTime.fromISO(value, { setZone: true }).toFormat(formatsLabel[interval])
+    const formatLabel = (value: string) => DateTime.fromISO(value, { setZone: true }).toFormat(formatsLabel[interval])
 
-    const formatValue = (value) => DateTime.fromISO(value, { setZone: true }).toFormat(formatsValue[interval])
+    const formatValue = (value: string) => DateTime.fromISO(value, { setZone: true }).toFormat(formatsValue[interval])
 
+    const buckets = aggregations?.[field]?.values.buckets
     const data = useMemo(() => {
-        const buckets = aggregations?.[field]?.values.buckets
-
         if (buckets) {
             let missingBarsCount = 0
             const elements = buckets.map(({ key_as_string, doc_count }, index) => {
                 if (index) {
-                    const unit = `${interval}s`
-                    const prevDate = DateTime.fromISO(buckets[index - 1].key_as_string)
-                    const currDate = DateTime.fromISO(key_as_string)
-                    missingBarsCount += prevDate.diff(currDate, unit)[unit] - 1
+                    const unit = `${interval}s` as DurationUnit
+                    const prevDate = DateTime.fromISO(buckets[index - 1].key_as_string as string)
+                    const currDate = DateTime.fromISO(key_as_string as string)
+                    missingBarsCount += prevDate.diff(currDate, unit)[unit as 'years' | 'months' | 'weeks' | 'days'] - 1
                 }
                 return {
-                    label: formatLabel(key_as_string),
-                    value: formatValue(key_as_string),
+                    label: formatLabel(key_as_string as string),
+                    value: formatValue(key_as_string as string),
                     count: doc_count,
                     missingBarsCount,
                 }
@@ -179,17 +168,20 @@ function Histogram({ title, field }) {
             const xScale = chartWidth / ((elements.length + missingBarsCount) * (barWidth + barMargin) - barMargin)
             const maxCount = Math.max(...buckets.map(({ doc_count }) => doc_count))
 
-            return elements.map(({ label, value, count, missingBarsCount }, index) => ({
-                label,
-                value,
-                count,
-                barWidth: barWidth * xScale,
-                barHeight: ((chartHeight - axisHeight) * Math.log(count + 1)) / Math.log(maxCount + 1),
-                barPosition: (index + missingBarsCount) * (barWidth + barMargin) * xScale,
-                labelPosition: ((index + missingBarsCount) * (barWidth + barMargin) + barWidth / 2) * xScale,
-            }))
+            return elements.map(
+                ({ label, value, count, missingBarsCount }, index) =>
+                    ({
+                        label,
+                        value,
+                        count,
+                        barWidth: barWidth * xScale,
+                        barHeight: ((chartHeight - axisHeight) * Math.log(count + 1)) / Math.log(maxCount + 1),
+                        barPosition: (index + missingBarsCount) * (barWidth + barMargin) * xScale,
+                        labelPosition: ((index + missingBarsCount) * (barWidth + barMargin) + barWidth / 2) * xScale,
+                    } as HistogramBar)
+            )
         }
-    }, [aggregations])
+    }, [buckets])
 
     return (
         <>
@@ -212,7 +204,7 @@ function Histogram({ title, field }) {
 
             <Collapse in={open}>
                 <div className={classes.chartBox}>
-                    {aggregationsLoading[field] ? (
+                    {aggregationsLoading ? (
                         <Loading />
                     ) : (
                         <HistogramChart
@@ -243,6 +235,4 @@ function Histogram({ title, field }) {
             </Menu>
         </>
     )
-}
-
-export default memo(Histogram)
+})

@@ -1,6 +1,7 @@
 import { Button, Grid, List, ListItem, TextField } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers'
-import { memo, useEffect, useState } from 'react'
+import { DateTime } from 'luxon'
+import { FC, useEffect, useState } from 'react'
 
 import { DATE_FORMAT } from '../../../constants/general'
 import { reactIcons } from '../../../constants/icons'
@@ -13,23 +14,30 @@ const icons = {
 
 const emptyLabel = 'YYYY-MM-DD'
 
-function DateRangeFilter({ defaultFrom, defaultTo, onChange, loading }) {
-    const [from, setFrom] = useState(defaultFrom)
-    const [to, setTo] = useState(defaultTo)
+interface DateRangeFilterProps {
+    defaultFrom?: string
+    defaultTo?: string
+    onChange: (range?: { from?: string; to?: string }) => void
+    loading: boolean
+}
 
-    const handleFromChange = (date) => setFrom(date?.toFormat(DATE_FORMAT))
-    const handleToChange = (date) => setTo(date?.toFormat(DATE_FORMAT))
+export const DateRangeFilter: FC<DateRangeFilterProps> = ({ defaultFrom, defaultTo, onChange, loading }) => {
+    const [from, setFrom] = useState<string | undefined>(defaultFrom)
+    const [to, setTo] = useState<string | undefined>(defaultTo)
+
+    const handleFromChange = (date: DateTime | null) => setFrom(date?.toFormat(DATE_FORMAT))
+    const handleToChange = (date: DateTime | null) => setTo(date?.toFormat(DATE_FORMAT))
 
     const handleApply = () => onChange({ from, to })
     const handleReset = () => {
-        setFrom(null)
-        setTo(null)
-        from && to && onChange(null)
+        setFrom(undefined)
+        setTo(undefined)
+        from && to && onChange()
     }
 
     const unedited = defaultFrom === from && defaultTo === to
 
-    const labelFunc = (field) => (date, invalidLabel) => {
+    const labelFunc = (field?: string) => (date: DateTime, invalidLabel: string) => {
         if (!field) {
             return ''
         }
@@ -48,15 +56,11 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange, loading }) {
                     renderInput={(props) => <TextField {...props} />}
                     value={from}
                     label={from ? null : emptyLabel}
-                    labelFunc={labelFunc(from)}
                     inputFormat={DATE_FORMAT}
                     onChange={handleFromChange}
-                    maxDate={to}
+                    maxDate={to as unknown as DateTime}
                     openTo="year"
-                    variant="inline"
                     disabled={loading}
-                    autoOk
-                    fullWidth
                     {...icons}
                 />
             </ListItem>
@@ -66,15 +70,11 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange, loading }) {
                     renderInput={(props) => <TextField {...props} />}
                     value={to}
                     label={to ? null : emptyLabel}
-                    labelFunc={labelFunc(to)}
                     inputFormat={DATE_FORMAT}
-                    minDate={from}
+                    minDate={from as unknown as DateTime}
                     onChange={handleToChange}
                     openTo="year"
-                    variant="inline"
                     disabled={loading}
-                    autoOk
-                    fullWidth
                     {...icons}
                 />
             </ListItem>
@@ -96,5 +96,3 @@ function DateRangeFilter({ defaultFrom, defaultTo, onChange, loading }) {
         </List>
     )
 }
-
-export default memo(DateRangeFilter)

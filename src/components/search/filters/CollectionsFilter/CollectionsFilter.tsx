@@ -34,7 +34,6 @@ export const CollectionsFilter: FC = observer(() => {
                                     disableRipple
                                     classes={{ root: classes.checkbox }}
                                     checked={searchCollections.includes(collection.name)}
-                                    onChange={handleSearchCollectionsChange(collection.name)}
                                 />
 
                                 <ListItemText
