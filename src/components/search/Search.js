@@ -1,5 +1,4 @@
 import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Tooltip, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import { observer } from 'mobx-react-lite'
 import Router from 'next/router'
 import { cloneElement, useEffect } from 'react'
@@ -13,43 +12,17 @@ import { useProgressIndicator } from '../ProgressIndicator'
 import { useSharedStore } from '../SharedStoreProvider'
 
 import { Categories } from './filters/Categories/Categories'
-import FiltersChips from './filters/FiltersChips'
-import Histogram from './filters/Histogram'
+import { FiltersChips } from './filters/FiltersChips/FiltersChips'
+import { Histogram } from './filters/Histogram/Histogram'
 import { HotKeys } from './HotKeys'
 import { QueryChips } from './QueryChips'
 import { Results } from './results/Results/Results'
+import { useStyles } from './Search.styles'
 import { SortingChips } from './sorting/SortingChips/SortingChips'
 import { SortingMenu } from './sorting/SortingMenu/SortingMenu'
 
-const useStyles = makeStyles((theme) => ({
-    error: {
-        paddingTop: theme.spacing(3),
-    },
-    main: {
-        paddingLeft: theme.spacing(3),
-        paddingRight: theme.spacing(3),
-    },
-    clear: {
-        color: theme.palette.grey.A100,
-    },
-    help: {
-        color: theme.palette.grey.A100,
-    },
-    noMaxWidth: {
-        maxWidth: 'none',
-    },
-    info: {
-        color: theme.palette.grey.A700,
-    },
-    sorting: {
-        display: 'flex',
-        marginTop: theme.spacing(2),
-        justifyContent: 'flex-end',
-    },
-}))
-
 export const Search = observer(() => {
-    const classes = useStyles()
+    const { classes } = useStyles()
     const {
         searchStore: {
             search,

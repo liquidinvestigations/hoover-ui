@@ -14,8 +14,8 @@ interface SplitPaneLayoutProps {
     leftStyle?: CSSProperties
     leftResizerStyle?: CSSProperties
     className?: string
-    defaultSizeLeft?: string
-    defaultSizeMiddle?: string
+    defaultSizeLeft?: string | number
+    defaultSizeMiddle?: string | number
     container?: boolean
 }
 

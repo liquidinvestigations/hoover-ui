@@ -1,42 +1,75 @@
 import { Tooltip } from '@mui/material'
 import { blue, grey } from '@mui/material/colors'
 import cx from 'classnames'
-import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
+import React, { FC, Fragment, useCallback, useEffect, useRef, useState } from 'react'
 
-import { formatThousands } from '../../../utils/utils'
+import { formatThousands } from '../../../../utils/utils'
 
-export default function HistogramChart({ width, height, axisHeight, data, selected, onSelect, onClick, preserveDragArea }) {
-    const ref = useRef()
+export interface HistogramBar {
+    label: string
+    value: string
+    count: number
+    barWidth: number
+    barHeight: number
+    barPosition: number
+    labelPosition: number
+}
 
-    const [startDragPosition, setStartDragPosition] = useState(null)
-    const [currentDragPosition, setCurrentDragPosition] = useState(null)
+interface HistogramChartProps {
+    width: number
+    height: number
+    axisHeight: number
+    data?: HistogramBar[]
+    selected?: string[]
+    onSelect?: (event: MouseEvent, bar: string[]) => void
+    onClick?: (event: MouseEvent, bar: string) => void
+    preserveDragArea?: boolean
+}
+
+export const HistogramChart: FC<HistogramChartProps> = ({
+    width,
+    height,
+    axisHeight,
+    data,
+    onSelect,
+    onClick,
+    selected = [],
+    preserveDragArea = false,
+}) => {
+    const ref = useRef<SVGSVGElement>(null)
+
+    const [startDragPosition, setStartDragPosition] = useState<number | undefined>()
+    const [currentDragPosition, setCurrentDragPosition] = useState<number | undefined>(undefined)
 
     useEffect(() => {
-        if (preserveDragArea === false) {
-            setStartDragPosition(null)
+        if (!preserveDragArea) {
+            setStartDragPosition(undefined)
         }
     }, [preserveDragArea])
 
-    const getChartPosition = (position) => {
-        const chartRect = ref.current.getBoundingClientRect()
-        const chartScale = width / (chartRect.right - chartRect.left)
-        return (position - chartRect.left) * chartScale
+    const getChartPosition = (position: number) => {
+        const chartRect = ref.current?.getBoundingClientRect()
+        if (chartRect) {
+            const chartScale = width / (chartRect.right - chartRect.left)
+            return (position - chartRect.left) * chartScale
+        }
+        return 0
     }
 
-    const handleBarClick = (bar) => (event) => {
+    const handleBarClick = (bar: string) => (event: React.MouseEvent) => {
         if (onSelect) {
-            onSelect(event, [bar])
+            onSelect(event.nativeEvent, [bar])
         } else if (onClick) {
-            onClick(event, bar)
+            onClick(event.nativeEvent, bar)
         }
     }
 
-    const handleMouseMove = useCallback((event) => {
+    const handleMouseMove = useCallback((event: MouseEvent) => {
         event.preventDefault()
         setCurrentDragPosition(getChartPosition(event.clientX))
     }, [])
 
-    const handleMouseUp = (startDragPosition) => (event) => {
+    const handleMouseUp = (startDragPosition: number) => (event: MouseEvent) => {
         event.preventDefault()
         window.removeEventListener('mousemove', handleMouseMove)
 
@@ -48,14 +81,14 @@ export default function HistogramChart({ width, height, axisHeight, data, select
             ?.filter(({ barPosition, barWidth }) => barPosition + barWidth >= startPosition && barPosition <= startPosition + selectionWidth)
             .map(({ value }) => value)
 
-        if (selected.length) {
+        if (onSelect && selected?.length) {
             onSelect(event, selected)
         } else {
-            setStartDragPosition(null)
+            setStartDragPosition(undefined)
         }
     }
 
-    const handleMouseDown = (event) => {
+    const handleMouseDown = (event: React.MouseEvent) => {
         event.preventDefault()
 
         if (onSelect) {
@@ -126,9 +159,9 @@ export default function HistogramChart({ width, height, axisHeight, data, select
             {startDragPosition && (
                 <rect
                     className="selection"
-                    x={Math.min(startDragPosition, currentDragPosition)}
+                    x={Math.min(startDragPosition, currentDragPosition || 0)}
                     y={0}
-                    width={Math.abs(startDragPosition - currentDragPosition)}
+                    width={Math.abs(startDragPosition - (currentDragPosition || 0))}
                     height={height - axisHeight}
                 />
             )}

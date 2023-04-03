@@ -13,6 +13,7 @@ export interface HashState {
     tab?: string
     subTab?: string
     previewPage?: string
+    histogram?: Record<string, boolean>
 }
 
 export class HashStateStore {
