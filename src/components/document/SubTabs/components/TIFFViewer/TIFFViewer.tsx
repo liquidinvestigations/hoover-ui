@@ -1,40 +1,32 @@
 import { Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
-import { useEffect, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { decode } from 'tiff'
 
-import Loading from '../Loading'
+import Loading from '../../../../Loading'
 
-const useStyles = makeStyles((theme) => ({
-    wrapper: {
-        textAlign: 'center',
-        paddingTop: theme.spacing(2),
-        backgroundColor: theme.palette.grey[200],
+import { useStyles } from './TIFFViewer.styles'
 
-        '& img': {
-            maxWidth: '95%',
-            boxShadow: '0 2px 10px 0 black',
-            marginBottom: theme.spacing(2),
-        },
-    },
-}))
-
-export default function TIFFViewer({ url }) {
-    const classes = useStyles()
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState()
-    const [pages, setPages] = useState(null)
+export const TIFFViewer: FC<{ url: string }> = ({ url }) => {
+    const { classes } = useStyles()
+    const [loading, setLoading] = useState<boolean | number>(true)
+    const [error, setError] = useState<string>()
+    const [pages, setPages] = useState<string[]>()
 
     useEffect(() => {
         ;(async () => {
-            setError(null)
+            setError(undefined)
             setLoading(true)
 
             const response = await fetch(url)
 
             if (response.ok) {
-                const reader = response.body.getReader()
-                const contentLength = response.headers.get('Content-Length')
+                const reader = response.body?.getReader()
+                const contentLengthHeader = response.headers.get('Content-Length')
+                const contentLength = contentLengthHeader ? parseInt(contentLengthHeader) : 1
+
+                if (!reader) {
+                    return
+                }
 
                 const chunks = []
                 let receivedLength = 0
@@ -62,7 +54,7 @@ export default function TIFFViewer({ url }) {
                 let ifd
                 try {
                     ifd = decode(chunksAll)
-                } catch (e) {
+                } catch (e: any) {
                     setError(e.message)
                     setLoading(false)
                     return
@@ -76,6 +68,10 @@ export default function TIFFViewer({ url }) {
 
                         const pixels = new Uint8ClampedArray(page.data)
                         const ctx = canvas.getContext('2d')
+
+                        if (!ctx) {
+                            return ''
+                        }
 
                         const imageData = ctx.createImageData(page.width, page.height)
                         const data = imageData.data

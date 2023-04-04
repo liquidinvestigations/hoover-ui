@@ -1,10 +1,10 @@
-import { makeStyles } from '@mui/styles'
-import { memo } from 'react'
+import { FC } from 'react'
 
-import PDFViewer from '../pdf-viewer/Dynamic'
-import { useSharedStore } from '../SharedStoreProvider'
+import PDFViewer from '../../../../pdf-viewer/Dynamic'
+import { useSharedStore } from '../../../../SharedStoreProvider'
+import { TIFFViewer } from '../TIFFViewer/TIFFViewer'
 
-import TIFFViewer from './TIFFViewer'
+import { useStyles } from './Preview.styles'
 
 // List copy/pasted from https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
 // and then ran through ` grep -o '[^ /]\+/[^ ]\+' | sort ` - only image, audio, video are here
@@ -40,29 +40,20 @@ export const PREVIEWABLE_MIME_TYPE_SUFFEXES = [
     '/x-troff-msvideo',
 ]
 
-const useStyles = makeStyles((theme) => ({
-    preview: {
-        height: '50vh',
-        overflow: 'hidden',
-        padding: theme.spacing(2),
-        backgroundColor: theme.palette.grey[200],
-    },
-}))
-
-function Preview() {
-    const classes = useStyles()
+export const Preview: FC = () => {
+    const { classes } = useStyles()
     const { data, docRawUrl, docPreviewUrl } = useSharedStore().documentStore
 
-    if (data.content['has-pdf-preview']) {
+    if (data?.content['has-pdf-preview']) {
         return <PDFViewer url={docPreviewUrl} />
     }
 
-    switch (data.content['content-type']) {
+    switch (data?.content['content-type']) {
         case 'application/pdf':
             return <PDFViewer url={docRawUrl} />
 
         case 'image/tiff':
-            return <TIFFViewer url={docRawUrl} />
+            return docRawUrl ? <TIFFViewer url={docRawUrl} /> : null
     }
 
     return (
@@ -70,13 +61,11 @@ function Preview() {
             <embed
                 style={{ objectFit: 'contain' }}
                 src={docRawUrl}
-                type={data.content['content-type']}
+                type={data?.content['content-type']}
                 height="100%"
                 width="100%"
-                title={data.content.filename}
+                title={data?.content.filename}
             />
         </div>
     )
 }
-
-export default memo(Preview)

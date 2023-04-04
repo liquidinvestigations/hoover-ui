@@ -1,3 +1,4 @@
+import { AutocompleteChangeReason, AutocompleteInputChangeReason } from '@mui/base/AutocompleteUnstyled/useAutocomplete'
 import {
     Autocomplete,
     Box,
@@ -15,83 +16,39 @@ import {
     Typography,
 } from '@mui/material'
 import { blue } from '@mui/material/colors'
-import { makeStyles } from '@mui/styles'
+import { SelectChangeEvent } from '@mui/material/Select/SelectInput'
 import { observer } from 'mobx-react-lite'
-import { cloneElement, useEffect, useMemo, useState } from 'react'
+import { cloneElement, FC, ReactElement, SyntheticEvent, useEffect, useMemo, useState } from 'react'
 
-import { tooltips } from '../../constants/help'
-import { reactIcons } from '../../constants/icons'
-import { specialTagsList } from '../../constants/specialTags'
-import { search as searchAPI } from '../../utils/api'
-import { getTagIcon } from '../../utils/utils'
-import Loading from '../Loading'
-import { useSharedStore } from '../SharedStoreProvider'
+import { tooltips } from '../../../../../constants/help'
+import { reactIcons } from '../../../../../constants/icons'
+import { specialTagsList } from '../../../../../constants/specialTags'
+import { Tag } from '../../../../../stores/TagsStore'
+import { Aggregations, Bucket, CollectionData } from '../../../../../Types'
+import { search as searchAPI } from '../../../../../utils/api'
+import { getTagIcon } from '../../../../../utils/utils'
+import Loading from '../../../../Loading'
+import { useSharedStore } from '../../../../SharedStoreProvider'
+import { ToolbarLink } from '../../../Toolbar/Toolbar'
 
-import { useTags } from './TagsProvider'
+import { useStyles } from './Tags.styles'
 import { TagTooltip } from './TagTooltip'
 
 const forbiddenCharsRegex = /[^a-z0-9_!@#$%^&*()-=+:,./?]/gi
 
-const useStyles = makeStyles((theme) => ({
-    error: {
-        padding: theme.spacing(1),
-        fontSize: '14px',
+export const getChipColor = (chip: Tag) => (chip.public ? blue[200] : undefined)
 
-        '& a': {
-            color: theme.palette.error.main,
-        },
-    },
-    toolbarButtons: {
-        marginBottom: theme.spacing(3),
-    },
-    toolbarButton: {
-        textTransform: 'none',
-    },
-    buttons: {
-        marginTop: theme.spacing(1),
-    },
-    help: {
-        color: theme.palette.grey.A100,
-    },
-    noMaxWidth: {
-        maxWidth: 'none',
-    },
-    otherTags: {
-        paddingBottom: 0,
-        borderBottom: '1px solid rgba(0, 0, 0, 0.42)',
-    },
-    otherTagsInfo: {
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-    },
-    tag: {
-        marginRight: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-    },
-    option: {
-        width: '100%',
-        display: 'inline-flex',
-        justifyContent: 'space-between',
-    },
-    optionCount: {
-        color: theme.palette.grey[500],
-    },
-}))
-
-export const getChipColor = (chip) => (chip.public ? blue[200] : undefined)
-
-export const Tags = observer(({ toolbarButtons }) => {
-    const classes = useStyles()
+export const Tags: FC<{ toolbarButtons: ToolbarLink[] }> = observer(({ toolbarButtons }) => {
+    const { classes } = useStyles()
     const {
         user,
         printMode,
-        collections,
+        collectionsData,
         documentStore: { digestUrl },
+        tagsStore: { tags, tagsLocked, tagsLoading, tagsError, handleTagAdd, handleTagDelete, handleTagLockClick },
     } = useSharedStore()
 
-    const { tags, tagsLocked, tagsLoading, tagsError, handleTagAdd, handleTagDelete, handleTagLockClick } = useTags()
-
-    const [tagsAggregations, setTagsAggregations] = useState()
+    const [tagsAggregations, setTagsAggregations] = useState<Aggregations>()
     const [tagsAggregationsLoading, setTagsAggregationsLoading] = useState(false)
     const handleInputFocus = () => {
         if (!tagsAggregations) {
@@ -100,7 +57,7 @@ export const Tags = observer(({ toolbarButtons }) => {
             searchAPI({
                 type: 'aggregations',
                 fieldList: ['tags', 'priv-tags'],
-                collections: collections.map((c) => c.name),
+                collections: collectionsData.map((c: CollectionData) => c.name),
             })
                 .then((results) => {
                     setTagsAggregations(results.aggregations)
@@ -108,7 +65,7 @@ export const Tags = observer(({ toolbarButtons }) => {
                 })
                 .catch((error) => {
                     if (error.name !== 'AbortError') {
-                        setTagsAggregations(null)
+                        setTagsAggregations(undefined)
                         setTagsAggregationsLoading(false)
                     }
                 })
@@ -128,7 +85,7 @@ export const Tags = observer(({ toolbarButtons }) => {
     const [inputValue, setInputValue] = useState('')
     const [newTagVisibility, setNewTagVisibility] = useState('public')
 
-    const handleNewTagVisibilityChange = (event) => {
+    const handleNewTagVisibilityChange = (event: SelectChangeEvent) => {
         setNewTagVisibility(event.target.value)
     }
 
@@ -137,7 +94,7 @@ export const Tags = observer(({ toolbarButtons }) => {
     }, [tags])
 
     const otherUsersTags = useMemo(() => {
-        const usersTags = {}
+        const usersTags = {} as { [key: string]: Tag[] }
         tags.forEach((tag) => {
             if (tag.user !== user.username) {
                 if (!usersTags[tag.user]) {
@@ -161,7 +118,7 @@ export const Tags = observer(({ toolbarButtons }) => {
         return null
     }
 
-    const simpleTags = (tags) => (
+    const simpleTags = (tags: Tag[]) => (
         <Grid container>
             {tags.map(({ tag }, index) => (
                 <Grid item className={classes.tag} key={index}>
@@ -191,15 +148,15 @@ export const Tags = observer(({ toolbarButtons }) => {
         )
     }
 
-    const handleInputChange = (event, value, reason) => {
+    const handleInputChange = (event: SyntheticEvent, value: string, reason: AutocompleteInputChangeReason) => {
         if (reason === 'input') {
             setInputValue(value.replace(' ', '-').replace(forbiddenCharsRegex, ''))
         }
     }
 
-    const handleChange = (event, value, reason) => {
+    const handleChange = (event: SyntheticEvent, value: any[], reason: AutocompleteChangeReason) => {
         switch (reason) {
-            case 'create-option':
+            case 'createOption':
                 value.forEach((tag) => {
                     if (typeof tag === 'string') {
                         handleTagAdd(tag, newTagVisibility === 'public')
@@ -207,7 +164,7 @@ export const Tags = observer(({ toolbarButtons }) => {
                 })
                 break
 
-            case 'select-option':
+            case 'selectOption':
                 value.forEach((tag) => {
                     if (tag.key) {
                         handleTagAdd(tag.key, newTagVisibility === 'public')
@@ -215,7 +172,7 @@ export const Tags = observer(({ toolbarButtons }) => {
                 })
                 break
 
-            case 'remove-option':
+            case 'removeOption':
                 tagsValue.forEach((tag) => {
                     if (!value.includes(tag)) {
                         handleTagDelete(tag)
@@ -227,7 +184,10 @@ export const Tags = observer(({ toolbarButtons }) => {
 
     const tagsValue = tags.filter((tag) => tag.user === user.username)
 
-    const options = newTagVisibility === 'public' ? tagsAggregations?.tags?.values?.buckets : tagsAggregations?.['priv-tags']?.values?.buckets
+    const options =
+        newTagVisibility === 'public'
+            ? (tagsAggregations?.tags?.values?.buckets as unknown as Tag[])
+            : (tagsAggregations?.['priv-tags']?.values?.buckets as unknown as Tag[])
 
     return tagsLoading ? (
         <Loading />
@@ -260,11 +220,11 @@ export const Tags = observer(({ toolbarButtons }) => {
                                 .map((tag) => tag.tag)
                                 .includes(option.key)
                         }
-                        getOptionLabel={(option) => option.key}
-                        renderOption={(option) => (
+                        getOptionLabel={(option) => (option as unknown as Bucket).key}
+                        renderOption={(props, option) => (
                             <span className={classes.option}>
                                 <span>{option.key}</span>
-                                <span className={classes.optionCount}>{option.doc_count}</span>
+                                <span className={classes.optionCount}>{(option as unknown as Bucket).doc_count}</span>
                             </span>
                         )}
                         loading={tagsAggregationsLoading}
@@ -275,9 +235,9 @@ export const Tags = observer(({ toolbarButtons }) => {
                                         label={
                                             !!getTagIcon(chip.tag, chip.public) ? (
                                                 <>
-                                                    {cloneElement(getTagIcon(chip.tag, chip.public), {
+                                                    {cloneElement(getTagIcon(chip.tag, chip.public) as ReactElement, {
                                                         style: {
-                                                            ...getTagIcon(chip.tag, chip.public).props.style,
+                                                            ...(getTagIcon(chip.tag, chip.public) as ReactElement).props.style,
                                                             marginLeft: -8,
                                                             marginRight: 4,
                                                             verticalAlign: 'middle',
@@ -296,7 +256,7 @@ export const Tags = observer(({ toolbarButtons }) => {
                                                         {chip.public ? reactIcons.publicTag : reactIcons.privateTag}
                                                     </IconButton>
                                                 </Tooltip>
-                                            ) : null
+                                            ) : undefined
                                         }
                                         style={{ backgroundColor: getChipColor(chip) }}
                                         {...getTagProps({ index })}
@@ -328,7 +288,7 @@ export const Tags = observer(({ toolbarButtons }) => {
                 </Grid>
 
                 <Grid item style={{ marginLeft: 20 }}>
-                    <Tooltip interactive="true" classes={{ tooltip: classes.noMaxWidth }} title={tooltips.tags}>
+                    <Tooltip classes={{ tooltip: classes.noMaxWidth }} title={tooltips.tags}>
                         {cloneElement(reactIcons.help, { className: classes.help })}
                     </Tooltip>
                 </Grid>
@@ -359,9 +319,9 @@ export const Tags = observer(({ toolbarButtons }) => {
                                         label={
                                             !!getTagIcon(chip.tag, chip.public) ? (
                                                 <>
-                                                    {cloneElement(getTagIcon(chip.tag, chip.public), {
+                                                    {cloneElement(getTagIcon(chip.tag, chip.public) as ReactElement, {
                                                         style: {
-                                                            ...getTagIcon(chip.tag, chip.public).props.style,
+                                                            ...(getTagIcon(chip.tag, chip.public) as ReactElement).props.style,
                                                             marginLeft: -8,
                                                             marginRight: 4,
                                                             verticalAlign: 'middle',
@@ -378,7 +338,7 @@ export const Tags = observer(({ toolbarButtons }) => {
                                                 <Tooltip title={`make ${chip.public ? 'private' : 'public'}`}>
                                                     <IconButton size="small">{chip.public ? reactIcons.publicTag : reactIcons.privateTag}</IconButton>
                                                 </Tooltip>
-                                            ) : null
+                                            ) : undefined
                                         }
                                         style={{
                                             pointerEvents: 'none',

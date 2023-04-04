@@ -1,103 +1,40 @@
 import { Badge, Box, Button, Chip, Grid, Tabs, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
-import { cloneElement, useEffect } from 'react'
+import { cloneElement, ReactElement, useEffect } from 'react'
 
 import { createOcrUrl } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
 import { specialTags } from '../../constants/specialTags'
+import { Tag } from '../../stores/TagsStore'
 import { getTagIcon } from '../../utils/utils'
 import Loading from '../Loading'
 import { useSharedStore } from '../SharedStoreProvider'
 
-import { HTML } from './HTML'
-import { Meta } from './Meta'
-import StyledTab from './StyledTab'
-import { SubTabs } from './SubTabs'
-import { TabPanel } from './TabPanel'
-import { Tags, getChipColor } from './Tags'
-import { useTags } from './TagsProvider'
-import { TagTooltip } from './TagTooltip'
-import { Text } from './Text'
-import Toolbar from './Toolbar'
+import { useStyles } from './Document.styles'
+import { HTML } from './SubTabs/components/HTML'
+import { Meta } from './SubTabs/components/Meta/Meta'
+import { StyledTab } from './StyledTab'
+import { SubTabs } from './SubTabs/SubTabs'
+import { TabPanel } from './TabPanel/TabPanel'
+import { Tags, getChipColor } from './SubTabs/components/Tags/Tags'
+import { TagTooltip } from './SubTabs/components/Tags/TagTooltip'
+import { Text } from './SubTabs/components/Text/Text'
+import { Toolbar, ToolbarLink } from './Toolbar/Toolbar'
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-    },
-    header: {
-        backgroundColor: theme.palette.primary.main,
-    },
-    titleWrapper: {
-        overflow: 'hidden',
-    },
-    filename: {
-        padding: theme.spacing(1),
-        paddingBottom: 0,
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        color: theme.palette.primary.contrastText,
-    },
-    subtitle: {
-        padding: theme.spacing(1),
-        paddingTop: theme.spacing(0.5),
-        alignItems: 'baseline',
-    },
-    collection: {
-        minHeight: 34,
-        marginRight: theme.spacing(3),
-        color: 'rgba(255,255,255,0.7)',
-    },
-    tag: {
-        marginRight: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-    },
-    thumbnail: {
-        padding: theme.spacing(1),
-        paddingBottom: 0,
-    },
-    thumbnailImg: {
-        height: 72,
-        maxWidth: 100,
-    },
-    tabsRoot: {
-        minHeight: 65,
-        color: theme.palette.primary.contrastText,
-        backgroundColor: theme.palette.primary.main,
-    },
-    tabsIndicator: {
-        top: 0,
-    },
-    activeTab: {
-        height: '100%',
-        overflow: 'auto',
-    },
-    printTitle: {
-        margin: theme.spacing(2),
-    },
-    printBackLink: {
-        position: 'absolute',
-        top: theme.spacing(2),
-        right: theme.spacing(2),
-        color: theme.palette.primary.contrastText,
-        zIndex: theme.zIndex.drawer + 2,
-    },
-}))
-
-export const Document = observer(({ onPrev, onNext }) => {
-    const classes = useStyles()
+export const Document = observer(() => {
+    const { classes } = useStyles()
 
     const {
         user,
         fullPage,
         printMode,
+        tagsStore: { tags, tagsLoading, tagsLocked, handleSpecialTagClick },
         documentStore: { data, pathname, loading, collection, digestUrl, docRawUrl, thumbnailSrcSet, tab, handleTabChange },
+        searchStore: {
+            searchResultsStore: { previewNextDoc, previewPreviousDoc },
+        },
     } = useSharedStore()
-
-    const { tags, tagsLoading, tagsLocked, handleSpecialTagClick } = useTags()
 
     useEffect(() => {
         if (printMode && !loading && !tagsLoading) {
@@ -106,12 +43,12 @@ export const Document = observer(({ onPrev, onNext }) => {
     }, [printMode, loading, tagsLoading])
 
     const headerLinks = {
-        actions: [],
-        navigation: [],
-        tags: [],
+        actions: [] as ToolbarLink[],
+        navigation: [] as ToolbarLink[],
+        tags: [] as ToolbarLink[],
     }
 
-    const tagsLinks = []
+    const tagsLinks = [] as ToolbarLink[]
 
     if (loading) {
         return <Loading />
@@ -146,38 +83,38 @@ export const Document = observer(({ onPrev, onNext }) => {
             href: docRawUrl,
             tooltip: 'Download original file',
             icon: reactIcons.download,
-            target: fullPage ? null : '_blank',
+            target: fullPage ? undefined : '_blank',
         })
 
         headerLinks.actions.push(
             ...ocrData.map(({ tag }) => ({
-                href: createOcrUrl(digestUrl, tag),
+                href: createOcrUrl(digestUrl || '', tag),
                 tooltip: `OCR ${tag}`,
                 icon: reactIcons.ocr,
-                target: fullPage ? null : '_blank',
+                target: fullPage ? undefined : '_blank',
             }))
         )
 
-        if (onPrev) {
+        if (previewNextDoc) {
             headerLinks.navigation.push({
                 icon: reactIcons.chevronLeft,
                 tooltip: 'Previous result',
-                onClick: onPrev,
+                onClick: previewNextDoc,
             })
         }
 
-        if (onNext) {
+        if (previewPreviousDoc) {
             headerLinks.navigation.push({
                 icon: reactIcons.chevronRight,
                 tooltip: 'Next result',
-                onClick: onNext,
+                onClick: previewPreviousDoc,
             })
         }
 
         Object.entries(specialTags).forEach(([tag, params]) => {
-            const present = tags.find((current) => current.tag === tag && current.public === params.public && current.user === user.username)
+            const present = tags.find((current: Tag) => current.tag === tag && current.public === params.public && current.user === user.username)
             const count =
-                tags.filter((current) => current.tag === tag && current.public === params.public && current.user !== user.username)?.length || null
+                tags.filter((current: Tag) => current.tag === tag && current.public === params.public && current.user !== user.username)?.length || 0
             const link = {
                 icon: present ? reactIcons[params.present.icon] : reactIcons[params.absent.icon],
                 label: present ? params.present.label : params.absent.label,
@@ -293,9 +230,9 @@ export const Document = observer(({ onPrev, onNext }) => {
                                                     label={
                                                         !!getTagIcon(chip.tag, chip.public) ? (
                                                             <>
-                                                                {cloneElement(getTagIcon(chip.tag, chip.public), {
+                                                                {cloneElement(getTagIcon(chip.tag, chip.public) as ReactElement, {
                                                                     style: {
-                                                                        ...getTagIcon(chip.tag, chip.public).props.style,
+                                                                        ...(getTagIcon(chip.tag, chip.public) as ReactElement).props.style,
                                                                         marginLeft: -4,
                                                                         marginTop: -2,
                                                                         marginRight: 2,
@@ -347,7 +284,7 @@ export const Document = observer(({ onPrev, onNext }) => {
             {tabsData
                 .filter((tabData) => tabData.visible)
                 .map((tabData, index) => (
-                    <Box key={index} className={index === tab ? classes.activeTab : null}>
+                    <Box key={index} className={index === tab ? classes.activeTab : undefined}>
                         {printMode && (
                             <Typography variant="h3" className={classes.printTitle}>
                                 {tabData.name}

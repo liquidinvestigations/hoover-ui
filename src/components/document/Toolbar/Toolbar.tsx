@@ -1,24 +1,28 @@
 import { Badge, Box, IconButton, Toolbar as MuiToolbar, Tooltip } from '@mui/material'
-import { makeStyles } from '@mui/styles'
+import { CSSProperties, FC, ReactElement, MouseEvent } from 'react'
 
-const useStyles = makeStyles((theme) => ({
-    toolbar: {
-        backgroundColor: theme.palette.grey[100],
-        borderBottomColor: theme.palette.grey[400],
-        borderBottomWidth: 1,
-        borderBottomStyle: 'solid',
-        justifyContent: 'space-between',
-    },
-    toolbarIcon: {
-        marginRight: theme.spacing(1),
-        '&:last-child': {
-            marginRight: 0,
-        },
-    },
-}))
+import { useStyles } from './Toolbar.styles'
 
-export default function Toolbar({ links }) {
-    const classes = useStyles()
+export interface ToolbarLink {
+    icon: ReactElement
+    label?: string
+    style?: CSSProperties
+    tooltip?: string
+    disabled?: boolean
+    count?: number
+    onClick?: (event: MouseEvent) => void
+    href?: string
+    target?: string
+}
+
+interface ToolbarProps {
+    links: {
+        [group: string]: ToolbarLink[]
+    }
+}
+
+export const Toolbar: FC<ToolbarProps> = ({ links }) => {
+    const { classes } = useStyles()
 
     return (
         <MuiToolbar variant="dense" classes={{ root: classes.toolbar }}>
@@ -26,7 +30,7 @@ export default function Toolbar({ links }) {
                 <Box key={group}>
                     {links.map(({ tooltip, icon, count, ...props }, index) => (
                         <Tooltip title={tooltip} key={index}>
-                            <IconButton size="small" component="a" className={classes.toolbarIcon} {...props}>
+                            <IconButton size="small" className={classes.toolbarIcon} {...props}>
                                 <Badge badgeContent={count} color="secondary">
                                     {icon}
                                 </Badge>

@@ -1,4 +1,5 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
+import { SyntheticEvent } from 'react'
 
 import { createDownloadUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI } from '../backend/api'
 import { DocumentData, OcrData, RequestError } from '../Types'
@@ -37,12 +38,8 @@ export class DocumentStore {
 
     subTab = 0
 
-    hashStore
-
-    constructor(hashStore: HashStateStore) {
+    constructor(private readonly hashStore: HashStateStore) {
         makeAutoObservable(this)
-
-        this.hashStore = hashStore
 
         runInAction(() => {
             const hashState = this.hashStore.hashState
@@ -167,12 +164,12 @@ export class DocumentStore {
         this.thumbnailSrcSet = createThumbnailSrcSet(`${this.collectionBaseUrl}/${data.id}`)
     }
 
-    handleTabChange = (_event: Event, tab: number) => {
+    handleTabChange = (_event: SyntheticEvent, tab: number) => {
         this.tab = tab
         this.hashStore.setHashState({ tab: tab.toString() }, false)
     }
 
-    handleSubTabChange = (_event: Event, subTab: number) => {
+    handleSubTabChange = (_event: SyntheticEvent, subTab: number) => {
         this.subTab = subTab
         this.hashStore.setHashState({ subTab: subTab.toString() }, false)
     }

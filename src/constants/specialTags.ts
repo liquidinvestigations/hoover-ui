@@ -1,24 +1,22 @@
-export interface SpecialTags {
-    [tag: string]: {
+export interface SpecialTag {
+    color: string
+    public: boolean
+    tooltip: string
+    present: {
+        icon: string
         color: string
-        public: boolean
-        tooltip: string
-        present: {
-            icon: string
-            color: string
-            label?: string
-        }
-        absent: {
-            icon: string
-            color: string
-            label?: string
-        }
-        showInToolbar: boolean
-        showInTagsTab: boolean
+        label?: string
     }
+    absent: {
+        icon: string
+        color: string
+        label?: string
+    }
+    showInToolbar: boolean
+    showInTagsTab: boolean
 }
 
-export const specialTags: SpecialTags = {
+export const specialTags: Record<string, SpecialTag> = {
     starred: {
         color: '#ffda80',
         public: false,

@@ -12,7 +12,6 @@ import { Finder } from '../../finder/Finder'
 import Locations from '../../Locations'
 import { useSharedStore } from '../../SharedStoreProvider'
 import { Document } from '../Document'
-import { TagsProvider } from '../TagsProvider'
 
 import { useStyles } from './DocPage.styles'
 
@@ -38,30 +37,22 @@ export const DocPage: FC = observer(() => {
         )
     }
 
-    const infoPane = (
-        <TagsProvider>
-            {!digest ? (
-                <Document />
-            ) : (
-                <SplitPaneLayout
-                    container={false}
-                    left={loading ? null : <Locations data={data} url={digestUrl} />}
-                    defaultSizeLeft="25%"
-                    defaultSizeMiddle="70%">
-                    <Document />
-                </SplitPaneLayout>
-            )}
-        </TagsProvider>
+    const infoPane = !digest ? (
+        <Document />
+    ) : (
+        <SplitPaneLayout
+            container={false}
+            left={loading ? null : <Locations data={data} url={digestUrl} />}
+            defaultSizeLeft="25%"
+            defaultSizeMiddle="70%">
+            <Document />
+        </SplitPaneLayout>
     )
 
     let content
 
     if (printMode) {
-        content = (
-            <TagsProvider>
-                <Document />
-            </TagsProvider>
-        )
+        content = <Document />
     } else {
         content = urlIsSha ? (
             <>

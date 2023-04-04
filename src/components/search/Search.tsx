@@ -1,14 +1,12 @@
 import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Tooltip, Typography } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import Router from 'next/router'
-import { cloneElement, useEffect } from 'react'
+import { cloneElement, FC, FormEvent, KeyboardEvent, useEffect } from 'react'
 
 import { tooltips } from '../../constants/help'
 import { reactIcons } from '../../constants/icons'
 import { SplitPaneLayout } from '../common/SplitPaneLayout/SplitPaneLayout'
 import { Document } from '../document/Document'
-import { TagsProvider } from '../document/TagsProvider'
-import { useProgressIndicator } from '../ProgressIndicator'
 import { useSharedStore } from '../SharedStoreProvider'
 
 import { Categories } from './filters/Categories/Categories'
@@ -21,7 +19,7 @@ import { useStyles } from './Search.styles'
 import { SortingChips } from './sorting/SortingChips/SortingChips'
 import { SortingMenu } from './sorting/SortingMenu/SortingMenu'
 
-export const Search = observer(() => {
+export const Search: FC = observer(() => {
     const { classes } = useStyles()
     const {
         searchStore: {
@@ -43,10 +41,10 @@ export const Search = observer(() => {
 
     const clearInput = () => {
         clearSearchText()
-        inputRef.current.focus()
+        inputRef.current?.focus()
     }
 
-    const clearSearchResults = (url) => {
+    const clearSearchResults = (url: string) => {
         if (url === '/') {
             clearInput()
             clearResults()
@@ -61,17 +59,19 @@ export const Search = observer(() => {
         }
     })
 
+    /*
     const { setLoading } = useProgressIndicator()
     useEffect(() => {
         setLoading(resultsLoading)
     }, [resultsLoading, setLoading])
+     */
 
-    const handleSubmit = (event) => {
+    const handleSubmit = (event: FormEvent) => {
         event.preventDefault()
         search()
     }
 
-    const handleInputKey = (event) => {
+    const handleInputKey = (event: KeyboardEvent) => {
         if (event.key === 'Enter' && !event.shiftKey) {
             handleSubmit(event)
         }
@@ -87,11 +87,7 @@ export const Search = observer(() => {
                         left={drawerPinned && <div ref={setDrawerRef} />}
                         onLeftChange={(size) => setDrawerWidth(size)}
                         defaultSizeLeft={drawerWidth}
-                        right={
-                            <TagsProvider>
-                                <Document onPrev={previewPreviousDoc} onNext={previewNextDoc} />
-                            </TagsProvider>
-                        }>
+                        right={<Document />}>
                         <div className={classes.main} ref={drawerPinned ? undefined : setDrawerRef}>
                             <Grid container>
                                 <Grid item sm={12}>
@@ -122,7 +118,7 @@ export const Search = observer(() => {
                                             </Grid>
 
                                             <Grid item style={{ marginLeft: 20, marginBottom: 7 }}>
-                                                <Tooltip interactive="true" classes={{ tooltip: classes.noMaxWidth }} title={tooltips.search}>
+                                                <Tooltip classes={{ tooltip: classes.noMaxWidth }} title={tooltips.search}>
                                                     {cloneElement(reactIcons.help, { className: classes.help })}
                                                 </Tooltip>
                                             </Grid>

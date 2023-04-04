@@ -53,7 +53,7 @@ export interface SearchQueryParams {
     q: string
     page: number
     size: number
-    collections: Category[]
+    collections: string[]
     order?: string[][]
     facets?: Record<string, any>
     filters?: Record<string, any>
@@ -142,6 +142,7 @@ export type SourceField =
     | 'thread-index'
     | 'to'
     | 'to.keyword'
+    | 'subject'
     | 'detected-objects.object.keyword'
     | 'image-classes.class.keyword'
     | 'translated-from'
@@ -156,6 +157,8 @@ export type SourceField =
     | 'entity-type.money.keyword'
     | 'tags'
     | 'priv-tags'
+    | 'md5'
+    | 'sha1'
 
 interface HighlightField {
     fragment_size: number
@@ -312,6 +315,8 @@ export interface DocumentContent {
     'translated-from': string[]
     'translated-to': string[]
     'word-count': number
+    tree: string
+    pgp: boolean
 }
 
 export interface DocumentData {
@@ -327,4 +332,5 @@ export interface DocumentData {
     content: DocumentContent
     has_locations: boolean
     version: string
+    safe_html?: string
 }

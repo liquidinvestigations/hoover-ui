@@ -127,7 +127,7 @@ export const createSearchParams = (field: SourceField, term: string | Term) => {
     return params
 }
 
-export const createSearchUrl = (term: Term | string, field: SourceField, collections: Category | Category[], hash: Record<string, any>) => {
+export const createSearchUrl = (term: Term | string, field: SourceField, collections: string | string[], hash: Record<string, any>) => {
     const params = createSearchParams(field, term)
     const hashParams = hash ? '#' + qs.stringify(rollupParams(hash)) : ''
 

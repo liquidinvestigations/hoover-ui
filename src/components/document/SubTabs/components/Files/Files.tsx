@@ -1,55 +1,39 @@
 import { Box, Table, TableBody, TableCell, TableRow } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
-import { useState } from 'react'
+import { SyntheticEvent, useState } from 'react'
 
-import { createDownloadUrl, doc as docAPI } from '../../backend/api'
-import { reactIcons } from '../../constants/icons'
-import { humanFileSize } from '../../utils/utils'
-import Loading from '../Loading'
-import { useSharedStore } from '../SharedStoreProvider'
+import { createDownloadUrl, doc as docAPI } from '../../../../../backend/api'
+import { reactIcons } from '../../../../../constants/icons'
+import { humanFileSize } from '../../../../../utils/utils'
+import Loading from '../../../../Loading'
+import { useSharedStore } from '../../../../SharedStoreProvider'
 
-const useStyles = makeStyles((theme) => ({
-    box: {
-        overflowX: 'auto',
-    },
-    cell: {
-        paddingTop: theme.spacing(1),
-        paddingBottom: theme.spacing(1),
-    },
-    link: {
-        color: theme.palette.grey[600],
-    },
-    more: {
-        padding: theme.spacing(1),
-        borderBottom: 'none',
-    },
-}))
+import { useStyles } from './Files.styles'
 
 export const Files = observer(() => {
-    const classes = useStyles()
+    const { classes } = useStyles()
     const {
         fullPage,
         documentStore: { data, collectionBaseUrl, pathname },
     } = useSharedStore()
 
-    const [files, setFiles] = useState(data.children)
-    const [currentPage, setCurrentPage] = useState(data.children_page)
-    const [currentHasNextPage, setCurrentHasNextPage] = useState(data.children_has_next_page)
+    const [files, setFiles] = useState(data?.children)
+    const [currentPage, setCurrentPage] = useState(data?.children_page)
+    const [currentHasNextPage, setCurrentHasNextPage] = useState(data?.children_has_next_page)
     const [isFetchingChildrenPage, setFetchingChildrenPage] = useState(false)
 
-    const loadMore = async (event) => {
+    const loadMore = async (event: SyntheticEvent) => {
         event.preventDefault()
         setFetchingChildrenPage(true)
-        const nextDoc = await docAPI(pathname, currentPage + 1)
+        const nextDoc = await docAPI(pathname, (currentPage || 0) + 1)
         setCurrentPage(nextDoc.children_page)
         setCurrentHasNextPage(nextDoc.children_has_next_page)
-        setFiles([...files, ...nextDoc.children])
+        setFiles([...(files || []), ...nextDoc.children])
         setFetchingChildrenPage(false)
     }
 
-    const filesRows = files.map(({ id, digest, file, filename, content_type, filetype, size }, index) => (
+    const filesRows = files?.map(({ id, digest, file, filename, content_type, filetype, size }, index) => (
         <TableRow key={index}>
             <TableCell className={classes.cell}>
                 {id ? <Link href={`${collectionBaseUrl}/${file || id}`}>{filename}</Link> : <span>{filename}</span>}
@@ -58,7 +42,7 @@ export const Files = observer(() => {
                 {digest && (
                     <a
                         href={createDownloadUrl(`${collectionBaseUrl}/${digest}`, filename)}
-                        target={fullPage ? null : '_blank'}
+                        target={fullPage ? undefined : '_blank'}
                         rel="noreferrer"
                         title="Original file"
                         className={classes.link}>
@@ -82,7 +66,7 @@ export const Files = observer(() => {
                                 {isFetchingChildrenPage ? (
                                     <Loading />
                                 ) : (
-                                    <a href="#" onClick={loadMore}>
+                                    <a href="src/components/document#" onClick={loadMore}>
                                         load more...
                                     </a>
                                 )}

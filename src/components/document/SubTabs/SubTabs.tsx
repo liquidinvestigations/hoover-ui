@@ -1,38 +1,29 @@
 import { Box, Tab, Tabs, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import { observer } from 'mobx-react-lite'
-import { cloneElement } from 'react'
+import { cloneElement, ReactElement } from 'react'
 
-import { createOcrUrl } from '../../backend/api'
-import { reactIcons } from '../../constants/icons'
-import { Expandable } from '../common/Expandable/Expandable'
-import PDFViewer from '../pdf-viewer/Dynamic'
-import { useSharedStore } from '../SharedStoreProvider'
+import { createOcrUrl } from '../../../backend/api'
+import { reactIcons } from '../../../constants/icons'
+import { Expandable } from '../../common/Expandable/Expandable'
+import PDFViewer from '../../pdf-viewer/Dynamic'
+import { useSharedStore } from '../../SharedStoreProvider'
+import { TabPanel } from '../TabPanel/TabPanel'
 
-import { Email } from './Email'
-import { Files } from './Files'
-import Preview, { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './Preview'
-import { TabPanel } from './TabPanel'
-import { Text } from './Text'
+import { Email } from './components/Email/Email'
+import { Files } from './components/Files/Files'
+import { Preview, PREVIEWABLE_MIME_TYPE_SUFFEXES } from './components/Preview/Preview'
+import { Text } from './components/Text/Text'
+import { useStyles } from './SubTabs.styles'
 
-const useStyles = makeStyles((theme) => ({
-    printTitle: {
-        margin: theme.spacing(2),
-    },
-    icon: {
-        verticalAlign: 'bottom',
-        marginRight: theme.spacing(1),
-    },
-    subTab: {
-        height: '100%',
-        overflow: 'auto',
-        display: 'flex',
-        flexDirection: 'column',
-    },
-}))
+interface Tab {
+    tag: string
+    name: string
+    icon: ReactElement
+    content: ReactElement
+}
 
 export const SubTabs = observer(() => {
-    const classes = useStyles()
+    const { classes } = useStyles()
     const {
         printMode,
         documentStore: { data, digestUrl, docRawUrl, ocrData, collection, subTab, handleSubTabChange },
@@ -51,16 +42,19 @@ export const SubTabs = observer(() => {
             name: 'Extracted from file',
             icon: reactIcons.content,
             content: <Text content={data.content.text} />,
-        },
+        } as Tab,
     ]
 
     tabs.push(
-        ...ocrData.map(({ tag, text }) => ({
-            tag,
-            name: (tag.startsWith('translated_') ? '' : 'OCR ') + tag,
-            icon: reactIcons.ocr,
-            content: <Text content={text} />,
-        }))
+        ...ocrData.map(
+            ({ tag, text }) =>
+                ({
+                    tag,
+                    name: (tag.startsWith('translated_') ? '' : 'OCR ') + tag,
+                    icon: reactIcons.ocr,
+                    content: <Text content={text} />,
+                } as Tab)
+        )
     )
 
     return (
@@ -80,7 +74,7 @@ export const SubTabs = observer(() => {
 
                 {tabs.map(({ tag }, index) => {
                     if (subTab === index && hasPreview && !tag?.startsWith('translated_')) {
-                        if (index !== 0 && data.content['content-type'] === 'application/pdf') {
+                        if (index !== 0 && digestUrl && data.content['content-type'] === 'application/pdf') {
                             return <PDFViewer key={index} url={createOcrUrl(digestUrl, tag)} />
                         } else {
                             return <Preview key={index} />

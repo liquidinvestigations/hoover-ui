@@ -1,10 +1,18 @@
 import { Box, Tooltip } from '@mui/material'
 import { DateTime } from 'luxon'
+import { FC, ReactElement } from 'react'
 
-import { formatDateTime } from '../../utils/utils'
-import { useSharedStore } from '../SharedStoreProvider'
+import { Tag } from '../../../../../stores/TagsStore'
+import { formatDateTime } from '../../../../../utils/utils'
+import { useSharedStore } from '../../../../SharedStoreProvider'
 
-export const TagTooltip = ({ chip, count, children }) => {
+interface TagTooltipProps {
+    chip: Tag
+    count?: number
+    children: ReactElement
+}
+
+export const TagTooltip: FC<TagTooltipProps> = ({ chip, count = 0, children }) => {
     const { user } = useSharedStore()
 
     return (
@@ -13,13 +21,17 @@ export const TagTooltip = ({ chip, count, children }) => {
             title={
                 <>
                     <Box>
-                        <strong>Created on:</strong> {formatDateTime(chip.date_created)}
+                        <strong>Created on:</strong> {formatDateTime(chip.date_created || '')}
                     </Box>
                     <Box>
                         {chip.date_indexed ? (
                             <>
                                 Indexed in
-                                <strong>{DateTime.fromISO(chip.date_indexed).diff(DateTime.fromISO(chip.date_modified)).toFormat(' s.SSS ')}</strong>
+                                <strong>
+                                    {DateTime.fromISO(chip.date_indexed)
+                                        .diff(DateTime.fromISO(chip.date_modified || ''))
+                                        .toFormat(' s.SSS ')}
+                                </strong>
                                 seconds
                             </>
                         ) : (

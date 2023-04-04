@@ -7,6 +7,7 @@ import { HotKeysStore } from './HotKeysStore'
 import { SearchStore } from './search/SearchStore'
 
 import type { CollectionData, User } from '../Types'
+import { TagsStore } from './TagsStore'
 
 export class SharedStore {
     collectionsData: CollectionData[] = []
@@ -25,6 +26,8 @@ export class SharedStore {
 
     documentStore
 
+    tagsStore
+
     hotKeysStore
 
     constructor(readonly user: User) {
@@ -35,6 +38,7 @@ export class SharedStore {
         this.hashStore = new HashStateStore(this)
         this.searchStore = new SearchStore(this)
         this.documentStore = new DocumentStore(this.hashStore)
+        this.tagsStore = new TagsStore(this.documentStore)
         this.hotKeysStore = new HotKeysStore(this.hashStore, this.documentStore, this.searchStore)
 
         makeAutoObservable(this)

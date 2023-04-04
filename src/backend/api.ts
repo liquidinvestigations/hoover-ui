@@ -4,6 +4,8 @@ import memoize from 'lodash/memoize'
 import fetch from 'node-fetch'
 import { stringify } from 'qs'
 
+import { Tag } from '../stores/TagsStore'
+
 import buildSearchQuery, { FieldList, SearchFields } from './buildSearchQuery'
 
 import type { SearchQueryParams, SearchQueryType } from '../Types'
@@ -92,18 +94,13 @@ export const tags = (docUrl: string) => fetchJson(buildUrl(docUrl, 'tags'))
 
 export const tag = (docUrl: string, tagId: string) => fetchJson(buildUrl(docUrl, 'tags', tagId))
 
-export interface TagData {
-    tag: string
-    public: boolean
-}
-
-export const createTag = (docUrl: string, data: TagData) =>
+export const createTag = (docUrl: string, data: Pick<Tag, 'tag' | 'public'>) =>
     fetchJson(buildUrl(docUrl, 'tags'), {
         method: 'POST',
         body: JSON.stringify(data),
     })
 
-export const updateTag = (docUrl: string, tagId: string, data: TagData) =>
+export const updateTag = (docUrl: string, tagId: string, data: Pick<Tag, 'public'>) =>
     fetchJson(buildUrl(docUrl, 'tags', tagId), {
         method: 'PATCH',
         body: JSON.stringify(data),

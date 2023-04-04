@@ -1,36 +1,27 @@
 import { Box, Divider, List, ListItem, ListItemText, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, MouseEvent } from 'react'
 
-import { flatten, formatDateTime, getLanguageName, humanFileSize, shortenName } from '../../utils/utils'
-import { useSharedStore } from '../SharedStoreProvider'
+import { DocumentContent, SourceField } from '../../../../../Types'
+import { flatten, formatDateTime, getLanguageName, humanFileSize, shortenName } from '../../../../../utils/utils'
+import { useSharedStore } from '../../../../SharedStoreProvider'
+import LinkMenu from '../../../LinkMenu'
 
-import LinkMenu from './LinkMenu'
+import { useStyles } from './Meta.styles'
 
-const useStyles = makeStyles((theme) => ({
-    icon: {
-        transform: 'rotate(-90deg)',
-    },
-    raw: {
-        fontFamily: 'monospace',
-        fontSize: '12px',
-    },
-    rawIcon: {
-        fontSize: '1rem',
-        transform: 'rotate(-90deg)',
-    },
-    searchField: {
-        cursor: 'pointer',
-        borderBottom: '1px dotted ' + theme.palette.grey[400],
-    },
-    score: {
-        color: theme.palette.grey[500],
-    },
-}))
-
-const tableFields = {
+const tableFields: Partial<
+    Record<
+        SourceField,
+        {
+            label: string
+            searchKey?: SourceField
+            visible?: (content?: Partial<DocumentContent>) => boolean
+            format?: (term?: any) => string
+            searchTerm?: (term: any) => string
+        }
+    >
+> = {
     filename: {
         label: 'Filename',
     },
@@ -40,67 +31,67 @@ const tableFields = {
     },
     filetype: {
         label: 'Type',
-        visible: (content) => !!content.filetype,
+        visible: (content) => !!content?.filetype,
     },
     md5: {
         label: 'MD5',
-        visible: (content) => content.filetype !== 'folder' && content.md5,
+        visible: (content) => content?.filetype !== 'folder' && !!content?.md5,
     },
     sha1: {
         label: 'SHA1',
-        visible: (content) => content.filetype !== 'folder' && content.sha1,
+        visible: (content) => content?.filetype !== 'folder' && !!content?.sha1,
     },
     lang: {
         label: 'Language',
         format: getLanguageName,
-        visible: (content) => !!content.lang,
+        visible: (content) => !!content?.lang,
     },
     date: {
         label: 'Modified',
         format: formatDateTime,
-        visible: (content) => !!content.date,
+        visible: (content) => !!content?.date,
     },
     'date-created': {
         label: 'Created',
         format: formatDateTime,
-        visible: (content) => !!content['date-created'],
+        visible: (content) => !!content?.['date-created'],
     },
     pgp: {
         label: 'PGP',
         format: () => 'true',
         searchTerm: () => 'true',
-        visible: (content) => !!content.pgp,
+        visible: (content) => !!content?.pgp,
     },
     'word-count': {
         label: 'Word count',
         searchTerm: (term) => term.toString(),
-        visible: (content) => !!content['word-count'],
+        visible: (content) => !!content?.['word-count'],
     },
     size: {
         label: 'Size',
         format: humanFileSize,
         searchTerm: (term) => term.toString(),
-        visible: (content) => !!content.size,
+        visible: (content) => !!content?.size,
     },
 }
 
 export const Meta = observer(() => {
-    const classes = useStyles()
+    const { classes } = useStyles()
     const { data, collection, collectionBaseUrl } = useSharedStore().documentStore
 
-    const [menuPosition, setMenuPosition] = useState(null)
-    const [currentLink, setCurrentLink] = useState(null)
+    const [menuPosition, setMenuPosition] = useState<{ left: number; top: number } | undefined>()
+    const [currentLink, setCurrentLink] = useState<{ field: string; term: string | string[] } | undefined>()
 
-    const handleLinkClick = (field, term) => (event) => {
+    const handleLinkClick = (field: string, term: any) => (event: MouseEvent) => {
         setCurrentLink({ field, term })
         setMenuPosition({ left: event.clientX, top: event.clientY })
     }
 
     const handleLinkMenuClose = () => {
-        setMenuPosition(null)
+        setMenuPosition(undefined)
     }
 
-    const getFieldSearchKey = (key) => {
+    const getFieldSearchKey = (key: string) => {
         switch (key) {
             case 'detected-objects':
                 return `${key}.object.keyword`
@@ -111,7 +102,7 @@ export const Meta = observer(() => {
         }
     }
 
-    const getFieldValue = (key, value) => {
+    const getFieldValue = (key: string, value: any) => {
         switch (key) {
             case 'detected-objects':
                 return value['object']
@@ -122,7 +113,7 @@ export const Meta = observer(() => {
         }
     }
 
-    const getFieldScore = (key, value) => {
+    const getFieldScore = (key: string, value: any) => {
         switch (key) {
             case 'detected-objects':
             case 'image-classes':
@@ -132,8 +123,8 @@ export const Meta = observer(() => {
         }
     }
 
-    const renderElement = (key, value, index) => (
-        <Typography key={index} component="pre" variant="caption" className={classes.raw}>
+    const renderElement = (key: string, value: any, componentKey: string) => (
+        <Typography key={componentKey} component="pre" variant="caption" className={classes.raw}>
             <strong>{key}:</strong>{' '}
             <span className={classes.searchField} onClick={handleLinkClick(getFieldSearchKey(key), getFieldValue(key, value))}>
                 {shortenName(getFieldValue(key, value), 200)}
@@ -149,7 +140,7 @@ export const Meta = observer(() => {
                     <ListItemText primary="Collection" secondary={collection} />
                 </ListItem>
 
-                {!!data.digest && (
+                {!!data?.digest && (
                     <ListItem disableGutters>
                         <ListItemText
                             primary="ID"
@@ -163,11 +154,15 @@ export const Meta = observer(() => {
                 )}
 
                 {Object.entries(tableFields)
-                    .filter(([, config]) => !config.visible || config.visible(data.content) !== false)
+                    .filter(([, config]) => !config.visible || config.visible(data?.content) !== false)
                     .map(([field, config]) => {
-                        const display = config.format ? config.format(data.content[field]) : data.content[field]
+                        const display = config.format
+                            ? config.format(data?.content?.[field as keyof DocumentContent])
+                            : (data?.content[field as keyof DocumentContent] as string)
                         const searchKey = config.searchKey || field
-                        const searchTerm = config.searchTerm ? config.searchTerm(data.content[field]) : data.content[field]
+                        const searchTerm = config.searchTerm
+                            ? config.searchTerm(data?.content?.[field as keyof DocumentContent])
+                            : data?.content[field as keyof DocumentContent]
 
                         return (
                             <ListItem key={field} disableGutters>
@@ -189,28 +184,31 @@ export const Meta = observer(() => {
             <Divider />
 
             <Box>
-                {Object.entries(data.content)
-                    .filter(
-                        ([key, value]) =>
-                            !['text', 'ocrtext', 'path-text', 'path-parts'].includes(key) &&
-                            ((!Array.isArray(value) && value) || (Array.isArray(value) && value.length))
-                    )
-                    .map(([key, value]) => {
-                        let elements
-                        if (Array.isArray(value)) {
-                            elements = { [key]: value }
-                        } else if (typeof value === 'object') {
-                            elements = flatten(value, [key])
-                        } else if (typeof value === 'boolean') {
-                            elements = { [key]: value ? 'true' : 'false' }
-                        } else {
-                            elements = { [key]: value }
-                        }
-
-                        return Object.entries(elements).map(([key, value], index) =>
-                            Array.isArray(value) ? value.map((v, i) => renderElement(key, v, `${index}-${i}`)) : renderElement(key, value, index)
+                {data &&
+                    Object.entries(data.content)
+                        .filter(
+                            ([key, value]) =>
+                                !['text', 'ocrtext', 'path-text', 'path-parts'].includes(key) &&
+                                ((!Array.isArray(value) && value) || (Array.isArray(value) && value.length))
                         )
-                    })}
+                        .map(([key, value]) => {
+                            let elements
+                            if (Array.isArray(value)) {
+                                elements = { [key]: value }
+                            } else if (typeof value === 'object') {
+                                elements = flatten(value, [key])
+                            } else if (typeof value === 'boolean') {
+                                elements = { [key]: value ? 'true' : 'false' }
+                            } else {
+                                elements = { [key]: value }
+                            }
+
+                            return Object.entries(elements).map(([key, value], index) =>
+                                Array.isArray(value)
+                                    ? value.map((v, i) => renderElement(key, v, `${index}-${i}`))
+                                    : renderElement(key, value, index.toString())
+                            )
+                        })}
             </Box>
 
             <LinkMenu link={currentLink} anchorPosition={menuPosition} onClose={handleLinkMenuClose} />
