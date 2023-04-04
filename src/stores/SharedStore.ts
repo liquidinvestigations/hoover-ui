@@ -5,9 +5,9 @@ import { DocumentStore } from './DocumentStore'
 import { HashStateStore } from './HashStateStore'
 import { HotKeysStore } from './HotKeysStore'
 import { SearchStore } from './search/SearchStore'
+import { TagsStore } from './TagsStore'
 
 import type { CollectionData, User } from '../Types'
-import { TagsStore } from './TagsStore'
 
 export class SharedStore {
     collectionsData: CollectionData[] = []

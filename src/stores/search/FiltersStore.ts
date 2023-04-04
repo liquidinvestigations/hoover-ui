@@ -195,8 +195,8 @@ export class FiltersStore {
 
     handleDateSelectionChange = (field: SourceField, value: string, resetPage: boolean) => () => {
         const queryFilter = this.searchStore.query?.filters?.[field]
-        const newIntervals = this.processFilterParams(queryFilter.intervals, value)
         const { intervals, missing, ...rest } = queryFilter || {}
+        const newIntervals = this.processFilterParams(intervals, value)
         if (newIntervals.include?.length /*|| newIntervals.missing*/) {
             this.handleChange(field, { intervals: newIntervals, ...rest }, resetPage)
         } else {

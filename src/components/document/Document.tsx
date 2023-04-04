@@ -12,14 +12,14 @@ import Loading from '../Loading'
 import { useSharedStore } from '../SharedStoreProvider'
 
 import { useStyles } from './Document.styles'
+import { StyledTab } from './StyledTab'
 import { HTML } from './SubTabs/components/HTML'
 import { Meta } from './SubTabs/components/Meta/Meta'
-import { StyledTab } from './StyledTab'
-import { SubTabs } from './SubTabs/SubTabs'
-import { TabPanel } from './TabPanel/TabPanel'
 import { Tags, getChipColor } from './SubTabs/components/Tags/Tags'
 import { TagTooltip } from './SubTabs/components/Tags/TagTooltip'
 import { Text } from './SubTabs/components/Text/Text'
+import { SubTabs } from './SubTabs/SubTabs'
+import { TabPanel } from './TabPanel/TabPanel'
 import { Toolbar, ToolbarLink } from './Toolbar/Toolbar'
 
 export const Document = observer(() => {
@@ -162,7 +162,7 @@ export const Document = observer(() => {
             name: 'HTML',
             icon: reactIcons.codeTab,
             visible: !!data.safe_html,
-            content: <HTML html={data.safe_html} />,
+            content: <HTML html={data.safe_html || ''} />,
         },
         {
             name: 'Headers & Parts',

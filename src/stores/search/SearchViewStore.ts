@@ -23,7 +23,7 @@ export class SearchViewStore {
 
     drawerPinned: boolean = true
 
-    searchCollections: Category[] = []
+    searchCollections: string[] = []
 
     searchText: string = ''
 
