@@ -1,20 +1,21 @@
 import { Button } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
-import { useSharedStore } from './SharedStoreProvider'
+import { useSharedStore } from '../../SharedStoreProvider'
 
-const useStyles = makeStyles((theme) => ({
-    link: {
-        color: 'white',
-        textDecoration: 'none',
-    },
-}))
+import { useStyles } from './Menu.styles'
+
+interface Link {
+    name: string
+    url: string
+    next?: boolean
+    type?: 'admin' | 'logged-in' | 'not-logged-in'
+}
 
 export const Menu = observer(() => {
-    const classes = useStyles()
+    const { classes } = useStyles()
     const router = useRouter()
     const { user } = useSharedStore()
 
@@ -25,7 +26,7 @@ export const Menu = observer(() => {
         return null
     }
 
-    const links = () =>
+    const links: Link[] = (
         [
             {
                 name: 'Search',
@@ -44,9 +45,9 @@ export const Menu = observer(() => {
             },
             process.env.HOOVER_UPLOADS_ENABLED
                 ? {
-                    name: 'Uploads',
-                    url: '/uploads',
-                    next: true,
+                      name: 'Uploads',
+                      url: '/uploads',
+                      next: true,
                   }
                 : false,
             process.env.HOOVER_MAPS_ENABLED
@@ -90,11 +91,10 @@ export const Menu = observer(() => {
                 url: user.urls.logout,
                 type: 'logged-in',
             },
-        ]
-            .filter(Boolean)
-            .map((link) => ({ ...link, active: router.asPath === link.url }))
+        ].filter(Boolean) as Link[]
+    ).map((link) => ({ ...link, active: router.asPath === link.url }))
 
-    const shouldShow = (link) => {
+    const shouldShow = (link: Link) => {
         if (link.type === 'admin') {
             return user.admin
         }
@@ -109,21 +109,19 @@ export const Menu = observer(() => {
 
     return (
         <>
-            {links()
-                .filter(shouldShow)
-                .map((link) =>
-                    !link.next ? (
-                        <Button key={link.name} variant="text" href={link.url} color="inherit">
+            {links.filter(shouldShow).map((link) =>
+                !link.next ? (
+                    <Button key={link.name} variant="text" href={link.url} color="inherit">
+                        {link.name}
+                    </Button>
+                ) : (
+                    <Link key={link.name} href={link.url} shallow className={classes.link}>
+                        <Button variant="text" href={link.url} color="inherit" component="span">
                             {link.name}
                         </Button>
-                    ) : (
-                        <Link key={link.name} href={link.url} shallow className={classes.link}>
-                            <Button variant="text" href={link.url} color="inherit" component="span">
-                                {link.name}
-                            </Button>
-                        </Link>
-                    )
-                )}
+                    </Link>
+                )
+            )}
         </>
     )
 })

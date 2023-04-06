@@ -4,7 +4,7 @@ import { FC, useEffect, useState } from 'react'
 
 import { doc as docAPI } from '../../backend/api'
 import { getBasePath } from '../../utils/utils'
-import ErrorBoundary from '../ErrorBoundary'
+import { ErrorBoundary } from '../ErrorBoundary'
 import { useSharedStore } from '../SharedStoreProvider'
 
 import { FinderColumn } from './FinderColumn'

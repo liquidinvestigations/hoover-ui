@@ -2,30 +2,25 @@ import { GetServerSidePropsContext, NextPage } from 'next'
 
 import { collections as collectionsAPI } from '../src/backend/api'
 import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
-import { Search } from '../src/components/search/Search'
+import Insights from '../src/components/insights/Insights'
 import { SearchProvider } from '../src/components/search/SearchProvider'
 import { useSharedStore } from '../src/components/SharedStoreProvider'
+import { CollectionData } from '../src/Types'
 
-import type { CollectionData } from '../src/Types'
-
-interface IndexProps {
+interface InsightsPageProps {
     collectionsData: CollectionData[]
     serverQuery: string
 }
 
-const Index: NextPage<IndexProps> = ({ collectionsData, serverQuery }) => {
+const InsightsPage: NextPage<InsightsPageProps> = ({ collectionsData, serverQuery }) => {
     const store = useSharedStore()
 
     store.collectionsData = collectionsData
     const query = store.searchStore.parseSearchParams(serverQuery)
 
-    if (query.q) {
-        store.searchStore.search(query)
-    }
-
     return (
         <SearchProvider serverQuery={serverQuery}>
-            <Search />
+            <Insights collectionsData={collectionsData} />
         </SearchProvider>
     )
 }
@@ -39,4 +34,4 @@ export async function getServerSideProps({ req }: GetServerSidePropsContext) {
     return { props: { collectionsData, serverQuery } }
 }
 
-export default Index
+export default InsightsPage

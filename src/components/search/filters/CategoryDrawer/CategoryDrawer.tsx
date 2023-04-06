@@ -6,8 +6,8 @@ import { Transition } from 'react-transition-group'
 
 import { reactIcons } from '../../../../constants/icons'
 import { Category } from '../../../../Types'
+import { ThinProgress } from '../../../common/ThinProgress/ThinProgress'
 import { useSharedStore } from '../../../SharedStoreProvider'
-import { ThinProgress } from '../../ThinProgress'
 
 import { useStyles } from './CategoryDrawer.styles'
 

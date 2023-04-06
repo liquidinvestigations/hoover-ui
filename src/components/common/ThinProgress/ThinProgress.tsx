@@ -1,7 +1,11 @@
 import { LinearProgress } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 
-export default function IntervalProgress({ classes, eta }) {
+import { useStyles } from './ThinProgress.styles'
+
+export const ThinProgress: FC<{ eta: number }> = ({ eta }) => {
+    const { classes } = useStyles()
+
     const [initialTime, setInitialTime] = useState(Date.now())
     const [value, setValue] = useState(0)
     useEffect(() => {

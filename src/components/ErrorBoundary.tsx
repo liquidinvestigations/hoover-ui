@@ -1,19 +1,29 @@
 import Typography from '@mui/material/Typography'
-import { Component } from 'react'
+import { Component, ErrorInfo, ReactNode } from 'react'
 
 import { logError } from '../backend/api'
 
-export default class ErrorBoundary extends Component {
-    state = { error: null }
+interface ErrorBoundaryProps {
+    visible: boolean
+    children: ReactNode | ReactNode[]
+}
+
+interface ErrorBoundaryState {
+    error: Error | undefined
+    info?: ErrorInfo
+}
+
+export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+    state: ErrorBoundaryState = { error: undefined }
 
     static defaultProps = {
         visible: true,
     }
 
-    componentDidCatch(error, info) {
+    componentDidCatch(error: Error, info: ErrorInfo) {
         console.error(error, info)
         this.setState({ error, info })
-        logError({ error: error.message, info, url: window.location.href })
+        logError({ error: error.message, info: info.componentStack, url: window.location.href })
     }
 
     render() {

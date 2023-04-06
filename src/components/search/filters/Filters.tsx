@@ -16,7 +16,7 @@ import { TermsAggregationFilter } from './TermsAggregationFilter'
 import type { Bucket } from '../../../Types'
 
 export const Filters: FC = observer(() => {
-    const classes = useStyles()
+    const { classes } = useStyles()
     const {
         searchStore: {
             query,

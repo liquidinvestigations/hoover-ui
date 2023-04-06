@@ -1,6 +1,8 @@
 import { makeAutoObservable } from 'mobx'
 import { createObservableHistory, ObservableHistory } from 'mobx-observable-history'
 
+import { Limits } from '../Types'
+
 import { DocumentStore } from './DocumentStore'
 import { HashStateStore } from './HashStateStore'
 import { HotKeysStore } from './HotKeysStore'
@@ -12,7 +14,7 @@ import type { CollectionData, User } from '../Types'
 export class SharedStore {
     collectionsData: CollectionData[] = []
 
-    limits = undefined
+    limits: Limits | undefined = undefined
 
     fullPage = false
 

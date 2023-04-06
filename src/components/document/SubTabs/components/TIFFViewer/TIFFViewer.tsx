@@ -2,7 +2,7 @@ import { Typography } from '@mui/material'
 import { FC, useEffect, useState } from 'react'
 import { decode } from 'tiff'
 
-import Loading from '../../../../Loading'
+import { Loading } from '../../../../common/Loading/Loading'
 
 import { useStyles } from './TIFFViewer.styles'
 
@@ -102,7 +102,10 @@ export const TIFFViewer: FC<{ url: string }> = ({ url }) => {
     return (
         <div className={classes.wrapper}>
             {loading && (
-                <Loading variant={typeof loading === 'number' ? 'determinate' : 'indeterminate'} value={typeof loading === 'number' ? loading : null} />
+                <Loading
+                    variant={typeof loading === 'number' ? 'determinate' : 'indeterminate'}
+                    value={typeof loading === 'number' ? loading : undefined}
+                />
             )}
             {error && <Typography color="error">{error}</Typography>}
             {pages?.map((data) => (

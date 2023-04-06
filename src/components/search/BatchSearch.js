@@ -6,7 +6,7 @@ import { batch } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
 import { createSearchUrl } from '../../utils/queryUtils'
 import { Expandable } from '../common/Expandable/Expandable'
-import Loading from '../Loading'
+import { Loading } from '../common/Loading/Loading'
 
 import BatchResults from './BatchResults'
 import { CollectionsFilter } from './filters/CollectionsFilter/CollectionsFilter'
@@ -24,10 +24,10 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-export default function BatchSearch({ collections, limits }) {
+export default function BatchSearch({ collectionsData, limits }) {
     const classes = useStyles()
 
-    const [selectedCollections, setSelectedCollections] = useState(collections?.map((c) => c.name))
+    const [selectedCollections, setSelectedCollections] = useState(collectionsData?.map((c) => c.name))
     const handleSelectedCollectionsChange = (collections) => {
         setSelectedCollections(collections)
         search(collections)

@@ -8,7 +8,7 @@ import { reactIcons } from '../../../../../constants/icons'
 import { specialTags, specialTagsList } from '../../../../../constants/specialTags'
 import { Hit } from '../../../../../Types'
 import { getPreviewParams, getTypeIcon, humanFileSize, makeUnsearchable, truncatePath } from '../../../../../utils/utils'
-import Loading from '../../../../Loading'
+import { Loading } from '../../../../common/Loading/Loading'
 import { useSharedStore } from '../../../../SharedStoreProvider'
 
 import { useStyles } from './ResultItem.styles'

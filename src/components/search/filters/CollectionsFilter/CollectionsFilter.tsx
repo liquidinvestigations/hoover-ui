@@ -9,7 +9,7 @@ import { useSharedStore } from '../../../SharedStoreProvider'
 import { useStyles } from './CollectionsFilter.styles'
 
 export const CollectionsFilter: FC = observer(() => {
-    const classes = useStyles()
+    const { classes } = useStyles()
     const {
         collectionsData,
         searchStore: {

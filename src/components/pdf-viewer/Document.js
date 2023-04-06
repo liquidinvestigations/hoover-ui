@@ -5,8 +5,8 @@ import { cloneElement, createRef, useCallback, useEffect, useRef, useState } fro
 
 import { reactIcons } from '../../constants/icons'
 import { Expandable } from '../common/Expandable/Expandable'
+import { Loading } from '../common/Loading/Loading'
 import { SplitPaneLayout } from '../common/SplitPaneLayout/SplitPaneLayout'
-import Loading from '../Loading'
 
 import AttachmentsView from './AttachmentsView'
 import BookmarksView from './BookmarksView'

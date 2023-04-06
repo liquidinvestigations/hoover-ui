@@ -6,7 +6,7 @@ import { SyntheticEvent, useState } from 'react'
 import { createDownloadUrl, doc as docAPI } from '../../../../../backend/api'
 import { reactIcons } from '../../../../../constants/icons'
 import { humanFileSize } from '../../../../../utils/utils'
-import Loading from '../../../../Loading'
+import { Loading } from '../../../../common/Loading/Loading'
 import { useSharedStore } from '../../../../SharedStoreProvider'
 
 import { useStyles } from './Files.styles'

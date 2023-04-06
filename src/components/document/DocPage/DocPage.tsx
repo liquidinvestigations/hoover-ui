@@ -29,9 +29,11 @@ export const DocPage: FC = observer(() => {
                 statusCode={error.status}
                 title={error.statusText}
                 message={
-                    <>
-                        Request to <a href={error.url}>{error.url}</a> returned HTTP {error.status} {error.statusText}
-                    </>
+                    (
+                        <>
+                            Request to <a href={error.url}>{error.url}</a> returned HTTP {error.status} {error.statusText}
+                        </>
+                    ) as unknown as string
                 }
             />
         )

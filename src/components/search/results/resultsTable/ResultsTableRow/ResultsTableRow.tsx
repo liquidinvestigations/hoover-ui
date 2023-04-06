@@ -8,7 +8,7 @@ import { reactIcons } from '../../../../../constants/icons'
 import { Hit } from '../../../../../Types'
 import { defaultSearchParams } from '../../../../../utils/queryUtils'
 import { documentViewUrl, formatDateTime, getPreviewParams, getTagIcon, getTypeIcon, humanFileSize, shortenName } from '../../../../../utils/utils'
-import Loading from '../../../../Loading'
+import { Loading } from '../../../../common/Loading/Loading'
 import { useSharedStore } from '../../../../SharedStoreProvider'
 
 import { useStyles } from './ResultsTableRow.styles'

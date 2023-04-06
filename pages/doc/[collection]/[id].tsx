@@ -1,6 +1,5 @@
-import { GetServerSidePropsContext } from 'next'
+import { GetServerSidePropsContext, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { FC } from 'react'
 
 import { collections as collectionsAPI } from '../../../src/backend/api'
 import getAuthorizationHeaders from '../../../src/backend/getAuthorizationHeaders'
@@ -12,7 +11,7 @@ interface DocProps {
     collectionsData: CollectionData[]
 }
 
-const Doc: FC<DocProps> = ({ collectionsData }) => {
+const Doc: NextPage<DocProps> = ({ collectionsData }) => {
     const router = useRouter()
     const store = useSharedStore()
     const { query } = router

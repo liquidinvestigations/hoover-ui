@@ -9,7 +9,7 @@ import { useEffect } from 'react'
 
 import { whoami } from '../src/backend/api'
 import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
-import Layout from '../src/components/Layout'
+import { Layout } from '../src/components/Layout'
 import { SharedStoreProvider } from '../src/components/SharedStoreProvider'
 import { JSS_CSS } from '../src/constants/general'
 import createEmotionCache from '../src/createEmotionCache'

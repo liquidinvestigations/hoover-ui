@@ -2,7 +2,7 @@ import { DateTime } from 'luxon'
 import { useMemo } from 'react'
 
 import { createSearchUrl } from '../../utils/queryUtils'
-import Loading from '../Loading'
+import { Loading } from '../common/Loading/Loading'
 import { formatsLabel, formatsValue } from '../search/filters/DateHistogramFilter'
 import { HistogramChart } from '../search/filters/Histogram/HistogramChart'
 import { useSearch } from '../search/SearchProvider'

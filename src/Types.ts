@@ -18,6 +18,11 @@ export interface User {
     uuid: string
 }
 
+export interface Limits {
+    requests: number
+    batch: number
+}
+
 export interface CollectionData {
     name: Category
     title: string

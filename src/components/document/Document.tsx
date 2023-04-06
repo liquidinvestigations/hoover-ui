@@ -8,7 +8,7 @@ import { reactIcons } from '../../constants/icons'
 import { specialTags } from '../../constants/specialTags'
 import { Tag } from '../../stores/TagsStore'
 import { getTagIcon } from '../../utils/utils'
-import Loading from '../Loading'
+import { Loading } from '../common/Loading/Loading'
 import { useSharedStore } from '../SharedStoreProvider'
 
 import { useStyles } from './Document.styles'

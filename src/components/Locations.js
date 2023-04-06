@@ -8,7 +8,7 @@ import { memo, useEffect, useState } from 'react'
 import { locations as locationsAPI } from '../backend/api'
 import { reactIcons } from '../constants/icons'
 
-import Loading from './Loading'
+import { Loading } from './common/Loading/Loading'
 
 const useStyles = makeStyles((theme) => ({
     error: {

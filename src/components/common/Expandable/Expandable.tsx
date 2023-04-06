@@ -2,7 +2,7 @@ import { CircularProgress, Collapse, Fade, Grid, IconButton, ListItem, Typograph
 import { cloneElement, FC, MouseEvent as ReactMouseEvent, ReactNode, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { reactIcons } from '../../../constants/icons'
-import { ThinProgress } from '../../search/ThinProgress'
+import { ThinProgress } from '../ThinProgress/ThinProgress'
 
 import { useStyles } from './Expandable.styles'
 

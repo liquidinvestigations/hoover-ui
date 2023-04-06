@@ -27,7 +27,7 @@ import { Tag } from '../../../../../stores/TagsStore'
 import { Aggregations, Bucket, CollectionData } from '../../../../../Types'
 import { search as searchAPI } from '../../../../../utils/api'
 import { getTagIcon } from '../../../../../utils/utils'
-import Loading from '../../../../Loading'
+import { Loading } from '../../../../common/Loading/Loading'
 import { useSharedStore } from '../../../../SharedStoreProvider'
 import { ToolbarLink } from '../../../Toolbar/Toolbar'
 

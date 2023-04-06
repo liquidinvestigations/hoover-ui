@@ -29,10 +29,10 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
-export default function Insights({ collections }) {
+export default function Insights({ collectionsData }) {
     const classes = useStyles()
 
-    const [collectionsState, setCollectionsState] = useState(collections)
+    const [collectionsState, setCollectionsState] = useState(collectionsData)
     const intervalRef = useRef(0)
     useEffect(() => {
         if (collectionsState) {
