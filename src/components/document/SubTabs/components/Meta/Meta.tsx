@@ -6,7 +6,7 @@ import { useState, MouseEvent } from 'react'
 import { DocumentContent, SourceField } from '../../../../../Types'
 import { flatten, formatDateTime, getLanguageName, humanFileSize, shortenName } from '../../../../../utils/utils'
 import { useSharedStore } from '../../../../SharedStoreProvider'
-import LinkMenu from '../../../LinkMenu'
+import { LinkMenu } from '../../../LinkMenu'
 
 import { useStyles } from './Meta.styles'
 
@@ -211,7 +211,7 @@ export const Meta = observer(() => {
                         })}
             </Box>
 
-            <LinkMenu link={currentLink} anchorPosition={menuPosition} onClose={handleLinkMenuClose} />
+            <LinkMenu link={currentLink as { field: SourceField; term: string }} anchorPosition={menuPosition} onClose={handleLinkMenuClose} />
         </>
     )
 })

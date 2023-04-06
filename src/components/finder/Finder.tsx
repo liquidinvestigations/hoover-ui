@@ -1,6 +1,6 @@
-import { makeStyles } from '@mui/styles'
 import { observer } from 'mobx-react-lite'
 import { FC, useEffect, useState } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 import { doc as docAPI } from '../../backend/api'
 import { getBasePath } from '../../utils/utils'
@@ -14,7 +14,7 @@ import type { ColumnItem, LocalDocumentData } from './Types'
 
 const parentLevels = 3
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
     container: {
         display: 'flex',
         overflowX: 'auto',
@@ -22,7 +22,7 @@ const useStyles = makeStyles(() => ({
 }))
 
 export const Finder: FC = observer(() => {
-    const classes = useStyles()
+    const { classes } = useStyles()
     const { data, pathname, loading } = useSharedStore().documentStore
 
     const [active, setActive] = useState<LocalDocumentData>()

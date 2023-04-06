@@ -1,6 +1,6 @@
 import { Grid, List, ListItem, Paper, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import { useEffect, useRef, useState } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 import { collectionsInsights } from '../../backend/api'
 import { humanFileSize } from '../../utils/utils'
@@ -13,7 +13,7 @@ import InsightsTitle from './InsightsTitle'
 import TaskErrorsTable from './TaskErrorsTable'
 import TaskTable from './TaskTable'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
     root: {
         padding: theme.spacing(2),
     },
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function Insights({ collectionsData }) {
-    const classes = useStyles()
+    const { classes } = useStyles()
 
     const [collectionsState, setCollectionsState] = useState(collectionsData)
     const intervalRef = useRef(0)

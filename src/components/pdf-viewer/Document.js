@@ -1,7 +1,6 @@
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
-import cx from 'classnames'
 import { cloneElement, createRef, useCallback, useEffect, useRef, useState } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 import { reactIcons } from '../../constants/icons'
 import { Expandable } from '../common/Expandable/Expandable'
@@ -16,7 +15,7 @@ import SideToolbar from './SideToolbar'
 import ThumbnailsView from './ThumbnailsView'
 import Toolbar from './Toolbar'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
     error: {
         padding: theme.spacing(3),
     },
@@ -93,7 +92,7 @@ const useStyles = makeStyles((theme) => ({
 const pageMargin = 20
 
 export default function Document({ initialPageIndex, onPageIndexChange, renderer = 'canvas' }) {
-    const classes = useStyles()
+    const { classes, cx } = useStyles()
     const { doc, firstPageData, status, error, percent, externalLinks } = useDocument()
     const [rotation, setRotation] = useState(0)
     const [scale, setScale] = useState(1)

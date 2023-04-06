@@ -154,8 +154,6 @@ export const collectionUrl = (collection: string) => [documentUrlPrefix, collect
 export const documentViewUrl = (item: Pick<Hit, '_collection' | '_id'>) => [documentUrlPrefix, item._collection, item._id].join('/')
 export const getPreviewParams = (item: Pick<Hit, '_collection' | '_id'>) => ({ preview: { c: item._collection, i: item._id } })
 
-export const removeCommentsAndSpacing = (str = '') => str.replace(/\/\*.*\*\//g, ' ').replace(/\s+/g, ' ')
-
 export const humanFileSize = (bytes: number, si = true, dp = 1) => {
     const thresh = si ? 1000 : 1024
 

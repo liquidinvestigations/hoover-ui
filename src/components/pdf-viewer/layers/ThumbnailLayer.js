@@ -1,7 +1,7 @@
-import { makeStyles } from '@mui/styles'
 import { useEffect, useRef, useState } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()(() => ({
     thumbnailImage: {
         opacity: 0.8,
         border: '1px solid rgba(0, 0, 0, 0)',
@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function ThumbnailLayer({ page, pageWidth, pageHeight, rotation, thumbnailWidth, thumbnailHeight }) {
-    const classes = useStyles()
+    const { classes } = useStyles()
     const renderTask = useRef()
     const [src, setSrc] = useState('')
 

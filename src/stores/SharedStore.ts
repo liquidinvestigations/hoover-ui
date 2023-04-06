@@ -6,6 +6,7 @@ import { Limits } from '../Types'
 import { DocumentStore } from './DocumentStore'
 import { HashStateStore } from './HashStateStore'
 import { HotKeysStore } from './HotKeysStore'
+import { MapsStore } from './MapsStore'
 import { SearchStore } from './search/SearchStore'
 import { TagsStore } from './TagsStore'
 
@@ -32,6 +33,8 @@ export class SharedStore {
 
     hotKeysStore
 
+    mapsStore
+
     constructor(readonly user: User) {
         if (typeof window !== 'undefined') {
             this.navigation = createObservableHistory()
@@ -42,6 +45,7 @@ export class SharedStore {
         this.documentStore = new DocumentStore(this.hashStore)
         this.tagsStore = new TagsStore(this.documentStore)
         this.hotKeysStore = new HotKeysStore(this.hashStore, this.documentStore, this.searchStore)
+        this.mapsStore = new MapsStore()
 
         makeAutoObservable(this)
     }

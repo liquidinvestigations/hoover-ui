@@ -1,15 +1,14 @@
 import { ButtonBase, ListItem, ListItemIcon, ListItemText, Theme } from '@mui/material'
-import { makeStyles } from '@mui/styles'
-import cx from 'classnames'
 import { useRouter } from 'next/router'
 import { FC, useEffect, useRef } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 import { ChildDocument, DocumentData } from '../../Types'
 import { getBasePath, getTypeIcon } from '../../utils/utils'
 
 import { filenameFor } from './utils'
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
     item: {
         paddingLeft: theme.spacing(0.5),
         paddingRight: theme.spacing(0.5),
@@ -47,7 +46,7 @@ interface FinderItemProps {
 }
 
 export const FinderItem: FC<FinderItemProps> = ({ pathname, item, active, selected }) => {
-    const classes = useStyles()
+    const { classes, cx } = useStyles()
     const ref = useRef<HTMLLIElement>(null)
     const router = useRouter()
     const isActive = item.id === active?.id

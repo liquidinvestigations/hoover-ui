@@ -1,5 +1,4 @@
 import { Button, Checkbox, CircularProgress, Divider, Fade, Grid, List, ListItem, ListItemText, Typography } from '@mui/material'
-import cx from 'classnames'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 
@@ -50,7 +49,7 @@ export const AggregationFilter: FC<AggregationFilterProps> = observer(
         bucketValue,
         quickFilter,
     }) => {
-        const { classes } = useStyles()
+        const { classes, cx } = useStyles()
         const { handleMissingChange, handleReset } = useSharedStore().searchStore.filtersStore
 
         const disableReset = loading || (!queryFilter?.include?.length && !queryFilter?.exclude?.length && !queryFilter?.missing && !queryFacets)

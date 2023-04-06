@@ -65,7 +65,7 @@ export const useStyles = makeStyles()((theme: Theme) => ({
 
     text: {
         cursor: 'text',
-        fontFamily: (theme.typography as any).fontFamilyMono,
+        fontFamily: 'SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
         fontSize: '.7rem',
         color: '#555',
     },

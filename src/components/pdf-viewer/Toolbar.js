@@ -1,14 +1,13 @@
 import { Grid, IconButton, Menu, MenuItem, TextField, Toolbar as MuiToolbar, Tooltip } from '@mui/material'
-import { makeStyles } from '@mui/styles'
-import cx from 'classnames'
 import { cloneElement, memo, useEffect, useRef, useState } from 'react'
 import screenfull from 'screenfull'
+import { makeStyles } from 'tss-react/mui'
 
 import { reactIcons } from '../../constants/icons'
 
 import { zoomIn, zoomOut } from './zooming'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
     toolbar: {
         backgroundColor: theme.palette.grey[100],
         borderColor: theme.palette.grey[400],
@@ -67,7 +66,7 @@ function Toolbar({
     fullscreenClass,
     fullscreenExitClass,
 }) {
-    const classes = useStyles()
+    const { classes, cx } = useStyles()
     const pageInputRef = useRef()
 
     const [anchorEl, setAnchorEl] = useState(null)

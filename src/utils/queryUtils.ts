@@ -59,7 +59,7 @@ export const clearQuotedParam = (param: string) => param.replace(/#/g, ' ').repl
 export interface Term {
     term: string
     format: string
-    interval: number
+    interval?: number
 }
 
 export const createSearchParams = (field: SourceField, term: string | Term) => {

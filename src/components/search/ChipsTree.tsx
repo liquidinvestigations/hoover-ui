@@ -1,13 +1,12 @@
 import { Box, ButtonBase, Menu, MenuItem, Theme } from '@mui/material'
 import { red } from '@mui/material/colors'
-import { makeStyles } from '@mui/styles'
-import cx from 'classnames'
 import { AST, Node, NodeTerm, Operator } from 'lucene'
 import { cloneElement, FC, useState, MouseEvent } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 import { DEFAULT_OPERATOR } from '../../constants/general'
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
     box: {
         display: 'flex',
         flexDirection: 'row',
@@ -64,7 +63,7 @@ interface ChipsTreeProps {
 }
 
 export const ChipsTree: FC<ChipsTreeProps> = ({ tree, renderChip, renderMenu, onChipDelete, onExpressionDelete }) => {
-    const classes = useStyles()
+    const { classes, cx } = useStyles()
 
     const [anchorPosition, setAnchorPosition] = useState<AnchorPosition>()
     const [isExpression, setExpression] = useState(false)

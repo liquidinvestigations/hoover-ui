@@ -6,7 +6,6 @@ export const SORTABLE_FIELDS: Record<string, string> = {
     size: 'Size',
     'word-count': 'Word count',
 }
-export const JSS_CSS = 'jss-server-side'
 export const PRIVATE_FIELDS = ['priv-tags']
 export const DATE_FORMAT = 'yyyy-MM-dd'
 export const DEFAULT_FACET_SIZE = 44

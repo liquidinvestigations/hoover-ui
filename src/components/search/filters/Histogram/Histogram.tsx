@@ -1,5 +1,4 @@
 import { Collapse, Grid, IconButton, ListItem, Menu, MenuItem, Typography } from '@mui/material'
-import cx from 'classnames'
 import { DateTime, DurationUnit } from 'luxon'
 import { observer } from 'mobx-react-lite'
 import { cloneElement, FC, useCallback, useEffect, useMemo, useState } from 'react'
@@ -29,7 +28,7 @@ interface HistogramProps {
 }
 
 export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
-    const { classes } = useStyles()
+    const { classes, cx } = useStyles()
     const {
         query,
         search,

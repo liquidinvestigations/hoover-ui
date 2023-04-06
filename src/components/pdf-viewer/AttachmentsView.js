@@ -1,20 +1,20 @@
 import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import { memo, useEffect, useState } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 import { reactIcons } from '../../constants/icons'
 import { downloadFile } from '../../utils/utils'
 
 import { useDocument } from './DocumentProvider'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
     container: {
         backgroundColor: theme.palette.grey[100],
     },
 }))
 
 function AttachmentsView() {
-    const classes = useStyles()
+    const { classes } = useStyles()
     const { doc } = useDocument()
     const [attachments, setAttachments] = useState([])
 

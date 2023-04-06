@@ -1,5 +1,4 @@
 import { Checkbox, ListItem, ListItemText, Typography } from '@mui/material'
-import cx from 'classnames'
 import { cloneElement, FC } from 'react'
 import Highlighter from 'react-highlight-words'
 
@@ -34,10 +33,10 @@ export const AggregationFilterBucket: FC<AggregationFilterBucketProps> = ({
     bucketValue,
     quickFilter,
 }) => {
-    const { classes } = useStyles()
+    const { classes, cx } = useStyles()
 
     const label = bucketLabel ? bucketLabel(bucket) : bucket.key_as_string || bucket.key
-    const subLabel = bucketSubLabel ? bucketSubLabel(bucket) : null
+    const subLabel = bucketSubLabel ? bucketSubLabel(bucket) : undefined
     const value = bucketValue ? (bucketValue(bucket) as SourceField) : (bucket.key_as_string as SourceField) || (bucket.key as SourceField)
     const included = queryFilter?.include?.includes(value)
     const excluded = queryFilter?.exclude?.includes(value)
@@ -100,7 +99,7 @@ export const AggregationFilterBucket: FC<AggregationFilterBucketProps> = ({
             <ListItemText
                 primary={displayLabel}
                 secondary={subLabel}
-                className={cx({ [classes.labelWithSub]: subLabel })}
+                className={cx({ [classes.labelWithSub]: !!subLabel })}
                 primaryTypographyProps={{
                     className: classes.label,
                 }}

@@ -1,9 +1,9 @@
 import { Box, Chip, FormControl, Theme, Tooltip, Typography } from '@mui/material'
 import { blue, red } from '@mui/material/colors'
-import { makeStyles } from '@mui/styles'
 import lucene, { AST, Node, NodeTerm } from 'lucene'
 import { observer } from 'mobx-react-lite'
 import { FC, useCallback, useEffect, useState } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 import { defaultSearchParams } from '../../utils/queryUtils'
 import { shortenName } from '../../utils/utils'
@@ -15,7 +15,7 @@ export interface ExtendedNodeTerm extends NodeTerm {
     proximity: null | number
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
     treeTitle: {
         marginTop: theme.spacing(1),
     },
@@ -69,7 +69,7 @@ const rebuildTree = (parent: AST | Node, node: AST | Node): AST | Node | null =>
 }
 
 export const QueryChips: FC = observer(() => {
-    const classes = useStyles()
+    const { classes } = useStyles()
     const { query, search } = useSharedStore().searchStore
     const [parsedQuery, setParsedQuery] = useState<AST>()
 

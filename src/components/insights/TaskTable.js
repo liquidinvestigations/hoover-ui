@@ -1,9 +1,9 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { makeStyles } from '@mui/styles'
+import { makeStyles } from 'tss-react/mui'
 
 import { formatTitleCase } from '../../utils/utils'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()(() => ({
     table: {
         '& th': {
             fontWeight: 'bold',
@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function TaskTable({ header, tasks }) {
-    const classes = useStyles()
+    const { classes } = useStyles()
 
     return (
         <TableContainer>

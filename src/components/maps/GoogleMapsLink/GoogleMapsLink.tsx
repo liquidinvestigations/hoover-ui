@@ -1,18 +1,10 @@
-import { makeStyles } from '@mui/styles'
+import { useSharedStore } from '../../SharedStoreProvider'
 
-import { useCoordinates } from './CoordinatesProvider'
-
-const useStyles = makeStyles((theme) => ({
-    link: {
-        position: 'absolute',
-        top: 100,
-        left: 10,
-    },
-}))
+import { useStyles } from './GoogleMapsLink.styles'
 
 export default function GoogleMapsLink() {
-    const classes = useStyles()
-    const { coordinates } = useCoordinates()
+    const { classes } = useStyles()
+    const { coordinates } = useSharedStore().mapsStore
     const { latitude, longitude, zoom } = coordinates
     const url = `https://www.google.com/maps/@${latitude?.toFixed(7)},${longitude?.toFixed(7)},${zoom?.toFixed(2)}z`
 

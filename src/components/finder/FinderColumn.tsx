@@ -1,6 +1,6 @@
 import { ButtonBase, CircularProgress, List, ListItem, ListItemIcon } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import { FC, useState } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 import { doc as docAPI } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
@@ -8,7 +8,7 @@ import { reactIcons } from '../../constants/icons'
 import { FinderItem } from './FinderItem'
 import { ColumnItem, LocalDocumentData } from './Types'
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()(() => ({
     column: {
         backgroundColor: '#fff',
         borderRight: '1px solid #d3d3d3',
@@ -22,7 +22,7 @@ interface FinderColumnProps extends ColumnItem {
 }
 
 export const FinderColumn: FC<FinderColumnProps> = ({ items, pathname, prevPage, nextPage, active, selected }) => {
-    const classes = useStyles()
+    const { classes } = useStyles()
 
     const [itemsState, setItemsState] = useState(items)
     const [prevPageState, setPrevPageState] = useState(prevPage)

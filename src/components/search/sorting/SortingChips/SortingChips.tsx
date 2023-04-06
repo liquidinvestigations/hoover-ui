@@ -1,5 +1,4 @@
 import { Chip } from '@mui/material'
-import cx from 'classnames'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
@@ -13,7 +12,7 @@ import { useSharedStore } from '../../../SharedStoreProvider'
 import { useStyles } from './SortingChips.styles'
 
 export const SortingChips: FC = observer(() => {
-    const { classes } = useStyles()
+    const { classes, cx } = useStyles()
     const { query, search } = useSharedStore().searchStore
 
     const order = query?.order || []

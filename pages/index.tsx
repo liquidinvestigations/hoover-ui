@@ -3,7 +3,6 @@ import { GetServerSidePropsContext, NextPage } from 'next'
 import { collections as collectionsAPI } from '../src/backend/api'
 import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
 import { Search } from '../src/components/search/Search'
-import { SearchProvider } from '../src/components/search/SearchProvider'
 import { useSharedStore } from '../src/components/SharedStoreProvider'
 
 import type { CollectionData } from '../src/Types'
@@ -23,11 +22,7 @@ const Index: NextPage<IndexProps> = ({ collectionsData, serverQuery }) => {
         store.searchStore.search(query)
     }
 
-    return (
-        <SearchProvider serverQuery={serverQuery}>
-            <Search />
-        </SearchProvider>
-    )
+    return <Search />
 }
 
 export async function getServerSideProps({ req }: GetServerSidePropsContext) {

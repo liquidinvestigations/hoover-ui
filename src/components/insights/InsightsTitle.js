@@ -1,10 +1,10 @@
 import { Grid, ListItem, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import { cloneElement } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 import { reactIcons } from '../../constants/icons'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
     expand: {
         marginLeft: theme.spacing(2),
         transform: 'rotate(90deg)',
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function InsightsTitle({ name, open, onClick }) {
-    const classes = useStyles()
+    const { classes } = useStyles()
 
     return (
         <ListItem button dense onClick={onClick}>

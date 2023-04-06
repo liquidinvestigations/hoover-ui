@@ -1,8 +1,8 @@
 import { Button, IconButton, Snackbar } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import { useRouter } from 'next/router'
 import qs from 'qs'
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 import { tags as tagsAPI } from '../../backend/api'
 import { availableColumns } from '../../constants/availableColumns'
@@ -15,7 +15,7 @@ import { useSharedStore } from '../SharedStoreProvider'
 import useAggregationsSearch from './useAggregationsSearch'
 import useMissingSearch from './useMissingSearch'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
     close: {
         padding: theme.spacing(0.5),
     },
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 const SearchContext = createContext({})
 
 export function SearchProvider({ children, serverQuery }) {
-    const classes = useStyles()
+    const { classes } = useStyles()
     const router = useRouter()
     const { pathname } = router
 

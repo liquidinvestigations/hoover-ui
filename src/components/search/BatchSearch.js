@@ -1,6 +1,6 @@
 import { Button, Grid, List, TextField, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import { useState } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 import { batch } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
@@ -11,7 +11,7 @@ import { Loading } from '../common/Loading/Loading'
 import BatchResults from './BatchResults'
 import { CollectionsFilter } from './filters/CollectionsFilter/CollectionsFilter'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
     main: {
         paddingLeft: theme.spacing(3),
         paddingRight: theme.spacing(3),
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function BatchSearch({ collectionsData, limits }) {
-    const classes = useStyles()
+    const { classes } = useStyles()
 
     const [selectedCollections, setSelectedCollections] = useState(collectionsData?.map((c) => c.name))
     const handleSelectedCollectionsChange = (collections) => {

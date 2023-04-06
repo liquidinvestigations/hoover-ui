@@ -1,10 +1,10 @@
 import { Grid, Paper, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import React, { useEffect, useRef, useState } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 import { getUploads } from '../../backend/api'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
     root: {
         padding: theme.spacing(2),
     },
@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function Uploads() {
-    const classes = useStyles()
+    const { classes } = useStyles()
 
     const [uploadsState, setUploadsState] = useState([])
     const intervalRef = useRef(0)

@@ -1,9 +1,9 @@
 import { Grid, Paper, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import Uppy from '@uppy/core'
 import { FileInput, StatusBar } from '@uppy/react'
 import Tus from '@uppy/tus'
 import React, { useEffect, useRef, useState, memo } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 import { getDirectoryUploads, createUploadUrl } from '../../backend/api'
 
@@ -11,7 +11,7 @@ import '@uppy/core/dist/style.css'
 import '@uppy/file-input/dist/style.css'
 import '@uppy/status-bar/dist/style.css'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
     root: {
         padding: theme.spacing(2),
     },
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function DirectoryUploads({ collection, directoryId }) {
-    const classes = useStyles()
+    const { classes } = useStyles()
 
     const [uploadsState, setUploadsState] = useState({ uploads: [] })
     const intervalRef = useRef(0)

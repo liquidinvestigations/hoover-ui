@@ -1,13 +1,13 @@
 import { Grid, MenuItem, Select, Theme, Typography } from '@mui/material'
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput'
-import { makeStyles } from '@mui/styles'
 import { FC } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 import { SIZE_OPTIONS } from '../../constants/general'
 import { SearchType } from '../../stores/search/SearchStore'
 import { useSharedStore } from '../SharedStoreProvider'
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles()((theme: Theme) => ({
     label: {
         marginRight: theme.spacing(1),
     },
@@ -19,7 +19,7 @@ interface SearchSizeProps {
 }
 
 export const SearchSize: FC<SearchSizeProps> = ({ page, size }) => {
-    const classes = useStyles()
+    const { classes } = useStyles()
     const { search } = useSharedStore().searchStore
 
     const handleSizeChange = (event: SelectChangeEvent) => {

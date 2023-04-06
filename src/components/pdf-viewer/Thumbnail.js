@@ -1,6 +1,5 @@
-import { makeStyles } from '@mui/styles'
-import cx from 'classnames'
 import { forwardRef, useEffect, useState } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 import { useDocument } from './DocumentProvider'
 import ThumbnailLayer from './layers/ThumbnailLayer'
@@ -8,7 +7,7 @@ import ThumbnailLayer from './layers/ThumbnailLayer'
 const thumbnailWidth = 100
 const thumbnailHeight = 150
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()(() => ({
     thumbnail: {
         float: 'left',
         margin: '0 10px 5px',
@@ -27,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default forwardRef(function Thumbnail({ containerRef, pageIndex, rotation, selected, onSelect }, thumbnailRef) {
-    const classes = useStyles()
+    const { classes, cx } = useStyles()
     const { doc, firstPageData } = useDocument()
     const [shouldScroll, setShouldScroll] = useState(true)
     const [pageData, setPageData] = useState({

@@ -1,16 +1,16 @@
 import url from 'url'
 
 import { List, ListItem, ListItemIcon, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import Link from 'next/link'
 import { memo, useEffect, useState } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 import { locations as locationsAPI } from '../backend/api'
 import { reactIcons } from '../constants/icons'
 
 import { Loading } from './common/Loading/Loading'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
     error: {
         padding: theme.spacing(3),
         fontSize: '14px',
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 function Locations({ url: docUrl, data }) {
-    const classes = useStyles()
+    const { classes } = useStyles()
     const [locations, setLocations] = useState([])
     const [error, setError] = useState(null)
     const [page, setPage] = useState(1)

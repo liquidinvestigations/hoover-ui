@@ -1,9 +1,9 @@
 import { Grid, IconButton, Toolbar as MuiToolbar, Tooltip } from '@mui/material'
-import { makeStyles } from '@mui/styles'
+import { makeStyles } from 'tss-react/mui'
 
 import { reactIcons } from '../../constants/icons'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
     toolbar: {
         borderColor: theme.palette.grey[400],
         borderBottomStyle: 'solid',
@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function SideToolbar({ viewerRef, currentTab, onTabSwitch }) {
-    const classes = useStyles()
+    const { classes } = useStyles()
 
     const openTab = (tab) => () => {
         onTabSwitch(tab)

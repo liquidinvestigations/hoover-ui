@@ -1,8 +1,7 @@
 import { Box, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
-import cx from 'classnames'
+import { makeStyles } from 'tss-react/mui'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
     progress: {
         float: 'right',
     },
@@ -37,7 +36,7 @@ const getResultsCount = (results) => (results.count === undefined ? Infinity : r
 const resultsCompareFn = (a, b) => getResultsCount(b) - getResultsCount(a)
 
 export default function BatchResults({ loading, results, batchSize, offset, terms }) {
-    const classes = useStyles()
+    const { classes, cx } = useStyles()
 
     const page = offset / batchSize
     const total = Math.ceil(terms?.length / batchSize)

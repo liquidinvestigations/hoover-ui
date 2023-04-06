@@ -59,13 +59,6 @@ export const Search: FC = observer(() => {
         }
     })
 
-    /*
-    const { setLoading } = useProgressIndicator()
-    useEffect(() => {
-        setLoading(resultsLoading)
-    }, [resultsLoading, setLoading])
-     */
-
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault()
         search()

@@ -1,11 +1,11 @@
 import { ButtonBase, List, ListItem, ListItemText, ListItemSecondaryAction, Typography } from '@mui/material'
-import { makeStyles } from '@mui/styles'
 import ReactPlaceholder from 'react-placeholder'
+import { makeStyles } from 'tss-react/mui'
 
 import { createSearchUrl } from '../../utils/queryUtils'
 import { useSearch } from '../search/SearchProvider'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()((theme) => ({
     bucket: {
         '&:hover': {
             backgroundColor: theme.palette.grey[100],
@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function AggregationsTable({ aggregation }) {
-    const classes = useStyles()
+    const { classes } = useStyles()
     const { query, aggregations, aggregationsError, aggregationsLoading } = useSearch()
 
     const loading = aggregationsLoading?.[aggregation]

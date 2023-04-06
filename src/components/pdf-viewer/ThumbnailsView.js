@@ -1,10 +1,10 @@
-import { makeStyles } from '@mui/styles'
 import { memo } from 'react'
+import { makeStyles } from 'tss-react/mui'
 
 import { useDocument } from './DocumentProvider'
 import Thumbnail from './Thumbnail'
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles()(() => ({
     container: {
         padding: '10px 30px 0',
         backgroundColor: 'rgba(0, 0, 0, 0.1)',
@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 function ThumbnailsView({ containerRef, thumbnailsRefs, rotation, currentPageIndex, shouldScroll, onSelect }) {
-    const classes = useStyles()
+    const { classes } = useStyles()
     const { doc } = useDocument()
 
     return (
