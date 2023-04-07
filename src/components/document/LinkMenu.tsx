@@ -71,7 +71,7 @@ export const LinkMenu: FC<LinkMenuProps> = observer(({ link, anchorPosition, onC
         <Menu open={!!anchorPosition} onClose={onClose} anchorReference="anchorPosition" anchorPosition={anchorPosition}>
             {
                 /*search &&*/
-                aggregationFields[link.field as SourceField]?.type === 'date' ? (
+                link && aggregationFields[link.field as SourceField]?.type === 'date' ? (
                     <NestedMenuItem label="restrict current search to this" parentMenuOpen={Boolean(anchorPosition)}>
                         {formats.map((format) => (
                             <MenuItem key={format} onClick={handleAddSearch(false, { term: link.term, format })}>
@@ -85,7 +85,7 @@ export const LinkMenu: FC<LinkMenuProps> = observer(({ link, anchorPosition, onC
             }
             {
                 /*search &&*/
-                aggregationFields[link.field as SourceField]?.type === 'date' ? (
+                link && aggregationFields[link.field as SourceField]?.type === 'date' ? (
                     <NestedMenuItem label="restrict current search to this (open in a new tab)" parentMenuOpen={Boolean(anchorPosition)}>
                         {formats.map((format) => (
                             <MenuItem key={format} onClick={handleAddSearch(true, { term: link.term, format })}>
@@ -97,7 +97,7 @@ export const LinkMenu: FC<LinkMenuProps> = observer(({ link, anchorPosition, onC
                     <MenuItem onClick={handleAddSearch(true)}>add this field to current search (open in new tab)</MenuItem>
                 )
             }
-            {aggregationFields[link.field as SourceField]?.type === 'date' ? (
+            {link && aggregationFields[link.field as SourceField]?.type === 'date' ? (
                 <NestedMenuItem label="open a new search for this" parentMenuOpen={Boolean(anchorPosition)}>
                     {formats.map((format) => (
                         <MenuItem key={format} onClick={handleNewSearch({ term: link.term, format })}>
