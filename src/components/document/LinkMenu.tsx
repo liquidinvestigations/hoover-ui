@@ -39,7 +39,7 @@ export const LinkMenu: FC<LinkMenuProps> = observer(({ link, anchorPosition, onC
         onClose()
 
         const newTerm = term || link.term
-        const newParams = createSearchParams(link.field as SourceField, newTerm)
+        const newParams = createSearchParams(link?.field as SourceField, newTerm)
         const mergedParams: Partial<SearchQueryParams> = {}
 
         if (newParams.filters) {
@@ -64,7 +64,7 @@ export const LinkMenu: FC<LinkMenuProps> = observer(({ link, anchorPosition, onC
     const handleNewSearch = (term?: string | Term) => () => {
         onClose()
         const newTerm = term || link.term
-        window.open(createSearchUrl(newTerm, link.field as SourceField, getCollections(), hash))
+        window.open(createSearchUrl(newTerm, link?.field as SourceField, getCollections(), hash))
     }
 
     return (
