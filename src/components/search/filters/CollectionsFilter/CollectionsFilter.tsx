@@ -39,12 +39,12 @@ export const CollectionsFilter: FC = observer(() => {
                                 <ListItemText
                                     primary={
                                         !categoryQuickFilter.collections?.length ? (
-                                            collection.name
+                                            collection.title
                                         ) : (
                                             <Highlighter
                                                 searchWords={[categoryQuickFilter.collections || '']}
                                                 autoEscape={true}
-                                                textToHighlight={collection.name}
+                                                textToHighlight={collection.title}
                                             />
                                         )
                                     }
