@@ -52,13 +52,13 @@ export default function Insights({ collectionsData }) {
 
     useEffect(() => {
         if (query?.collections) {
-            setCurrentCollection(collections.find((collection) => collection.name === query.collections[0]))
+            setCurrentCollection(collectionsData.find((collection) => collection.name === query.collections[0]))
         } else {
             search({ collections: [collectionsState[0].name] })
         }
     }, [query?.collections])
 
-    const [currentCollection, setCurrentCollection] = useState(collections[0])
+    const [currentCollection, setCurrentCollection] = useState(collectionsData[0])
     const handleMenuClick = (collection) => () => {
         search({ collections: [collection.name] })
     }
@@ -70,7 +70,7 @@ export default function Insights({ collectionsData }) {
                     {collectionsState.map((collection) => (
                         <InsightsTitle
                             key={collection.name}
-                            name={collection.name}
+                            name={collection.title}
                             open={currentCollection?.name === collection.name}
                             onClick={handleMenuClick(collection)}
                         />
