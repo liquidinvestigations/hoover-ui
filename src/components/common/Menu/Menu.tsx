@@ -14,6 +14,7 @@ interface Link {
     url: string
     next?: boolean
     type?: 'admin' | 'logged-in' | 'not-logged-in'
+    active?: boolean
 }
 
 export const Menu = observer(() => {
@@ -29,77 +30,88 @@ export const Menu = observer(() => {
         return null
     }
 
-    const links: Link[] = ([
-        {
-            name: 'Search',
-            url: '/',
-            next: true,
-        },
-        {
-            name: 'Batch',
-            url: '/batch-search',
-            next: true,
-        },
-        {
-            name: 'Insights',
-            url: '/insights',
-            next: true,
-        },
-        process.env.HOOVER_UPLOADS_ENABLED
-            ? {
-                  name: 'Uploads',
-                  url: '/uploads',
-                  next: true,
-              }
-            : false,
-        process.env.HOOVER_MAPS_ENABLED
-            ? {
-                  name: 'Maps',
-                  url: '/maps',
-                  next: true,
-              }
-            : false,
-        process.env.HOOVER_TRANSLATION_ENABLED
-            ? {
-                  name: 'Translate',
-                  url: '/libre_translate',
-              }
-            : false,
-        {
+    const getNavLinks = (): Link[] => {
+        const links: Link[] = [
+            {
+                name: 'Search',
+                url: '/',
+                next: true,
+                active: router.asPath === '/',
+            },
+            {
+                name: 'Batch',
+                url: '/batch-search',
+                next: true,
+                active: router.asPath === '/batch-search',
+            },
+            {
+                name: 'Insights',
+                url: '/insights',
+                next: true,
+                active: router.asPath === '/insights',
+            },
+        ]
+
+        if (process.env.HOOVER_UPLOADS_ENABLED) {
+            links.push({
+                name: 'Uploads',
+                url: '/uploads',
+                next: true,
+                active: router.asPath === '/uploads',
+            })
+        }
+
+        if (process.env.HOOVER_MAPS_ENABLED) {
+            links.push({
+                name: 'Maps',
+                url: '/maps',
+                next: true,
+                active: router.asPath === '/maps',
+            })
+        }
+
+        if (process.env.HOOVER_TRANSLATION_ENABLED) {
+            links.push({
+                name: 'Translate',
+                url: '/libre_translate',
+                active: router.asPath === '/libre_translate',
+            })
+        }
+
+        links.push({
             name: 'Docs',
             url: 'https://github.com/liquidinvestigations/docs/wiki/User-Guide:-Hoover',
-        },
-    ].filter(Boolean) as Link[]).map((link: Link) => ({ ...link, active: router.asPath === link.url }))
+        })
 
-    const userMenuLinks: Link[] = [
-        {
-            name: 'Login',
-            url: user.urls.login,
-            type: 'not-logged-in',
-        },
-        {
-            name: 'Admin',
-            url: user.urls.admin,
-            type: 'admin',
-        },
-        {
-            name: `Logout`,
-            url: user.urls.logout,
-            type: 'logged-in',
-        },
-    ]
+        if (user.admin) {
+            links.push({
+                name: 'Admin',
+                url: user.urls.admin,
+                active: router.asPath === user.urls.admin,
+            })
+        }
 
-    const shouldShow = (link: Link) => {
-        if (link.type === 'admin') {
-            return user.admin
+        return links;
+    }
+
+    const getMenuLinks = (): Link[] => {
+        const links: Link[] = []
+
+        if (user.username) {
+            links.push({
+                name: `Logout`,
+                url: user.urls.logout,
+            })
         }
-        if (link.type === 'logged-in') {
-            return user.username
+
+        if (!user.username) {
+            links.push({
+                name: 'Login',
+                url: user.urls.login,
+            })
         }
-        if (link.type === 'not-logged-in') {
-            return !user.username
-        }
-        return true
+
+        return links
     }
 
     const handleUserMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -112,7 +124,7 @@ export const Menu = observer(() => {
 
     return (
         <>
-            {links.map((link) =>
+            {getNavLinks().map((link) =>
                 !link.next ? (
                     <Button key={link.name} variant="text" href={link.url} color="inherit">
                         {link.name}
@@ -129,12 +141,14 @@ export const Menu = observer(() => {
                 {reactIcons.accountCircle}
             </IconButton>
             <MenuMui anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleUserMenuClose}>
-                <Box className={classes.menuHeader}>
-                    <Typography variant="subtitle1">{user.username}</Typography>
-                </Box>
-                <Divider />
+                {!!user.username && (
+                    <Box>
+                        <Typography variant="subtitle1" className={classes.menuHeader}>{user.username}</Typography>
+                        <Divider />
+                    </Box>
+                )}
                 <MenuList>
-                    {userMenuLinks.filter(shouldShow).map((link) => (
+                    {getMenuLinks().map((link) => (
                         <MenuItem key={link.name}>
                             <NextLink href={link.url} shallow className={classes.menuItem}>
                                 {link.name}
