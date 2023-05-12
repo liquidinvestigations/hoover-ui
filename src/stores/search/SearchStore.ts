@@ -45,8 +45,8 @@ export class SearchStore {
     parseSearchParams = (search: string): Partial<SearchQueryParams> => {
         const parsedQuery = fixLegacyQuery(unwindParams(qs.parse(search, { arrayLimit: 100 })))
 
-        this.searchViewStore.searchText = parsedQuery.q
-        this.searchViewStore.searchCollections = parsedQuery.collections
+        this.searchViewStore.searchText = parsedQuery.q || ''
+        this.searchViewStore.searchCollections = parsedQuery.collections || []
 
         return parsedQuery
     }
