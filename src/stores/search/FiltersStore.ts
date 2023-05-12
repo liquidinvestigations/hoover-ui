@@ -3,11 +3,11 @@ import { Entries } from 'type-fest'
 
 import { aggregationCategories, AggregationField, aggregationFields } from '../../constants/aggregationFields'
 import { reactIcons } from '../../constants/icons'
-import { Category, SearchQueryParams, SourceField } from '../../Types'
+import { AggregationsKey, Category, SearchQueryParams, SourceField } from '../../Types'
 import { defaultSearchParams } from '../../utils/queryUtils'
 import { getClosestInterval } from '../../utils/utils'
 
-import { SearchType, SearchStore } from './SearchStore'
+import { SearchStore } from './SearchStore'
 
 interface FilterField extends AggregationField {
     field: SourceField
@@ -112,8 +112,8 @@ export class FiltersStore {
             )
         })
 
-    triggerSearch = (params: Partial<SearchQueryParams>) => {
-        this.searchStore.search({ ...params, page: defaultSearchParams.page })
+    triggerSearch = (params: Partial<SearchQueryParams>, keepFromClearing?: AggregationsKey) => {
+        this.searchStore.search({ ...params, page: defaultSearchParams.page }, { keepFromClearing })
     }
 
     handleChange = (key: string, value: any, resetPage: boolean = false) => {
@@ -121,9 +121,9 @@ export class FiltersStore {
 
         if (resetPage) {
             const { [key]: prevFacet, ...restFacets } = this.searchStore.query?.facets || {}
-            this.triggerSearch({ filters: { [key]: value, ...restFilters }, facets: { ...restFacets } })
+            this.triggerSearch({ filters: { [key]: value, ...restFilters }, facets: { ...restFacets } }, key as AggregationsKey)
         } else {
-            this.triggerSearch({ filters: { [key]: value, ...restFilters } })
+            this.triggerSearch({ filters: { [key]: value, ...restFilters } }, key as AggregationsKey)
         }
     }
 

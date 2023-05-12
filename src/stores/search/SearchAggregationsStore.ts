@@ -1,8 +1,7 @@
 import { makeAutoObservable, reaction } from 'mobx'
 import { Entries } from 'type-fest'
 
-import { Aggregations, SearchQueryParams } from '../../Types'
-import { defaultSearchParams } from '../../utils/queryUtils'
+import { Aggregations, AggregationsKey, SearchQueryParams } from '../../Types'
 
 import { AsyncQueryTask, AsyncQueryTaskRunner } from './AsyncTaskRunner'
 import { SearchStore } from './SearchStore'
@@ -16,6 +15,8 @@ export class SearchAggregationsStore {
     missingAggregationsQueryTasks: any
 
     error: any
+
+    keepFromClearing: AggregationsKey | undefined
 
     constructor(private readonly searchStore: SearchStore) {
         makeAutoObservable(this)
@@ -34,10 +35,16 @@ export class SearchAggregationsStore {
         )
     }
 
-    queryResult(query: SearchQueryParams) {
+    queryResult(query: SearchQueryParams, keepFromClearing: AggregationsKey | undefined) {
         this.aggregationsQueryTasks = {}
         this.aggregatedCollections = []
-        this.aggregations = {}
+        this.keepFromClearing = keepFromClearing
+
+        if (keepFromClearing && Object.keys(this.aggregations).includes(keepFromClearing)) {
+            this.aggregations = { [keepFromClearing]: { ...this.aggregations[keepFromClearing] } }
+        } else {
+            this.aggregations = {}
+        }
 
         for (const collection of query.collections) {
             const { collections, ...queryParams } = query
