@@ -51,7 +51,7 @@ export class SearchStore {
         return parsedQuery
     }
 
-    search = (params: Partial<SearchQueryParams> = {}, options: SearchOptions) => {
+    search = (params: Partial<SearchQueryParams> = {}, options: SearchOptions = {}) => {
         const { searchText, searchCollections } = this.searchViewStore
 
         const { searchType, keepFromClearing } = {

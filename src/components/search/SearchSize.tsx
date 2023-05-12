@@ -25,9 +25,9 @@ export const SearchSize: FC<SearchSizeProps> = ({ page, size }) => {
     const handleSizeChange = (event: SelectChangeEvent) => {
         const newSize = parseInt(event.target.value)
         if (newSize > size) {
-            search({ size: newSize, page: Math.ceil((page * size) / newSize) }, SearchType.Results)
+            search({ size: newSize, page: Math.ceil((page * size) / newSize) }, { searchType: SearchType.Results })
         } else {
-            search({ size: newSize, page: Math.floor(((page - 1) * size) / newSize) + 1 }, SearchType.Results)
+            search({ size: newSize, page: Math.floor(((page - 1) * size) / newSize) + 1 }, { searchType: SearchType.Results })
         }
     }
 

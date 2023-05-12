@@ -35,9 +35,9 @@ export const Pagination: FC = observer(() => {
     const total = Math.max(...Object.entries(resultsQueryTasks).map(([_collection, { data }]) => data?.result?.hits.total || 0))
     const { size, page } = query
 
-    const handleNext = () => search({ page: page + 1 }, SearchType.Results)
-    const handlePrev = () => search({ page: page - 1 }, SearchType.Results)
-    const handleSet = (pageE: number) => () => search({ page: pageE }, SearchType.Results)
+    const handleNext = () => search({ page: page + 1 }, { searchType: SearchType.Results })
+    const handlePrev = () => search({ page: page - 1 }, { searchType: SearchType.Results })
+    const handleSet = (pageE: number) => () => search({ page: pageE }, { searchType: SearchType.Results })
 
     const pageCount = Math.ceil(Math.min(total, maxCount) / size)
 

@@ -22,7 +22,7 @@ export const SortingMenu: FC = observer(() => {
     const handleSortingClick = (field: string) => () => {
         const index = order.findIndex(([v]) => v === field)
         if (!index || index < 0) {
-            search({ order: [[field, 'desc'], ...order], page: defaultSearchParams.page }, SearchType.Results)
+            search({ order: [[field, 'desc'], ...order], page: defaultSearchParams.page }, { searchType: SearchType.Results })
         }
     }
 

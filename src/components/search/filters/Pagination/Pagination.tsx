@@ -24,9 +24,9 @@ export const Pagination: FC<{ field: SourceField }> = observer(({ field }) => {
     const handlePagination = (newPage: number) => {
         const { [field]: prevFacet, ...restFacets } = query?.facets || {}
         if (newPage > 1) {
-            search({ facets: { [field]: newPage, ...restFacets, page: defaultSearchParams.page } }, SearchType.Aggregations)
+            search({ facets: { [field]: newPage, ...restFacets, page: defaultSearchParams.page } }, { searchType: SearchType.Aggregations })
         } else {
-            search({ facets: { ...restFacets }, page: defaultSearchParams.page }, SearchType.Aggregations)
+            search({ facets: { ...restFacets }, page: defaultSearchParams.page }, { searchType: SearchType.Aggregations })
         }
     }
 

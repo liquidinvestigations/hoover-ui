@@ -25,7 +25,7 @@ export const MoreButton: FC<{ field: SourceField }> = observer(({ field }) => {
 
     const handleLoadMore = () => {
         const facets = query?.facets || {}
-        search({ facets: { ...facets, [field]: page + 1 }, page: defaultSearchParams.page }, SearchType.Aggregations)
+        search({ facets: { ...facets, [field]: page + 1 }, page: defaultSearchParams.page }, { searchType: SearchType.Aggregations })
     }
 
     const cardinality = aggregations?.[field]?.count
