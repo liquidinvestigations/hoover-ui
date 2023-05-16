@@ -1,5 +1,5 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
-import { ChangeEvent, useRef } from 'react'
+import { ChangeEvent, RefObject } from 'react'
 import { Entry } from 'type-fest'
 
 import { availableColumns } from '../../constants/availableColumns'
@@ -11,7 +11,7 @@ import { SearchStore } from './SearchStore'
 export type ResultsViewType = 'list' | 'table'
 
 export class SearchViewStore {
-    readonly inputRef = useRef<HTMLInputElement>()
+    inputRef: RefObject<HTMLInputElement> | undefined = undefined
 
     drawerRef: HTMLDivElement | undefined = undefined
 
@@ -42,6 +42,12 @@ export class SearchViewStore {
                 this.drawerWidth = drawerRef?.getBoundingClientRect().width
             }
         )
+    }
+
+    setInputRef = (inputRef: RefObject<HTMLInputElement>) => {
+        runInAction(() => {
+            this.inputRef = inputRef
+        })
     }
 
     setDrawerRef = (drawerRef: HTMLDivElement) => {

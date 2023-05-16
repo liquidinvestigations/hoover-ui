@@ -1,18 +1,14 @@
 import { observer } from 'mobx-react-lite'
-import { FC, useEffect, useState } from 'react'
+import { FC, useMemo } from 'react'
 import { makeStyles } from 'tss-react/mui'
 
-import { doc as docAPI } from '../../backend/api'
 import { getBasePath } from '../../utils/utils'
 import { ErrorBoundary } from '../ErrorBoundary'
 import { useSharedStore } from '../SharedStoreProvider'
 
 import { FinderColumn } from './FinderColumn'
+import { ColumnItem, LocalDocumentData } from './Types'
 import { makeColumns } from './utils'
-
-import type { ColumnItem, LocalDocumentData } from './Types'
-
-const parentLevels = 3
 
 const useStyles = makeStyles()(() => ({
     container: {
@@ -23,32 +19,12 @@ const useStyles = makeStyles()(() => ({
 
 export const Finder: FC = observer(() => {
     const { classes } = useStyles()
-    const { data, pathname, loading } = useSharedStore().documentStore
+    const { pathname, hierarchy } = useSharedStore().documentStore
 
-    const [active, setActive] = useState<LocalDocumentData>()
-    const [columns, setColumns] = useState<ColumnItem[]>([])
-
-    useEffect(() => {
-        ;(async () => {
-            if (!loading && pathname && data) {
-                const localData = { ...data }
-                let current: LocalDocumentData | undefined = localData
-                let level = 0
-
-                setActive(current)
-                setColumns(makeColumns(current, getBasePath(pathname)))
-
-                while (current?.parent_id && level <= parentLevels) {
-                    current.parent = await docAPI(getBasePath(pathname) + current.parent_id, current.parent_children_page)
-
-                    current = current.parent
-                    level++
-
-                    setColumns(makeColumns(localData, getBasePath(pathname)))
-                }
-            }
-        })()
-    }, [data, pathname, loading])
+    const columns = useMemo(() => {
+        if (!pathname || !hierarchy) return [{} as ColumnItem];
+        return makeColumns(hierarchy, getBasePath(pathname))
+    }, [hierarchy, pathname])
 
     return (
         <ErrorBoundary visible>
@@ -60,7 +36,7 @@ export const Finder: FC = observer(() => {
                         pathname={pathname}
                         prevPage={prevPage}
                         nextPage={nextPage}
-                        active={active}
+                        active={{ ...hierarchy } as LocalDocumentData}
                         selected={selected}
                     />
                 ))}

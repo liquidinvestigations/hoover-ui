@@ -21,7 +21,9 @@ export const makeColumns = (doc: LocalDocumentData, pathname: string | null) => 
 
     if (doc.parent) {
         let node = doc
-        while (node.parent) {
+        // we have to restrict the length here as well due to docAPI caching/memoization
+        // which will return all parent hierarchy fetched so far 
+        while (node.parent && columns.length < 5) {
             createColumn(node.parent, node)
             node = node.parent
         }

@@ -1,9 +1,8 @@
-import { ButtonBase, CircularProgress, List, ListItem, ListItemIcon } from '@mui/material'
-import { FC, useState } from 'react'
+import { List } from '@mui/material'
+import { FC } from 'react'
 import { makeStyles } from 'tss-react/mui'
 
-import { doc as docAPI } from '../../backend/api'
-import { reactIcons } from '../../constants/icons'
+import { Loading } from '../common/Loading/Loading'
 
 import { FinderItem } from './FinderItem'
 import { ColumnItem, LocalDocumentData } from './Types'
@@ -24,45 +23,12 @@ interface FinderColumnProps extends ColumnItem {
 export const FinderColumn: FC<FinderColumnProps> = ({ items, pathname, prevPage, nextPage, active, selected }) => {
     const { classes } = useStyles()
 
-    const [itemsState, setItemsState] = useState(items)
-    const [prevPageState, setPrevPageState] = useState(prevPage)
-    const [nextPageState, setNextPageState] = useState(nextPage)
-
-    const [prevPageLoading, setPrevPageLoading] = useState(false)
-    const [nextPageLoading, setNextPageLoading] = useState(false)
-
-    const handlePrevPage = async () => {
-        setPrevPageLoading(true)
-        const prevItems = await docAPI(pathname, prevPage)
-        setPrevPageLoading(false)
-        setPrevPageState(prevItems.children_page > 1 ? prevItems.children_page - 1 : undefined)
-        setItemsState((currentItems = []) => [...prevItems.children, ...currentItems])
-    }
-
-    const handleNextPage = async () => {
-        setNextPageLoading(true)
-        const nextItems = await docAPI(pathname, nextPage)
-        setNextPageLoading(false)
-        setNextPageState(nextItems.children_has_next_page ? nextItems.children_page + 1 : null)
-        setItemsState((currentItems = []) => [...currentItems, ...nextItems.children])
-    }
-
     return (
         <List dense disablePadding className={classes.column}>
-            {prevPageState && (
-                <ListItem component={ButtonBase} onClick={prevPageLoading ? undefined : handlePrevPage}>
-                    {prevPageLoading ? <CircularProgress size={18} thickness={5} /> : <ListItemIcon>{reactIcons.moreFiles}</ListItemIcon>}
-                </ListItem>
-            )}
-
-            {itemsState?.map((item) => (
-                <FinderItem key={item.id} pathname={pathname} item={item} active={active} selected={selected} />
-            ))}
-
-            {nextPageState && (
-                <ListItem component={ButtonBase} onClick={nextPageLoading ? undefined : handleNextPage}>
-                    {nextPageLoading ? <CircularProgress size={18} thickness={5} /> : <ListItemIcon>{reactIcons.moreFiles}</ListItemIcon>}
-                </ListItem>
+            {!items ? (
+                <Loading />
+            ) : (
+                items.map((item) => <FinderItem key={item.id} pathname={pathname} item={item} active={active} selected={selected} />)
             )}
         </List>
     )
