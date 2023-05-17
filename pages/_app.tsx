@@ -10,7 +10,6 @@ import { whoami } from '../src/backend/api'
 import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
 import { Layout } from '../src/components/Layout'
 import { SharedStoreProvider } from '../src/components/SharedStoreProvider'
-import { SharedStore } from '../src/stores/SharedStore'
 import { User } from '../src/Types'
 
 interface HooverApp extends AppProps {
@@ -22,7 +21,7 @@ export default function HooverApp({ Component, pageProps, user }: HooverApp) {
         <CacheProvider value={createCache({ key: 'css', prepend: true })}>
             <LocalizationProvider dateAdapter={AdapterLuxon}>
                 <CssBaseline />
-                <SharedStoreProvider store={new SharedStore(user)}>
+                <SharedStoreProvider user={user}>
                     <Layout>
                         <Component {...pageProps} />
                     </Layout>

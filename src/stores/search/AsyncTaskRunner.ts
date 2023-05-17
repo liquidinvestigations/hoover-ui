@@ -3,6 +3,13 @@ import { makeAutoObservable } from 'mobx'
 import { asyncSearch as asyncSearchAPI } from '../../backend/api'
 import { AsyncTaskData, SearchQueryParams, SearchQueryType } from '../../Types'
 
+interface FetchParams extends SearchQueryParams {
+    type: SearchQueryType
+    fieldList: string
+    async?: boolean
+    missing?: boolean
+}
+
 export class AsyncQueryTask {
     running: boolean = false
     initialEta?: number
@@ -18,11 +25,16 @@ export class AsyncQueryTask {
         if (!this.running) {
             this.running = true
 
-            const params = {
+            const params: FetchParams = {
                 ...this.query,
                 type: this.type,
                 fieldList: this.fieldList,
                 async: true,
+            }
+
+            if (this.type === 'missing') {
+                params.type = 'aggregations'
+                params.missing = true
             }
 
             this.controller = new AbortController()

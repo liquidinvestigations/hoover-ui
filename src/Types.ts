@@ -52,7 +52,7 @@ export interface CollectionData {
     max_result_window: number
 }
 
-export type SearchQueryType = 'aggregations' | 'results'
+export type SearchQueryType = 'aggregations' | 'missing' | 'results'
 
 export interface SearchQueryParams {
     q: string

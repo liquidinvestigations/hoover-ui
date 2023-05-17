@@ -7,12 +7,11 @@ import { AsyncQueryTask, AsyncQueryTaskRunner } from './AsyncTaskRunner'
 import { SearchStore } from './SearchStore'
 
 export class SearchAggregationsStore {
-    /*private*/ aggregationsQueryTasks: Record<string, AsyncQueryTask> = {}
     private aggregatedCollections: string[] = []
 
-    aggregations: Aggregations = {}
+    aggregationsQueryTasks: Record<string, AsyncQueryTask> = {}
 
-    missingAggregationsQueryTasks: any
+    aggregations: Aggregations = {}
 
     error: any
 
@@ -35,7 +34,7 @@ export class SearchAggregationsStore {
         )
     }
 
-    queryResult(query: SearchQueryParams, keepFromClearing: AggregationsKey | undefined) {
+    performQuery(query: SearchQueryParams, keepFromClearing: AggregationsKey | undefined) {
         this.aggregationsQueryTasks = {}
         this.aggregatedCollections = []
         this.keepFromClearing = keepFromClearing

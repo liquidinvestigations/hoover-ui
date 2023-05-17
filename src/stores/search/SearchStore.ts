@@ -8,6 +8,7 @@ import { SharedStore } from '../SharedStore'
 
 import { FiltersStore } from './FiltersStore'
 import { SearchAggregationsStore } from './SearchAggregationsStore'
+import { SearchMissingStore } from './SearchMissingStore'
 import { SearchResultsStore } from './SearchResultsStore'
 import { SearchViewStore } from './SearchViewStore'
 
@@ -31,12 +32,15 @@ export class SearchStore {
 
     searchAggregationsStore: SearchAggregationsStore
 
+    searchMissingStore: SearchMissingStore
+
     searchResultsStore: SearchResultsStore
 
     constructor(private readonly sharedStore: SharedStore) {
         this.filtersStore = new FiltersStore(this)
         this.searchViewStore = new SearchViewStore(sharedStore, this)
         this.searchAggregationsStore = new SearchAggregationsStore(this)
+        this.searchMissingStore = new SearchMissingStore(this)
         this.searchResultsStore = new SearchResultsStore(this)
 
         makeAutoObservable(this)
@@ -55,7 +59,7 @@ export class SearchStore {
         const { searchText, searchCollections } = this.searchViewStore
 
         const { searchType, keepFromClearing } = {
-            ...{ searchType: SearchType.Aggregations | SearchType.Results},
+            ...{ searchType: SearchType.Aggregations | SearchType.Results },
             ...options,
         }
 
@@ -75,11 +79,15 @@ export class SearchStore {
 
         if (query.q && query.page && query.size && query.collections?.length) {
             if (searchType & SearchType.Aggregations) {
-                this.searchAggregationsStore.queryResult(query as SearchQueryParams, keepFromClearing)
+                this.searchAggregationsStore.performQuery(query as SearchQueryParams, keepFromClearing)
+            }
+
+            if (searchType & SearchType.Missing) {
+                this.searchMissingStore.performQuery(query as SearchQueryParams, keepFromClearing)
             }
 
             if (searchType & SearchType.Results) {
-                this.searchResultsStore.queryResult(query as SearchQueryParams)
+                this.searchResultsStore.performQuery(query as SearchQueryParams)
             }
         }
 
