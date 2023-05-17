@@ -34,7 +34,10 @@ export const Files = observer(() => {
     }
 
     useEffect(() => {
-        setFiles(data?.children)
+        if (!data) return;
+        setFiles(data.children)
+        setCurrentPage(data.children_page)
+        setCurrentHasNextPage(data.children_has_next_page)
     }, [data])
 
     const filesRows = files?.map(({ id, digest, file, filename, content_type, filetype, size }, index) => (
