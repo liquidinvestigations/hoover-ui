@@ -22,7 +22,8 @@ export const Filters: FC = observer(() => {
             query,
             searchViewStore: { categoryQuickFilter },
             filtersStore: { categories, expandedFilters, onExpandToggle, isHighlighted },
-            searchAggregationsStore: { aggregations, aggregationsQueryTasks, aggregationsLoading, error, missingAggregationsQueryTasks },
+            searchAggregationsStore: { aggregations, aggregationsQueryTasks, aggregationsLoading, error },
+            searchMissingStore: { missing },
         },
     } = useSharedStore()
 
@@ -101,11 +102,7 @@ export const Filters: FC = observer(() => {
                                     aggregations={aggregations?.[field]}
                                     loading={!!aggregationsLoading?.[1]?.data?.result?.aggregations[field]}
                                     loadingETA={loadingETA}
-                                    missing={
-                                        missingAggregationsQueryTasks?.[Object.keys(aggregationsQueryTasks)[0]]?.data?.result?.aggregations[
-                                            `${field}-missing`
-                                        ]
-                                    }
+                                    missing={missing?.[`${field}-missing`]}
                                     missingLoading={false}
                                     missingLoadingETA={0}
                                     open={expandedFilters[category] === field}

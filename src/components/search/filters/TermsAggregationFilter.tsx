@@ -20,7 +20,7 @@ interface TermsAggregationFilterProps {
     aggregations?: Aggregation
     loading: boolean
     loadingETA: number
-    missing: Aggregation
+    missing?: number
     missingLoading: boolean
     missingLoadingETA: number
     open: boolean
@@ -86,7 +86,7 @@ export const TermsAggregationFilter: FC<TermsAggregationFilterProps> = observer(
                     queryFacets={queryFacets}
                     aggregations={aggregations?.values}
                     loading={loading}
-                    missing={missing?.values}
+                    missing={missing}
                     missingLoading={missingLoading}
                     missingLoadingETA={missingLoadingETA}
                     onChange={handleAggregationChange}

@@ -21,7 +21,7 @@ interface AggregationFilterProps {
     queryFacets?: number
     aggregations?: AggregationValues
     loading: boolean
-    missing?: AggregationValues
+    missing?: number
     missingLoading: boolean
     missingLoadingETA: number
     onChange: (field: SourceField, ...rest: any) => () => void
@@ -80,7 +80,7 @@ export const AggregationFilter: FC<AggregationFilterProps> = observer(
                         primary={
                             !!missing ? (
                                 <Typography variant="caption" className={classes.empty}>
-                                    {formatThousands(missing?.doc_count || 0)}
+                                    {formatThousands(missing || 0)}
                                 </Typography>
                             ) : (
                                 <Fade in={missingLoading} unmountOnExit>
