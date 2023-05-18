@@ -8,6 +8,10 @@ export const useStyles = makeStyles()((theme: Theme) => ({
 
     flex: {
         flexGrow: 1,
+        minWidth: 250,
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
     },
 
     noLink: {
