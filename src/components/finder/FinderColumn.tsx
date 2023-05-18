@@ -4,6 +4,7 @@ import { makeStyles } from 'tss-react/mui'
 
 import { doc as docAPI } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
+import { Loading } from '../common/Loading/Loading'
 
 import { FinderItem } from './FinderItem'
 import { ColumnItem, LocalDocumentData } from './Types'
@@ -55,9 +56,11 @@ export const FinderColumn: FC<FinderColumnProps> = ({ items, pathname, prevPage,
                 </ListItem>
             )}
 
-            {itemsState?.map((item) => (
-                <FinderItem key={item.id} pathname={pathname} item={item} active={active} selected={selected} />
-            ))}
+            {!itemsState ? (
+                <Loading />
+            ) : (
+                itemsState.map((item) => <FinderItem key={item.id} pathname={pathname} item={item} active={active} selected={selected} />)
+            )}
 
             {nextPageState && (
                 <ListItem component={ButtonBase} onClick={nextPageLoading ? undefined : handleNextPage}>

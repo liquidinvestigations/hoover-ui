@@ -12,11 +12,11 @@ import { Layout } from '../src/components/Layout'
 import { SharedStoreProvider } from '../src/components/SharedStoreProvider'
 import { User } from '../src/Types'
 
-interface HooverApp extends AppProps {
+interface HooverAppProps extends AppProps {
     user: User
 }
 
-export default function HooverApp({ Component, pageProps, user }: HooverApp) {
+export default function HooverApp({ Component, pageProps, user }: HooverAppProps) {
     return (
         <CacheProvider value={createCache({ key: 'css', prepend: true })}>
             <LocalizationProvider dateAdapter={AdapterLuxon}>

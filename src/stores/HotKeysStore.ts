@@ -12,7 +12,7 @@ export class HotKeysStore {
     constructor(private readonly hashStore: HashStateStore, private readonly documentStore: DocumentStore, private readonly searchStore: SearchStore) {
         makeAutoObservable(this)
 
-        const isInputFocused = () => searchStore.searchViewStore.inputRef.current === document.activeElement
+        const isInputFocused = () => searchStore.searchViewStore.inputRef?.current === document.activeElement
 
         this.keys = {
             nextItem: {

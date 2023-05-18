@@ -2,8 +2,9 @@ import { makeAutoObservable, reaction, runInAction } from 'mobx'
 import { SyntheticEvent } from 'react'
 
 import { createDownloadUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI } from '../backend/api'
+import { LocalDocumentData } from '../components/finder/Types'
 import { DocumentData, OcrData, RequestError } from '../Types'
-import { collectionUrl, documentViewUrl } from '../utils/utils'
+import { collectionUrl, documentViewUrl, getBasePath } from '../utils/utils'
 
 import { HashStateStore } from './HashStateStore'
 
@@ -37,6 +38,8 @@ export class DocumentStore {
     tab = 0
 
     subTab = 0
+
+    hierarchy: LocalDocumentData | undefined = undefined
 
     constructor(private readonly hashStore: HashStateStore) {
         makeAutoObservable(this)
@@ -78,7 +81,6 @@ export class DocumentStore {
     }
 
     loadDocument = () => {
-        this.data = undefined
         this.error = undefined
         this.loading = true
         this.tab = parseInt(this.hashStore.hashState.tab || '0')
@@ -89,7 +91,10 @@ export class DocumentStore {
         }
 
         docAPI(this.pathname)
-            .then(this.parseDocumentData)
+            .then((data: DocumentData) => {
+                this.parseDocumentData(data)
+                this.getDocumentHierarchy()
+            })
             .catch((response: Response) => {
                 runInAction(() => {
                     this.error = {
@@ -104,6 +109,24 @@ export class DocumentStore {
                     this.loading = false
                 })
             })
+    }
+
+    getDocumentHierarchy = async () => {
+        if (this.pathname && this.data) {
+            const parentLevels = 3
+            const localData = { ...this.data }
+            let current: LocalDocumentData | undefined = localData
+            let level = 0
+
+            while (current?.parent_id && level < parentLevels) {
+                current.parent = await docAPI(getBasePath(this.pathname) + current.parent_id, current.parent_children_page)
+
+                current = current.parent
+                level++
+            }
+
+            this.hierarchy = localData
+        }
     }
 
     parseDocumentData = (data: DocumentData) => {

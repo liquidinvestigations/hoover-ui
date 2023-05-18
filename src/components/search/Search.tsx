@@ -1,7 +1,7 @@
 import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Tooltip, Typography } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import Router from 'next/router'
-import { cloneElement, FC, FormEvent, KeyboardEvent, useEffect } from 'react'
+import { cloneElement, FC, FormEvent, KeyboardEvent, useEffect, useRef } from 'react'
 
 import { tooltips } from '../../constants/help'
 import { reactIcons } from '../../constants/icons'
@@ -21,11 +21,12 @@ import { SortingMenu } from './sorting/SortingMenu/SortingMenu'
 
 export const Search: FC = observer(() => {
     const { classes } = useStyles()
+    const inputRef = useRef<HTMLInputElement>(null)
     const {
         searchStore: {
             search,
             searchViewStore: {
-                inputRef,
+                setInputRef,
                 setDrawerRef,
                 drawerWidth,
                 setDrawerWidth,
@@ -41,7 +42,7 @@ export const Search: FC = observer(() => {
 
     const clearInput = () => {
         clearSearchText()
-        inputRef.current?.focus()
+        inputRef?.current?.focus()
     }
 
     const clearSearchResults = (url: string) => {
@@ -58,6 +59,10 @@ export const Search: FC = observer(() => {
             Router.events.off('routeChangeStart', clearSearchResults)
         }
     })
+
+    useEffect(() => {
+        setInputRef(inputRef)
+    }, [inputRef, setInputRef])
 
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault()

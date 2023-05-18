@@ -1,7 +1,7 @@
 import { Box, Table, TableBody, TableCell, TableRow } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
-import { SyntheticEvent, useState } from 'react'
+import { SyntheticEvent, useEffect, useState } from 'react'
 
 import { createDownloadUrl, doc as docAPI } from '../../../../../backend/api'
 import { reactIcons } from '../../../../../constants/icons'
@@ -32,6 +32,13 @@ export const Files = observer(() => {
         setFiles([...(files || []), ...nextDoc.children])
         setFetchingChildrenPage(false)
     }
+
+    useEffect(() => {
+        if (!data) return;
+        setFiles(data.children)
+        setCurrentPage(data.children_page)
+        setCurrentHasNextPage(data.children_has_next_page)
+    }, [data])
 
     const filesRows = files?.map(({ id, digest, file, filename, content_type, filetype, size }, index) => (
         <TableRow key={index}>
