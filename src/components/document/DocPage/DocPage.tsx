@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material'
+import { CircularProgress, Typography } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import Head from 'next/head'
 import { FC } from 'react'
@@ -67,11 +67,16 @@ export const DocPage: FC = observer(() => {
             </>
         ) : (
             <>
-                {data && (
-                    <Typography variant="subtitle2" className={classes.title}>
-                        {!!digest ? 'File' : 'Directory'} <b>{data.content.path}</b>
-                    </Typography>
-                )}
+                <Typography variant="subtitle2" className={classes.title}>
+                    {data ? (
+                        <>
+                            {!!digest ? 'File' : 'Directory'} <b>{data.content.path}</b>
+                        </>
+                    ) : (
+                        <CircularProgress size={16} thickness={4} />
+                    )}
+                </Typography>
+
                 <div className={classes.splitPane}>
                     <SplitPane
                         split="horizontal"

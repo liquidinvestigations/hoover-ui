@@ -1,8 +1,10 @@
-import { Button } from '@mui/material'
+import { Button, IconButton, MenuItem, Menu as MenuMui, Typography, Divider, Box, MenuList } from '@mui/material'
 import { observer } from 'mobx-react-lite'
-import Link from 'next/link'
+import NextLink from 'next/link'
 import { useRouter } from 'next/router'
+import { useState } from 'react'
 
+import { reactIcons } from '../../../constants/icons'
 import { useSharedStore } from '../../SharedStoreProvider'
 
 import { useStyles } from './Menu.styles'
@@ -12,9 +14,11 @@ interface Link {
     url: string
     next?: boolean
     type?: 'admin' | 'logged-in' | 'not-logged-in'
+    active?: boolean
 }
 
 export const Menu = observer(() => {
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
     const { classes } = useStyles()
     const router = useRouter()
     const { user } = useSharedStore()
@@ -26,102 +30,133 @@ export const Menu = observer(() => {
         return null
     }
 
-    const links: Link[] = (
-        [
+    const getNavLinks = (): Link[] => {
+        const links: Link[] = [
             {
                 name: 'Search',
                 url: '/',
                 next: true,
+                active: router.asPath === '/',
             },
             {
-                name: 'Batch search',
+                name: 'Batch',
                 url: '/batch-search',
                 next: true,
+                active: router.asPath === '/batch-search',
             },
             {
                 name: 'Insights',
                 url: '/insights',
                 next: true,
+                active: router.asPath === '/insights',
             },
-            process.env.HOOVER_UPLOADS_ENABLED
-                ? {
-                      name: 'Uploads',
-                      url: '/uploads',
-                      next: true,
-                  }
-                : false,
-            process.env.HOOVER_MAPS_ENABLED
-                ? {
-                      name: 'Maps',
-                      url: '/maps',
-                      next: true,
-                  }
-                : false,
-            process.env.HOOVER_TRANSLATION_ENABLED
-                ? {
-                      name: 'Translate',
-                      url: '/libre_translate',
-                  }
-                : false,
-            {
-                name: 'About',
-                url: 'https://github.com/liquidinvestigations/hoover-search',
-            },
-            //{
-            //    name: 'Terms',
-            //    url: '/terms',
-            //    next: true,
-            //},
-            {
-                name: 'Documentation',
-                url: 'https://github.com/liquidinvestigations/docs/wiki/User-Guide:-Hoover',
-            },
-            {
-                name: 'Login',
-                url: user.urls.login,
-                type: 'not-logged-in',
-            },
-            {
+        ]
+
+        if (process.env.HOOVER_UPLOADS_ENABLED) {
+            links.push({
+                name: 'Uploads',
+                url: '/uploads',
+                next: true,
+                active: router.asPath === '/uploads',
+            })
+        }
+
+        if (process.env.HOOVER_MAPS_ENABLED) {
+            links.push({
+                name: 'Maps',
+                url: '/maps',
+                next: true,
+                active: router.asPath === '/maps',
+            })
+        }
+
+        if (process.env.HOOVER_TRANSLATION_ENABLED) {
+            links.push({
+                name: 'Translate',
+                url: '/libre_translate',
+                active: router.asPath === '/libre_translate',
+            })
+        }
+
+        links.push({
+            name: 'Docs',
+            url: 'https://github.com/liquidinvestigations/docs/wiki/User-Guide:-Hoover',
+        })
+
+        if (user.admin) {
+            links.push({
                 name: 'Admin',
                 url: user.urls.admin,
-                type: 'admin',
-            },
-            {
-                name: `Logout (${user.username})`,
-                url: user.urls.logout,
-                type: 'logged-in',
-            },
-        ].filter(Boolean) as Link[]
-    ).map((link) => ({ ...link, active: router.asPath === link.url }))
+                active: router.asPath === user.urls.admin,
+            })
+        }
 
-    const shouldShow = (link: Link) => {
-        if (link.type === 'admin') {
-            return user.admin
+        return links;
+    }
+
+    const getMenuLinks = (): Link[] => {
+        const links: Link[] = []
+
+        if (user.username) {
+            links.push({
+                name: `Logout`,
+                url: user.urls.logout,
+            })
         }
-        if (link.type === 'logged-in') {
-            return user.username
+
+        if (!user.username) {
+            links.push({
+                name: 'Login',
+                url: user.urls.login,
+            })
         }
-        if (link.type === 'not-logged-in') {
-            return !user.username
-        }
-        return true
+
+        return links
+    }
+
+    const handleUserMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget)
+    }
+
+    const handleUserMenuClose = () => {
+        setAnchorEl(null)
     }
 
     return (
         <>
-            {links.filter(shouldShow).map((link) =>
+            {getNavLinks().map((link) =>
                 !link.next ? (
                     <Button key={link.name} variant="text" href={link.url} color="inherit">
                         {link.name}
                     </Button>
                 ) : (
-                    <Link key={link.name} href={link.url} shallow className={classes.link}>
+                    <NextLink key={link.name} href={link.url} shallow className={classes.link}>
                         <Button variant="text" href={link.url} color="inherit" component="span">
                             {link.name}
                         </Button>
-                    </Link>
+                    </NextLink>
                 )
             )}
+            <IconButton edge="end" color="inherit" onClick={handleUserMenuClick}>
+                {reactIcons.accountCircle}
+            </IconButton>
+            <MenuMui anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleUserMenuClose}>
+                {!!user.username && (
+                    <Box>
+                        <Typography variant="subtitle1" className={classes.menuHeader}>{user.username}</Typography>
+                        <Divider />
+                    </Box>
+                )}
+                <MenuList>
+                    {getMenuLinks().map((link) => (
+                        <MenuItem key={link.name}>
+                            <NextLink href={link.url} shallow className={classes.menuItem}>
+                                {link.name}
+                            </NextLink>
+                        </MenuItem>
+                    ))}
+                </MenuList>
+            </MenuMui>
         </>
     )
 })

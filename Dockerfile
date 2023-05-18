@@ -1,4 +1,4 @@
-FROM node:14
+FROM node:18
 
 RUN mkdir -p /opt/hoover/ui
 WORKDIR /opt/hoover/ui
@@ -6,7 +6,7 @@ WORKDIR /opt/hoover/ui
 ADD package*.json /opt/hoover/ui/
 ADD patches /opt/hoover/ui/patches/
 ADD postinstall-fixes.js /opt/hoover/ui/
-RUN npm install --unsafe-perm
+RUN npm install --unsafe-perm --legacy-peer-deps
 
 ADD . /opt/hoover/ui/
 ENV NEXT_TELEMETRY_DISABLED=1

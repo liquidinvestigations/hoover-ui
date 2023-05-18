@@ -47,17 +47,17 @@ depends_on:
 
 steps:
 - name: npm install
-  image: node:14
+  image: node:18
   commands:
-  - npm install --unsafe-perm
+  - npm install --unsafe-perm --legacy-peer-deps
 
 - name: npm run build
-  image: node:14
+  image: node:18
   commands:
   - npm run build
 
 - name: npm test
-  image: node:14
+  image: node:18
   commands:
   - npm test
 ---

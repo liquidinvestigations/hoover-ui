@@ -32,7 +32,7 @@ export const Pagination: FC = observer(() => {
     const maxResultWindow = Math.max(...collectionsData.map((collectionData) => collectionData.max_result_window))
     const maxCount = maxResultWindow && !isNaN(maxResultWindow) && maxResultWindow < DEFAULT_MAX_RESULTS ? maxResultWindow : DEFAULT_MAX_RESULTS
 
-    const total = Math.max(...Object.entries(resultsQueryTasks).map(([_collection, { data }]) => data?.result?.hits.total || 0))
+    const total = Math.max(...Object.entries(resultsQueryTasks).map(([_collection, { data }]) => data?.result?.hits.total || 0), 0)
     const { size, page } = query
 
     const handleNext = () => search({ page: page + 1 }, { searchType: SearchType.Results })

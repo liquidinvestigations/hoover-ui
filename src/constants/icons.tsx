@@ -74,6 +74,7 @@ import {
     VisibilityOffOutlined,
     ZoomIn,
     ZoomOut,
+    AccountCircle,
 } from '@mui/icons-material'
 import { createElement, CSSProperties, ReactElement } from 'react'
 
@@ -98,6 +99,7 @@ const FAIcon = ({ icon, style = {}, className = '' }: FAIconProps) =>
     })
 
 export const reactIcons: Record<string, ReactElement> = {
+    accountCircle: <AccountCircle />,
     categoryCollections: <FAIcon icon={faLayerGroup} style={{ width: '1.25em' }} />,
     categoryTags: <LocalOffer />,
     categoryDates: <DateRange />,

@@ -32,7 +32,7 @@ export class SearchResultsStore {
         },
     })
 
-    queryResult = (query: SearchQueryParams) => {
+    performQuery = (query: SearchQueryParams) => {
         this.resultsQueryTasks = {}
 
         for (const collection of query.collections) {

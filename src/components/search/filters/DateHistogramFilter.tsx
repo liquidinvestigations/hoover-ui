@@ -39,7 +39,7 @@ interface DateHistogramFilterProps {
     aggregations?: Aggregation
     loading: boolean
     loadingETA: number
-    missing: Aggregation
+    missing?: number
     missingLoading: boolean
     missingLoadingETA: number
     open: boolean
@@ -117,7 +117,7 @@ export const DateHistogramFilter: FC<DateHistogramFilterProps> = observer(
                     queryFacets={queryFacets}
                     aggregations={aggregations?.values}
                     loading={loading}
-                    missing={missing?.values}
+                    missing={missing}
                     missingLoading={missingLoading}
                     missingLoadingETA={missingLoadingETA}
                     onChange={handleDateSelectionChange}

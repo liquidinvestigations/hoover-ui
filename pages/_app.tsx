@@ -5,13 +5,11 @@ import { CssBaseline } from '@mui/material'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
 import App, { AppContext, AppProps } from 'next/app'
-import { useMemo } from 'react'
 
 import { whoami } from '../src/backend/api'
 import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
 import { Layout } from '../src/components/Layout'
 import { SharedStoreProvider } from '../src/components/SharedStoreProvider'
-import { SharedStore } from '../src/stores/SharedStore'
 import { User } from '../src/Types'
 
 interface HooverAppProps extends AppProps {
@@ -19,13 +17,11 @@ interface HooverAppProps extends AppProps {
 }
 
 export default function HooverApp({ Component, pageProps, user }: HooverAppProps) {
-    const sharedStore = useMemo(() => new SharedStore(user), [user])
-    
     return (
         <CacheProvider value={createCache({ key: 'css', prepend: true })}>
             <LocalizationProvider dateAdapter={AdapterLuxon}>
                 <CssBaseline />
-                <SharedStoreProvider store={sharedStore}>
+                <SharedStoreProvider user={user}>
                     <Layout>
                         <Component {...pageProps} />
                     </Layout>
