@@ -1,11 +1,12 @@
 import url from 'url'
 
-import { List, ListItem, ListItemIcon, Typography } from '@mui/material'
+import { List, ListItem, ListItemIcon, Typography, Box } from '@mui/material'
 import Link from 'next/link'
 import { memo, useEffect, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
 
 import { locations as locationsAPI } from '../backend/api'
+import { useSharedStore } from '../components/SharedStoreProvider'
 import { reactIcons } from '../constants/icons'
 
 import { Loading } from './common/Loading/Loading'
@@ -19,9 +20,20 @@ const useStyles = makeStyles()((theme) => ({
             color: theme.palette.error.main,
         },
     },
+    container: {
+        paddingTop: theme.spacing(2),
+    },
+    title: {
+        padding: `${theme.spacing(0.5)} ${theme.spacing(2)}`,
+    },
+    list: {
+        overflowY: 'auto',
+        height: 'calc(100% - 40px)'
+    }
 }))
 
 function Locations({ url: docUrl, data }) {
+    const { fullPage } = useSharedStore()
     const { classes } = useStyles()
     const [locations, setLocations] = useState([])
     const [error, setError] = useState(null)
@@ -73,38 +85,39 @@ function Locations({ url: docUrl, data }) {
     const basePath = url.parse(baseUrl).pathname
 
     return (
-        <List component="nav" dense>
-            <ListItem>
-                <Typography variant="h6">Locations</Typography>
-            </ListItem>
+        <Box className={classes.container} sx={{ height: fullPage ? '100%' : '40%' }}>
+            <Typography variant="h6" className={classes.title}>
+                Locations
+            </Typography>
+            <List component="nav" dense className={classes.list}>
+                {locations.length && (
+                    <>
+                        {locations.map((location) => (
+                            <Link key={location.id} href={`${basePath}${location.id}`} shallow {...(!fullPage && { target: '_blank' })}>
+                                <ListItem button>
+                                    <ListItemIcon>{reactIcons.location}</ListItemIcon>
 
-            {locations.length && (
-                <>
-                    {locations.map((location) => (
-                        <Link key={location.id} href={`${basePath}${location.id}`} shallow>
-                            <ListItem button>
-                                <ListItemIcon>{reactIcons.location}</ListItemIcon>
-
-                                <Typography style={{ wordBreak: 'break-all' }}>
-                                    {location.parent_path}/<em>{location.filename}</em>
-                                </Typography>
-                            </ListItem>
-                        </Link>
-                    ))}
-                </>
-            )}
-            {hasNextPage && (
-                <ListItem dense>
-                    {loadingNextPage ? (
-                        <Loading />
-                    ) : (
-                        <a href="#" onClick={loadMore}>
-                            load more...
-                        </a>
-                    )}
-                </ListItem>
-            )}
-        </List>
+                                    <Typography style={{ wordBreak: 'break-all' }}>
+                                        {location.parent_path}/<em>{location.filename}</em>
+                                    </Typography>
+                                </ListItem>
+                            </Link>
+                        ))}
+                    </>
+                )}
+                {hasNextPage && (
+                    <ListItem dense>
+                        {loadingNextPage ? (
+                            <Loading />
+                        ) : (
+                            <a href="#" onClick={loadMore}>
+                                load more...
+                            </a>
+                        )}
+                    </ListItem>
+                )}
+            </List>
+        </Box>
     )
 }
 

@@ -3,6 +3,7 @@ import { SyntheticEvent } from 'react'
 
 import { createDownloadUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI } from '../backend/api'
 import { LocalDocumentData } from '../components/finder/Types'
+import { parentLevels } from '../components/finder/utils'
 import { DocumentData, OcrData, RequestError } from '../Types'
 import { collectionUrl, documentViewUrl, getBasePath } from '../utils/utils'
 
@@ -113,7 +114,6 @@ export class DocumentStore {
 
     getDocumentHierarchy = async () => {
         if (this.pathname && this.data) {
-            const parentLevels = 3
             const localData = { ...this.data }
             let current: LocalDocumentData | undefined = localData
             let level = 0

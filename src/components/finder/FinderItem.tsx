@@ -5,6 +5,7 @@ import { makeStyles } from 'tss-react/mui'
 
 import { ChildDocument, DocumentData } from '../../Types'
 import { getBasePath, getTypeIcon } from '../../utils/utils'
+import { useSharedStore } from '../SharedStoreProvider'
 
 import { filenameFor } from './utils'
 
@@ -14,11 +15,13 @@ const useStyles = makeStyles()((theme: Theme) => ({
         paddingRight: theme.spacing(0.5),
     },
     active: {
-        backgroundColor: '#1e90ff',
+        // added !important here in order to override the :hover styling of list items
+        // which apply a lighter background color
+        backgroundColor: '#1e90ff !important',
         color: '#fff',
     },
     selected: {
-        backgroundColor: '#dedede',
+        backgroundColor: '#dedede !important',
     },
     itemRoot: {
         margin: 0,
@@ -46,10 +49,11 @@ interface FinderItemProps {
 }
 
 export const FinderItem: FC<FinderItemProps> = ({ pathname, item, active, selected }) => {
+    const { fullPage } = useSharedStore()
     const { classes, cx } = useStyles()
     const ref = useRef<HTMLLIElement>(null)
     const router = useRouter()
-    const isActive = item.id === active?.id
+    const isActive = item.id === active?.id || item.digest === active?.id
     const isSelected = item.id === selected?.id
 
     useEffect(() => {
@@ -59,7 +63,12 @@ export const FinderItem: FC<FinderItemProps> = ({ pathname, item, active, select
     }, [isActive, isSelected])
 
     const handleClick = () => {
-        router.push(getBasePath(pathname) + ((item as any).file || item.id), undefined, { shallow: true })
+        const path = getBasePath(pathname) + ((item as any).file || item.id)
+        if (!fullPage) {
+            window.open(path, '_blank')
+        } else {
+            router.push(path, undefined, { shallow: true })
+        }
     }
 
     return (
