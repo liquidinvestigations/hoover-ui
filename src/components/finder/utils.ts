@@ -21,7 +21,7 @@ export const makeColumns = (doc: LocalDocumentData, pathname: string | null) => 
 
     if (doc.parent) {
         let node = doc
-        while (node.parent) {
+        while (node.parent && columns.length < 5) {
             createColumn(node.parent, node)
             node = node.parent
         }

@@ -78,7 +78,7 @@ export const AggregationFilter: FC<AggregationFilterProps> = observer(
 
                     <ListItemText
                         primary={
-                            !!missing ? (
+                            missing !== undefined ? (
                                 <Typography variant="caption" className={classes.empty}>
                                     {formatThousands(missing || 0)}
                                 </Typography>
@@ -92,7 +92,7 @@ export const AggregationFilter: FC<AggregationFilterProps> = observer(
                             )
                         }
                         disableTypography
-                        className={classes.right}
+                        className={classes.docCount}
                     />
                 </ListItem>
 

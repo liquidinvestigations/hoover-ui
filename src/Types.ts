@@ -59,6 +59,7 @@ export interface SearchQueryParams {
     page: number
     size: number
     collections: string[]
+    fieldList: SourceField[] | '*'
     order?: string[][]
     facets?: Record<string, any>
     filters?: Record<string, any>

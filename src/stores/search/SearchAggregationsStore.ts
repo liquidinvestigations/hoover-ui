@@ -41,8 +41,12 @@ export class SearchAggregationsStore {
 
         if (keepFromClearing && Object.keys(this.aggregations).includes(keepFromClearing)) {
             this.aggregations = { [keepFromClearing]: { ...this.aggregations[keepFromClearing] } }
+            this.searchStore.searchMissingStore.missing = {
+                [keepFromClearing]: this.searchStore.searchMissingStore.missing[`${keepFromClearing}-missing`],
+            }
         } else {
             this.aggregations = {}
+            this.searchStore.searchMissingStore.missing = {}
         }
 
         for (const collection of query.collections) {

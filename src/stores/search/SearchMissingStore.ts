@@ -15,14 +15,11 @@ export class SearchMissingStore {
 
     error: any
 
-    keepFromClearing: AggregationsKey | undefined
-
     constructor(private readonly searchStore: SearchStore) {
         makeAutoObservable(this)
 
         reaction(
-            () =>
-                Object.entries(this.missingQueryTasks).map(([collection, { data }]) => ({ collection, aggregations: data?.result?.aggregations })),
+            () => Object.entries(this.missingQueryTasks).map(([collection, { data }]) => ({ collection, aggregations: data?.result?.aggregations })),
             (results) => {
                 results.forEach(({ collection, aggregations }) => {
                     if (aggregations && !this.missingCollections.includes(collection)) {
@@ -34,21 +31,18 @@ export class SearchMissingStore {
         )
     }
 
-    performQuery(query: SearchQueryParams, keepFromClearing: AggregationsKey | undefined) {
+    performQuery(query: SearchQueryParams) {
+        if (this.missing[`${query.fieldList}-missing`]) {
+            return
+        }
+
         this.missingQueryTasks = {}
         this.missingCollections = []
-        this.keepFromClearing = keepFromClearing
-
-        if (keepFromClearing && Object.keys(this.missing).includes(keepFromClearing)) {
-            this.missing = { [keepFromClearing]: this.missing[keepFromClearing] }
-        } else {
-            this.missing = {}
-        }
 
         for (const collection of query.collections) {
             const { collections, ...queryParams } = query
             const singleCollectionQuery = { collections: [collection], ...queryParams }
-            this.missingQueryTasks[collection] = AsyncQueryTaskRunner.createAsyncQueryTask(singleCollectionQuery, 'missing', '*')
+            this.missingQueryTasks[collection] = AsyncQueryTaskRunner.createAsyncQueryTask(singleCollectionQuery, 'missing', query.fieldList)
         }
     }
 
@@ -58,9 +52,9 @@ export class SearchMissingStore {
 
     private sumMissing(aggregations: Aggregations) {
         ;(Object.entries(aggregations) as Entries<typeof aggregations>).forEach(([field, aggregation]) => {
-            const docCount = aggregation?.values.doc_count || 0
+            const docCount = aggregation?.values?.doc_count || 0
 
-            if (!this.missing[field]) {
+            if (this.missing[field] === undefined) {
                 this.missing[field] = docCount
             } else {
                 this.missing[field] += docCount

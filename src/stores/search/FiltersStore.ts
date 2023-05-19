@@ -7,7 +7,7 @@ import { AggregationsKey, Category, SearchQueryParams, SourceField } from '../..
 import { defaultSearchParams } from '../../utils/queryUtils'
 import { getClosestInterval } from '../../utils/utils'
 
-import { SearchStore } from './SearchStore'
+import { SearchStore, SearchType } from './SearchStore'
 
 interface FilterField extends AggregationField {
     field: SourceField
@@ -94,6 +94,7 @@ export class FiltersStore {
     onExpandToggle = (category: Category, field: SourceField) => (open: boolean) => {
         if (open) {
             this.setExpandedFilters({ ...this.expandedFilters, ...{ [category]: field } })
+            this.loadMissing(field)
         } else {
             const { [category]: closed, ...expanded } = this.expandedFilters
             this.setExpandedFilters(expanded)
@@ -205,4 +206,10 @@ export class FiltersStore {
     }
 
     handleReset = (field: SourceField) => () => this.handleChange(field, [], true)
+
+    loadMissing = (field: SourceField) => {
+        if (!this.searchStore.searchMissingStore.missing[`${field}-missing`]) {
+            this.searchStore.search({ fieldList: [field] }, { searchType: SearchType.Missing })
+        }
+    }
 }

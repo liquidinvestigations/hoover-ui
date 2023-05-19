@@ -1,11 +1,10 @@
 import { makeAutoObservable } from 'mobx'
 
 import { asyncSearch as asyncSearchAPI } from '../../backend/api'
-import { AsyncTaskData, SearchQueryParams, SearchQueryType } from '../../Types'
+import { AsyncTaskData, SearchQueryParams, SearchQueryType, SourceField } from '../../Types'
 
 interface FetchParams extends SearchQueryParams {
     type: SearchQueryType
-    fieldList: string
     async?: boolean
     missing?: boolean
 }
@@ -17,7 +16,7 @@ export class AsyncQueryTask {
     timeout?: NodeJS.Timeout
     controller?: AbortController
 
-    constructor(readonly query: SearchQueryParams, private readonly type: SearchQueryType, private readonly fieldList: string) {
+    constructor(readonly query: SearchQueryParams, private readonly type: SearchQueryType, private readonly fieldList: SourceField[] | '*') {
         makeAutoObservable(this)
     }
 
@@ -91,7 +90,7 @@ export class AsyncQueryTask {
 export class AsyncQueryTaskRunner {
     static taskQueue: AsyncQueryTask[] = []
 
-    static createAsyncQueryTask(query: SearchQueryParams, type: SearchQueryType, fieldList: string): AsyncQueryTask {
+    static createAsyncQueryTask(query: SearchQueryParams, type: SearchQueryType, fieldList: SourceField[] | '*'): AsyncQueryTask {
         const task = new AsyncQueryTask(query, type, fieldList)
 
         this.taskQueue.push(task)

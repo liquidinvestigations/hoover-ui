@@ -37,11 +37,11 @@ export class SearchStore {
     searchResultsStore: SearchResultsStore
 
     constructor(private readonly sharedStore: SharedStore) {
-        this.filtersStore = new FiltersStore(this)
         this.searchViewStore = new SearchViewStore(sharedStore, this)
         this.searchAggregationsStore = new SearchAggregationsStore(this)
         this.searchMissingStore = new SearchMissingStore(this)
         this.searchResultsStore = new SearchResultsStore(this)
+        this.filtersStore = new FiltersStore(this)
 
         makeAutoObservable(this)
     }
@@ -83,7 +83,7 @@ export class SearchStore {
             }
 
             if (searchType & SearchType.Missing) {
-                this.searchMissingStore.performQuery(query as SearchQueryParams, keepFromClearing)
+                this.searchMissingStore.performQuery(query as SearchQueryParams)
             }
 
             if (searchType & SearchType.Results) {

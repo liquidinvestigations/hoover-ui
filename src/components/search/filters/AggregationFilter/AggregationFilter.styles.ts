@@ -28,7 +28,10 @@ export const useStyles = makeStyles()((theme) => ({
         marginLeft: theme.spacing(1),
     },
 
-    right: {
+    docCount: {
+        flex: '1 0 auto',
+        paddingLeft: 6,
         alignSelf: 'flex-end',
+        textAlign: 'right',
     },
 }))

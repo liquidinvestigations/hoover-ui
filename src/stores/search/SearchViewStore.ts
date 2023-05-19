@@ -84,6 +84,10 @@ export class SearchViewStore {
         runInAction(() => {
             this.openCategory = category
         })
+
+        if (category) {
+            this.searchStore.filtersStore.loadMissing(this.searchStore.filtersStore.categories[category]?.filters[0].field)
+        }
     }
 
     setDrawerPinned = (drawerPinned: boolean) => {
