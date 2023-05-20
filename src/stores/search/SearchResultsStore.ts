@@ -1,17 +1,34 @@
-import { makeAutoObservable, runInAction } from 'mobx'
+import { makeAutoObservable, reaction, runInAction } from 'mobx'
 
-import { SearchQueryParams } from '../../Types'
+import { Hit, SearchQueryParams } from '../../Types'
+import { getPreviewParams } from '../../utils/utils'
+import { SharedStore } from '../SharedStore'
 
 import { AsyncQueryTask, AsyncQueryTaskRunner } from './AsyncTaskRunner'
 import { SearchStore } from './SearchStore'
+
+type PreviewOnLoad = 'first' | 'last' | undefined
 
 export class SearchResultsStore {
     resultsQueryTasks: Record<string, AsyncQueryTask> = {}
 
     error: any
 
-    constructor(private readonly searchStore: SearchStore) {
+    previewOnLoad: PreviewOnLoad
+
+    constructor(private readonly sharedStore: SharedStore, private readonly searchStore: SearchStore) {
         makeAutoObservable(this)
+
+        reaction(
+            () => this.hits,
+            (hits) => {
+                if (this.previewOnLoad === 'first' && hits[0]) {
+                    this.openPreview(hits[0])
+                } else if (this.previewOnLoad === 'last' && hits[hits.length - 1]) {
+                    this.openPreview(hits[hits.length - 1])
+                }
+            }
+        )
     }
 
     maskIrrelevantParams = (query: SearchQueryParams): SearchQueryParams => ({
@@ -43,33 +60,74 @@ export class SearchResultsStore {
     }
 
     previewNextDoc = () => {
-        /*
-        if (!resultsLoading && results?.hits.hits && (parseInt(query.page) - 1) * parseInt(query.size) + currentIndex < results.hits.total - 1) {
-            if (currentIndex === results.hits.hits.length - 1) {
-                setPreviewOnLoad('first')
-                search({ page: parseInt(query.page) + 1 })
+        const page = this.searchStore.query?.page || 1
+        const size = this.searchStore.query?.size || 0
+        const currentIndex = this.currentPreviewIndex
+        const hits = this.hits
+
+        if (!this.resultsLoading && hits && (page - 1) * size + currentIndex < this.hitsTotal - 1) {
+            if (currentIndex === hits.length - 1) {
+                this.setPreviewOnLoad('first')
+                this.searchStore.search({ page: page + 1 })
             } else {
-                setHashState({ ...getPreviewParams(results.hits.hits[currentIndex + 1]), tab: undefined, subTab: undefined, previewPage: undefined })
+                this.openPreview(hits[currentIndex + 1])
             }
         }
-         */
     }
 
     previewPreviousDoc = () => {
-        /*
-        if ((!resultsLoading && results?.hits.hits && parseInt(query.page) > 1) || currentIndex >= 1) {
-            if (currentIndex === 0 && parseInt(query.page) > 1) {
-                setPreviewOnLoad('last')
-                search({ page: parseInt(query.page) - 1 })
+        const page = this.searchStore.query?.page || 1
+        const currentIndex = this.currentPreviewIndex
+        const hits = this.hits
+
+        if ((!this.resultsLoading && hits && page > 1) || currentIndex >= 1) {
+            if (currentIndex === 0 && page > 1) {
+                this.setPreviewOnLoad('last')
+                this.searchStore.search({ page: page - 1 })
             } else {
-                setHashState({ ...getPreviewParams(results.hits.hits[currentIndex - 1]), tab: undefined, subTab: undefined, previewPage: undefined })
+                this.openPreview(hits[currentIndex - 1])
             }
         }
-         */
+    }
+
+    openPreview = (hit: Hit) => {
+        this.sharedStore.hashStore.setHashState({
+            ...getPreviewParams(hit),
+            tab: undefined,
+            subTab: undefined,
+            previewPage: undefined,
+        })
+    }
+
+    get currentPreviewIndex() {
+        const hashState = this.sharedStore.hashStore.hashState
+
+        return this.hits.findIndex((hit) => hit._collection === hashState.preview?.c && hit._id === hashState.preview?.i)
     }
 
     get resultsLoading() {
         return Object.entries(this.resultsQueryTasks).find(([_collection, queryTask]) => queryTask.data?.status !== 'done')
+    }
+
+    get hits() {
+        return Object.entries(this.resultsQueryTasks).reduce((hits, [_collection, queryTask]) => {
+            hits.push(...(queryTask.data?.result?.hits.hits || []))
+
+            return hits
+        }, [] as Hit[])
+    }
+
+    get hitsTotal() {
+        return Object.entries(this.resultsQueryTasks).reduce(
+            (total, [_collection, queryTask]) => Math.max(queryTask.data?.result?.hits.total || 0, total),
+            0
+        )
+    }
+
+    setPreviewOnLoad = (previewOnLoad: PreviewOnLoad): void => {
+        runInAction(() => {
+            this.previewOnLoad = previewOnLoad
+        })
     }
 
     clearResults = (): void => {

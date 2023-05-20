@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import qs from 'qs'
 
-import { AggregationsKey, SearchQueryParams } from '../../Types'
+import { AggregationsKey, SearchQueryParams, SourceField } from '../../Types'
 import fixLegacyQuery from '../../utils/fixLegacyQuery'
 import { buildSearchQuerystring, defaultSearchParams, unwindParams } from '../../utils/queryUtils'
 import { SharedStore } from '../SharedStore'
@@ -20,6 +20,7 @@ export enum SearchType {
 
 interface SearchOptions {
     searchType?: number
+    fieldList?: SourceField[] | '*'
     keepFromClearing?: AggregationsKey
 }
 
@@ -40,7 +41,7 @@ export class SearchStore {
         this.searchViewStore = new SearchViewStore(sharedStore, this)
         this.searchAggregationsStore = new SearchAggregationsStore(this)
         this.searchMissingStore = new SearchMissingStore(this)
-        this.searchResultsStore = new SearchResultsStore(this)
+        this.searchResultsStore = new SearchResultsStore(sharedStore, this)
         this.filtersStore = new FiltersStore(this)
 
         makeAutoObservable(this)
@@ -48,6 +49,9 @@ export class SearchStore {
 
     parseSearchParams = (search: string): Partial<SearchQueryParams> => {
         const parsedQuery = fixLegacyQuery(unwindParams(qs.parse(search, { arrayLimit: 100 })))
+
+        parsedQuery.page = parseInt(parsedQuery.page)
+        parsedQuery.size = parseInt(parsedQuery.size)
 
         this.searchViewStore.searchText = parsedQuery.q || ''
         this.searchViewStore.searchCollections = parsedQuery.collections || []
@@ -83,7 +87,7 @@ export class SearchStore {
             }
 
             if (searchType & SearchType.Missing) {
-                this.searchMissingStore.performQuery(query as SearchQueryParams)
+                this.searchMissingStore.performQuery(query as SearchQueryParams, options.fieldList)
             }
 
             if (searchType & SearchType.Results) {

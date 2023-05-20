@@ -7,6 +7,7 @@ interface FetchParams extends SearchQueryParams {
     type: SearchQueryType
     async?: boolean
     missing?: boolean
+    fieldList: SourceField[] | '*'
 }
 
 export class AsyncQueryTask {

@@ -209,7 +209,7 @@ export class FiltersStore {
 
     loadMissing = (field: SourceField) => {
         if (!this.searchStore.searchMissingStore.missing[`${field}-missing`]) {
-            this.searchStore.search({ fieldList: [field] }, { searchType: SearchType.Missing })
+            this.searchStore.search(undefined, { searchType: SearchType.Missing, fieldList: [field] })
         }
     }
 }

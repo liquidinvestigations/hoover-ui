@@ -25,7 +25,10 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
     const { classes, cx } = useStyles()
     const {
         user,
-        hashStore: { hashState, setHashState },
+        hashStore: { hashState },
+        searchStore: {
+            searchResultsStore: { openPreview },
+        },
     } = useSharedStore()
 
     const isPreview = hit._collection === hashState.preview?.c && hit._id === hashState.preview?.i
@@ -41,7 +44,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
     const handleMouseUp = () => {
         if ((nodeRef.current as any).willFocus) {
             ;(nodeRef.current as any).tUp = timeMs()
-            setHashState({ ...getPreviewParams(hit), tab: undefined, subTab: undefined, previewPage: undefined })
+            openPreview(hit)
         }
     }
 

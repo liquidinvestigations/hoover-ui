@@ -1,7 +1,8 @@
 import { makeAutoObservable, reaction } from 'mobx'
 import { Entries } from 'type-fest'
 
-import { Aggregations, AggregationsKey, SearchQueryParams } from '../../Types'
+import { SearchFields } from '../../backend/buildSearchQuery'
+import { Aggregations, AggregationsKey, SearchQueryParams, SourceField } from '../../Types'
 
 import { AsyncQueryTask, AsyncQueryTaskRunner } from './AsyncTaskRunner'
 import { SearchStore } from './SearchStore'
@@ -31,8 +32,8 @@ export class SearchMissingStore {
         )
     }
 
-    performQuery(query: SearchQueryParams) {
-        if (this.missing[`${query.fieldList}-missing`]) {
+    performQuery(query: SearchQueryParams, fieldList: SourceField[] | '*' = '*') {
+        if (this.missing[`${fieldList}-missing`]) {
             return
         }
 
@@ -42,7 +43,7 @@ export class SearchMissingStore {
         for (const collection of query.collections) {
             const { collections, ...queryParams } = query
             const singleCollectionQuery = { collections: [collection], ...queryParams }
-            this.missingQueryTasks[collection] = AsyncQueryTaskRunner.createAsyncQueryTask(singleCollectionQuery, 'missing', query.fieldList)
+            this.missingQueryTasks[collection] = AsyncQueryTaskRunner.createAsyncQueryTask(singleCollectionQuery, 'missing', fieldList)
         }
     }
 
