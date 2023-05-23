@@ -20,6 +20,9 @@ const useStyles = makeStyles()((theme) => ({
         padding: theme.spacing(3),
     },
     viewer: {
+        height: '100%',
+        display: 'flex',
+        flexFlow: 'column',
         '&:fullscreen': {
             '& $container': {
                 height: 'calc(100vh - 48px)',
@@ -37,7 +40,7 @@ const useStyles = makeStyles()((theme) => ({
         display: 'none',
     },
     container: {
-        height: '50vh',
+        flex: 1,
         overflow: 'auto',
         position: 'relative',
         boxSizing: 'content-box',
