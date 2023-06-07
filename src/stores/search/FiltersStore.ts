@@ -1,6 +1,8 @@
+import { AST, Node } from 'lucene'
 import { makeAutoObservable, runInAction } from 'mobx'
 import { Entries } from 'type-fest'
 
+import { deleteFilterOperands } from '../../components/search/filters/FiltersChips/utils'
 import { aggregationCategories, AggregationField, aggregationFields } from '../../constants/aggregationFields'
 import { reactIcons } from '../../constants/icons'
 import { AggregationsKey, Category, SearchQueryParams, SourceField } from '../../Types'
@@ -203,6 +205,10 @@ export class FiltersStore {
         } else {
             this.handleChange(field, rest, resetPage)
         }
+    }
+
+    handleFilterChipDelete = (node: AST | Node) => {
+        this.searchStore.search({ filters: deleteFilterOperands({ ...this.searchStore.query?.filters }, node) })
     }
 
     handleReset = (field: SourceField) => () => this.handleChange(field, [], true)

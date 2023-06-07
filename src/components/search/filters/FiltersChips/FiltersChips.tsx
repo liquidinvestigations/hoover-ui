@@ -15,7 +15,11 @@ import { deleteFilterOperands } from './utils'
 
 export const FiltersChips: FC = observer(() => {
     const { classes } = useStyles()
-    const { query, search } = useSharedStore().searchStore
+    const {
+        query,
+        filtersStore: { handleFilterChipDelete },
+    } = useSharedStore().searchStore
+
     const [parsedFilters, setParsedFilters] = useState<AST>()
 
     useEffect(() => {
@@ -89,13 +93,6 @@ export const FiltersChips: FC = observer(() => {
         }
     }, [query])
 
-    const handleDelete = useCallback(
-        (node: AST | Node) => {
-            search({ filters: deleteFilterOperands({ ...query?.filters }, node) })
-        },
-        [search]
-    )
-
     const getChip = useCallback((q: Node) => {
         const n = q as NodeTerm & NodeRangedTerm
         let className = classes.chip
@@ -159,8 +156,8 @@ export const FiltersChips: FC = observer(() => {
                     tree={parsedFilters}
                     renderChip={getChip}
                     renderMenu={renderMenu}
-                    onChipDelete={handleDelete}
-                    onExpressionDelete={handleDelete}
+                    onChipDelete={handleFilterChipDelete}
+                    onExpressionDelete={handleFilterChipDelete}
                 />
             </FormControl>
         </Box>
