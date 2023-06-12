@@ -79,6 +79,7 @@ export interface AggregationField {
     type: string
     bucketsMax?: boolean
     buckets?: { key: string; label: string }[]
+    sort: boolean
 }
 
 export const aggregationFields: Partial<Record<SourceField, AggregationField>> = {
@@ -86,72 +87,86 @@ export const aggregationFields: Partial<Record<SourceField, AggregationField>> =
         filterLabel: 'Public tags',
         chipLabel: 'Public tag',
         type: 'term-and',
+        sort: true,
     },
     'priv-tags': {
         filterLabel: 'Private tags',
         chipLabel: 'Private tag',
         type: 'term-and',
+        sort: true,
     },
     date: {
         filterLabel: 'Date modified',
         chipLabel: 'Date modified',
         type: 'date',
+        sort: false,
     },
     'date-created': {
         filterLabel: 'Date created',
         chipLabel: 'Date created',
         type: 'date',
+        sort: false,
     },
     filetype: {
         filterLabel: 'File type',
         chipLabel: 'File type',
         type: 'term-or',
+        sort: true,
     },
     'content-type': {
         filterLabel: 'Content type',
         chipLabel: 'Content type',
         type: 'term-or',
+        sort: true,
     },
     skipped: {
         filterLabel: 'File processing skipped',
         chipLabel: 'File processing skipped',
         type: 'term-or',
+        sort: true,
     },
     lang: {
         filterLabel: 'Language',
         chipLabel: 'Language',
         type: 'term-or',
+        sort: true,
     },
     'email-domains': {
         filterLabel: 'Email domain',
         chipLabel: 'Email domain',
         type: 'term-or',
+        sort: true,
     },
     'from.keyword': {
         filterLabel: 'Email from',
         chipLabel: 'Email from',
         type: 'term-or',
+        sort: true,
     },
     'to.keyword': {
         filterLabel: 'Email to',
         chipLabel: 'Email to',
         type: 'term-or',
+        sort: true,
     },
     attachments: {
         filterLabel: 'Has Attachments',
         chipLabel: 'Has Attachments',
         type: 'term-or',
+        sort: true,
     },
     pgp: {
         filterLabel: 'PGP Encrypted',
         chipLabel: 'PGP Encrypted',
         type: 'term-or',
+        sort: true,
     },
     'path-parts': {
         filterLabel: 'Path',
         chipLabel: 'Path',
         type: 'term-or',
         bucketsMax: true,
+        sort: true,
     },
     size: {
         filterLabel: 'Size',
@@ -199,6 +214,7 @@ export const aggregationFields: Partial<Record<SourceField, AggregationField>> =
                 label: '>= 1 TB',
             },*/
         ],
+        sort: false,
     },
     'word-count': {
         filterLabel: 'Word count',
@@ -238,86 +254,103 @@ export const aggregationFields: Partial<Record<SourceField, AggregationField>> =
                 label: '>= 1,000,000',
             },
         ],
+        sort: false,
     },
     ocr: {
         filterLabel: 'OCRed',
         chipLabel: 'OCRed',
         type: 'term-or',
+        sort: true,
     },
     ocrpdf: {
         filterLabel: 'OCRed PDF/Office Document',
         chipLabel: 'OCRed PDF/Office Document',
         type: 'term-or',
+        sort: true,
     },
     ocrimage: {
         filterLabel: 'OCRed Image',
         chipLabel: 'OCRed Image',
         type: 'term-or',
+        sort: true,
     },
     'detected-objects.object.keyword': {
         filterLabel: 'Detected objects',
         chipLabel: 'Detected object',
         type: 'term-or',
+        sort: true,
     },
     'image-classes.class.keyword': {
         filterLabel: 'Image classes',
         chipLabel: 'Image class',
         type: 'term-or',
+        sort: true,
     },
     'entity.keyword': {
         filterLabel: 'Entity',
         chipLabel: 'Entity',
         type: 'term-or',
+        sort: true,
     },
     'entity-type.location.keyword': {
         filterLabel: 'Location entity',
         chipLabel: 'Location entity',
         type: 'term-or',
+        sort: true,
     },
     'entity-type.organization.keyword': {
         filterLabel: 'Organization entity',
         chipLabel: 'Organization entity',
         type: 'term-or',
+        sort: true,
     },
     'entity-type.event.keyword': {
         filterLabel: 'Event entity',
         chipLabel: 'Event entity',
         type: 'term-or',
+        sort: true,
     },
     'entity-type.person.keyword': {
         filterLabel: 'Person entity',
         chipLabel: 'Person entity',
         type: 'term-or',
+        sort: true,
     },
     'entity-type.money.keyword': {
         filterLabel: 'Money entity',
         chipLabel: 'Money entity',
         type: 'term-or',
+        sort: true,
     },
     'translated-from': {
         filterLabel: 'Translated From',
         chipLabel: 'Translated From',
         type: 'term-or',
+        sort: true,
     },
     'translated-to': {
         filterLabel: 'Translated To',
         chipLabel: 'Translated To',
         type: 'term-or',
+        sort: true,
     },
     'is-table': {
         filterLabel: 'Is Table',
         chipLabel: 'Is Table',
         type: 'term-or',
+        sort: true,
     },
     'table-columns': {
         filterLabel: 'Table Column Name',
         chipLabel: 'Table Column Name',
         type: 'term-or',
+        sort: true,
     },
     'table-sheets': {
         filterLabel: 'Table Sheet Name',
         chipLabel: 'Table Sheet Name',
         type: 'term-or',
+        sort: true,
     },
     'table-row-count': {
         filterLabel: 'Row Count',
@@ -357,6 +390,7 @@ export const aggregationFields: Partial<Record<SourceField, AggregationField>> =
                 label: '>= 1,000,000',
             },
         ],
+        sort: false,
     },
     'table-col-count': {
         filterLabel: 'Column Count',
@@ -388,6 +422,7 @@ export const aggregationFields: Partial<Record<SourceField, AggregationField>> =
                 label: '>= 100',
             },
         ],
+        sort: false,
     },
     'table-sheet-count': {
         filterLabel: 'Sheet Count',
@@ -419,5 +454,6 @@ export const aggregationFields: Partial<Record<SourceField, AggregationField>> =
                 label: '>= 100',
             },
         ],
+        sort: false,
     },
 }

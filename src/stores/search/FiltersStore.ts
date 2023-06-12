@@ -37,6 +37,7 @@ export class FiltersStore {
                         filterLabel: field,
                         chipLabel: field,
                         type: 'term-and',
+                        sort: true,
                     }),
                 })),
             }
@@ -211,7 +212,12 @@ export class FiltersStore {
         this.searchStore.search({ filters: deleteFilterOperands({ ...this.searchStore.query?.filters }, node) })
     }
 
-    handleReset = (field: SourceField) => () => this.handleChange(field, [], true)
+    handleReset = (field: SourceField) => () => {
+        const { [field]: prevFilter, ...restFilters } = this.searchStore.query?.filters || {}
+        const { [field]: prevFacet, ...restFacets } = this.searchStore.query?.facets || {}
+
+        this.triggerSearch({ filters: { [field]: [], ...restFilters }, facets: { ...restFacets } })
+    }
 
     loadMissing = (field: SourceField) => {
         if (!this.searchStore.searchMissingStore.missing[`${field}-missing`]) {

@@ -40,7 +40,7 @@ export const Filters: FC = observer(() => {
             {(Object.entries(categories) as Entries<typeof categories>).map(([category, { label, icon, filters }]) => {
                 const greyed = filters.every(({ field }) => aggregations?.[field]?.values?.buckets?.length === 0)
 
-                const loading = filters.some(({ field }) => aggregationsLoading?.[1].data?.result?.aggregations[field])
+                const loading = filters.some(({ field }) => aggregationsLoading[field])
 
                 const loadingTask = Object.entries(aggregationsQueryTasks).find(
                     ([_collection, task]) => task.data?.result && Object.keys(task.data?.result?.aggregations).includes(filters[0].field)
@@ -100,7 +100,7 @@ export const Filters: FC = observer(() => {
                                     queryFilter={query?.filters?.[field]}
                                     queryFacets={query?.facets?.[field]}
                                     aggregations={aggregations?.[field]}
-                                    loading={loading}
+                                    loading={!!aggregationsLoading[field]}
                                     loadingETA={loadingETA}
                                     missing={missing?.[`${field}-missing`]}
                                     missingLoading={missingLoading?.[1].running || false}

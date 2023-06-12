@@ -24,9 +24,12 @@ export const Pagination: FC<{ field: SourceField }> = observer(({ field }) => {
     const handlePagination = (newPage: number) => {
         const { [field]: prevFacet, ...restFacets } = query?.facets || {}
         if (newPage > 1) {
-            search({ facets: { [field]: newPage, ...restFacets, page: defaultSearchParams.page } }, { searchType: SearchType.Aggregations })
+            search(
+                { facets: { [field]: newPage, ...restFacets, page: defaultSearchParams.page } },
+                { searchType: SearchType.Aggregations, fieldList: [field] }
+            )
         } else {
-            search({ facets: { ...restFacets }, page: defaultSearchParams.page }, { searchType: SearchType.Aggregations })
+            search({ facets: { ...restFacets }, page: defaultSearchParams.page }, { searchType: SearchType.Aggregations, fieldList: [field] })
         }
     }
 
@@ -36,7 +39,7 @@ export const Pagination: FC<{ field: SourceField }> = observer(({ field }) => {
     const handlePrev = () => handlePagination(page - 1)
     const handleNext = () => handlePagination(page + 1)
 
-    const hasNext = aggregations?.[field]?.values?.buckets?.length || 0 >= DEFAULT_FACET_SIZE
+    const hasNext = (aggregations?.[field]?.values?.buckets?.length || 0) >= DEFAULT_FACET_SIZE
     const hasPrev = page > 1
 
     return hasPrev || hasNext ? (
@@ -45,20 +48,16 @@ export const Pagination: FC<{ field: SourceField }> = observer(({ field }) => {
                 size="small"
                 tabIndex={-1}
                 onClick={handlePrev}
-                disabled={!!aggregationsLoading?.[1].data?.result?.aggregations[field] || !hasPrev}
+                disabled={!!aggregationsLoading[field] || !hasPrev}
                 data-test="prev-buckets-page">
                 {reactIcons.chevronLeft}
             </IconButton>
 
-            <IconButton
-                size="small"
-                onClick={handleNext}
-                disabled={!!aggregationsLoading?.[1].data?.result?.aggregations[field] || !hasNext}
-                data-test="next-buckets-page">
+            <IconButton size="small" onClick={handleNext} disabled={!!aggregationsLoading[field] || !hasNext} data-test="next-buckets-page">
                 {reactIcons.chevronRight}
             </IconButton>
 
-            {!!aggregationsLoading?.[1].data?.result?.aggregations[field] && <CircularProgress size={18} thickness={5} className={classes.loading} />}
+            {!!aggregationsLoading[field] && <CircularProgress size={18} thickness={5} className={classes.loading} />}
         </>
     ) : null
 })

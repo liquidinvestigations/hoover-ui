@@ -62,7 +62,7 @@ export class SearchStore {
     search = (params: Partial<SearchQueryParams> = {}, options: SearchOptions = {}) => {
         const { searchText, searchCollections } = this.searchViewStore
 
-        const { searchType, keepFromClearing } = {
+        const { searchType, keepFromClearing, fieldList } = {
             ...{ searchType: SearchType.Aggregations | SearchType.Results },
             ...options,
         }
@@ -83,11 +83,11 @@ export class SearchStore {
 
         if (query.q && query.page && query.size && query.collections?.length) {
             if (searchType & SearchType.Aggregations) {
-                this.searchAggregationsStore.performQuery(query as SearchQueryParams, keepFromClearing)
+                this.searchAggregationsStore.performQuery(query as SearchQueryParams, keepFromClearing, fieldList)
             }
 
             if (searchType & SearchType.Missing) {
-                this.searchMissingStore.performQuery(query as SearchQueryParams, options.fieldList)
+                this.searchMissingStore.performQuery(query as SearchQueryParams, fieldList)
             }
 
             if (searchType & SearchType.Results) {
