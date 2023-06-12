@@ -25,19 +25,22 @@ export const MoreButton: FC<{ field: SourceField }> = observer(({ field }) => {
 
     const handleLoadMore = () => {
         const facets = query?.facets || {}
-        search({ facets: { ...facets, [field]: page + 1 }, page: defaultSearchParams.page }, { searchType: SearchType.Aggregations })
+        search(
+            { facets: { ...facets, [field]: page + 1 }, page: defaultSearchParams.page },
+            { searchType: SearchType.Aggregations, keepFromClearing: field, fieldList: [field] }
+        )
     }
 
-    const cardinality = aggregations?.[field]?.count
-    const hasMore = cardinality?.value || 1 > page * DEFAULT_FACET_SIZE
+    const cardinality = (aggregations?.[field]?.count.value || 1) - (aggregations?.[field]?.values.buckets?.length || 0)
+    const hasMore = cardinality > page * DEFAULT_FACET_SIZE
 
     return hasMore ? (
         <>
-            <Button size="small" disabled={!!aggregationsLoading?.[1].data?.result?.aggregations[field]} variant="text" onClick={handleLoadMore}>
-                More ({cardinality?.value || 1 - page * DEFAULT_FACET_SIZE})
+            <Button size="small" disabled={!!aggregationsLoading[field]} variant="text" onClick={handleLoadMore}>
+                More ({cardinality})
             </Button>
 
-            {aggregationsLoading?.[1].data?.result?.aggregations[field] && <CircularProgress size={18} thickness={5} className={classes.loading} />}
+            {!!aggregationsLoading[field] && <CircularProgress size={18} thickness={5} className={classes.loading} />}
         </>
     ) : null
 })

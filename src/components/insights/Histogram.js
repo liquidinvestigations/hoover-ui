@@ -14,7 +14,7 @@ const barMargin = 1
 const axisHeight = 15
 
 export default function Histogram() {
-    const { aggregations, query, search, aggregationsLoading } = useSearch()
+    const { aggregations, query, aggregationsLoading } = useSearch()
 
     const handleClick = (event, bar) => {
         window.open(
