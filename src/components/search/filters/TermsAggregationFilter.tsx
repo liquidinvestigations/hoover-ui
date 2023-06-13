@@ -61,7 +61,7 @@ export const TermsAggregationFilter: FC<TermsAggregationFilterProps> = observer(
                 onToggle={onToggle}
                 resizable={false}
                 summary={
-                    !!aggregations?.values?.buckets?.length
+                    aggregations?.values?.buckets !== undefined
                         ? ((
                               <Typography variant="caption" display="block">
                                   {!aggregationFields[field]?.buckets &&

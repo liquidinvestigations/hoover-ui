@@ -8,14 +8,11 @@ import { useSharedStore } from '../../../SharedStoreProvider'
 import { ResultsList } from '../resultsList/ResultsList'
 import { ResultsTable } from '../resultsTable/ResultsTable/ResultsTable'
 
-import { useStyles } from './ResultsGroup.styles'
-
 interface ResultsProps {
     collection: string
 }
 
 export const ResultsGroup: FC<ResultsProps> = observer(({ collection }) => {
-    const { classes, cx } = useStyles()
     const {
         searchViewStore: { resultsViewType },
         searchResultsStore: { resultsQueryTasks },
@@ -35,13 +32,12 @@ export const ResultsGroup: FC<ResultsProps> = observer(({ collection }) => {
 
     return (
         <Expandable
-            resizable
             defaultOpen
-            open={queryTask.data?.result && queryTask.data?.result?.hits.total > 0 ? undefined : true}
+            contentVisible={queryTask.data?.result ? queryTask.data.result.hits.total > 0 : false}
             highlight={false}
             title={collection}
             summary={
-                <Typography variant="caption" display="block" className={classes.docCount}>
+                <Typography variant="caption" display="block">
                     {queryTask.data?.result
                         ? `${formatThousands(queryTask.data.result.hits.total)} result${queryTask.data.result.hits.total === 1 ? '' : 's'}`
                         : ''}

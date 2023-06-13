@@ -89,7 +89,7 @@ export const DateHistogramFilter: FC<DateHistogramFilterProps> = observer(
                 onToggle={onToggle}
                 resizable={false}
                 summary={
-                    !!aggregations?.values?.buckets?.length
+                    aggregations?.values?.buckets !== undefined
                         ? ((
                               <Typography variant="caption" display="block">
                                   {aggregations?.values?.buckets.length >= DEFAULT_FACET_SIZE && '> '}
