@@ -86,8 +86,10 @@ export class SearchAggregationsStore {
                         existingBucket.doc_count += newBucket.doc_count
                     }
                 })
-                // @ts-ignore
-                this.aggregations[field].count.value += aggregation.count.value
+                if (this.aggregations[field]?.count && aggregation?.count) {
+                    // @ts-ignore
+                    this.aggregations[field].count.value += aggregation.count.value
+                }
             }
             // @ts-ignore
             this.aggregationsLoading[field]--
