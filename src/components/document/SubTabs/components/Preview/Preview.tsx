@@ -48,6 +48,26 @@ export const Preview: FC = () => {
         return <PDFViewer url={docPreviewUrl} />
     }
 
+    if (data?.content.filetype === 'video') {
+        return (
+            <div className={classes.preview}>
+                <video controls style={{ objectFit: 'contain' }} width="100%" height="100%">
+                    <source src={docRawUrl} type={data?.content['content-type']} />
+                </video>
+            </div>
+        )
+    }
+
+    if (data?.content.filetype === 'audio') {
+        return (
+            <div className={classes.preview} style={{ height: '90px' }}>
+                <audio controls style={{ width: '100%' }}>
+                    <source src={docRawUrl} type={data?.content['content-type']} />
+                </audio>
+            </div>
+        )
+    }
+
     switch (data?.content['content-type']) {
         case 'application/pdf':
             return <PDFViewer url={docRawUrl} />
