@@ -21,6 +21,7 @@ interface ExpandableProps {
     resizable?: boolean
     fullHeight?: boolean
     highlight?: boolean
+    contentVisible?: boolean
 }
 
 export const Expandable: FC<ExpandableProps> = ({
@@ -36,6 +37,7 @@ export const Expandable: FC<ExpandableProps> = ({
     resizable = false,
     fullHeight = true,
     highlight = true,
+    contentVisible = true,
 }) => {
     const { classes, cx } = useStyles()
 
@@ -88,12 +90,7 @@ export const Expandable: FC<ExpandableProps> = ({
 
     const headerBar = useMemo(
         () => (
-            <ListItem
-                dense
-                button
-                onClick={toggle}
-                className={cx(classes.header, { [classes.enabled]: typeof open === 'undefined' })}
-                disabled={typeof open !== 'undefined'}>
+            <ListItem dense button onClick={toggle} className={cx(classes.header, { [classes.enabled]: contentVisible })} disabled={!contentVisible}>
                 <Fade in={loading} unmountOnExit>
                     <div>
                         <ThinProgress eta={loadingETA || 0} />
@@ -113,12 +110,12 @@ export const Expandable: FC<ExpandableProps> = ({
                     </Grid>
 
                     {summary && (
-                        <Grid item flex={1}>
+                        <Grid item flex="1" textAlign="right">
                             {summary}
                         </Grid>
                     )}
 
-                    {typeof open === 'undefined' && (
+                    {typeof open === 'undefined' && contentVisible && (
                         <Grid item>
                             <IconButton
                                 size="small"
@@ -162,7 +159,7 @@ export const Expandable: FC<ExpandableProps> = ({
                     {children}
                 </div>
 
-                {resizable && <div role="presentation" className={cx('Resizer horizontal')} onMouseDown={handleMouseDown} />}
+                {resizable && contentVisible && <div role="presentation" className={cx('Resizer horizontal')} onMouseDown={handleMouseDown} />}
             </Collapse>
         </>
     )
