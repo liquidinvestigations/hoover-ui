@@ -42,7 +42,9 @@ export const ResultsGroup: FC<ResultsProps> = observer(({ collection }) => {
             title={collection}
             summary={
                 <Typography variant="caption" display="block" className={classes.docCount}>
-                    {queryTask.data?.result ? formatThousands(queryTask.data.result.hits.total) : ''}
+                    {queryTask.data?.result
+                        ? `${formatThousands(queryTask.data.result.hits.total)} result${queryTask.data.result.hits.total === 1 ? '' : 's'}`
+                        : ''}
                 </Typography>
             }
             loading={queryTask.data?.status === 'pending'}
