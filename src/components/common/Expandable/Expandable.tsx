@@ -13,7 +13,7 @@ interface ExpandableProps {
     children: ReactNode | ReactNode[]
     loading?: boolean
     loadingETA?: number
-    summary?: string
+    summary?: ReactNode
     greyed?: boolean
     defaultOpen?: boolean
     open?: boolean
@@ -88,7 +88,12 @@ export const Expandable: FC<ExpandableProps> = ({
 
     const headerBar = useMemo(
         () => (
-            <ListItem dense button onClick={toggle} className={classes.header}>
+            <ListItem
+                dense
+                button
+                onClick={toggle}
+                className={cx(classes.header, { [classes.enabled]: typeof open === 'undefined' })}
+                disabled={typeof open !== 'undefined'}>
                 <Fade in={loading} unmountOnExit>
                     <div>
                         <ThinProgress eta={loadingETA || 0} />
@@ -107,7 +112,11 @@ export const Expandable: FC<ExpandableProps> = ({
                         </Typography>
                     </Grid>
 
-                    {summary && <Grid item>{summary}</Grid>}
+                    {summary && (
+                        <Grid item flex={1}>
+                            {summary}
+                        </Grid>
+                    )}
 
                     {typeof open === 'undefined' && (
                         <Grid item>

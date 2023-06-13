@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx'
 
 import { asyncSearch as asyncSearchAPI } from '../../backend/api'
 import { AsyncTaskData, SearchQueryParams, SearchQueryType, SourceField } from '../../Types'
@@ -56,7 +56,10 @@ export class AsyncQueryTask {
                 throw new Error(json.reason || json.message || `HTTP ${response.status} ${response.statusText}`)
             }
 
-            this.data = await response.json()
+            const data = await response.json()
+            runInAction(() => {
+                this.data = data
+            })
 
             if (this.data && this.data.status !== 'done') {
                 this.initialEta = this.data.eta.total_sec
@@ -69,7 +72,10 @@ export class AsyncQueryTask {
         if (!this.data || !this.initialEta) return
 
         const wait = (this.data.eta.total_sec as number) < parseInt(process.env.ASYNC_SEARCH_POLL_INTERVAL as string)
-        this.data = await asyncSearchAPI(this.data.task_id, wait)
+        const data = await asyncSearchAPI(this.data.task_id, wait)
+        runInAction(() => {
+            this.data = data
+        })
 
         if (this.data && this.data.status !== 'done') {
             if (Date.now() - Date.parse(this.data.date_created) < this.timeoutMs) {

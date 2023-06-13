@@ -30,11 +30,13 @@ export const Toolbar: FC<ToolbarProps> = ({ links }) => {
                 <Box key={group}>
                     {links.map(({ tooltip, icon, count, ...props }, index) => (
                         <Tooltip title={tooltip} key={index}>
-                            <IconButton size="small" className={classes.toolbarIcon} {...props}>
-                                <Badge badgeContent={count} color="secondary">
-                                    {icon}
-                                </Badge>
-                            </IconButton>
+                            <span>
+                                <IconButton size="small" className={classes.toolbarIcon} {...props}>
+                                    <Badge badgeContent={count} color="secondary">
+                                        {icon}
+                                    </Badge>
+                                </IconButton>
+                            </span>
                         </Tooltip>
                     ))}
                 </Box>

@@ -27,7 +27,9 @@ export const useStyles = makeStyles()((theme: Theme) => ({
 
     header: {
         backgroundColor: theme.palette.grey[100],
+    },
 
+    enabled: {
         '&:hover': {
             backgroundColor: theme.palette.grey[200],
         },
@@ -48,7 +50,7 @@ export const useStyles = makeStyles()((theme: Theme) => ({
     },
 
     fullHeightContent: {
-        height: '100%',
+        height: 'calc(100% - 6px)',
         maxHeight: 'none',
         overflow: 'hidden',
     },

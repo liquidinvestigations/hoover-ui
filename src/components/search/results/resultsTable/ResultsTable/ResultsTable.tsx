@@ -26,10 +26,6 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ queryTask }) => {
         searchResultsStore: { resultsLoading },
     } = useSharedStore().searchStore
 
-    if (!queryTask.data?.result) {
-        return null
-    }
-
     const size = query?.size || defaultSearchParams.size
     const order = query?.order
     const changeOrder = (newOrder: string[][]) => {
@@ -69,6 +65,10 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ queryTask }) => {
         }
 
         setResultsColumns(resultsColumnsCopy)
+    }
+
+    if (!queryTask.data?.result) {
+        return null
     }
 
     return (

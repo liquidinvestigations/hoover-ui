@@ -110,11 +110,13 @@ export class SearchResultsStore {
     }
 
     get hits() {
-        return Object.entries(this.resultsQueryTasks).reduce((hits, [_collection, queryTask]) => {
-            hits.push(...(queryTask.data?.result?.hits.hits || []))
+        return Object.entries(this.resultsQueryTasks)
+            .sort(([a], [b]) => this.resultsSortCompareFn(a, b))
+            .reduce((hits, [_collection, queryTask]) => {
+                hits.push(...(queryTask.data?.result?.hits.hits || []))
 
-            return hits
-        }, [] as Hit[])
+                return hits
+            }, [] as Hit[])
     }
 
     get hitsTotal() {
@@ -134,5 +136,16 @@ export class SearchResultsStore {
         runInAction(() => {
             this.resultsQueryTasks = {}
         })
+    }
+
+    resultsSortCompareFn = (a: string, b: string) => {
+        if (this.resultsQueryTasks[a]?.data?.result && this.resultsQueryTasks[b]?.data?.result) {
+            // @ts-ignore
+            return this.resultsQueryTasks[b].data.result.hits.total - this.resultsQueryTasks[a].data.result.hits.total
+        } else if (this.resultsQueryTasks[a]?.data?.result) {
+            return -1
+        } else if (this.resultsQueryTasks[b]?.data?.result) {
+            return 1
+        } else return 0
     }
 }

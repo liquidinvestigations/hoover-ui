@@ -13,7 +13,7 @@ export const Results: FC = observer(() => {
     const { classes } = useStyles()
     const {
         searchViewStore: { searchCollections, resultsViewType, setResultsViewType },
-        searchResultsStore: { resultsQueryTasks, resultsLoading },
+        searchResultsStore: { resultsQueryTasks, resultsLoading, resultsSortCompareFn },
     } = useSharedStore().searchStore
 
     return (
@@ -47,9 +47,11 @@ export const Results: FC = observer(() => {
                 <i>no collections selected</i>
             ) : (
                 <>
-                    {Object.keys(resultsQueryTasks).map((collection) => (
-                        <ResultsGroup key={collection} collection={collection} />
-                    ))}
+                    {Object.keys(resultsQueryTasks)
+                        .sort(resultsSortCompareFn)
+                        .map((collection) => (
+                            <ResultsGroup key={collection} collection={collection} />
+                        ))}
                     {!resultsLoading && <Pagination />}
                 </>
             )}
