@@ -2,8 +2,7 @@ import { GetServerSidePropsContext, NextPage } from 'next'
 
 import { collections as collectionsAPI } from '../src/backend/api'
 import getAuthorizationHeaders from '../src/backend/getAuthorizationHeaders'
-import Insights from '../src/components/insights/Insights'
-import { SearchProvider } from '../src/components/search/SearchProvider'
+import { Insights } from '../src/components/insights/Insights'
 import { useSharedStore } from '../src/components/SharedStoreProvider'
 import { CollectionData } from '../src/Types'
 
@@ -18,11 +17,9 @@ const InsightsPage: NextPage<InsightsPageProps> = ({ collectionsData, serverQuer
     store.collectionsData = collectionsData
     const query = store.searchStore.parseSearchParams(serverQuery)
 
-    return (
-        <SearchProvider serverQuery={serverQuery}>
-            <Insights collectionsData={collectionsData} />
-        </SearchProvider>
-    )
+    store.searchStore.search({ q: '*', ...query })
+
+    return <Insights collectionsData={collectionsData} />
 }
 
 export async function getServerSideProps({ req }: GetServerSidePropsContext) {
