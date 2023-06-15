@@ -1,17 +1,12 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { makeStyles } from 'tss-react/mui'
+import { FC } from 'react'
 
-import { formatTitleCase } from '../../utils/utils'
+import { ErrorCounts } from '../../../Types'
+import { formatTitleCase } from '../../../utils/utils'
 
-const useStyles = makeStyles()(() => ({
-    table: {
-        '& th': {
-            fontWeight: 'bold',
-        },
-    },
-}))
+import { useStyles } from './TaskErrorsTable.styles'
 
-export default function TaskErrorsTable({ errors }) {
+export const TaskErrorsTable: FC<{ errors: ErrorCounts[] }> = ({ errors }) => {
     const { classes } = useStyles()
 
     return (
@@ -26,7 +21,7 @@ export default function TaskErrorsTable({ errors }) {
                 </TableHead>
                 <TableBody>
                     {errors.map(({ func, error_type, count }) => (
-                        <TableRow key={func}>
+                        <TableRow key={`${func}${error_type}`}>
                             <TableCell>{formatTitleCase(func)}</TableCell>
                             <TableCell align="right">{error_type}</TableCell>
                             <TableCell align="right">{count}</TableCell>

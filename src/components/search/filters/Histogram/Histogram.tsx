@@ -203,7 +203,7 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
 
             <Collapse in={open}>
                 <div className={classes.chartBox}>
-                    {aggregationsLoading ? (
+                    {aggregationsLoading[field] ? (
                         <Loading />
                     ) : (
                         <HistogramChart

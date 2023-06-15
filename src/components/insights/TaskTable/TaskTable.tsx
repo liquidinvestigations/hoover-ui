@@ -1,17 +1,16 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
-import { makeStyles } from 'tss-react/mui'
+import { FC } from 'react'
 
-import { formatTitleCase } from '../../utils/utils'
+import { formatTitleCase } from '../../../utils/utils'
 
-const useStyles = makeStyles()(() => ({
-    table: {
-        '& th': {
-            fontWeight: 'bold',
-        },
-    },
-}))
+import { useStyles } from './TaskTable.styles'
 
-export default function TaskTable({ header, tasks }) {
+interface TaskTableProps {
+    header: string[]
+    tasks: string[][]
+}
+
+export const TaskTable: FC<TaskTableProps> = ({ header, tasks }) => {
     const { classes } = useStyles()
 
     return (

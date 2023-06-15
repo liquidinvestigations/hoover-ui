@@ -1,39 +1,25 @@
 import { Grid, List, ListItem, Paper, Typography } from '@mui/material'
-import { useEffect, useRef, useState } from 'react'
-import { makeStyles } from 'tss-react/mui'
+import { observer } from 'mobx-react-lite'
+import { FC, MutableRefObject, useEffect, useRef, useState } from 'react'
 
 import { collectionsInsights } from '../../backend/api'
+import { CollectionData } from '../../Types'
 import { humanFileSize } from '../../utils/utils'
 import { SplitPaneLayout } from '../common/SplitPaneLayout/SplitPaneLayout'
-import { useSearch } from '../search/SearchProvider'
+import { useSharedStore } from '../SharedStoreProvider'
 
-import AggregationsTable from './AggregationsTable'
-import Histogram from './Histogram'
-import InsightsTitle from './InsightsTitle'
-import TaskErrorsTable from './TaskErrorsTable'
-import TaskTable from './TaskTable'
+import { AggregationsTable } from './AggregationsTable/AggregationsTable'
+import { Histogram } from './Histogram/Histogram'
+import { useStyles } from './Insights.styles'
+import { InsightsTitle } from './InsightsTitle/InsightsTitle'
+import { TaskErrorsTable } from './TaskErrorsTable/TaskErrorsTable'
+import { TaskTable } from './TaskTable/TaskTable'
 
-const useStyles = makeStyles()((theme) => ({
-    root: {
-        padding: theme.spacing(2),
-    },
-    list: {
-        maxWidth: 1200,
-        margin: '0 auto',
-        padding: theme.spacing(2),
-        backgroundColor: theme.palette.grey[100],
-    },
-    sectionTitle: {
-        padding: theme.spacing(2),
-        backgroundColor: theme.palette.grey[300],
-    },
-}))
-
-export default function Insights({ collectionsData }) {
+export const Insights: FC<{ collectionsData: CollectionData[] }> = observer(({ collectionsData }) => {
     const { classes } = useStyles()
 
     const [collectionsState, setCollectionsState] = useState(collectionsData)
-    const intervalRef = useRef(0)
+    const intervalRef: MutableRefObject<undefined | ReturnType<typeof setInterval>> = useRef(undefined)
     useEffect(() => {
         if (collectionsState) {
             search({ collections: [collectionsState[0].name] })
@@ -48,18 +34,18 @@ export default function Insights({ collectionsData }) {
         }
     }, [])
 
-    const { query, search } = useSearch()
+    const { query, search } = useSharedStore().searchStore
 
     useEffect(() => {
         if (query?.collections) {
-            setCurrentCollection(collectionsData.find((collection) => collection.name === query.collections[0]))
+            setCurrentCollection(collectionsData.find((collection) => collection.name === query.collections[0]) as CollectionData)
         } else {
             search({ collections: [collectionsState[0].name] })
         }
     }, [query?.collections])
 
     const [currentCollection, setCurrentCollection] = useState(collectionsData[0])
-    const handleMenuClick = (collection) => () => {
+    const handleMenuClick = (collection: CollectionData) => () => {
         search({ collections: [collection.name] })
     }
 
@@ -85,7 +71,7 @@ export default function Insights({ collectionsData }) {
                                 <Typography variant="h5" className={classes.sectionTitle}>
                                     File types
                                 </Typography>
-                                <AggregationsTable aggregation="filetype" />
+                                <AggregationsTable field="filetype" />
                             </Paper>
                         </Grid>
 
@@ -94,7 +80,7 @@ export default function Insights({ collectionsData }) {
                                 <Typography variant="h5" className={classes.sectionTitle}>
                                     Content types
                                 </Typography>
-                                <AggregationsTable aggregation="content-type" />
+                                <AggregationsTable field="content-type" />
                             </Paper>
                         </Grid>
 
@@ -103,7 +89,7 @@ export default function Insights({ collectionsData }) {
                                 <Typography variant="h5" className={classes.sectionTitle}>
                                     Email domains
                                 </Typography>
-                                <AggregationsTable aggregation="email-domains" />
+                                <AggregationsTable field="email-domains" />
                             </Paper>
                         </Grid>
 
@@ -112,7 +98,7 @@ export default function Insights({ collectionsData }) {
                                 <Typography variant="h5" className={classes.sectionTitle}>
                                     Tags
                                 </Typography>
-                                <AggregationsTable aggregation="tags" />
+                                <AggregationsTable field="tags" />
                             </Paper>
                         </Grid>
 
@@ -172,4 +158,4 @@ export default function Insights({ collectionsData }) {
             )}
         </SplitPaneLayout>
     )
-}
+})

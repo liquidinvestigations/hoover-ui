@@ -49,6 +49,7 @@ export const unwindParams = (query: ParsedQs) =>
 export const buildSearchQuerystring = (params: Partial<SearchQueryParams>) =>
     qs.stringify(
         rollupParams({
+            ...defaultSearchParams,
             ...params,
             collections: params?.collections?.join?.('+'),
         })
@@ -59,7 +60,7 @@ export const clearQuotedParam = (param: string) => param.replace(/#/g, ' ').repl
 export interface Term {
     term: string
     format: string
-    interval?: number
+    interval?: number | string
 }
 
 export const createSearchParams = (field: SourceField, term: string | Term) => {
@@ -127,7 +128,12 @@ export const createSearchParams = (field: SourceField, term: string | Term) => {
     return params
 }
 
-export const createSearchUrl = (term: Term | string, field: SourceField, collections: string | string[], hash: Record<string, any>) => {
+export const createSearchUrl = (
+    term: Term | string,
+    field: SourceField,
+    collections: string | string[],
+    hash: Record<string, any> | undefined = undefined
+) => {
     const params = createSearchParams(field, term)
     const hashParams = hash ? '#' + qs.stringify(rollupParams(hash)) : ''
 

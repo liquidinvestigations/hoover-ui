@@ -23,6 +23,12 @@ export interface Limits {
     batch: number
 }
 
+export interface ErrorCounts {
+    func: string
+    count: number
+    error_type: string
+}
+
 export interface CollectionData {
     name: Category
     title: string
@@ -39,11 +45,7 @@ export interface CollectionData {
             collection_source_count: number
         }
         db_size: number
-        error_counts: {
-            func: string
-            count: number
-            error_type: string
-        }[]
+        error_counts: ErrorCounts[]
         progress_str: string
         stats_collection_time: number
         task_matrix_header: string[]

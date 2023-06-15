@@ -1,38 +1,31 @@
 import { ButtonBase, List, ListItem, ListItemText, ListItemSecondaryAction, Typography } from '@mui/material'
+import { observer } from 'mobx-react-lite'
+import { FC } from 'react'
 import ReactPlaceholder from 'react-placeholder'
-import { makeStyles } from 'tss-react/mui'
 
-import { createSearchUrl } from '../../utils/queryUtils'
-import { useSearch } from '../search/SearchProvider'
+import { SourceField } from '../../../Types'
+import { createSearchUrl, Term } from '../../../utils/queryUtils'
+import { useSharedStore } from '../../SharedStoreProvider'
 
-const useStyles = makeStyles()((theme) => ({
-    bucket: {
-        '&:hover': {
-            backgroundColor: theme.palette.grey[100],
-        },
-    },
-}))
+import { useStyles } from './AggregationsTable.styles'
 
-export default function AggregationsTable({ aggregation }) {
+export const AggregationsTable: FC<{ field: SourceField }> = observer(({ field }) => {
     const { classes } = useStyles()
-    const { query, aggregations, aggregationsError, aggregationsLoading } = useSearch()
+    const {
+        query,
+        searchAggregationsStore: { aggregations, aggregationsLoading },
+    } = useSharedStore().searchStore
 
-    const loading = aggregationsLoading?.[aggregation]
-    const buckets = aggregations?.[aggregation]?.values.buckets.slice(0, 10)
+    const loading = aggregationsLoading?.[field]
+    const buckets = aggregations?.[field]?.values.buckets?.slice(0, 10)
 
-    const handleNewSearch = (term) => () => {
-        window.open(createSearchUrl(term, aggregation, query.collections))
+    const handleNewSearch = (term: string) => () => {
+        window.open(createSearchUrl(term, field, query?.collections as string | string[]))
     }
 
     return (
         <List dense>
             <ReactPlaceholder showLoadingAnimation ready={!loading} type="text" rows={10}>
-                {aggregationsError && (
-                    <ListItem>
-                        <ListItemText primary={<Typography color="error">{aggregationsError}</Typography>} />
-                    </ListItem>
-                )}
-
                 {buckets?.length ? (
                     buckets.map(({ key, doc_count }) => (
                         <ListItem key={key} component={ButtonBase} className={classes.bucket} onClick={handleNewSearch(key)}>
@@ -48,4 +41,4 @@ export default function AggregationsTable({ aggregation }) {
             </ReactPlaceholder>
         </List>
     )
-}
+})
