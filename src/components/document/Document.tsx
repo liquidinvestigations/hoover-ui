@@ -15,6 +15,7 @@ import { useStyles } from './Document.styles'
 import { StyledTab } from './StyledTab'
 import { HTML } from './SubTabs/components/HTML'
 import { Meta } from './SubTabs/components/Meta/Meta'
+import { Preview, PREVIEWABLE_MIME_TYPE_SUFFEXES } from './SubTabs/components/Preview/Preview'
 import { Tags, getChipColor } from './SubTabs/components/Tags/Tags'
 import { TagTooltip } from './SubTabs/components/Tags/TagTooltip'
 import { Text } from './SubTabs/components/Text/Text'
@@ -138,10 +139,22 @@ export const Document = observer(() => {
         indicator: classes.tabsIndicator,
     }
 
+
+    const hasPreview =
+        data.content['has-pdf-preview'] ||
+        (docRawUrl && data.content['content-type'] && PREVIEWABLE_MIME_TYPE_SUFFEXES.some((x) => data.content['content-type'].endsWith(x)))
+
     const tabsData = [
         {
             name: data.content.filetype,
             icon: reactIcons.contentTab,
+            visible: hasPreview,
+            padding: 0,
+            content: <Preview />,
+        },
+        {
+            name: 'Text',
+            icon: reactIcons.content,
             visible: true,
             padding: 0,
             content: <SubTabs />,
