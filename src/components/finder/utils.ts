@@ -2,7 +2,9 @@ import { ChildDocument } from '../../Types'
 
 import { ColumnItem, LocalDocumentData } from './Types'
 
-export const makeColumns = (doc: LocalDocumentData, pathname: string | null) => {
+export const parentLevels = 4
+
+export const makeColumns = (doc: LocalDocumentData, pathname: string | null, limit?: number) => {
     const columns: ColumnItem[] = []
 
     const createColumn = (item: LocalDocumentData, selected: LocalDocumentData) => {
@@ -19,22 +21,24 @@ export const makeColumns = (doc: LocalDocumentData, pathname: string | null) => 
         createColumn(doc, doc)
     }
 
-    if (doc.parent) {
-        let node = doc
-        while (node.parent && columns.length < 5) {
-            createColumn(node.parent, node)
-            node = node.parent
-        }
+    let node = { ...doc }
+
+    while (node.parent && columns.length < (limit ?? parentLevels)) {
+        createColumn(node.parent, node)
+        node = node.parent
+    }
+
+    if (node.parent) {
         columns.unshift({
-            items: [node],
+            items: node.parent.children,
             pathname: pathname + node.id,
             selected: node,
         })
     } else {
         columns.unshift({
-            items: [doc],
+            items: [node],
             pathname: pathname + doc.id,
-            selected: doc,
+            selected: node,
         })
     }
 

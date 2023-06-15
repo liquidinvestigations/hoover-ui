@@ -9,6 +9,8 @@ import { specialTags } from '../../constants/specialTags'
 import { Tag } from '../../stores/TagsStore'
 import { getTagIcon } from '../../utils/utils'
 import { Loading } from '../common/Loading/Loading'
+import { Finder } from '../finder/Finder'
+import Locations from '../Locations'
 import { useSharedStore } from '../SharedStoreProvider'
 
 import { useStyles } from './Document.styles'
@@ -164,6 +166,17 @@ export const Document = observer(() => {
             icon: reactIcons.tagsTab,
             visible: !printMode && data.content.filetype !== 'folder',
             content: <Tags toolbarButtons={tagsLinks} />,
+        },
+        {
+            name: 'Location',
+            icon: reactIcons.location,
+            visible: !fullPage,
+            content: (
+                <>
+                    <Finder />
+                    <Locations data={data} url={digestUrl} />
+                </>
+            ),
         },
         {
             name: 'Meta',

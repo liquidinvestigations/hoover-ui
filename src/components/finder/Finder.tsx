@@ -15,20 +15,27 @@ const useStyles = makeStyles()(() => ({
         display: 'flex',
         overflowX: 'auto',
     },
+    searchPreview: {
+        height: '60%',
+        borderBottom: '1px solid #d3d3d3',
+    },
 }))
 
 export const Finder: FC = observer(() => {
-    const { classes } = useStyles()
-    const { pathname, hierarchy } = useSharedStore().documentStore
+    const { classes, cx } = useStyles()
+    const {
+        fullPage,
+        documentStore: { pathname, hierarchy },
+    } = useSharedStore()
 
     const columns = useMemo(() => {
-        if (!pathname || !hierarchy) return [{} as ColumnItem];
-        return makeColumns(hierarchy, getBasePath(pathname))
-    }, [hierarchy, pathname])
+        if (!pathname || !hierarchy) return [{} as ColumnItem]
+        return makeColumns(hierarchy, getBasePath(pathname), !fullPage ? 1 : undefined)
+    }, [hierarchy, pathname, fullPage])
 
     return (
         <ErrorBoundary visible>
-            <div className={classes.container}>
+            <div className={cx(classes.container, { [classes.searchPreview]: !fullPage })}>
                 {columns.map(({ items, pathname, prevPage, nextPage, selected }, index) => (
                     <FinderColumn
                         key={pathname + index}

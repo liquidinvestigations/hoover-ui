@@ -1,4 +1,4 @@
-import { ButtonBase, CircularProgress, List, ListItem, ListItemIcon } from '@mui/material'
+import { ButtonBase, CircularProgress, List, ListItem, ListItemIcon, lighten } from '@mui/material'
 import { FC, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
 
@@ -15,6 +15,11 @@ const useStyles = makeStyles()(() => ({
         borderRight: '1px solid #d3d3d3',
         minWidth: 200,
         overflowY: 'auto',
+        '& .MuiListItem-root': {
+            '&:hover': {
+                backgroundColor: lighten('#dedede', 0.5),
+            },
+        },
     },
 }))
 
