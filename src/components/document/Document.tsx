@@ -232,7 +232,7 @@ export const Document = observer(() => {
                 <Grid item className={classes.titleWrapper}>
                     <Box>
                         <Typography variant="h5" className={classes.filename}>
-                            {data.content.filename}
+                            {data.content?.filename?.[0] ?? ''}
                         </Typography>
                     </Box>
 

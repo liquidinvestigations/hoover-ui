@@ -23,6 +23,8 @@ export const DocPage: FC = observer(() => {
         documentStore: { data, loading, error, digest, digestUrl, urlIsSha },
     } = useSharedStore()
 
+    const [fileName] = data?.content.filename ?? ['']
+
     if (error) {
         return (
             <Error
@@ -60,7 +62,7 @@ export const DocPage: FC = observer(() => {
             <>
                 {data && (
                     <Typography variant="subtitle2" className={classes.title}>
-                        Document <b>{data?.id}</b> filename: <b>{shortenName(data?.content.filename, 50)}</b> - please pick a location to see the Finder
+                        Document <b>{data?.id}</b> filename: <b>{shortenName(fileName, 50)}</b> - please pick a location to see the Finder
                     </Typography>
                 )}
                 <div className={classes.splitPane}>{infoPane}</div>
@@ -70,7 +72,7 @@ export const DocPage: FC = observer(() => {
                 <Typography variant="subtitle2" className={classes.title}>
                     {data ? (
                         <>
-                            {!!digest ? 'File' : 'Directory'} <b>{data.content.path}</b>
+                            {!!digest ? 'File' : 'Directory'} <b>{data.content?.path?.[0] ?? ''}</b>
                         </>
                     ) : (
                         <CircularProgress size={16} thickness={4} />
@@ -106,7 +108,7 @@ export const DocPage: FC = observer(() => {
     return (
         <>
             <Head>
-                <title>{`Hoover ${data && `- ${data.content.filename}`}`}</title>
+                <title>{`Hoover ${data && `- ${fileName}`}`}</title>
                 {user.urls.hypothesis_embed && (
                     <>
                         <script async src={user.urls.hypothesis_embed} />

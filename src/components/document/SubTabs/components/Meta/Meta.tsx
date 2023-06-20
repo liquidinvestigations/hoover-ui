@@ -156,13 +156,15 @@ export const Meta = observer(() => {
                 {Object.entries(tableFields)
                     .filter(([, config]) => !config.visible || config.visible(data?.content) !== false)
                     .map(([field, config]) => {
+                        const fieldContent = (data?.content[field as keyof DocumentContent] as string)
+                        const fieldValue = Array.isArray(fieldContent) ? fieldContent[0] : fieldContent
                         const display = config.format
                             ? config.format(data?.content?.[field as keyof DocumentContent])
-                            : (data?.content[field as keyof DocumentContent] as string)
+                            : fieldValue
                         const searchKey = config.searchKey || field
                         const searchTerm = config.searchTerm
                             ? config.searchTerm(data?.content?.[field as keyof DocumentContent])
-                            : data?.content[field as keyof DocumentContent]
+                            : fieldValue
 
                         return (
                             <ListItem key={field} disableGutters>

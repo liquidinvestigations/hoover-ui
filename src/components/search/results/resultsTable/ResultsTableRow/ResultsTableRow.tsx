@@ -33,7 +33,7 @@ export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index 
     const url = documentViewUrl(hit)
     const fields = hit._source || {}
     const collection = hit._collection || ''
-    const downloadUrl = createDownloadUrl(url, fields.filename)
+    const downloadUrl = createDownloadUrl(url, fields.filename[0] ?? '')
     const isPreview = collection === hashState.preview?.c && hit._id === hashState.preview?.i
 
     const handleResultClick = () => {

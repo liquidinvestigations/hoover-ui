@@ -46,10 +46,13 @@ export const makeColumns = (doc: LocalDocumentData, pathname: string | null, lim
 }
 
 export const filenameFor = (item: Partial<LocalDocumentData & ChildDocument>) => {
-    if (item.filename) {
-        return item.filename
-    } else {
-        const { filename, path } = item.content || {}
-        return filename || path?.split('/').filter(Boolean).pop() || path || '/'
-    }
+    if (item.filename) return item.filename
+
+    const { filename, path } = item.content ?? {}
+    if (filename) return filename[0]
+    if (!path) return '/'
+
+    const something = Array.isArray(path) ? path[0] : path
+    return something?.split('/').filter(Boolean).pop()
 }
+  
