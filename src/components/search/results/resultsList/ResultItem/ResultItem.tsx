@@ -68,7 +68,8 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
     const fields = hit._source || {}
     const highlights = hit.highlight || {}
     const collection = hit._collection || ''
-    const downloadUrl = createDownloadUrl(url, fields.filename)
+    const [fileName] = fields.filename ?? ['']
+    const downloadUrl = createDownloadUrl(url, fileName)
 
     const cardHeaderClasses = {
         action: classes.cardHeaderAction,
@@ -95,7 +96,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                                 <Box component="span" className={classes.index}>
                                     {index}.
                                 </Box>{' '}
-                                {fields.filename}
+                                {fileName}
                             </Grid>
 
                             <Grid container component="span">
@@ -140,7 +141,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
 
                             <Grid item component="span" className={classes.title}>
                                 <Typography variant="body1" className={classes.title} component="span" color="textSecondary">
-                                    {truncatePath(fields.path)}
+                                    {truncatePath(fields.path?.[0] ?? '')}
                                 </Typography>
                             </Grid>
                         </Grid>

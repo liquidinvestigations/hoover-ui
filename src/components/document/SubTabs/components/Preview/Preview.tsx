@@ -84,7 +84,7 @@ export const Preview: FC = () => {
                 type={data?.content['content-type']}
                 height="100%"
                 width="100%"
-                title={data?.content.filename}
+                title={data?.content.filename[0] ?? ''}
             />
         </div>
     )

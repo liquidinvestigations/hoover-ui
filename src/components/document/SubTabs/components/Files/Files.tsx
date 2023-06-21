@@ -43,12 +43,12 @@ export const Files = observer(() => {
     const filesRows = files?.map(({ id, digest, file, filename, content_type, filetype, size }, index) => (
         <TableRow key={index}>
             <TableCell className={classes.cell}>
-                {id ? <Link href={`${collectionBaseUrl}/${file || id}`}>{filename}</Link> : <span>{filename}</span>}
+                {id ? <Link href={`${collectionBaseUrl}/${file || id}`}>{filename?.[0]}</Link> : <span>{filename?.[0]}</span>}
             </TableCell>
             <TableCell className={classes.cell}>
                 {digest && (
                     <a
-                        href={createDownloadUrl(`${collectionBaseUrl}/${digest}`, filename)}
+                        href={createDownloadUrl(`${collectionBaseUrl}/${digest}`, filename?.[0])}
                         target={fullPage ? undefined : '_blank'}
                         rel="noreferrer"
                         title="Original file"

@@ -282,7 +282,7 @@ export interface OcrData {
 
 export interface ChildDocument {
     id: string
-    filename: string
+    filename: string[]
     filetype: string
     content_type: string
     digest?: string
@@ -292,7 +292,7 @@ export interface ChildDocument {
 
 export interface DocumentContent {
     id: string
-    filename: string
+    filename: string[]
     filetype: string
     'has-pdf-preview': boolean
     'has-thumbnails': boolean
@@ -314,7 +314,7 @@ export interface DocumentContent {
     'entity-type.location': string[]
     'entity-type.organization': string[]
     'entity-type.person': string[]
-    path: string
+    path: string[]
     'path-parts': string[]
     'path-text': string
     tika: string[]

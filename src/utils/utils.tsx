@@ -107,22 +107,36 @@ export const makeUnsearchable = (text: string) => {
 }
 
 export const truncatePath = (str: string) => {
-    if (str.length < 100) {
+    try {
+        if (str.length < 100) {
+            return str
+        }
+
+        const parts = str.split('/')
+
+        return [...parts.slice(0, parts.length / 3), '…', ...parts.slice(-(parts.length / 3))].join('/')
+    } catch (error) {
+        console.error('An error occurred while truncating path:', error)
         return str
     }
-    const parts = str.split('/')
-
-    return [...parts.slice(0, parts.length / 3), '…', ...parts.slice(-(parts.length / 3))].join('/')
 }
 
-export const shortenName = (name: string | undefined, length = ELLIPSIS_TERM_LENGTH) =>
-    name && name.length > length ? (
-        <Tooltip title={name}>
-            <span>{`${name.substr(0, (2 / 3) * length - 3)}...${name.substr((-1 / 3) * length)}`}</span>
-        </Tooltip>
-    ) : (
-        name
-    )
+export const shortenName = (name: string | undefined, length = ELLIPSIS_TERM_LENGTH) => {
+    if (!name) return undefined
+    if (name.length < length) return name
+
+    try {
+        const shortenedName = `${name.substr(0, (2 / 3) * length - 3)}...${name.substr((-1 / 3) * length)}`
+        return (
+            <Tooltip title={name}>
+                <span>{shortenedName}</span>
+            </Tooltip>
+        )
+    } catch (error) {
+        console.error('An error occurred while shortening field name: ', error)
+        return 'undefined'
+    }
+}
 
 export const formatThousands = (number: number) => {
     let decimalPart = ''
@@ -144,10 +158,20 @@ export const formatThousands = (number: number) => {
 }
 
 export const copyMetadata = (doc: DocumentData) => {
-    const string = [doc.content.md5, doc.content.path].join('\n')
-
-    return copy(string) ? `Copied MD5 and path to clipboard` : `Could not copy meta metadata – unsupported browser?`
-}
+    const { md5, path } = doc.content;
+  
+    let string = md5;
+    if (path && Array.isArray(path) && path.length > 0) {
+      string += `\n${path[0]}`;
+    }
+  
+    if (copy(string)) {
+      return `Copied MD5 and path to clipboard`;
+    } else {
+      return `Could not copy meta metadata - unsupported browser?`;
+    }
+  };
+  
 
 const documentUrlPrefix = '/doc'
 export const collectionUrl = (collection: string) => [documentUrlPrefix, collection].join('/')

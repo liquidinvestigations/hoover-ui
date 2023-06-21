@@ -166,7 +166,7 @@ export class DocumentStore {
     setFileDocumentAttributes = (data: DocumentData) => {
         this.digest = data.digest
         this.digestUrl = `${this.collectionBaseUrl}/${data.digest}`
-        this.docRawUrl = createDownloadUrl(`${this.collectionBaseUrl}/${data.digest}`, data.content.filename)
+        this.docRawUrl = createDownloadUrl(`${this.collectionBaseUrl}/${data.digest}`, data.content?.filename?.[0] ?? '')
         this.docPreviewUrl = createPreviewUrl(`${this.collectionBaseUrl}/${data.digest}`)
         this.thumbnailSrcSet = createThumbnailSrcSet(`${this.collectionBaseUrl}/${data.digest}`)
         this.urlIsSha = false
@@ -182,7 +182,7 @@ export class DocumentStore {
 
     setShaDocumentAttributes = (data: DocumentData) => {
         this.digest = data.id
-        this.docRawUrl = createDownloadUrl(`${this.collectionBaseUrl}/${data.id}`, data.content.filename)
+        this.docRawUrl = createDownloadUrl(`${this.collectionBaseUrl}/${data.id}`, data.content?.filename?.[0] ?? '')
         this.docPreviewUrl = createPreviewUrl(`${this.collectionBaseUrl}/${data.id}`)
         this.thumbnailSrcSet = createThumbnailSrcSet(`${this.collectionBaseUrl}/${data.id}`)
     }
