@@ -88,7 +88,7 @@ export const useStyles = makeStyles()((theme: Theme) => ({
 
     collection: {
         fontSize: 16,
-        color: theme.palette.grey.A200,
+        color: theme.palette.grey[600],
         display: 'inline-flex',
         alignItems: 'center',
     },
