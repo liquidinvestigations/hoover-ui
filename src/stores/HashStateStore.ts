@@ -30,8 +30,10 @@ export class HashStateStore {
             const { hash } = this.sharedStore.navigation?.location
 
             if (hash) {
-                runInAction(() => {
-                    this.hashState = unwindParams(qs.parse(hash.substring(1)))
+                setTimeout(() => {
+                    runInAction(() => {
+                        this.hashState = unwindParams(qs.parse(hash.substring(1)))
+                    })
                 })
             }
 
