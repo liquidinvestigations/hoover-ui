@@ -36,7 +36,7 @@ export const Search: FC = observer(() => {
                 clearSearchText,
                 handleInputChange,
             },
-            searchResultsStore: { error, clearResults, resultsLoading, previewNextDoc, previewPreviousDoc },
+            searchResultsStore: { error, clearResults },
         },
     } = useSharedStore()
 
@@ -146,9 +146,9 @@ export const Search: FC = observer(() => {
                                 </Grid>
                             </Grid>
 
-                            {error && (
+                            {!!Object.keys(error).length && (
                                 <Typography color="error" className={classes.error}>
-                                    {error}
+                                    {JSON.stringify(error)}
                                 </Typography>
                             )}
 

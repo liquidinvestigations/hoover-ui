@@ -4,9 +4,13 @@ const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
 const {
     API_URL,
     REWRITE_API,
-    AGGREGATIONS_SPLIT = 1,
-    MAX_SEARCH_RETRIES = 1,
+    API_RETRY_DELAY_MIN = 500,
+    API_RETRY_DELAY_MAX = 10000,
+    API_RETRY_COUNT = 4,
+
     SEARCH_RETRY_DELAY = 3000,
+    MAX_SEARCH_RETRIES = 1,
+    ASYNC_SEARCH_POLL_SIZE = 6,
     ASYNC_SEARCH_POLL_INTERVAL = 45,
     ASYNC_SEARCH_MAX_FINAL_RETRIES = 3,
     ASYNC_SEARCH_ERROR_MULTIPLIER = 2,
@@ -19,9 +23,13 @@ const {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     env: {
-        AGGREGATIONS_SPLIT,
-        MAX_SEARCH_RETRIES,
+        API_RETRY_DELAY_MIN,
+        API_RETRY_DELAY_MAX,
+        API_RETRY_COUNT,
+
         SEARCH_RETRY_DELAY,
+        MAX_SEARCH_RETRIES,
+        ASYNC_SEARCH_POLL_SIZE,
         ASYNC_SEARCH_POLL_INTERVAL,
         ASYNC_SEARCH_MAX_FINAL_RETRIES,
         ASYNC_SEARCH_ERROR_MULTIPLIER,

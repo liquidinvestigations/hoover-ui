@@ -225,14 +225,16 @@ export type AggregationsKey = SourceField | `${SourceField}-missing`
 
 export type Aggregations = Partial<Record<AggregationsKey, Aggregation>>
 
+export interface Hits {
+    hits: Hit[]
+    max_score: number
+    total: number
+}
+
 export interface Result {
     aggregations: Aggregations
     count_by_index: Partial<Record<Category, number>>
-    hits: {
-        hits: Hit[]
-        max_score: number
-        total: number
-    }
+    hits: Hits
     status: 'ok'
     timed_out: boolean
     took: number

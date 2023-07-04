@@ -1,75 +1,115 @@
-import { makeAutoObservable, reaction } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx'
 import { Entries } from 'type-fest'
 
 import { aggregationFields } from '../../constants/aggregationFields'
-import { Aggregations, AggregationsKey, SearchQueryParams, SourceField } from '../../Types'
+import { Aggregations, AggregationsKey, AsyncTaskData, SearchQueryParams, SourceField } from '../../Types'
 
-import { AsyncQueryTask, AsyncQueryTaskRunner } from './AsyncTaskRunner'
+import { AsyncQueryTaskRunner } from './AsyncTaskRunner'
 import { SearchStore } from './SearchStore'
 
 export class SearchAggregationsStore {
     private aggregatedCollections: string[] = []
 
-    aggregationsQueryTasks: Record<string, AsyncQueryTask> = {}
-
     aggregations: Aggregations = {}
 
-    aggregationsLoading: Partial<Record<SourceField, number>> = SearchAggregationsStore.initialAggregationsLoading()
+    aggregationsLoading: Partial<Record<SourceField, number>> = SearchAggregationsStore.initialAggregationsLoading(0)
 
-    error: any
+    aggregationsLoadingETA: Partial<Record<SourceField, number>> = SearchAggregationsStore.initialAggregationsLoading(0)
+
+    error: Record<string, string> = {}
 
     keepFromClearing: AggregationsKey | undefined
 
     constructor(private readonly searchStore: SearchStore) {
         makeAutoObservable(this)
-
-        reaction(
-            () =>
-                Object.entries(this.aggregationsQueryTasks).map(([collection, { data }]) => ({ collection, aggregations: data?.result?.aggregations })),
-            (results) => {
-                results.forEach(({ collection, aggregations }) => {
-                    if (aggregations && !this.aggregatedCollections.includes(collection)) {
-                        this.aggregatedCollections.push(collection)
-                        this.combineAggregations(aggregations)
-                        this.sortAggregations()
-                    }
-                })
-            }
-        )
     }
 
     performQuery(query: SearchQueryParams, keepFromClearing: AggregationsKey | undefined, fieldList: SourceField[] | '*' = '*') {
-        this.aggregationsQueryTasks = {}
-        this.aggregatedCollections = []
-        this.aggregationsLoading = SearchAggregationsStore.initialAggregationsLoading()
-        this.keepFromClearing = keepFromClearing
+        AsyncQueryTaskRunner.clearQueue()
 
-        if (keepFromClearing && Object.keys(this.aggregations).includes(keepFromClearing)) {
-            this.aggregations = { [keepFromClearing]: { ...this.aggregations[keepFromClearing] } }
-            this.searchStore.searchMissingStore.missing = {
-                [keepFromClearing]: this.searchStore.searchMissingStore.missing[`${keepFromClearing}-missing`],
+        runInAction(() => {
+            this.aggregatedCollections = []
+            this.aggregationsLoading = SearchAggregationsStore.initialAggregationsLoading(0)
+            this.aggregationsLoadingETA = SearchAggregationsStore.initialAggregationsLoading(0)
+            this.keepFromClearing = keepFromClearing
+
+            if (keepFromClearing && Object.keys(this.aggregations).includes(keepFromClearing)) {
+                this.aggregations = { [keepFromClearing]: { ...this.aggregations[keepFromClearing] } }
+                this.searchStore.searchMissingStore.missing = {
+                    [`${keepFromClearing}-missing`]: this.searchStore.searchMissingStore.missing[`${keepFromClearing}-missing`],
+                }
+            } else {
+                this.aggregations = {}
+                this.searchStore.searchMissingStore.missing = {}
             }
-        } else {
-            this.aggregations = {}
-            this.searchStore.searchMissingStore.missing = {}
+        })
+
+        const setAggregationsLoading = (value: number) => {
+            if (fieldList === '*') {
+                for (const field in this.aggregationsLoading) {
+                    runInAction(() => {
+                        // @ts-ignore
+                        this.aggregationsLoading[field] += value
+                    })
+                }
+            } else {
+                fieldList.forEach((field) => {
+                    runInAction(() => {
+                        // @ts-ignore
+                        this.aggregationsLoading[field] += value
+                    })
+                })
+            }
+        }
+
+        const setAggregationsLoadingETA = (value: number) => {
+            if (fieldList === '*') {
+                for (const field in this.aggregationsLoadingETA) {
+                    runInAction(() => {
+                        // @ts-ignore
+                        this.aggregationsLoadingETA[field] = value
+                    })
+                }
+            } else {
+                fieldList.forEach((field) => {
+                    // @ts-ignore
+                    runInAction(() => {
+                        this.aggregationsLoadingETA[field] = value
+                    })
+                })
+            }
         }
 
         for (const collection of query.collections) {
             const { collections, ...queryParams } = query
             const singleCollectionQuery = { collections: [collection], ...queryParams }
-            this.aggregationsQueryTasks[collection] = AsyncQueryTaskRunner.createAsyncQueryTask(singleCollectionQuery, 'aggregations', fieldList)
 
-            if (fieldList === '*') {
-                for (const field in this.aggregationsLoading) {
-                    // @ts-ignore
-                    this.aggregationsLoading[field]++
+            const task = AsyncQueryTaskRunner.createAsyncQueryTask(singleCollectionQuery, 'aggregations', fieldList)
+
+            task.addEventListener('done', (event) => {
+                const { detail: data } = event as CustomEvent<AsyncTaskData>
+
+                if (data.result?.aggregations && !this.aggregatedCollections.includes(collection)) {
+                    this.aggregatedCollections.push(collection)
+                    this.combineAggregations(data.result.aggregations)
+                    this.sortAggregations()
                 }
-            } else {
-                fieldList.forEach((field) => {
-                    // @ts-ignore
-                    this.aggregationsLoading[field]++
-                })
-            }
+            })
+
+            task.addEventListener('eta', (event) => {
+                const { detail: eta } = event as CustomEvent<number>
+
+                setAggregationsLoadingETA(eta)
+            })
+
+            task.addEventListener('error', (event) => {
+                const { message } = event as ErrorEvent
+
+                this.error[collection] = message
+                setAggregationsLoading(-1)
+            })
+
+            setAggregationsLoading(1)
         }
     }
 
@@ -104,5 +144,5 @@ export class SearchAggregationsStore {
         })
     }
 
-    private static initialAggregationsLoading = () => Object.fromEntries(Object.keys(aggregationFields).map((field) => [field, 0]))
+    private static initialAggregationsLoading = (value: number) => Object.fromEntries(Object.keys(aggregationFields).map((field) => [field, value]))
 }

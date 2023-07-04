@@ -2,6 +2,7 @@ import { OutgoingHttpHeaders } from 'http'
 
 import memoize from 'lodash/memoize'
 import fetch from 'node-fetch'
+import { AbortSignal } from 'node-fetch/externals'
 import { stringify } from 'qs'
 
 import { Tag } from '../stores/TagsStore'
@@ -18,11 +19,12 @@ interface FetchOptions {
     headers?: OutgoingHttpHeaders
     method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
     body?: string
+    signal?: AbortSignal
 }
 
 type PathPart = string | Record<string, string | boolean> | undefined
 
-const buildUrl = (...paths: PathPart[]) => {
+export const buildUrl = (...paths: PathPart[]) => {
     const queryObj = paths.reduce((prev, curr, index) => {
         if (typeof curr !== 'string' && typeof curr === 'object' && curr !== null) {
             paths.splice(index, 1)
@@ -32,8 +34,9 @@ const buildUrl = (...paths: PathPart[]) => {
     return [prefix, ...paths].join('/').replace(/\/+/g, '/') + (queryObj ? `?${stringify(queryObj)}` : '')
 }
 
-const fetchJson = async (url: string, opts: FetchOptions = {}) => {
-    const res = await fetch((typeof window === 'undefined' ? API_URL : '') + url, {
+export const fetchJson = (url: string, opts: FetchOptions = {}) => {
+    const fetchUrl = (typeof window === 'undefined' ? API_URL : '') + url
+    const fetchInit = {
         ...opts,
         timeout: 100000,
         headers: {
@@ -41,16 +44,36 @@ const fetchJson = async (url: string, opts: FetchOptions = {}) => {
             'Content-Type': 'application/json',
             Accept: 'application/json',
         },
-    })
-
-    if (res.ok) {
-        if (res.status === 204) {
-            return true
-        }
-        return res.json()
-    } else {
-        throw res
     }
+
+    const min = process.env.API_RETRY_DELAY_MIN as unknown as number
+    const max = process.env.API_RETRY_DELAY_MAX as unknown as number
+    const maxRetryCount = process.env.API_RETRY_COUNT as unknown as number
+
+    let retryCounter = 0
+    const retryDelay = () => min + (retryCounter / (maxRetryCount - 1)) * (max - min)
+
+    return new Promise((resolve, reject) => {
+        const fetchFn = () =>
+            fetch(fetchUrl, fetchInit).then((res) => {
+                if (res.ok) {
+                    if (res.status === 204) {
+                        resolve(true)
+                    }
+
+                    resolve(res.json())
+                } else {
+                    if (retryCounter >= maxRetryCount) {
+                        reject(`status (${res.status}) -> ${res.url}`)
+                    }
+
+                    retryCounter++
+                    setTimeout(fetchFn, retryDelay())
+                }
+            })
+
+        void fetchFn()
+    })
 }
 
 /*

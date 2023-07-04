@@ -7,6 +7,7 @@ import { TextRow } from 'react-placeholder/lib/placeholders'
 import { availableColumns } from '../../../../../constants/availableColumns'
 import { reactIcons } from '../../../../../constants/icons'
 import { AsyncQueryTask } from '../../../../../stores/search/AsyncTaskRunner'
+import { Hits } from '../../../../../Types'
 import { defaultSearchParams } from '../../../../../utils/queryUtils'
 import { useSharedStore } from '../../../../SharedStoreProvider'
 import { ResultsTableRow } from '../ResultsTableRow/ResultsTableRow'
@@ -14,16 +15,16 @@ import { ResultsTableRow } from '../ResultsTableRow/ResultsTableRow'
 import { useStyles } from './ResultsTable.styles'
 
 interface ResultsTableProps {
-    queryTask: AsyncQueryTask
+    hits?: Hits
 }
 
-export const ResultsTable: FC<ResultsTableProps> = observer(({ queryTask }) => {
+export const ResultsTable: FC<ResultsTableProps> = observer(({ hits }) => {
     const { classes, cx } = useStyles()
     const {
         query,
         search,
         searchViewStore: { resultsColumns, setResultsColumns },
-        searchResultsStore: { resultsLoading },
+        searchResultsStore: { resultsLoadingETA },
     } = useSharedStore().searchStore
 
     const size = query?.size || defaultSearchParams.size
@@ -65,10 +66,6 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ queryTask }) => {
         }
 
         setResultsColumns(resultsColumnsCopy)
-    }
-
-    if (!queryTask.data?.result) {
-        return null
     }
 
     return (
@@ -121,7 +118,7 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ queryTask }) => {
                 <TableBody>
                     <ReactPlaceholder
                         showLoadingAnimation
-                        ready={!resultsLoading}
+                        ready={!!hits}
                         customPlaceholder={
                             <>
                                 {[...Array(size)].map((_v, i) => (
@@ -133,7 +130,7 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ queryTask }) => {
                                 ))}
                             </>
                         }>
-                        {queryTask.data.result.hits.hits.map((hit, i) => (
+                        {hits?.hits.map((hit, i) => (
                             <ResultsTableRow key={hit._id} index={i} hit={hit} />
                         ))}
                     </ReactPlaceholder>

@@ -1,6 +1,6 @@
-import { makeAutoObservable, runInAction } from 'mobx'
+import { AbortSignal } from 'node-fetch/externals'
 
-import { asyncSearch as asyncSearchAPI } from '../../backend/api'
+import { buildUrl, fetchJson } from '../../backend/api'
 import { AsyncTaskData, SearchQueryParams, SearchQueryType, SourceField } from '../../Types'
 
 interface FetchParams extends SearchQueryParams {
@@ -10,20 +10,21 @@ interface FetchParams extends SearchQueryParams {
     fieldList: SourceField[] | '*'
 }
 
-export class AsyncQueryTask {
-    running: boolean = false
+export class AsyncQueryTask extends EventTarget {
+    isRunning: boolean = false
     initialEta?: number
     data?: AsyncTaskData
-    timeout?: NodeJS.Timeout
-    controller?: AbortController
+
+    private timeout?: NodeJS.Timeout
+    private controller?: AbortController
 
     constructor(readonly query: SearchQueryParams, private readonly type: SearchQueryType, private readonly fieldList: SourceField[] | '*') {
-        makeAutoObservable(this)
+        super()
     }
 
     async run() {
-        if (!this.running) {
-            this.running = true
+        if (!this.isRunning) {
+            this.isRunning = true
 
             const params: FetchParams = {
                 ...this.query,
@@ -38,33 +39,32 @@ export class AsyncQueryTask {
             }
 
             this.controller = new AbortController()
-            const signal = this.controller.signal
+            const signal = this.controller.signal as AbortSignal
 
-            const response = await fetch('/api/search', {
+            const data = await fetchJson('api/search', {
                 signal,
                 method: 'POST',
                 body: JSON.stringify(params),
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                },
             })
 
-            if (!response.ok) {
-                const json = await response.json()
-                throw new Error(json.reason || json.message || `HTTP ${response.status} ${response.statusText}`)
-            }
+            this.data = data as AsyncTaskData
+            this.initialEta = this.data.eta.total_sec
+            this.dispatchEvent(new CustomEvent('eta', { detail: this.data.eta.total_sec }))
 
-            const data = await response.json()
-            runInAction(() => {
-                this.data = data
-            })
-
-            if (this.data && this.data.status !== 'done') {
-                this.initialEta = this.data.eta.total_sec
-                await this.handleQueryResult()
+            if (this.data?.status == 'done') {
+                this.isRunning = false
+                AsyncQueryTaskRunner.runTaskQueue()
+            } else {
+                void this.handleQueryResult()
             }
+        }
+    }
+
+    abort() {
+        if (this.isRunning) {
+            this.controller?.abort()
+            clearTimeout(this.timeout)
+            this.isRunning = false
         }
     }
 
@@ -72,16 +72,22 @@ export class AsyncQueryTask {
         if (!this.data || !this.initialEta) return
 
         const wait = (this.data.eta.total_sec as number) < parseInt(process.env.ASYNC_SEARCH_POLL_INTERVAL as string)
-        const data = await asyncSearchAPI(this.data.task_id, wait)
-        runInAction(() => {
-            this.data = data
-        })
 
-        if (this.data && this.data.status !== 'done') {
+        this.controller = new AbortController()
+        const signal = this.controller.signal as AbortSignal
+
+        const data = await fetchJson(buildUrl('async_search', this.data.task_id, { wait }), { signal })
+        this.data = data as AsyncTaskData
+        this.dispatchEvent(new CustomEvent('eta', { detail: this.data.eta.total_sec }))
+
+        if (this.data.status == 'done') {
+            this.isRunning = false
+            AsyncQueryTaskRunner.runTaskQueue()
+        } else {
             if (Date.now() - Date.parse(this.data.date_created) < this.timeoutMs) {
                 this.timeout = setTimeout(this.handleQueryResult, parseInt(process.env.ASYNC_SEARCH_POLL_INTERVAL as string) * 1000)
             } else {
-                throw new Error('Results task ETA timeout')
+                this.dispatchEvent(new ErrorEvent('error', { message: 'Results task ETA timeout' }))
             }
         }
     }
@@ -101,18 +107,37 @@ export class AsyncQueryTaskRunner {
         const task = new AsyncQueryTask(query, type, fieldList)
 
         this.taskQueue.push(task)
-        void this.runTaskQueue()
+        this.runTaskQueue()
 
         return task
     }
 
-    static async runTaskQueue() {
+    static runTaskQueue() {
         for (const task of this.taskQueue) {
-            try {
-                await task.run()
-            } catch (error) {
-                //handleResultsError(error)
+            if (task.data?.status === 'done') {
+                this.clearTask(task)
+                task.dispatchEvent(new CustomEvent('done', { detail: task.data }))
             }
         }
+
+        for (const task of this.taskQueue) {
+            if (this.taskQueue.filter((task) => task.isRunning).length < (process.env.ASYNC_SEARCH_POLL_SIZE as unknown as number)) {
+                task.run().catch((error) => {
+                    this.clearTask(task)
+                    task.dispatchEvent(new ErrorEvent('error', { message: error }))
+                })
+            }
+        }
+    }
+
+    static clearTask(task: AsyncQueryTask) {
+        this.taskQueue.splice(this.taskQueue.indexOf(task), 1)
+    }
+
+    static clearQueue() {
+        for (const task of this.taskQueue) {
+            task.abort()
+        }
+        this.taskQueue = []
     }
 }

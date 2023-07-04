@@ -1,35 +1,22 @@
-import { makeAutoObservable, reaction } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx'
 import { Entries } from 'type-fest'
 
-import { SearchFields } from '../../backend/buildSearchQuery'
-import { Aggregations, AggregationsKey, SearchQueryParams, SourceField } from '../../Types'
+import { Aggregations, AsyncTaskData, SearchQueryParams, SourceField } from '../../Types'
 
-import { AsyncQueryTask, AsyncQueryTaskRunner } from './AsyncTaskRunner'
+import { AsyncQueryTaskRunner } from './AsyncTaskRunner'
 import { SearchStore } from './SearchStore'
 
 export class SearchMissingStore {
-    private missingCollections: string[] = []
-
-    missingQueryTasks: Record<string, AsyncQueryTask> = {}
-
     missing: Record<string, number> = {}
 
-    error: any
+    missingLoading = 0
+
+    missingLoadingETA = 0
+
+    error: Record<string, string> = {}
 
     constructor(private readonly searchStore: SearchStore) {
         makeAutoObservable(this)
-
-        reaction(
-            () => Object.entries(this.missingQueryTasks).map(([collection, { data }]) => ({ collection, aggregations: data?.result?.aggregations })),
-            (results) => {
-                results.forEach(({ collection, aggregations }) => {
-                    if (aggregations && !this.missingCollections.includes(collection)) {
-                        this.missingCollections.push(collection)
-                        this.sumMissing(aggregations)
-                    }
-                })
-            }
-        )
     }
 
     performQuery(query: SearchQueryParams, fieldList: SourceField[] | '*' = '*') {
@@ -37,18 +24,45 @@ export class SearchMissingStore {
             return
         }
 
-        this.missingQueryTasks = {}
-        this.missingCollections = []
-
         for (const collection of query.collections) {
             const { collections, ...queryParams } = query
             const singleCollectionQuery = { collections: [collection], ...queryParams }
-            this.missingQueryTasks[collection] = AsyncQueryTaskRunner.createAsyncQueryTask(singleCollectionQuery, 'missing', fieldList)
-        }
-    }
 
-    get missingLoading() {
-        return Object.entries(this.missingQueryTasks).find(([_collection, queryTask]) => queryTask.data?.status !== 'done')
+            runInAction(() => {
+                this.missingLoading++
+            })
+
+            const task = AsyncQueryTaskRunner.createAsyncQueryTask(singleCollectionQuery, 'missing', fieldList)
+
+            task.addEventListener('done', (event) => {
+                const { detail: data } = event as CustomEvent<AsyncTaskData>
+
+                if (data.result?.aggregations) {
+                    this.sumMissing(data.result.aggregations)
+                }
+
+                runInAction(() => {
+                    this.missingLoading--
+                })
+            })
+
+            task.addEventListener('eta', (event) => {
+                const { detail: eta } = event as CustomEvent<number>
+
+                runInAction(() => {
+                    this.missingLoadingETA = eta
+                })
+            })
+
+            task.addEventListener('error', (event) => {
+                const { message } = event as ErrorEvent
+
+                runInAction(() => {
+                    this.error[collection] = message
+                    this.missingLoading--
+                })
+            })
+        }
     }
 
     private sumMissing(aggregations: Aggregations) {

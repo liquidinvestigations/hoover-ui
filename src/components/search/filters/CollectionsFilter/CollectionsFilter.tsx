@@ -14,7 +14,7 @@ export const CollectionsFilter: FC = observer(() => {
         collectionsData,
         searchStore: {
             searchViewStore: { categoryQuickFilter, searchCollections, handleSearchCollectionsChange, handleAllSearchCollectionsToggle },
-            searchResultsStore: { resultsQueryTasks },
+            searchResultsStore: { resultsCounts },
         },
     } = useSharedStore()
 
@@ -58,10 +58,7 @@ export const CollectionsFilter: FC = observer(() => {
                                 <ListItemText
                                     primary={
                                         <Typography variant="caption">
-                                            {resultsQueryTasks?.[collection.name]?.data?.result?.count_by_index?.[collection.name] &&
-                                                formatThousands(
-                                                    resultsQueryTasks?.[collection.name]?.data?.result?.count_by_index?.[collection.name] || 0
-                                                )}
+                                            {resultsCounts?.[collection.name] && formatThousands(resultsCounts?.[collection.name] || 0)}
                                         </Typography>
                                     }
                                     className={classes.docCount}

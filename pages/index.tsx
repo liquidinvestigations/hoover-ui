@@ -1,3 +1,4 @@
+import { runInAction } from 'mobx'
 import { GetServerSidePropsContext, NextPage } from 'next'
 
 import { collections as collectionsAPI } from '../src/backend/api'
@@ -15,7 +16,10 @@ interface IndexProps {
 const Index: NextPage<IndexProps> = ({ collectionsData, serverQuery }) => {
     const store = useSharedStore()
 
-    store.collectionsData = collectionsData
+    runInAction(() => {
+        store.collectionsData = collectionsData
+    })
+
     const query = store.searchStore.parseSearchParams(serverQuery)
 
     if (query.q) {
