@@ -6,6 +6,7 @@ import { AbortSignal } from 'node-fetch/externals'
 import { stringify } from 'qs'
 
 import { Tag } from '../stores/TagsStore'
+import { CollectionData, DocumentData, User } from '../Types'
 
 import buildSearchQuery, { FieldList, SearchFields } from './buildSearchQuery'
 
@@ -34,7 +35,7 @@ export const buildUrl = (...paths: PathPart[]) => {
     return [prefix, ...paths].join('/').replace(/\/+/g, '/') + (queryObj ? `?${stringify(queryObj)}` : '')
 }
 
-export const fetchJson = (url: string, opts: FetchOptions = {}) => {
+export const fetchJson = <T>(url: string, opts: FetchOptions = {}) => {
     const fetchUrl = (typeof window === 'undefined' ? API_URL : '') + url
     const fetchInit = {
         ...opts,
@@ -53,12 +54,12 @@ export const fetchJson = (url: string, opts: FetchOptions = {}) => {
     let retryCounter = 0
     const retryDelay = () => min + (retryCounter / (maxRetryCount - 1)) * (max - min)
 
-    return new Promise((resolve, reject) => {
+    return new Promise<T>((resolve, reject) => {
         const fetchFn = () =>
             fetch(fetchUrl, fetchInit).then((res) => {
                 if (res.ok) {
                     if (res.status === 204) {
-                        resolve(true)
+                        resolve(true as T)
                     }
 
                     resolve(res.json())
@@ -79,10 +80,10 @@ export const fetchJson = (url: string, opts: FetchOptions = {}) => {
 /*
  called only by node.js
  */
-export const whoami = (headers: OutgoingHttpHeaders) => fetchJson(buildUrl('whoami'), { headers })
+export const whoami = (headers: OutgoingHttpHeaders): Promise<User> => fetchJson(buildUrl('whoami'), { headers })
 export const limits = (headers: OutgoingHttpHeaders) => fetchJson(buildUrl('limits'), { headers })
 export const collections = (headers: OutgoingHttpHeaders) => fetchJson(buildUrl('collections'), { headers })
-export const searchFields = (headers: OutgoingHttpHeaders) => fetchJson(buildUrl('search_fields'), { headers })
+export const searchFields = (headers: OutgoingHttpHeaders): Promise<{ fields: SearchFields }> => fetchJson(buildUrl('search_fields'), { headers })
 export const search = async (
     headers: OutgoingHttpHeaders,
     params: SearchQueryParams,
@@ -104,7 +105,7 @@ export const search = async (
  called only by browser
  */
 export const doc = memoize(
-    (docUrl, pageIndex = 1) => fetchJson(buildUrl(docUrl, 'json', { children_page: pageIndex })),
+    (docUrl, pageIndex = 1): Promise<DocumentData> => fetchJson(buildUrl(docUrl, 'json', { children_page: pageIndex })),
     (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`
 )
 
@@ -113,17 +114,17 @@ export const locations = memoize(
     (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`
 )
 
-export const tags = (docUrl: string) => fetchJson(buildUrl(docUrl, 'tags'))
+export const tags = (docUrl: string): Promise<Tag[]> => fetchJson(buildUrl(docUrl, 'tags'))
 
-export const tag = (docUrl: string, tagId: string) => fetchJson(buildUrl(docUrl, 'tags', tagId))
+export const tag = (docUrl: string, tagId: string): Promise<Tag> => fetchJson(buildUrl(docUrl, 'tags', tagId))
 
-export const createTag = (docUrl: string, data: Pick<Tag, 'tag' | 'public'>) =>
+export const createTag = (docUrl: string, data: Pick<Tag, 'tag' | 'public'>): Promise<Tag> =>
     fetchJson(buildUrl(docUrl, 'tags'), {
         method: 'POST',
         body: JSON.stringify(data),
     })
 
-export const updateTag = (docUrl: string, tagId: string, data: Pick<Tag, 'public'>) =>
+export const updateTag = (docUrl: string, tagId: string, data: Pick<Tag, 'public'>): Promise<Tag> =>
     fetchJson(buildUrl(docUrl, 'tags', tagId), {
         method: 'PATCH',
         body: JSON.stringify(data),
@@ -137,13 +138,11 @@ export const batch = (query: SearchQueryParams) =>
         body: JSON.stringify(query),
     })
 
-export const collectionsInsights = () => fetchJson(buildUrl('collections'))
+export const collectionsInsights = () => fetchJson<CollectionData[]>(buildUrl('collections'))
 
 export const getUploads = () => fetchJson(buildUrl('get_uploads'))
 
 export const getDirectoryUploads = (collection: string, directoryId: string) => fetchJson(buildUrl(collection, directoryId, 'get_directory_uploads'))
-
-export const asyncSearch = (uuid: string, wait: boolean) => fetchJson(buildUrl('async_search', uuid, { wait }))
 
 export interface LogError {
     error: string

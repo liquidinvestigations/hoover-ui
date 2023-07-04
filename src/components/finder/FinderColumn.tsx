@@ -4,6 +4,7 @@ import { makeStyles } from 'tss-react/mui'
 
 import { doc as docAPI } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
+import { ChildDocument, DocumentData } from '../../Types'
 import { Loading } from '../common/Loading/Loading'
 
 import { FinderItem } from './FinderItem'
@@ -30,7 +31,7 @@ interface FinderColumnProps extends ColumnItem {
 export const FinderColumn: FC<FinderColumnProps> = ({ items, pathname, prevPage, nextPage, active, selected }) => {
     const { classes } = useStyles()
 
-    const [itemsState, setItemsState] = useState(items)
+    const [itemsState, setItemsState] = useState(items as ChildDocument[])
     const [prevPageState, setPrevPageState] = useState(prevPage)
     const [nextPageState, setNextPageState] = useState(nextPage)
 
@@ -49,7 +50,7 @@ export const FinderColumn: FC<FinderColumnProps> = ({ items, pathname, prevPage,
         setNextPageLoading(true)
         const nextItems = await docAPI(pathname, nextPage)
         setNextPageLoading(false)
-        setNextPageState(nextItems.children_has_next_page ? nextItems.children_page + 1 : null)
+        setNextPageState(nextItems.children_has_next_page ? nextItems.children_page + 1 : undefined)
         setItemsState((currentItems = []) => [...currentItems, ...nextItems.children])
     }
 

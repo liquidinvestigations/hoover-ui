@@ -41,13 +41,11 @@ export class AsyncQueryTask extends EventTarget {
             this.controller = new AbortController()
             const signal = this.controller.signal as AbortSignal
 
-            const data = await fetchJson('api/search', {
+            this.data = await fetchJson<AsyncTaskData>('api/search', {
                 signal,
                 method: 'POST',
                 body: JSON.stringify(params),
             })
-
-            this.data = data as AsyncTaskData
             this.initialEta = this.data.eta.total_sec
             this.dispatchEvent(new CustomEvent('eta', { detail: this.data.eta.total_sec }))
 
@@ -76,8 +74,7 @@ export class AsyncQueryTask extends EventTarget {
         this.controller = new AbortController()
         const signal = this.controller.signal as AbortSignal
 
-        const data = await fetchJson(buildUrl('async_search', this.data.task_id, { wait }), { signal })
-        this.data = data as AsyncTaskData
+        this.data = await fetchJson<AsyncTaskData>(buildUrl('async_search', this.data.task_id, { wait }), { signal })
         this.dispatchEvent(new CustomEvent('eta', { detail: this.data.eta.total_sec }))
 
         if (this.data.status == 'done') {
