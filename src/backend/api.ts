@@ -6,7 +6,7 @@ import { AbortSignal } from 'node-fetch/externals'
 import { stringify } from 'qs'
 
 import { Tag } from '../stores/TagsStore'
-import { CollectionData, DocumentData, User } from '../Types'
+import { CollectionData, DocumentData, Limits, User } from '../Types'
 
 import buildSearchQuery, { FieldList, SearchFields } from './buildSearchQuery'
 
@@ -81,8 +81,8 @@ export const fetchJson = <T>(url: string, opts: FetchOptions = {}) => {
  called only by node.js
  */
 export const whoami = (headers: OutgoingHttpHeaders): Promise<User> => fetchJson(buildUrl('whoami'), { headers })
-export const limits = (headers: OutgoingHttpHeaders) => fetchJson(buildUrl('limits'), { headers })
-export const collections = (headers: OutgoingHttpHeaders) => fetchJson(buildUrl('collections'), { headers })
+export const limits = (headers: OutgoingHttpHeaders): Promise<Limits> => fetchJson(buildUrl('limits'), { headers })
+export const collections = (headers: OutgoingHttpHeaders): Promise<CollectionData[]> => fetchJson(buildUrl('collections'), { headers })
 export const searchFields = (headers: OutgoingHttpHeaders): Promise<{ fields: SearchFields }> => fetchJson(buildUrl('search_fields'), { headers })
 export const search = async (
     headers: OutgoingHttpHeaders,
@@ -138,7 +138,7 @@ export const batch = (query: SearchQueryParams) =>
         body: JSON.stringify(query),
     })
 
-export const collectionsInsights = () => fetchJson<CollectionData[]>(buildUrl('collections'))
+export const collectionsInsights = (): Promise<CollectionData[]> => fetchJson(buildUrl('collections'))
 
 export const getUploads = () => fetchJson(buildUrl('get_uploads'))
 
