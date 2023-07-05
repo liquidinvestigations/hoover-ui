@@ -56,22 +56,24 @@ export const fetchJson = <T>(url: string, opts: FetchOptions = {}) => {
 
     return new Promise<T>((resolve, reject) => {
         const fetchFn = () =>
-            fetch(fetchUrl, fetchInit).then((res) => {
-                if (res.ok) {
-                    if (res.status === 204) {
-                        resolve(true as T)
-                    }
+            fetch(fetchUrl, fetchInit)
+                .then((res) => {
+                    if (res.ok) {
+                        if (res.status === 204) {
+                            resolve(true as T)
+                        }
 
-                    resolve(res.json())
-                } else {
-                    if (retryCounter >= maxRetryCount) {
-                        reject(`status (${res.status}) -> ${res.url}`)
-                    }
+                        resolve(res.json())
+                    } else {
+                        if (retryCounter >= maxRetryCount) {
+                            reject(`status (${res.status}) -> ${res.url}`)
+                        }
 
-                    retryCounter++
-                    setTimeout(fetchFn, retryDelay())
-                }
-            })
+                        retryCounter++
+                        setTimeout(fetchFn, retryDelay())
+                    }
+                })
+                .catch((reason) => reject(reason))
 
         void fetchFn()
     })

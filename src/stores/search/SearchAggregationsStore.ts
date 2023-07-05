@@ -28,6 +28,7 @@ export class SearchAggregationsStore {
         AsyncQueryTaskRunner.clearQueue()
 
         runInAction(() => {
+            this.error = {}
             this.aggregatedCollections = []
             this.aggregationsLoading = SearchAggregationsStore.initialAggregationsLoading(0)
             this.aggregationsLoadingETA = SearchAggregationsStore.initialAggregationsLoading(0)

@@ -1,3 +1,4 @@
+import events from 'missing-dom-events'
 import { AbortSignal } from 'node-fetch/externals'
 
 import { buildUrl, fetchJson } from '../../backend/api'
@@ -41,13 +42,13 @@ export class AsyncQueryTask extends EventTarget {
             this.controller = new AbortController()
             const signal = this.controller.signal as AbortSignal
 
-            this.data = await fetchJson<AsyncTaskData>('api/search', {
+            this.data = await fetchJson<AsyncTaskData>('/api/search', {
                 signal,
                 method: 'POST',
                 body: JSON.stringify(params),
             })
             this.initialEta = this.data.eta.total_sec
-            this.dispatchEvent(new CustomEvent('eta', { detail: this.data.eta.total_sec }))
+            this.dispatchEvent(new events.CustomEvent('eta', { detail: this.data.eta.total_sec }))
 
             if (this.data?.status == 'done') {
                 this.isRunning = false
@@ -75,7 +76,7 @@ export class AsyncQueryTask extends EventTarget {
         const signal = this.controller.signal as AbortSignal
 
         this.data = await fetchJson<AsyncTaskData>(buildUrl('async_search', this.data.task_id, { wait }), { signal })
-        this.dispatchEvent(new CustomEvent('eta', { detail: this.data.eta.total_sec }))
+        this.dispatchEvent(new events.CustomEvent('eta', { detail: this.data.eta.total_sec }))
 
         if (this.data.status == 'done') {
             this.isRunning = false
@@ -84,7 +85,7 @@ export class AsyncQueryTask extends EventTarget {
             if (Date.now() - Date.parse(this.data.date_created) < this.timeoutMs) {
                 this.timeout = setTimeout(this.handleQueryResult, parseInt(process.env.ASYNC_SEARCH_POLL_INTERVAL as string) * 1000)
             } else {
-                this.dispatchEvent(new ErrorEvent('error', { message: 'Results task ETA timeout' }))
+                this.dispatchEvent(new events.ErrorEvent('error', { message: 'Results task ETA timeout' }))
             }
         }
     }
@@ -113,7 +114,7 @@ export class AsyncQueryTaskRunner {
         for (const task of this.taskQueue) {
             if (task.data?.status === 'done') {
                 this.clearTask(task)
-                task.dispatchEvent(new CustomEvent('done', { detail: task.data }))
+                task.dispatchEvent(new events.CustomEvent('done', { detail: task.data }))
             }
         }
 
@@ -121,7 +122,7 @@ export class AsyncQueryTaskRunner {
             if (this.taskQueue.filter((task) => task.isRunning).length < (process.env.ASYNC_SEARCH_POLL_SIZE as unknown as number)) {
                 task.run().catch((error) => {
                     this.clearTask(task)
-                    task.dispatchEvent(new ErrorEvent('error', { message: error }))
+                    task.dispatchEvent(new events.ErrorEvent('error', { message: error }))
                 })
             }
         }

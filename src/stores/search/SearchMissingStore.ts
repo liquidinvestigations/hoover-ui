@@ -29,6 +29,7 @@ export class SearchMissingStore {
             const singleCollectionQuery = { collections: [collection], ...queryParams }
 
             runInAction(() => {
+                this.error = {}
                 this.missingLoading++
             })
 

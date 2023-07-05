@@ -43,6 +43,10 @@ export class SearchResultsStore {
     }
 
     performQuery = (query: SearchQueryParams) => {
+        runInAction(() => {
+            this.error = {}
+        })
+
         for (const collection of query.collections) {
             const { collections, ...queryParams } = query
             const singleCollectionQuery = { collections: [collection], ...queryParams }
@@ -101,7 +105,7 @@ export class SearchResultsStore {
         const currentIndex = this.currentPreviewIndex
         const hits = this.hits
 
-        if (!Object.keys(this.resultsLoadingETA) && hits && (page - 1) * size + currentIndex < this.hitsTotal - 1) {
+        if (!Object.keys(this.resultsLoadingETA).length && hits && (page - 1) * size + currentIndex < this.hitsTotal - 1) {
             if (currentIndex === hits.length - 1) {
                 this.setPreviewOnLoad('first')
                 this.searchStore.search({ page: page + 1 })
@@ -116,7 +120,7 @@ export class SearchResultsStore {
         const currentIndex = this.currentPreviewIndex
         const hits = this.hits
 
-        if ((!Object.keys(this.resultsLoadingETA) && hits && page > 1) || currentIndex >= 1) {
+        if ((!Object.keys(this.resultsLoadingETA).length && hits && page > 1) || currentIndex >= 1) {
             if (currentIndex === 0 && page > 1) {
                 this.setPreviewOnLoad('last')
                 this.searchStore.search({ page: page - 1 })
