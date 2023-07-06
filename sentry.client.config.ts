@@ -5,7 +5,10 @@
 import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
-  dsn: "http://6938c60f8037454383134ba0af114f67@10.66.60.1:9000/5",
+  //  The DSN tells the SDK where to send the events.
+  //  If this value is not provided, the SDK will try to read it from the SENTRY_DSN environment variable.
+  //  If that variable also does not exist, the SDK will just not send any events.
+  // dsn: "http://secret@localhost:9000/5",
 
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: 1,

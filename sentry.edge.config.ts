@@ -6,7 +6,7 @@
 import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
-  dsn: "http://6938c60f8037454383134ba0af114f67@10.66.60.1:9000/5",
+  // dsn: "http://secret@localhost:9000/5",
 
   // Adjust this value in production, or use tracesSampler for greater control
   tracesSampleRate: 1,
