@@ -2,6 +2,11 @@ import { Theme } from '@mui/material'
 import { makeStyles } from 'tss-react/mui'
 
 export const useStyles = makeStyles()((theme: Theme) => ({
+    container: {
+        '& mark.active': {
+            backgroundColor: 'orange'
+        }
+    },
     icon: {
         transform: 'rotate(-90deg)',
     },
@@ -9,6 +14,9 @@ export const useStyles = makeStyles()((theme: Theme) => ({
     raw: {
         fontFamily: 'monospace',
         fontSize: '12px',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
     },
 
     rawIcon: {

@@ -1,7 +1,7 @@
-import { Badge, Box, Button, Chip, Grid, Tabs, Typography } from '@mui/material'
+import { Badge, Box, Button, Chip, Grid, Tabs, Tooltip, Typography } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
-import { cloneElement, ReactElement, useEffect } from 'react'
+import { cloneElement, ReactElement, useEffect, useRef, useState } from 'react'
 
 import { createOcrUrl } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
@@ -9,6 +9,7 @@ import { specialTags } from '../../constants/specialTags'
 import { Tag } from '../../stores/TagsStore'
 import { getTagIcon } from '../../utils/utils'
 import { Loading } from '../common/Loading/Loading'
+import { PageSearch } from '../common/PageSearch/PageSearch'
 import { Finder } from '../finder/Finder'
 import Locations from '../Locations'
 import { useSharedStore } from '../SharedStoreProvider'
@@ -18,7 +19,7 @@ import { StyledTab } from './StyledTab'
 import { HTML } from './SubTabs/components/HTML'
 import { Meta } from './SubTabs/components/Meta/Meta'
 import { Preview, PREVIEWABLE_MIME_TYPE_SUFFEXES } from './SubTabs/components/Preview/Preview'
-import { Tags, getChipColor } from './SubTabs/components/Tags/Tags'
+import { getChipColor, Tags } from './SubTabs/components/Tags/Tags'
 import { TagTooltip } from './SubTabs/components/Tags/TagTooltip'
 import { Text } from './SubTabs/components/Text/Text'
 import { SubTabs } from './SubTabs/SubTabs'
@@ -27,23 +28,65 @@ import { Toolbar, ToolbarLink } from './Toolbar/Toolbar'
 
 export const Document = observer(() => {
     const { classes } = useStyles()
+    const containerRef = useRef<HTMLDivElement>(null)
+    const [isEventAdded, setIsEventAdded] = useState(false)
 
     const {
         user,
         fullPage,
         printMode,
         tagsStore: { tags, tagsLoading, tagsLocked, handleSpecialTagClick },
-        documentStore: { data, pathname, loading, collection, digestUrl, docRawUrl, thumbnailSrcSet, tab, handleTabChange },
+        documentStore: {
+            data,
+            ocrData: ocrDataStore,
+            pathname,
+            loading,
+            collection,
+            digestUrl,
+            docRawUrl,
+            thumbnailSrcSet,
+            tab,
+            handleTabChange,
+            documentSearchStore: { toggleSearchInput, query, metaSearchStore, textSearchStore, pdfSearchStore },
+        },
         searchStore: {
             searchResultsStore: { previewNextDoc, previewPreviousDoc },
         },
     } = useSharedStore()
 
     useEffect(() => {
+        if (!data?.content) return
+        const content = [data.content.text]
+        if(ocrDataStore?.length) content.push(...ocrDataStore.map(({text}) => text))
+        textSearchStore.setTextContent(content)
+    }, [data, ocrDataStore, textSearchStore])
+
+    useEffect(() => {
         if (printMode && !loading && !tagsLoading) {
             window.setTimeout(window.print)
         }
     }, [printMode, loading, tagsLoading])
+
+    useEffect(() => {
+        const containerElement = containerRef.current
+        if(!containerElement || isEventAdded) return
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if ((event.ctrlKey || event.metaKey) && event.key === 'f') {
+                event.preventDefault()
+                toggleSearchInput()
+            }
+        }
+
+        containerElement.addEventListener('keydown', handleKeyDown)
+        setIsEventAdded(true)
+
+        return () => {
+            containerElement.removeEventListener('keydown', handleKeyDown)
+            setIsEventAdded(false)
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [containerRef, toggleSearchInput, data])
 
     const headerLinks = {
         actions: [] as ToolbarLink[],
@@ -153,6 +196,8 @@ export const Document = observer(() => {
             visible: hasPreview,
             padding: 0,
             content: <Preview />,
+            searchLoading: pdfSearchStore.loading,
+            searchCount: pdfSearchStore.getSearchResultsCount()
         },
         {
             name: 'Text',
@@ -160,6 +205,8 @@ export const Document = observer(() => {
             visible: true,
             padding: 0,
             content: <SubTabs />,
+            searchLoading: textSearchStore.loading,
+            searchCount: textSearchStore.getTotalSearchResultsCount()
         },
         {
             name: 'Tags',
@@ -183,6 +230,8 @@ export const Document = observer(() => {
             icon: reactIcons.metaTab,
             visible: !printMode,
             content: <Meta />,
+            searchLoading: metaSearchStore.loading,
+            searchCount: metaSearchStore.getSearchResultsCount()
         },
         {
             name: 'HTML',
@@ -218,8 +267,27 @@ export const Document = observer(() => {
         )
     }
 
+    const getSearchCount = (tabData: any, index: number) => {
+        if (!query) return undefined
+        if (!tabData.hasOwnProperty('searchLoading')) return undefined
+        return (
+            <span className={classes.searchCount}>
+                {tabData.searchLoading ? (
+                    <Loading size={16} sx={{ color: index === tab ? '' : 'inherit' }} />
+                ) : (
+                    <span className="totalCount">{tabData.searchCount}</span>
+                )}
+                {!index && (
+                    <Tooltip title="Currently, PDF search can only be performed while the PDF viewer is active">
+                        <span className="help">?</span>
+                    </Tooltip>
+                )}
+            </span>
+        )
+    }
+
     return (
-        <div className={classes.root} data-test="doc-view">
+        <div ref={containerRef} className={classes.root} data-test="doc-view" tabIndex={0}>
             {!printMode && data.content.filetype !== 'folder' && <Toolbar links={headerLinks} />}
 
             {printMode && (
@@ -294,12 +362,25 @@ export const Document = observer(() => {
                 )}
             </Grid>
 
+            <Box className={classes.header}>
+                <PageSearch />
+            </Box>
+
             {!printMode && (
                 <Tabs value={tab} onChange={handleTabChange} classes={tabsClasses} variant="scrollable" scrollButtons="auto" indicatorColor="secondary">
                     {tabsData
                         .filter((tabData) => tabData.visible)
                         .map((tabData, index) => (
-                            <StyledTab key={index} icon={tabData.icon} label={tabData.name} />
+                            <StyledTab
+                                key={index}
+                                icon={tabData.icon}
+                                label={
+                                    <>
+                                        {tabData.name}
+                                        {getSearchCount(tabData, index)}
+                                    </>
+                                }
+                            />
                         ))}
                     {data.content.filetype === 'folder' &&
                         !data.content.path.includes('//') &&
@@ -310,7 +391,7 @@ export const Document = observer(() => {
             {tabsData
                 .filter((tabData) => tabData.visible)
                 .map((tabData, index) => (
-                    <Box key={index} className={index === tab ? classes.activeTab : undefined}>
+                    <Box key={index} className={index === tab ? `${classes.activeTab} activeTab` : undefined}>
                         {printMode && (
                             <Typography variant="h3" className={classes.printTitle}>
                                 {tabData.name}

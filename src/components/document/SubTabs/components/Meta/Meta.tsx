@@ -1,83 +1,31 @@
 import { Box, Divider, List, ListItem, ListItemText, Typography } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
-import { useState, MouseEvent } from 'react'
+import { MouseEvent, useEffect, useState } from 'react'
 
-import { DocumentContent, SourceField } from '../../../../../Types'
-import { flatten, formatDateTime, getLanguageName, humanFileSize, shortenName } from '../../../../../utils/utils'
+import { SourceField } from '../../../../../Types'
 import { useSharedStore } from '../../../../SharedStoreProvider'
 import { LinkMenu } from '../../../LinkMenu'
 
 import { useStyles } from './Meta.styles'
 
-const tableFields: Partial<
-    Record<
-        SourceField,
-        {
-            label: string
-            searchKey?: SourceField
-            visible?: (content?: Partial<DocumentContent>) => boolean
-            format?: (term?: any) => string
-            searchTerm?: (term: any) => string
-        }
-    >
-> = {
-    filename: {
-        label: 'Filename',
-    },
-    path: {
-        label: 'Path',
-        searchKey: 'path-parts',
-    },
-    filetype: {
-        label: 'Type',
-        visible: (content) => !!content?.filetype,
-    },
-    md5: {
-        label: 'MD5',
-        visible: (content) => content?.filetype !== 'folder' && !!content?.md5,
-    },
-    sha1: {
-        label: 'SHA1',
-        visible: (content) => content?.filetype !== 'folder' && !!content?.sha1,
-    },
-    lang: {
-        label: 'Language',
-        format: getLanguageName,
-        visible: (content) => !!content?.lang,
-    },
-    date: {
-        label: 'Modified',
-        format: formatDateTime,
-        visible: (content) => !!content?.date,
-    },
-    'date-created': {
-        label: 'Created',
-        format: formatDateTime,
-        visible: (content) => !!content?.['date-created'],
-    },
-    pgp: {
-        label: 'PGP',
-        format: () => 'true',
-        searchTerm: () => 'true',
-        visible: (content) => !!content?.pgp,
-    },
-    'word-count': {
-        label: 'Word count',
-        searchTerm: (term) => term.toString(),
-        visible: (content) => !!content?.['word-count'],
-    },
-    size: {
-        label: 'Size',
-        format: humanFileSize,
-        searchTerm: (term) => term.toString(),
-        visible: (content) => !!content?.size,
-    },
-}
-
 export const Meta = observer(() => {
     const { classes } = useStyles()
-    const { data, collection, collectionBaseUrl } = useSharedStore().documentStore
+    const {
+        data,
+        collection,
+        collectionBaseUrl,
+        metaStore: { tableData, metaData },
+        documentSearchStore: {
+            query,
+            setActiveSearch,
+            metaSearchStore,
+        },
+    } = useSharedStore().documentStore
+
+    useEffect(() => {
+        setActiveSearch(metaSearchStore)
+    }, [setActiveSearch, metaSearchStore])
 
     const [menuPosition, setMenuPosition] = useState<{ left: number; top: number } | undefined>()
     const [currentLink, setCurrentLink] = useState<{ field: string; term: string | string[] } | undefined>()
@@ -123,18 +71,23 @@ export const Meta = observer(() => {
         }
     }
 
-    const renderElement = (key: string, value: any, componentKey: string) => (
-        <Typography key={componentKey} component="pre" variant="caption" className={classes.raw}>
-            <strong>{key}:</strong>{' '}
-            <span className={classes.searchField} onClick={handleLinkClick(getFieldSearchKey(key), getFieldValue(key, value))}>
-                {shortenName(getFieldValue(key, value), 200)}
-                {getFieldScore(key, value)}
-            </span>
-        </Typography>
-    )
+    const renderElement = (key: string, value: any, componentKey: string) => {
+        const fieldValue = getFieldValue(key, value)
+        
+        return (
+            <Typography key={componentKey} component="pre" variant="caption" className={classes.raw}>
+                <strong>{key}:</strong>{' '}
+                <span className={classes.searchField} onClick={handleLinkClick(getFieldSearchKey(key), fieldValue)}>
+                    {/* I have removed the Tooltip temporarily */}
+                    <span dangerouslySetInnerHTML={{ __html: fieldValue }}></span>
+                    {getFieldScore(key, value)}
+                </span>
+            </Typography>
+        )
+    }
 
     return (
-        <>
+        <Box className={classes.container}>
             <List dense>
                 <ListItem disableGutters>
                     <ListItemText primary="Collection" secondary={collection} />
@@ -153,67 +106,31 @@ export const Meta = observer(() => {
                     </ListItem>
                 )}
 
-                {Object.entries(tableFields)
-                    .filter(([, config]) => !config.visible || config.visible(data?.content) !== false)
-                    .map(([field, config]) => {
-                        const fieldContent = (data?.content[field as keyof DocumentContent] as string)
-                        const fieldValue = Array.isArray(fieldContent) ? fieldContent[0] : fieldContent
-                        const display = config.format
-                            ? config.format(data?.content?.[field as keyof DocumentContent])
-                            : fieldValue
-                        const searchKey = config.searchKey || field
-                        const searchTerm = config.searchTerm
-                            ? config.searchTerm(data?.content?.[field as keyof DocumentContent])
-                            : fieldValue
-
-                        return (
-                            <ListItem key={field} disableGutters>
-                                <ListItemText
-                                    primary={config.label}
-                                    secondary={
-                                        <>
-                                            <span className={classes.searchField} onClick={handleLinkClick(searchKey, searchTerm)}>
-                                                {display}
-                                            </span>
-                                        </>
-                                    }
+                {(query ? metaSearchStore.highlightedTableData : tableData).map((tableData) => (
+                    <ListItem key={tableData.field} disableGutters>
+                        <ListItemText
+                            primary={tableData.label}
+                            secondary={
+                                <span
+                                    className={classes.searchField}
+                                    onClick={handleLinkClick(tableData.searchKey, tableData.searchTerm)}
+                                    dangerouslySetInnerHTML={{ __html: tableData.display }}
                                 />
-                            </ListItem>
-                        )
-                    })}
+                            }
+                        />
+                    </ListItem>
+                ))}
             </List>
 
             <Divider />
 
             <Box>
-                {data &&
-                    Object.entries(data.content)
-                        .filter(
-                            ([key, value]) =>
-                                !['text', 'ocrtext', 'path-text', 'path-parts'].includes(key) &&
-                                ((!Array.isArray(value) && value) || (Array.isArray(value) && value.length))
-                        )
-                        .map(([key, value]) => {
-                            let elements
-                            if (Array.isArray(value)) {
-                                elements = { [key]: value }
-                            } else if (typeof value === 'object') {
-                                elements = flatten(value, [key])
-                            } else if (typeof value === 'boolean') {
-                                elements = { [key]: value ? 'true' : 'false' }
-                            } else {
-                                elements = { [key]: value }
-                            }
-
-                            return Object.entries(elements).map(([key, value], index) =>
-                                Array.isArray(value)
-                                    ? value.map((v, i) => renderElement(key, v, `${index}-${i}`))
-                                    : renderElement(key, value, index.toString())
-                            )
-                        })}
+                {(query ? metaSearchStore.highlightedMetaData : metaData).map(({ key, value, componentKey }) =>
+                    Array.isArray(value) ? value.map((v) => renderElement(key, v, componentKey)) : renderElement(key, value, componentKey)
+                )}
             </Box>
 
             <LinkMenu link={currentLink as { field: SourceField; term: string }} anchorPosition={menuPosition} onClose={handleLinkMenuClose} />
-        </>
+        </Box>
     )
 })
