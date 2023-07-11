@@ -116,7 +116,7 @@ export class SearchViewStore {
     }
 
     handleAllSearchCollectionsToggle = () => {
-        if (this.sharedStore.collectionsData.length === this.setSearchCollections.length) {
+        if (this.sharedStore.collectionsData.length === this.searchCollections.length) {
             this.setSearchCollections([])
         } else {
             this.setSearchCollections(this.sharedStore.collectionsData.map((c) => c.name))

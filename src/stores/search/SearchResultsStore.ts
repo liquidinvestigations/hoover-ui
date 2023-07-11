@@ -4,7 +4,7 @@ import { AsyncTaskData, Category, Hit, Hits, SearchQueryParams } from '../../Typ
 import { getPreviewParams } from '../../utils/utils'
 import { SharedStore } from '../SharedStore'
 
-import { AsyncQueryTask, AsyncQueryTaskRunner } from './AsyncTaskRunner'
+import { AsyncQueryTaskRunner } from './AsyncTaskRunner'
 import { SearchStore } from './SearchStore'
 
 type PreviewOnLoad = 'first' | 'last' | undefined
@@ -165,7 +165,6 @@ export class SearchResultsStore {
 
     resultsSortCompareFn = (a: Result, b: Result) => {
         if (a.hits && b.hits) {
-            // @ts-ignore
             return b.hits.total - a.hits.total
         } else if (a.hits) {
             return -1

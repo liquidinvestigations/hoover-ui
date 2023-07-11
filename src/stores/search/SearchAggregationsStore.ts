@@ -73,7 +73,6 @@ export class SearchAggregationsStore {
                 }
             } else {
                 fieldList.forEach((field) => {
-                    // @ts-ignore
                     runInAction(() => {
                         this.aggregationsLoadingETA[field] = value
                     })
@@ -92,7 +91,7 @@ export class SearchAggregationsStore {
 
                 if (data.result?.aggregations && !this.aggregatedCollections.includes(collection)) {
                     this.aggregatedCollections.push(collection)
-                    this.combineAggregations(data.result.aggregations)
+                    this.combineAggregations(data.result.aggregations, keepFromClearing)
                     this.sortAggregations()
                 }
             })
@@ -114,7 +113,7 @@ export class SearchAggregationsStore {
         }
     }
 
-    private combineAggregations(aggregations: Aggregations) {
+    private combineAggregations(aggregations: Aggregations, keepFromClearing: AggregationsKey | undefined) {
         ;(Object.entries(aggregations) as Entries<typeof aggregations>).forEach(([field, aggregation]) => {
             if (!this.aggregations[field]) {
                 this.aggregations[field] = aggregation
@@ -127,9 +126,8 @@ export class SearchAggregationsStore {
                         existingBucket.doc_count += newBucket.doc_count
                     }
                 })
-                if (this.aggregations[field]?.count && aggregation?.count) {
-                    // @ts-ignore
-                    this.aggregations[field].count.value += aggregation.count.value
+                if (this.aggregations[field]?.count && aggregation?.count && field !== keepFromClearing) {
+                    this.aggregations[field]!.count.value += aggregation.count.value
                 }
             }
             // @ts-ignore
