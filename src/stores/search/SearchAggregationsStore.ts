@@ -3,8 +3,8 @@ import { Entries } from 'type-fest'
 
 import { aggregationFields } from '../../constants/aggregationFields'
 import { Aggregations, AggregationsKey, AsyncTaskData, SearchQueryParams, SourceField } from '../../Types'
+import { AsyncQueryTaskRunner } from '../../utils/AsyncTaskRunner'
 
-import { AsyncQueryTaskRunner } from './AsyncTaskRunner'
 import { SearchStore } from './SearchStore'
 
 export class SearchAggregationsStore {

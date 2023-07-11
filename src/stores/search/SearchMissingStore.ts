@@ -2,8 +2,8 @@ import { makeAutoObservable, runInAction } from 'mobx'
 import { Entries } from 'type-fest'
 
 import { Aggregations, AsyncTaskData, SearchQueryParams, SourceField } from '../../Types'
+import { AsyncQueryTaskRunner } from '../../utils/AsyncTaskRunner'
 
-import { AsyncQueryTaskRunner } from './AsyncTaskRunner'
 import { SearchStore } from './SearchStore'
 
 export class SearchMissingStore {

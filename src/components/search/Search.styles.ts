@@ -32,4 +32,8 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         marginTop: theme.spacing(2),
         justifyContent: 'flex-end',
     },
+
+    close: {
+        padding: theme.spacing(0.5),
+    },
 }))

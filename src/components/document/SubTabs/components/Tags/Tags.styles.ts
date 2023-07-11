@@ -47,9 +47,7 @@ export const useStyles = makeStyles()((theme: Theme) => ({
     },
 
     option: {
-        width: '100%',
-        display: 'inline-flex',
-        justifyContent: 'space-between',
+        justifyContent: 'space-between !important',
     },
 
     optionCount: {

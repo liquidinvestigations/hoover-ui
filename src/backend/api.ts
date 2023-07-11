@@ -61,9 +61,9 @@ export const fetchJson = <T>(url: string, opts: FetchOptions = {}) => {
                     if (res.ok) {
                         if (res.status === 204) {
                             resolve(true as T)
+                        } else {
+                            resolve(res.json())
                         }
-
-                        resolve(res.json())
                     } else {
                         if (retryCounter >= maxRetryCount) {
                             reject(`status (${res.status}) -> ${res.url}`)

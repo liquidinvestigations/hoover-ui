@@ -1,8 +1,8 @@
 import events from 'missing-dom-events'
 import { AbortSignal } from 'node-fetch/externals'
 
-import { buildUrl, fetchJson } from '../../backend/api'
-import { AsyncTaskData, SearchQueryParams, SearchQueryType, SourceField } from '../../Types'
+import { buildUrl, fetchJson } from '../backend/api'
+import { AsyncTaskData, SearchQueryParams, SearchQueryType, SourceField } from '../Types'
 
 interface FetchParams extends SearchQueryParams {
     type: SearchQueryType

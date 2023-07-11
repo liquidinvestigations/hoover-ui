@@ -1,8 +1,10 @@
+import { Button } from '@mui/material'
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
-import { ChangeEvent, RefObject } from 'react'
+import { ChangeEvent, ReactNode, RefObject } from 'react'
 import { Entry } from 'type-fest'
 
 import { availableColumns } from '../../constants/availableColumns'
+import { reactIcons } from '../../constants/icons'
 import { Category } from '../../Types'
 import { SharedStore } from '../SharedStore'
 
@@ -33,6 +35,8 @@ export class SearchViewStore {
 
     resultsColumns = Object.entries(availableColumns).filter(([, { hidden }]) => !hidden)
 
+    snackbarMessage: ReactNode | undefined
+
     constructor(private readonly sharedStore: SharedStore, private readonly searchStore: SearchStore) {
         makeAutoObservable(this)
 
@@ -40,6 +44,21 @@ export class SearchViewStore {
             () => this.drawerRef,
             (drawerRef) => {
                 this.drawerWidth = drawerRef?.getBoundingClientRect().width
+            }
+        )
+
+        reaction(
+            () => this.sharedStore.tagsStore.tagsRefreshQueue,
+            (tagsRefreshQueue) => {
+                if (tagsRefreshQueue) {
+                    tagsRefreshQueue.promise
+                        .then(() => {
+                            this.setSnackbarMessage('Refresh for new tags')
+                        })
+                        .finally(() => {
+                            this.sharedStore.tagsStore.setTagsRefreshQueue(undefined)
+                        })
+                }
             }
         )
     }
@@ -140,5 +159,15 @@ export class SearchViewStore {
         runInAction(() => {
             this.resultsColumns = resultsColumns
         })
+    }
+
+    setSnackbarMessage = (snackbarMessage: ReactNode): void => {
+        runInAction(() => {
+            this.snackbarMessage = snackbarMessage
+        })
+    }
+
+    handleSnackbarClose = (): void => {
+        this.setSnackbarMessage(undefined)
     }
 }

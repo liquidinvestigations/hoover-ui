@@ -20,12 +20,12 @@ import { SelectChangeEvent } from '@mui/material/Select/SelectInput'
 import { observer } from 'mobx-react-lite'
 import { cloneElement, FC, ReactElement, SyntheticEvent, useEffect, useMemo, useState } from 'react'
 
+import { fetchJson } from '../../../../../backend/api'
 import { tooltips } from '../../../../../constants/help'
 import { reactIcons } from '../../../../../constants/icons'
 import { specialTagsList } from '../../../../../constants/specialTags'
 import { Tag } from '../../../../../stores/TagsStore'
 import { Aggregations, Bucket, CollectionData } from '../../../../../Types'
-import { search as searchAPI } from '../../../../../utils/api'
 import { getTagIcon } from '../../../../../utils/utils'
 import { Loading } from '../../../../common/Loading/Loading'
 import { useSharedStore } from '../../../../SharedStoreProvider'
@@ -39,7 +39,7 @@ const forbiddenCharsRegex = /[^a-z0-9_!@#$%^&*()-=+:,./?]/gi
 export const getChipColor = (chip: Tag) => (chip.public ? blue[200] : undefined)
 
 export const Tags: FC<{ toolbarButtons: ToolbarLink[] }> = observer(({ toolbarButtons }) => {
-    const { classes } = useStyles()
+    const { classes, cx } = useStyles()
     const {
         user,
         printMode,
@@ -51,36 +51,31 @@ export const Tags: FC<{ toolbarButtons: ToolbarLink[] }> = observer(({ toolbarBu
     const [tagsAggregations, setTagsAggregations] = useState<Aggregations>()
     const [tagsAggregationsLoading, setTagsAggregationsLoading] = useState(false)
     const handleInputFocus = () => {
-        if (!tagsAggregations) {
-            setTagsAggregationsLoading(true)
+        ;(async () => {
+            if (!tagsAggregations) {
+                setTagsAggregationsLoading(true)
 
-            searchAPI({
-                type: 'aggregations',
-                fieldList: ['tags', 'priv-tags'],
-                collections: collectionsData.map((c: CollectionData) => c.name),
-            })
-                .then((results) => {
+                try {
+                    const results = await fetchJson<{ aggregations: Aggregations }>('/api/search', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            type: 'aggregations',
+                            fieldList: ['tags', 'priv-tags'],
+                            collections: collectionsData.map((c: CollectionData) => c.name),
+                        }),
+                    })
+
                     setTagsAggregations(results.aggregations)
                     setTagsAggregationsLoading(false)
-                })
-                .catch((error) => {
+                } catch (error: any) {
                     if (error.name !== 'AbortError') {
                         setTagsAggregations(undefined)
                         setTagsAggregationsLoading(false)
                     }
-                })
-        }
+                }
+            }
+        })()
     }
-
-    useEffect(() => {
-        return () => {
-            searchAPI({
-                type: 'aggregations',
-                fieldList: ['tags', 'priv-tags'],
-                cancel: true,
-            }).catch(() => {})
-        }
-    }, [])
 
     const [inputValue, setInputValue] = useState('')
     const [newTagVisibility, setNewTagVisibility] = useState('public')
@@ -222,7 +217,7 @@ export const Tags: FC<{ toolbarButtons: ToolbarLink[] }> = observer(({ toolbarBu
                         }
                         getOptionLabel={(option) => (option as unknown as Bucket).key}
                         renderOption={(props, option) => (
-                            <span className={classes.option}>
+                            <span {...props} className={cx(props.className, classes.option)}>
                                 <span>{option.key}</span>
                                 <span className={classes.optionCount}>{(option as unknown as Bucket).doc_count}</span>
                             </span>
@@ -280,6 +275,7 @@ export const Tags: FC<{ toolbarButtons: ToolbarLink[] }> = observer(({ toolbarBu
                                         </>
                                     ),
                                     onFocus: handleInputFocus,
+                                    onBlur: () => false,
                                 }}
                             />
                         )}

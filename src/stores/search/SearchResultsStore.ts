@@ -1,10 +1,10 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
 
 import { AsyncTaskData, Category, Hit, Hits, SearchQueryParams } from '../../Types'
+import { AsyncQueryTaskRunner } from '../../utils/AsyncTaskRunner'
 import { getPreviewParams } from '../../utils/utils'
 import { SharedStore } from '../SharedStore'
 
-import { AsyncQueryTaskRunner } from './AsyncTaskRunner'
 import { SearchStore } from './SearchStore'
 
 type PreviewOnLoad = 'first' | 'last' | undefined

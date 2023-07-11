@@ -1,7 +1,7 @@
-import { Button, FormControl, Grid, IconButton, InputAdornment, TextField, Tooltip, Typography } from '@mui/material'
+import { Button, FormControl, Grid, IconButton, InputAdornment, Snackbar, TextField, Tooltip, Typography } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import Router from 'next/router'
-import { cloneElement, FC, FormEvent, KeyboardEvent, useEffect, useRef } from 'react'
+import { cloneElement, FC, FormEvent, KeyboardEvent, useEffect, useRef, useState } from 'react'
 
 import { tooltips } from '../../constants/help'
 import { reactIcons } from '../../constants/icons'
@@ -35,6 +35,8 @@ export const Search: FC = observer(() => {
                 searchText,
                 clearSearchText,
                 handleInputChange,
+                snackbarMessage,
+                handleSnackbarClose,
             },
             searchResultsStore: { error, clearResults },
         },
@@ -161,6 +163,35 @@ export const Search: FC = observer(() => {
                     </SplitPaneLayout>
                 </Grid>
             </Grid>
+            <Snackbar
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                open={Boolean(snackbarMessage)}
+                autoHideDuration={30000}
+                onClose={handleSnackbarClose}
+                message={
+                    <Button
+                        color="inherit"
+                        startIcon={reactIcons.refresh}
+                        onClick={() => {
+                            handleSnackbarClose()
+                            search()
+                        }}>
+                        {snackbarMessage}
+                    </Button>
+                }
+                ClickAwayListenerProps={{
+                    mouseEvent: false,
+                    touchEvent: false,
+                }}
+                action={
+                    <IconButton aria-label="close" color="inherit" className={classes.close} onClick={handleSnackbarClose} size="large">
+                        {reactIcons.close}
+                    </IconButton>
+                }
+            />
         </HotKeys>
     )
 })
