@@ -1,13 +1,10 @@
 import { IconButton, Menu, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import { cloneElement, FC, useState, MouseEvent } from 'react'
-import ReactPlaceholder from 'react-placeholder'
-import { TextRow } from 'react-placeholder/lib/placeholders'
 
 import { availableColumns } from '../../../../../constants/availableColumns'
 import { reactIcons } from '../../../../../constants/icons'
 import { Hits } from '../../../../../Types'
-import { AsyncQueryTask } from '../../../../../utils/AsyncTaskRunner'
 import { defaultSearchParams } from '../../../../../utils/queryUtils'
 import { useSharedStore } from '../../../../SharedStoreProvider'
 import { ResultsTableRow } from '../ResultsTableRow/ResultsTableRow'
@@ -116,24 +113,9 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ hits }) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    <ReactPlaceholder
-                        showLoadingAnimation
-                        ready={!!hits}
-                        customPlaceholder={
-                            <>
-                                {[...Array(size)].map((_v, i) => (
-                                    <TableRow key={i}>
-                                        <TableCell colSpan={resultsColumns.length + 2}>
-                                            <TextRow lineSpacing={0} color="#CDCDCD" style={{ height: 26 }} />
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </>
-                        }>
-                        {hits?.hits.map((hit, i) => (
-                            <ResultsTableRow key={hit._id} index={i} hit={hit} />
-                        ))}
-                    </ReactPlaceholder>
+                    {hits?.hits.map((hit, i) => (
+                        <ResultsTableRow key={hit._id} index={i} hit={hit} />
+                    ))}
                 </TableBody>
             </Table>
         </TableContainer>

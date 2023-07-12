@@ -1,6 +1,5 @@
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
-import ReactPlaceholder from 'react-placeholder'
 
 import { Hits, SearchQueryParams } from '../../../../Types'
 import { documentViewUrl } from '../../../../utils/utils'
@@ -17,10 +16,10 @@ export const ResultsList: FC<ResultsListProps> = observer(({ hits }) => {
     const start = 1 + (page - 1) * size
 
     return (
-        <ReactPlaceholder showLoadingAnimation ready={!!hits} type="text" rows={10}>
+        <>
             {hits?.hits.map((hit, i) => (
                 <ResultItem key={hit._id + i} hit={hit} url={documentViewUrl(hit)} index={start + i} />
             ))}
-        </ReactPlaceholder>
+        </>
     )
 })
