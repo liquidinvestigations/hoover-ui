@@ -4,6 +4,6 @@
     ".+\\.(css|styl|less|sass|scss|png|jpg|svg|ttf|woff|woff2)$": "jest-transform-stub"
   },
   "transformIgnorePatterns": [
-    "node_modules/(?!copy-text-to-clipboard)"
+    "node_modules/(?!copy-text-to-clipboard|missing-dom-events)"
   ]
 }

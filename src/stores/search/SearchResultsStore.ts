@@ -1,18 +1,29 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
 
-import { Hit, SearchQueryParams } from '../../Types'
+import { AsyncTaskData, Category, Hit, Hits, SearchQueryParams } from '../../Types'
+import { AsyncQueryTaskRunner } from '../../utils/AsyncTaskRunner'
 import { getPreviewParams } from '../../utils/utils'
 import { SharedStore } from '../SharedStore'
 
-import { AsyncQueryTask, AsyncQueryTaskRunner } from './AsyncTaskRunner'
 import { SearchStore } from './SearchStore'
 
 type PreviewOnLoad = 'first' | 'last' | undefined
 
-export class SearchResultsStore {
-    resultsQueryTasks: Record<string, AsyncQueryTask> = {}
+interface Result {
+    collection: string
+    hits?: Hits
+}
 
-    error: any
+export class SearchResultsStore {
+    results: Result[] = []
+
+    resultsCounts: Record<string, number> = {}
+
+    resultsLoadingETA: Record<string, number> = {}
+
+    hits: Hit[] = []
+
+    error: Record<string, string> = {}
 
     previewOnLoad: PreviewOnLoad
 
@@ -31,31 +42,60 @@ export class SearchResultsStore {
         )
     }
 
-    maskIrrelevantParams = (query: SearchQueryParams): SearchQueryParams => ({
-        ...query,
-        facets: undefined,
-        filters: {
-            ...(query.filters || {}),
-            date: {
-                from: query.filters?.date?.from,
-                to: query.filters?.date?.to,
-                intervals: query.filters?.date?.intervals,
-            },
-            ['date-created']: {
-                from: query.filters?.['date-created']?.from,
-                to: query.filters?.['date-created']?.to,
-                intervals: query.filters?.['date-created']?.intervals,
-            },
-        },
-    })
-
     performQuery = (query: SearchQueryParams) => {
-        this.resultsQueryTasks = {}
+        runInAction(() => {
+            this.error = {}
+        })
 
         for (const collection of query.collections) {
             const { collections, ...queryParams } = query
             const singleCollectionQuery = { collections: [collection], ...queryParams }
-            this.resultsQueryTasks[collection] = AsyncQueryTaskRunner.createAsyncQueryTask(singleCollectionQuery, 'results', '*')
+
+            runInAction(() => {
+                this.results.push({ collection })
+            })
+
+            const task = AsyncQueryTaskRunner.createAsyncQueryTask(singleCollectionQuery, 'results', '*')
+
+            task.addEventListener('done', (event) => {
+                const { detail: data } = event as CustomEvent<AsyncTaskData>
+
+                runInAction(() => {
+                    const initResult = this.results.find(({ collection: initCollection }) => collection === initCollection)
+                    if (initResult) {
+                        initResult.hits = data.result?.hits as Hits
+                    }
+
+                    this.results.sort(this.resultsSortCompareFn)
+
+                    this.resultsCounts[collection] = data.result?.count_by_index?.[collection as Category] as number
+
+                    this.hits = this.results.reduce((accHits, { collection, hits }) => {
+                        accHits.push(...(hits?.hits || []))
+
+                        return accHits
+                    }, [] as Hit[])
+
+                    delete this.resultsLoadingETA[collection]
+                })
+            })
+
+            task.addEventListener('eta', (event) => {
+                const { detail: eta } = event as CustomEvent<number>
+
+                runInAction(() => {
+                    this.resultsLoadingETA[collection] = eta
+                })
+            })
+
+            task.addEventListener('error', (event) => {
+                const { message } = event as ErrorEvent
+
+                runInAction(() => {
+                    this.error[collection] = message
+                    delete this.resultsLoadingETA[collection]
+                })
+            })
         }
     }
 
@@ -65,7 +105,7 @@ export class SearchResultsStore {
         const currentIndex = this.currentPreviewIndex
         const hits = this.hits
 
-        if (!this.resultsLoading && hits && (page - 1) * size + currentIndex < this.hitsTotal - 1) {
+        if (!Object.keys(this.resultsLoadingETA).length && hits && (page - 1) * size + currentIndex < this.hitsTotal - 1) {
             if (currentIndex === hits.length - 1) {
                 this.setPreviewOnLoad('first')
                 this.searchStore.search({ page: page + 1 })
@@ -80,7 +120,7 @@ export class SearchResultsStore {
         const currentIndex = this.currentPreviewIndex
         const hits = this.hits
 
-        if ((!this.resultsLoading && hits && page > 1) || currentIndex >= 1) {
+        if ((!Object.keys(this.resultsLoadingETA).length && hits && page > 1) || currentIndex >= 1) {
             if (currentIndex === 0 && page > 1) {
                 this.setPreviewOnLoad('last')
                 this.searchStore.search({ page: page - 1 })
@@ -105,25 +145,8 @@ export class SearchResultsStore {
         return this.hits.findIndex((hit) => hit._collection === hashState.preview?.c && hit._id === hashState.preview?.i)
     }
 
-    get resultsLoading() {
-        return Object.entries(this.resultsQueryTasks).find(([_collection, queryTask]) => queryTask.data?.status !== 'done')
-    }
-
-    get hits() {
-        return Object.entries(this.resultsQueryTasks)
-            .sort(([a], [b]) => this.resultsSortCompareFn(a, b))
-            .reduce((hits, [_collection, queryTask]) => {
-                hits.push(...(queryTask.data?.result?.hits.hits || []))
-
-                return hits
-            }, [] as Hit[])
-    }
-
     get hitsTotal() {
-        return Object.entries(this.resultsQueryTasks).reduce(
-            (total, [_collection, queryTask]) => Math.max(queryTask.data?.result?.hits.total || 0, total),
-            0
-        )
+        return this.results.reduce((total, { hits }) => Math.max(hits?.total || 0, total), 0)
     }
 
     setPreviewOnLoad = (previewOnLoad: PreviewOnLoad): void => {
@@ -134,17 +157,18 @@ export class SearchResultsStore {
 
     clearResults = (): void => {
         runInAction(() => {
-            this.resultsQueryTasks = {}
+            this.results = []
+            this.resultsCounts = {}
+            this.hits = []
         })
     }
 
-    resultsSortCompareFn = (a: string, b: string) => {
-        if (this.resultsQueryTasks[a]?.data?.result && this.resultsQueryTasks[b]?.data?.result) {
-            // @ts-ignore
-            return this.resultsQueryTasks[b].data.result.hits.total - this.resultsQueryTasks[a].data.result.hits.total
-        } else if (this.resultsQueryTasks[a]?.data?.result) {
+    resultsSortCompareFn = (a: Result, b: Result) => {
+        if (a.hits && b.hits) {
+            return b.hits.total - a.hits.total
+        } else if (a.hits) {
             return -1
-        } else if (this.resultsQueryTasks[b]?.data?.result) {
+        } else if (b.hits) {
             return 1
         } else return 0
     }

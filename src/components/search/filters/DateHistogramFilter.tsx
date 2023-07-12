@@ -39,9 +39,6 @@ interface DateHistogramFilterProps {
     aggregations?: Aggregation
     loading: boolean
     loadingETA: number
-    missing?: number
-    missingLoading: boolean
-    missingLoadingETA: number
     open: boolean
     onToggle?: (open: boolean) => void
     quickFilter?: string
@@ -50,21 +47,7 @@ interface DateHistogramFilterProps {
 }
 
 export const DateHistogramFilter: FC<DateHistogramFilterProps> = observer(
-    ({
-        title,
-        field,
-        queryFilter,
-        queryFacets,
-        aggregations,
-        loading,
-        loadingETA,
-        missing,
-        missingLoading,
-        missingLoadingETA,
-        open,
-        onToggle,
-        quickFilter,
-    }) => {
+    ({ title, field, queryFilter, queryFacets, aggregations, loading, loadingETA, open, onToggle, quickFilter }) => {
         const { handleDateRangeChange, handleDateSelectionChange } = useSharedStore().searchStore.filtersStore
 
         const interval = queryFilter?.interval || DEFAULT_INTERVAL
@@ -117,9 +100,6 @@ export const DateHistogramFilter: FC<DateHistogramFilterProps> = observer(
                     queryFacets={queryFacets}
                     aggregations={aggregations?.values}
                     loading={loading}
-                    missing={missing}
-                    missingLoading={missingLoading}
-                    missingLoadingETA={missingLoadingETA}
                     onChange={handleDateSelectionChange}
                     bucketLabel={formatLabel}
                     bucketSubLabel={interval === 'week' ? formatWeekStart : undefined}

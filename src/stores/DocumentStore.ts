@@ -92,7 +92,7 @@ export class DocumentStore {
         }
 
         docAPI(this.pathname)
-            .then((data: DocumentData) => {
+            .then((data) => {
                 this.parseDocumentData(data)
                 this.getDocumentHierarchy()
             })

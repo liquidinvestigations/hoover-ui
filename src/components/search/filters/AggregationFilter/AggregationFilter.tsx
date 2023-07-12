@@ -21,9 +21,6 @@ interface AggregationFilterProps {
     queryFacets?: number
     aggregations?: AggregationValues
     loading: boolean
-    missing?: number
-    missingLoading: boolean
-    missingLoadingETA: number
     onChange: (field: SourceField, ...rest: any) => () => void
     triState?: boolean
     bucketLabel?: (bucket: Bucket) => string
@@ -33,24 +30,12 @@ interface AggregationFilterProps {
 }
 
 export const AggregationFilter: FC<AggregationFilterProps> = observer(
-    ({
-        field,
-        queryFilter,
-        queryFacets,
-        aggregations,
-        loading,
-        missing,
-        missingLoading,
-        missingLoadingETA,
-        onChange,
-        triState = false,
-        bucketLabel,
-        bucketSubLabel,
-        bucketValue,
-        quickFilter,
-    }) => {
+    ({ field, queryFilter, queryFacets, aggregations, loading, onChange, triState = false, bucketLabel, bucketSubLabel, bucketValue, quickFilter }) => {
         const { classes, cx } = useStyles()
-        const { handleMissingChange, handleReset } = useSharedStore().searchStore.filtersStore
+        const {
+            filtersStore: { handleMissingChange, handleReset },
+            searchMissingStore: { missing, missingLoading, missingLoadingETA },
+        } = useSharedStore().searchStore
 
         const disableReset = loading || (!queryFilter?.include?.length && !queryFilter?.exclude?.length && !queryFilter?.missing && !queryFacets)
 
@@ -78,12 +63,12 @@ export const AggregationFilter: FC<AggregationFilterProps> = observer(
 
                     <ListItemText
                         primary={
-                            missing !== undefined ? (
+                            missingLoading === 0 ? (
                                 <Typography variant="caption" className={classes.empty}>
-                                    {formatThousands(missing || 0)}
+                                    {formatThousands(missing?.[`${field}-missing`] || 0)}
                                 </Typography>
                             ) : (
-                                <Fade in={missingLoading} unmountOnExit>
+                                <Fade in={missingLoading > 0} unmountOnExit>
                                     <div>
                                         <ThinProgress eta={missingLoadingETA} />
                                         <CircularProgress size={18} thickness={5} className={classes.loading} />

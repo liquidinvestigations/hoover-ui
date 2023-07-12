@@ -2,9 +2,11 @@ import { OutgoingHttpHeaders } from 'http'
 
 import memoize from 'lodash/memoize'
 import fetch from 'node-fetch'
+import { AbortSignal } from 'node-fetch/externals'
 import { stringify } from 'qs'
 
 import { Tag } from '../stores/TagsStore'
+import { CollectionData, DocumentData, Limits, User } from '../Types'
 
 import buildSearchQuery, { FieldList, SearchFields } from './buildSearchQuery'
 
@@ -18,11 +20,12 @@ interface FetchOptions {
     headers?: OutgoingHttpHeaders
     method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
     body?: string
+    signal?: AbortSignal
 }
 
 type PathPart = string | Record<string, string | boolean> | undefined
 
-const buildUrl = (...paths: PathPart[]) => {
+export const buildUrl = (...paths: PathPart[]) => {
     const queryObj = paths.reduce((prev, curr, index) => {
         if (typeof curr !== 'string' && typeof curr === 'object' && curr !== null) {
             paths.splice(index, 1)
@@ -32,8 +35,9 @@ const buildUrl = (...paths: PathPart[]) => {
     return [prefix, ...paths].join('/').replace(/\/+/g, '/') + (queryObj ? `?${stringify(queryObj)}` : '')
 }
 
-const fetchJson = async (url: string, opts: FetchOptions = {}) => {
-    const res = await fetch((typeof window === 'undefined' ? API_URL : '') + url, {
+export const fetchJson = <T>(url: string, opts: FetchOptions = {}) => {
+    const fetchUrl = (typeof window === 'undefined' ? API_URL : '') + url
+    const fetchInit = {
         ...opts,
         timeout: 100000,
         headers: {
@@ -41,25 +45,47 @@ const fetchJson = async (url: string, opts: FetchOptions = {}) => {
             'Content-Type': 'application/json',
             Accept: 'application/json',
         },
-    })
-
-    if (res.ok) {
-        if (res.status === 204) {
-            return true
-        }
-        return res.json()
-    } else {
-        throw res
     }
+
+    const min = process.env.API_RETRY_DELAY_MIN as unknown as number
+    const max = process.env.API_RETRY_DELAY_MAX as unknown as number
+    const maxRetryCount = process.env.API_RETRY_COUNT as unknown as number
+
+    let retryCounter = 0
+    const retryDelay = () => min + (retryCounter / (maxRetryCount - 1)) * (max - min)
+
+    return new Promise<T>((resolve, reject) => {
+        const fetchFn = () =>
+            fetch(fetchUrl, fetchInit)
+                .then((res) => {
+                    if (res.ok) {
+                        if (res.status === 204) {
+                            resolve(true as T)
+                        } else {
+                            resolve(res.json())
+                        }
+                    } else {
+                        if (retryCounter >= maxRetryCount) {
+                            reject(`status (${res.status}) -> ${res.url}`)
+                        }
+
+                        retryCounter++
+                        setTimeout(fetchFn, retryDelay())
+                    }
+                })
+                .catch((reason) => reject(reason))
+
+        void fetchFn()
+    })
 }
 
 /*
  called only by node.js
  */
-export const whoami = (headers: OutgoingHttpHeaders) => fetchJson(buildUrl('whoami'), { headers })
-export const limits = (headers: OutgoingHttpHeaders) => fetchJson(buildUrl('limits'), { headers })
-export const collections = (headers: OutgoingHttpHeaders) => fetchJson(buildUrl('collections'), { headers })
-export const searchFields = (headers: OutgoingHttpHeaders) => fetchJson(buildUrl('search_fields'), { headers })
+export const whoami = (headers: OutgoingHttpHeaders): Promise<User> => fetchJson(buildUrl('whoami'), { headers })
+export const limits = (headers: OutgoingHttpHeaders): Promise<Limits> => fetchJson(buildUrl('limits'), { headers })
+export const collections = (headers: OutgoingHttpHeaders): Promise<CollectionData[]> => fetchJson(buildUrl('collections'), { headers })
+export const searchFields = (headers: OutgoingHttpHeaders): Promise<{ fields: SearchFields }> => fetchJson(buildUrl('search_fields'), { headers })
 export const search = async (
     headers: OutgoingHttpHeaders,
     params: SearchQueryParams,
@@ -81,7 +107,7 @@ export const search = async (
  called only by browser
  */
 export const doc = memoize(
-    (docUrl, pageIndex = 1) => fetchJson(buildUrl(docUrl, 'json', { children_page: pageIndex })),
+    (docUrl, pageIndex = 1): Promise<DocumentData> => fetchJson(buildUrl(docUrl, 'json', { children_page: pageIndex })),
     (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`
 )
 
@@ -90,17 +116,17 @@ export const locations = memoize(
     (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`
 )
 
-export const tags = (docUrl: string) => fetchJson(buildUrl(docUrl, 'tags'))
+export const tags = (docUrl: string): Promise<Tag[]> => fetchJson(buildUrl(docUrl, 'tags'))
 
-export const tag = (docUrl: string, tagId: string) => fetchJson(buildUrl(docUrl, 'tags', tagId))
+export const tag = (docUrl: string, tagId: string): Promise<Tag> => fetchJson(buildUrl(docUrl, 'tags', tagId))
 
-export const createTag = (docUrl: string, data: Pick<Tag, 'tag' | 'public'>) =>
+export const createTag = (docUrl: string, data: Pick<Tag, 'tag' | 'public'>): Promise<Tag> =>
     fetchJson(buildUrl(docUrl, 'tags'), {
         method: 'POST',
         body: JSON.stringify(data),
     })
 
-export const updateTag = (docUrl: string, tagId: string, data: Pick<Tag, 'public'>) =>
+export const updateTag = (docUrl: string, tagId: string, data: Pick<Tag, 'public'>): Promise<Tag> =>
     fetchJson(buildUrl(docUrl, 'tags', tagId), {
         method: 'PATCH',
         body: JSON.stringify(data),
@@ -114,13 +140,11 @@ export const batch = (query: SearchQueryParams) =>
         body: JSON.stringify(query),
     })
 
-export const collectionsInsights = () => fetchJson(buildUrl('collections'))
+export const collectionsInsights = (): Promise<CollectionData[]> => fetchJson(buildUrl('collections'))
 
 export const getUploads = () => fetchJson(buildUrl('get_uploads'))
 
 export const getDirectoryUploads = (collection: string, directoryId: string) => fetchJson(buildUrl(collection, directoryId, 'get_directory_uploads'))
-
-export const asyncSearch = (uuid: string, wait: boolean) => fetchJson(buildUrl('async_search', uuid, { wait }))
 
 export interface LogError {
     error: string

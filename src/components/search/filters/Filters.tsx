@@ -3,7 +3,6 @@ import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 import { Entries } from 'type-fest'
 
-import { AsyncQueryTask } from '../../../stores/search/AsyncTaskRunner'
 import { getLanguageName } from '../../../utils/utils'
 import { useSharedStore } from '../../SharedStoreProvider'
 
@@ -22,38 +21,16 @@ export const Filters: FC = observer(() => {
             query,
             searchViewStore: { categoryQuickFilter },
             filtersStore: { categories, expandedFilters, onExpandToggle, isHighlighted },
-            searchAggregationsStore: { aggregations, aggregationsQueryTasks, aggregationsLoading, error },
-            searchMissingStore: { missing, missingLoading },
+            searchAggregationsStore: { aggregations, aggregationsLoading, aggregationsLoadingETA },
         },
     } = useSharedStore()
-
-    if (error) {
-        return (
-            <Typography color="error" className={classes.error}>
-                {error}
-            </Typography>
-        )
-    }
 
     return (
         <>
             {(Object.entries(categories) as Entries<typeof categories>).map(([category, { label, icon, filters }]) => {
                 const greyed = filters.every(({ field }) => aggregations?.[field]?.values?.buckets?.length === 0)
-
                 const loading = filters.some(({ field }) => aggregationsLoading[field])
-
-                const loadingTask = Object.entries(aggregationsQueryTasks).find(
-                    ([_collection, task]) => task.data?.result && Object.keys(task.data?.result?.aggregations).includes(filters[0].field)
-                )
-                let loadingETA = Number.MAX_SAFE_INTEGER
-                if (loadingTask) {
-                    const task = Object.entries(loadingTask)[0][1] as AsyncQueryTask
-                    if (task.data?.status === 'done') {
-                        loadingETA = 0
-                    } else {
-                        loadingETA = Math.min(task?.initialEta || 0, task.data?.eta.total_sec || 0)
-                    }
-                }
+                const loadingETA = Math.min(...filters.map(({ field }) => aggregationsLoadingETA[field] || Number.MAX_SAFE_INTEGER))
 
                 return (
                     <CategoryDrawer
@@ -102,9 +79,6 @@ export const Filters: FC = observer(() => {
                                     aggregations={aggregations?.[field]}
                                     loading={!!aggregationsLoading[field]}
                                     loadingETA={loadingETA}
-                                    missing={missing?.[`${field}-missing`]}
-                                    missingLoading={missingLoading?.[1].running || false}
-                                    missingLoadingETA={missingLoading?.[1].data?.eta.total_sec || 0}
                                     open={expandedFilters[category] === field}
                                     onToggle={filters.length > 1 && expandedFilters[category] !== field ? onExpandToggle(category, field) : undefined}
                                     quickFilter={categoryQuickFilter[category]}

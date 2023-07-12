@@ -18,6 +18,11 @@ export interface Tag {
     date_indexed?: string
 }
 
+interface TagsRefreshQueue {
+    cancel: () => void
+    promise: Promise<void>
+}
+
 export class TagsStore {
     tags: Tag[] = []
 
@@ -27,7 +32,7 @@ export class TagsStore {
 
     tagsError: any
 
-    tagsRefreshQueue: any
+    tagsRefreshQueue: TagsRefreshQueue | undefined
 
     constructor(private readonly documentStore: DocumentStore) {
         makeAutoObservable(this)
@@ -89,13 +94,13 @@ export class TagsStore {
         })
     }
 
-    setTagsRefreshQueue = (tagsRefreshQueue: any) => {
+    setTagsRefreshQueue = (tagsRefreshQueue: TagsRefreshQueue | undefined) => {
         runInAction(() => {
             this.tagsRefreshQueue = tagsRefreshQueue
         })
     }
 
-    periodicallyCheckIndexedTime = (digestUrl: string) => {
+    periodicallyCheckIndexedTime = (digestUrl: string): TagsRefreshQueue => {
         let timeout: ReturnType<typeof setTimeout>,
             delayIndex = 0
 

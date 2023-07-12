@@ -1,12 +1,10 @@
 import { IconButton, Menu, MenuItem, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import { cloneElement, FC, useState, MouseEvent } from 'react'
-import ReactPlaceholder from 'react-placeholder'
-import { TextRow } from 'react-placeholder/lib/placeholders'
 
 import { availableColumns } from '../../../../../constants/availableColumns'
 import { reactIcons } from '../../../../../constants/icons'
-import { AsyncQueryTask } from '../../../../../stores/search/AsyncTaskRunner'
+import { Hits } from '../../../../../Types'
 import { defaultSearchParams } from '../../../../../utils/queryUtils'
 import { useSharedStore } from '../../../../SharedStoreProvider'
 import { ResultsTableRow } from '../ResultsTableRow/ResultsTableRow'
@@ -14,16 +12,16 @@ import { ResultsTableRow } from '../ResultsTableRow/ResultsTableRow'
 import { useStyles } from './ResultsTable.styles'
 
 interface ResultsTableProps {
-    queryTask: AsyncQueryTask
+    hits?: Hits
 }
 
-export const ResultsTable: FC<ResultsTableProps> = observer(({ queryTask }) => {
+export const ResultsTable: FC<ResultsTableProps> = observer(({ hits }) => {
     const { classes, cx } = useStyles()
     const {
         query,
         search,
         searchViewStore: { resultsColumns, setResultsColumns },
-        searchResultsStore: { resultsLoading },
+        searchResultsStore: { resultsLoadingETA },
     } = useSharedStore().searchStore
 
     const size = query?.size || defaultSearchParams.size
@@ -65,10 +63,6 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ queryTask }) => {
         }
 
         setResultsColumns(resultsColumnsCopy)
-    }
-
-    if (!queryTask.data?.result) {
-        return null
     }
 
     return (
@@ -119,24 +113,9 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ queryTask }) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    <ReactPlaceholder
-                        showLoadingAnimation
-                        ready={!resultsLoading}
-                        customPlaceholder={
-                            <>
-                                {[...Array(size)].map((_v, i) => (
-                                    <TableRow key={i}>
-                                        <TableCell colSpan={resultsColumns.length + 2}>
-                                            <TextRow lineSpacing={0} color="#CDCDCD" style={{ height: 26 }} />
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </>
-                        }>
-                        {queryTask.data.result.hits.hits.map((hit, i) => (
-                            <ResultsTableRow key={hit._id} index={i} hit={hit} />
-                        ))}
-                    </ReactPlaceholder>
+                    {hits?.hits.map((hit, i) => (
+                        <ResultsTableRow key={hit._id} index={i} hit={hit} />
+                    ))}
                 </TableBody>
             </Table>
         </TableContainer>

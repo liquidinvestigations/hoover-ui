@@ -20,9 +20,6 @@ interface TermsAggregationFilterProps {
     aggregations?: Aggregation
     loading: boolean
     loadingETA: number
-    missing?: number
-    missingLoading: boolean
-    missingLoadingETA: number
     open: boolean
     onToggle?: (open: boolean) => void
     quickFilter?: string
@@ -30,22 +27,7 @@ interface TermsAggregationFilterProps {
 }
 
 export const TermsAggregationFilter: FC<TermsAggregationFilterProps> = observer(
-    ({
-        title,
-        field,
-        queryFilter,
-        queryFacets,
-        aggregations,
-        loading,
-        loadingETA,
-        missing,
-        missingLoading,
-        missingLoadingETA,
-        open,
-        onToggle,
-        quickFilter,
-        ...rest
-    }) => {
+    ({ title, field, queryFilter, queryFacets, aggregations, loading, loadingETA, open, onToggle, quickFilter, ...rest }) => {
         const { handleAggregationChange } = useSharedStore().searchStore.filtersStore
 
         const highlight = !!(queryFilter?.include?.length || queryFilter?.exclude?.length || queryFilter?.missing)
@@ -86,9 +68,6 @@ export const TermsAggregationFilter: FC<TermsAggregationFilterProps> = observer(
                     queryFacets={queryFacets}
                     aggregations={aggregations?.values}
                     loading={loading}
-                    missing={missing}
-                    missingLoading={missingLoading}
-                    missingLoadingETA={missingLoadingETA}
                     onChange={handleAggregationChange}
                     quickFilter={quickFilter}
                     triState

@@ -13,6 +13,7 @@ interface ExpandableProps {
     children: ReactNode | ReactNode[]
     loading?: boolean
     loadingETA?: number
+    loadingHeight?: number
     summary?: ReactNode
     greyed?: boolean
     defaultOpen?: boolean
@@ -28,6 +29,7 @@ export const Expandable: FC<ExpandableProps> = ({
     title,
     loading,
     loadingETA,
+    loadingHeight,
     summary,
     children,
     greyed = false,
@@ -93,7 +95,7 @@ export const Expandable: FC<ExpandableProps> = ({
             <ListItem dense button onClick={toggle} className={cx(classes.header, { [classes.enabled]: contentVisible })} disabled={!contentVisible}>
                 <Fade in={loading} unmountOnExit>
                     <div>
-                        <ThinProgress eta={loadingETA || 0} />
+                        <ThinProgress eta={loadingETA || 0} height={loadingHeight} />
                     </div>
                 </Fade>
 

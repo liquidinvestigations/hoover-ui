@@ -1,19 +1,21 @@
 import { Box, Card, CardContent, CardHeader, Grid, IconButton, Paper, Popper, Tooltip, Typography } from '@mui/material'
 import { DateTime } from 'luxon'
 import { observer } from 'mobx-react-lite'
-import { cloneElement, FC, RefObject, useEffect, useRef, useState } from 'react'
+import { cloneElement, useEffect, useRef, useState } from 'react'
 
 import { createDownloadUrl, createThumbnailSrc, createThumbnailSrcSet } from '../../../../../backend/api'
 import { reactIcons } from '../../../../../constants/icons'
 import { specialTags, specialTagsList } from '../../../../../constants/specialTags'
-import { Hit } from '../../../../../Types'
-import { getPreviewParams, getTypeIcon, humanFileSize, makeUnsearchable, truncatePath } from '../../../../../utils/utils'
+import { getTypeIcon, humanFileSize, makeUnsearchable, truncatePath } from '../../../../../utils/utils'
 import { Loading } from '../../../../common/Loading/Loading'
 import { useSharedStore } from '../../../../SharedStoreProvider'
 
 import { useStyles } from './ResultItem.styles'
 
-const timeMs = () => new Date().getTime()
+import type { Hit } from '../../../../../Types'
+import type { FC, RefObject } from 'react'
+
+const timeMs = (): number => new Date().getTime()
 
 interface ResultItemProps {
     hit: Hit
@@ -31,17 +33,17 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
         },
     } = useSharedStore()
 
-    const isPreview = hit._collection === hashState.preview?.c && hit._id === hashState.preview?.i
+    const isPreview = hit._collection === hashState.preview?.c && hit._id === hashState.preview.i
     const unsearchable = !!hashState.preview
 
     const nodeRef = useRef()
-    const handleMouseDown = () => {
+    const handleMouseDown = (): void => {
         ;(nodeRef.current as any).willFocus = !((nodeRef.current as any).tUp && timeMs() - (nodeRef.current as any).tUp < 300)
     }
-    const handleMouseMove = () => {
+    const handleMouseMove = (): void => {
         ;(nodeRef.current as any).willFocus = false
     }
-    const handleMouseUp = () => {
+    const handleMouseUp = (): void => {
         if ((nodeRef.current as any).willFocus) {
             ;(nodeRef.current as any).tUp = timeMs()
             openPreview(hit)
@@ -172,7 +174,9 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                                             {previewLoading && <Loading />}
                                             <img
                                                 className={previewLoading ? classes.previewImgLoading : classes.previewImg}
-                                                onLoad={() => setPreviewLoading(false)}
+                                                onLoad={() => {
+                                                    setPreviewLoading(false)
+                                                }}
                                                 src={createThumbnailSrc(`doc/${hit._collection}/${hit._id}`, 400)}
                                             />
                                         </Paper>

@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from 'react'
 
 import { useStyles } from './ThinProgress.styles'
 
-export const ThinProgress: FC<{ eta: number }> = ({ eta }) => {
+export const ThinProgress: FC<{ eta: number; height?: number }> = ({ eta, height = 1 }) => {
     const { classes } = useStyles()
 
     const [initialTime, setInitialTime] = useState(Date.now())
@@ -24,5 +24,5 @@ export const ThinProgress: FC<{ eta: number }> = ({ eta }) => {
         setInitialTime(Date.now())
     }, [eta])
 
-    return <LinearProgress className={classes.progress} classes={{ root: classes.progressRoot }} variant="determinate" value={value} />
+    return <LinearProgress className={classes.progress} style={{ height }} variant="determinate" value={value} />
 }

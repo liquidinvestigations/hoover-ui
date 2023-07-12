@@ -7,8 +7,4 @@ export const useStyles = makeStyles()(() => ({
         left: 0,
         width: '100%',
     },
-
-    progressRoot: {
-        height: 1,
-    },
 }))

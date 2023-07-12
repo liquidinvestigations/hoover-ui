@@ -23,9 +23,9 @@ export const ProgressIndicator: FC<ProgressIndicatorProps> = ({ type }) => {
     const { classes } = useStyles()
     const {
         searchStore: {
-            searchResultsStore: { resultsLoading },
+            searchResultsStore: { resultsLoadingETA },
         },
     } = useSharedStore()
 
-    return <div className={classes[type]}>{resultsLoading && getIndicator(type)}</div>
+    return <div className={classes[type]}>{!!Object.keys(resultsLoadingETA).length && getIndicator(type)}</div>
 }
