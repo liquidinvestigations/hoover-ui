@@ -1,15 +1,23 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
-import { SyntheticEvent } from 'react'
+import { ReactElement, SyntheticEvent } from 'react'
 
 import { createDownloadUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI } from '../backend/api'
 import { LocalDocumentData } from '../components/finder/Types'
 import { parentLevels } from '../components/finder/utils'
+import { reactIcons } from '../constants/icons'
 import { DocumentData, OcrData, RequestError } from '../Types'
 import { collectionUrl, documentViewUrl, getBasePath } from '../utils/utils'
 
 import { DocumentSearchStore } from './DocumentSearchStore'
 import { HashStateStore } from './HashStateStore'
 import { MetaStore } from './MetaStore'
+
+interface Tab {
+    tag: string
+    name: string
+    icon: ReactElement
+    content: string
+}
 
 export class DocumentStore {
     id: string | undefined
@@ -44,9 +52,11 @@ export class DocumentStore {
 
     hierarchy: LocalDocumentData | undefined = undefined
 
-    metaStore: MetaStore 
+    metaStore: MetaStore
 
     documentSearchStore: DocumentSearchStore
+
+    tabs: Tab[] = []
 
     constructor(private readonly hashStore: HashStateStore) {
         this.metaStore = new MetaStore()
@@ -83,6 +93,29 @@ export class DocumentStore {
         )
     }
 
+    setTabs = () => {
+        const tabs = []
+        if (this.data?.content) {
+            tabs.push({
+                name: 'Extracted from file',
+                icon: reactIcons.content,
+                content: this.data.content.text,
+            } as Tab)
+        }
+        if (this.ocrData) {
+            tabs.push(
+                ...this.ocrData.map(({ tag, text }) => ({
+                    tag,
+                    name: (tag.startsWith('translated_') ? '' : 'OCR ') + tag,
+                    icon: reactIcons.ocr,
+                    content: text,
+                }))
+            )
+        }
+
+        this.tabs = tabs
+    }
+
     setDocument = (collection: string, id: string) => {
         this.collection = collection
         this.id = id
@@ -103,6 +136,7 @@ export class DocumentStore {
             .then((data) => {
                 this.parseDocumentData(data)
                 this.metaStore.updateData(data)
+                this.setTabs()
                 this.getDocumentHierarchy()
             })
             .catch((response: Response) => {

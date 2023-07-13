@@ -18,7 +18,8 @@ import { useStyles } from './Document.styles'
 import { StyledTab } from './StyledTab'
 import { HTML } from './SubTabs/components/HTML'
 import { Meta } from './SubTabs/components/Meta/Meta'
-import { Preview, PREVIEWABLE_MIME_TYPE_SUFFEXES } from './SubTabs/components/Preview/Preview'
+import { PdfTab } from './SubTabs/components/Preview/PdfTab'
+import { PREVIEWABLE_MIME_TYPE_SUFFEXES } from './SubTabs/components/Preview/Preview'
 import { getChipColor, Tags } from './SubTabs/components/Tags/Tags'
 import { TagTooltip } from './SubTabs/components/Tags/TagTooltip'
 import { Text } from './SubTabs/components/Text/Text'
@@ -29,7 +30,6 @@ import { Toolbar, ToolbarLink } from './Toolbar/Toolbar'
 export const Document = observer(() => {
     const { classes } = useStyles()
     const containerRef = useRef<HTMLDivElement>(null)
-    const [isEventAdded, setIsEventAdded] = useState(false)
 
     const {
         user,
@@ -154,7 +154,7 @@ export const Document = observer(() => {
         root: classes.tabsRoot,
         indicator: classes.tabsIndicator,
     }
-
+    
 
     const hasPreview =
         data.content['has-pdf-preview'] ||
@@ -166,7 +166,7 @@ export const Document = observer(() => {
             icon: reactIcons.contentTab,
             visible: hasPreview,
             padding: 0,
-            content: <Preview />,
+            content: <PdfTab />,
             searchLoading: pdfSearchStore.loading,
             searchCount: pdfSearchStore.getSearchResultsCount()
         },
