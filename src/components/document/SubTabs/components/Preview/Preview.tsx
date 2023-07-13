@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react'
+import { FC } from 'react'
 
 import PDFViewer from '../../../../pdf-viewer/Dynamic'
 import { useSharedStore } from '../../../../SharedStoreProvider'
@@ -47,13 +47,8 @@ export const Preview: FC = () => {
             data,
             docRawUrl,
             docPreviewUrl,
-            documentSearchStore: { setActiveSearch, pdfSearchStore },
         },
     } = useSharedStore()
-    
-    useEffect(() => {
-        setActiveSearch(pdfSearchStore)
-    }, [setActiveSearch, pdfSearchStore])
 
     if (data?.content['has-pdf-preview']) {
         return <PDFViewer url={docPreviewUrl} />
