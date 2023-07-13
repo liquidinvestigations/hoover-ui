@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 
 import PDFViewer from '../../../../pdf-viewer/Dynamic'
 import { useSharedStore } from '../../../../SharedStoreProvider'
@@ -42,7 +42,18 @@ export const PREVIEWABLE_MIME_TYPE_SUFFEXES = [
 
 export const Preview: FC = () => {
     const { classes } = useStyles()
-    const { data, docRawUrl, docPreviewUrl } = useSharedStore().documentStore
+    const {
+        documentStore: {
+            data,
+            docRawUrl,
+            docPreviewUrl,
+            documentSearchStore: { setActiveSearch, pdfSearchStore },
+        },
+    } = useSharedStore()
+    
+    useEffect(() => {
+        setActiveSearch(pdfSearchStore)
+    }, [setActiveSearch, pdfSearchStore])
 
     if (data?.content['has-pdf-preview']) {
         return <PDFViewer url={docPreviewUrl} />

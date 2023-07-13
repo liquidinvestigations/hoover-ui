@@ -6,11 +6,12 @@ import { reactIcons } from '../../constants/icons'
 import { Expandable } from '../common/Expandable/Expandable'
 import { Loading } from '../common/Loading/Loading'
 import { SplitPaneLayout } from '../common/SplitPaneLayout/SplitPaneLayout'
+import { useSharedStore } from '../SharedStoreProvider'
 
 import AttachmentsView from './AttachmentsView'
 import BookmarksView from './BookmarksView'
 import { STATUS_COMPLETE, STATUS_ERROR, STATUS_LOADING, useDocument } from './DocumentProvider'
-import Page from './Page'
+import { Page } from './Page'
 import SideToolbar from './SideToolbar'
 import ThumbnailsView from './ThumbnailsView'
 import Toolbar from './Toolbar'
@@ -97,6 +98,13 @@ const pageMargin = 20
 export default function Document({ initialPageIndex, onPageIndexChange, renderer = 'canvas' }) {
     const { classes, cx } = useStyles()
     const { doc, firstPageData, status, error, percent, externalLinks } = useDocument()
+    const {
+        documentStore: {
+            documentSearchStore: {
+                pdfSearchStore: { setDocument },
+            },
+        },
+    } = useSharedStore()
     const [rotation, setRotation] = useState(0)
     const [scale, setScale] = useState(1)
     const [currentPageIndex, setCurrentPageIndex] = useState(initialPageIndex)
@@ -117,6 +125,8 @@ export default function Document({ initialPageIndex, onPageIndexChange, renderer
 
     useEffect(() => {
         if (doc?.numPages) {
+            // TODO: this will need to change in order to be able to search in PDF when viewer is not active
+            setDocument(doc)
             setPagesRefs((refs) =>
                 Array(doc.numPages)
                     .fill()

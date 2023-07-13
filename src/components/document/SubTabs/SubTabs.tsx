@@ -1,8 +1,9 @@
 import { Box, Tab, Tabs, Typography } from '@mui/material'
 import { observer } from 'mobx-react-lite'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 import { reactIcons } from '../../../constants/icons'
+import { Loading } from '../../common/Loading/Loading'
 import { useSharedStore } from '../../SharedStoreProvider'
 import { TabPanel } from '../TabPanel/TabPanel'
 
@@ -14,15 +15,26 @@ interface Tab {
     tag: string
     name: string
     icon: ReactElement
-    content: ReactElement
+    content: string
 }
 
 export const SubTabs = observer(() => {
     const { classes } = useStyles()
     const {
         printMode,
-        documentStore: { data, ocrData, collection, subTab, handleSubTabChange },
+        documentStore: {
+            data,
+            ocrData,
+            collection,
+            subTab,
+            handleSubTabChange,
+            documentSearchStore: { query, setActiveSearch, textSearchStore },
+        },
     } = useSharedStore()
+
+    useEffect(() => {
+        setActiveSearch(textSearchStore)
+    }, [setActiveSearch, textSearchStore])
 
     if (!data || !collection || !ocrData) {
         return null
@@ -32,7 +44,7 @@ export const SubTabs = observer(() => {
         {
             name: 'Extracted from file',
             icon: reactIcons.content,
-            content: <Text content={data.content.text} />,
+            content: data.content.text,
         } as Tab,
     ]
 
@@ -43,7 +55,7 @@ export const SubTabs = observer(() => {
                     tag,
                     name: (tag.startsWith('translated_') ? '' : 'OCR ') + tag,
                     icon: reactIcons.ocr,
-                    content: <Text content={text} />,
+                    content: text,
                 } as Tab)
         )
     )
@@ -54,13 +66,30 @@ export const SubTabs = observer(() => {
                 <Box>
                     <Tabs value={subTab} onChange={handleSubTabChange} variant="scrollable" scrollButtons="auto">
                         {tabs.map(({ icon, name }, index) => (
-                            <Tab key={index} icon={icon} label={name} />
+                            <Tab
+                                key={index}
+                                icon={icon}
+                                label={
+                                    <>
+                                        {name}
+                                        {query && (
+                                            <span className={classes.searchCount}>
+                                                {textSearchStore.loading ? (
+                                                    <Loading size={16} />
+                                                ) : (
+                                                    <span className="totalCount">{textSearchStore.searchResults[index]?.occurrenceCount || 0}</span>
+                                                )}
+                                            </span>
+                                        )}
+                                    </>
+                                }
+                            />
                         ))}
                     </Tabs>
                 </Box>
             )}
 
-            <Box className={classes.subTab}>
+            <Box className={classes.subTab} id={`subTab-${subTab}`}>
                 {data.content.filetype === 'email' && <Email />}
 
                 {tabs.map(({ name, content }, index) => (
@@ -71,7 +100,7 @@ export const SubTabs = observer(() => {
                             </Typography>
                         )}
                         <TabPanel value={subTab} index={index} alwaysVisible={printMode}>
-                            {content}
+                            <Text content={(query && textSearchStore.searchResults[index]?.highlightedText) || content} />
                         </TabPanel>
                     </Box>
                 ))}

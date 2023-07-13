@@ -7,7 +7,9 @@ import { parentLevels } from '../components/finder/utils'
 import { DocumentData, OcrData, RequestError } from '../Types'
 import { collectionUrl, documentViewUrl, getBasePath } from '../utils/utils'
 
+import { DocumentSearchStore } from './DocumentSearchStore'
 import { HashStateStore } from './HashStateStore'
+import { MetaStore } from './MetaStore'
 
 export class DocumentStore {
     id: string | undefined
@@ -42,7 +44,13 @@ export class DocumentStore {
 
     hierarchy: LocalDocumentData | undefined = undefined
 
+    metaStore: MetaStore 
+
+    documentSearchStore: DocumentSearchStore
+
     constructor(private readonly hashStore: HashStateStore) {
+        this.metaStore = new MetaStore()
+        this.documentSearchStore = new DocumentSearchStore(this)
         makeAutoObservable(this)
 
         runInAction(() => {
@@ -94,6 +102,7 @@ export class DocumentStore {
         docAPI(this.pathname)
             .then((data) => {
                 this.parseDocumentData(data)
+                this.metaStore.updateData(data)
                 this.getDocumentHierarchy()
             })
             .catch((response: Response) => {

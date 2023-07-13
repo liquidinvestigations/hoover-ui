@@ -1,24 +1,32 @@
-import { forwardRef, useEffect, useState } from 'react'
+import { observer } from 'mobx-react-lite'
+import { forwardRef, useCallback, useEffect, useState } from 'react'
+
+import { useSharedStore } from '../SharedStoreProvider'
 
 import AnnotationLayer from './layers/AnnotationLayer'
 import CanvasLayer from './layers/CanvasLayer'
 import SVGLayer from './layers/SVGLayer'
 import TextLayer from './layers/TextLayer'
 
-export default forwardRef(function Page(
+// eslint-disable-next-line react/display-name
+export const Page = observer(forwardRef((
     { doc, containerRef, pagesRefs, renderer, pageIndex, width, height, rotation, scale, onVisibilityChanged },
     pageRef
-) {
+) => {
     const [pageData, setPageData] = useState({
         page: null,
         width,
         height,
         rotation,
     })
-
     const [visible, setVisible] = useState(false)
+    const {
+        documentStore: {
+            documentSearchStore: { pdfSearchStore: { currentHighlightIndex, searchResults }},
+        },
+    } = useSharedStore()
 
-    const getPageData = () => {
+    const getPageData = useCallback(() => {
         doc.getPage(pageIndex + 1).then((page) => {
             const { width, height, rotation } = page.getViewport({ scale: 1 })
 
@@ -29,7 +37,11 @@ export default forwardRef(function Page(
                 rotation,
             })
         })
-    }
+    }, [doc, pageIndex])
+
+    useEffect(() => {
+        if (!visible && searchResults[currentHighlightIndex]?.pageNum - 1 === pageIndex) getPageData()
+    }, [currentHighlightIndex, getPageData, pageIndex, searchResults, visible])
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -56,7 +68,7 @@ export default forwardRef(function Page(
         return () => {
             observer.unobserve(ref)
         }
-    }, [])
+    }, [getPageData, onVisibilityChanged, pageData.page, pageIndex, pageRef])
 
     const { page, width: pageWidth, height: pageHeight } = pageData
 
@@ -77,7 +89,7 @@ export default forwardRef(function Page(
                 width: elementWidth,
                 height: elementHeight,
             }}>
-            {!page || !visible ? (
+            {!page || (!visible && !searchResults[currentHighlightIndex]?.pageNum - 1 === pageIndex) ? (
                 <span className="loadingIcon" />
             ) : (
                 <>
@@ -100,4 +112,4 @@ export default forwardRef(function Page(
             )}
         </div>
     )
-})
+}))
