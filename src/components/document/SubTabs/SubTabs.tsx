@@ -36,10 +36,6 @@ export const SubTabs = observer(() => {
         setActiveSearch(textSearchStore)
     }, [setActiveSearch, textSearchStore])
 
-    useEffect(() => {
-        textSearchStore.setSubTab(subTab)
-    }, [subTab, textSearchStore])
-
     if (!data || !collection || !ocrData) {
         return null
     }
@@ -81,7 +77,7 @@ export const SubTabs = observer(() => {
                                                 {textSearchStore.loading ? (
                                                     <Loading size={16} />
                                                 ) : (
-                                                    <span className="totalCount">{textSearchStore.searchResults[index].occurrenceCount}</span>
+                                                    <span className="totalCount">{textSearchStore.searchResults[index]?.occurrenceCount || 0}</span>
                                                 )}
                                             </span>
                                         )}

@@ -1,32 +1,33 @@
 import debounce from 'lodash/debounce'
 import { makeAutoObservable, reaction } from 'mobx'
 
-import { Semaphore } from '../utils/semaphore'
-
 import { DocumentStore } from './DocumentStore'
 import { MetaSearchStore } from './search/MetaSearchStore'
 import { PdfSearchStore } from './search/PdfSearchStore'
 import { TextSearchStore } from './search/TextSearchStore'
 
 export class DocumentSearchStore {
-    isOpen: boolean = false
+    inputValue : string = ''
     query: string = ''
     loading: boolean = false
     pdfSearchStore: PdfSearchStore
     textSearchStore: TextSearchStore
     metaSearchStore: MetaSearchStore
-    searchSemaphore: Semaphore
     activeSearch: PdfSearchStore | TextSearchStore | MetaSearchStore
     documentStore: DocumentStore;
 
     constructor(documentStore: DocumentStore) {
         this.documentStore = documentStore
-        this.searchSemaphore = new Semaphore(4)
         this.pdfSearchStore = new PdfSearchStore(this)
         this.textSearchStore = new TextSearchStore(this)
-        this.metaSearchStore = new MetaSearchStore(this, documentStore.metaStore)
+        this.metaSearchStore = new MetaSearchStore(documentStore.metaStore)
         this.activeSearch = this.pdfSearchStore
         makeAutoObservable(this)
+
+        reaction(
+            () => this.inputValue,
+            () => this.inputValue && this.setQuery()
+        )
 
         reaction(
             () => this.query,
@@ -34,16 +35,12 @@ export class DocumentSearchStore {
         )
     }
 
-    setQuery = debounce((value: string): void => {
-        this.query = value
+    setQuery = debounce(() => {
+        this.query = this.inputValue
     }, 500)
 
-    toggleSearchInput = () => {
-        this.isOpen = !this.isOpen
-    } 
-
-    setLoading(value: boolean) {
-        this.loading = value
+    setInputValue = (value: string) => {
+        this.inputValue = value
     }
 
     setActiveSearch = (activeSearch: PdfSearchStore | TextSearchStore | MetaSearchStore) => {

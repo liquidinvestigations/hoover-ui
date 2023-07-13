@@ -3,18 +3,17 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, IconButton, InputAdornment, TextField } from '@mui/material'
 import { observer } from 'mobx-react-lite'
-import React, { ChangeEvent, useEffect, useState } from 'react'
+import React, { ChangeEvent } from 'react'
 
 import { useSharedStore } from '../../SharedStoreProvider'
 
 import { useStyles } from './PageSearch.styles'
 
-const PageSearchInput = () => {
-    const [inputValue, setInputValue] = useState('')
+export const PageSearch = observer(() => {
     const { classes } = useStyles()
     const {
         documentStore: {
-            documentSearchStore: { isOpen, setQuery, activeSearch },
+            documentSearchStore: { inputValue, setInputValue, activeSearch },
         },
     } = useSharedStore()
 
@@ -22,14 +21,10 @@ const PageSearchInput = () => {
         setInputValue(event.target.value)
     }
 
-    useEffect(() => {
-        setQuery(inputValue)
-    }, [inputValue, setQuery])
-
     return (
         <TextField
             autoComplete="off"
-            sx={{ display: !isOpen ? 'none' : 'block' }}
+            sx={{ display: 'block' }}
             id="standard-basic"
             variant="standard"
             className={classes.input}
@@ -46,7 +41,9 @@ const PageSearchInput = () => {
                 endAdornment: (
                     <InputAdornment position="end">
                         {inputValue && activeSearch.getSearchResultsCount() > 0 && (
-                            <SearchCount count={activeSearch.getSearchResultsCount()} currentIndex={activeSearch.getCurrentHighlightIndex()} />
+                            <Box className={classes.searchCount}>
+                                {activeSearch.getCurrentHighlightIndex() + 1} of {activeSearch.getSearchResultsCount()}
+                            </Box>
                         )}
                         <IconButton onClick={activeSearch.nextSearchResult}>
                             <ArrowDownwardIcon />
@@ -59,21 +56,4 @@ const PageSearchInput = () => {
             }}
         />
     )
-}
-
-interface SearchCountProps {
-    count: number
-    currentIndex: number
-}
-
-const SearchCount: React.FC<SearchCountProps> = ({ count, currentIndex }) => {
-    const { classes } = useStyles()
-
-    return (
-        <Box className={classes.searchCount}>
-            {currentIndex + 1} of {count}
-        </Box>
-    )
-}
-
-export const PageSearch = observer(PageSearchInput)
+})

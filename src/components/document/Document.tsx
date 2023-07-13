@@ -38,7 +38,6 @@ export const Document = observer(() => {
         tagsStore: { tags, tagsLoading, tagsLocked, handleSpecialTagClick },
         documentStore: {
             data,
-            ocrData: ocrDataStore,
             pathname,
             loading,
             collection,
@@ -47,7 +46,7 @@ export const Document = observer(() => {
             thumbnailSrcSet,
             tab,
             handleTabChange,
-            documentSearchStore: { toggleSearchInput, query, metaSearchStore, textSearchStore, pdfSearchStore },
+            documentSearchStore: { query, metaSearchStore, textSearchStore, pdfSearchStore },
         },
         searchStore: {
             searchResultsStore: { previewNextDoc, previewPreviousDoc },
@@ -55,38 +54,10 @@ export const Document = observer(() => {
     } = useSharedStore()
 
     useEffect(() => {
-        if (!data?.content) return
-        const content = [data.content.text]
-        if(ocrDataStore?.length) content.push(...ocrDataStore.map(({text}) => text))
-        textSearchStore.setTextContent(content)
-    }, [data, ocrDataStore, textSearchStore])
-
-    useEffect(() => {
         if (printMode && !loading && !tagsLoading) {
             window.setTimeout(window.print)
         }
     }, [printMode, loading, tagsLoading])
-
-    useEffect(() => {
-        const containerElement = containerRef.current
-        if(!containerElement || isEventAdded) return
-
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if ((event.ctrlKey || event.metaKey) && event.key === 'f') {
-                event.preventDefault()
-                toggleSearchInput()
-            }
-        }
-
-        containerElement.addEventListener('keydown', handleKeyDown)
-        setIsEventAdded(true)
-
-        return () => {
-            containerElement.removeEventListener('keydown', handleKeyDown)
-            setIsEventAdded(false)
-        }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [containerRef, toggleSearchInput, data])
 
     const headerLinks = {
         actions: [] as ToolbarLink[],

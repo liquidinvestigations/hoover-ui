@@ -1,20 +1,16 @@
 import { makeAutoObservable, reaction } from 'mobx'
 
-import { Semaphore } from '../../utils/semaphore'
-import { DocumentSearchStore } from '../DocumentSearchStore'
 import { MetaData, MetaStore, TableData } from '../MetaStore'
 
 export class MetaSearchStore {
     searchResults: number = 0
     currentHighlightIndex: number = 0
     loading = false
-    searchSemaphore: Semaphore
     metaStore: MetaStore
     highlightedMetaData: MetaData[] = []
     highlightedTableData: TableData[] = []
 
-    constructor(documentSearchStore: DocumentSearchStore, metaStore: MetaStore) {
-        this.searchSemaphore = documentSearchStore.searchSemaphore
+    constructor(metaStore: MetaStore) {
         this.metaStore = metaStore
         makeAutoObservable(this)
 
@@ -92,13 +88,11 @@ export class MetaSearchStore {
         this.currentHighlightIndex = (this.currentHighlightIndex - 1 + this.searchResults) % this.searchResults
     }
 
-    search = async (query: string): Promise<void> => {
+    search = async (query: string) => {
         this.searchResults = 0
         this.loading = true
 
         try {
-            await this.searchSemaphore.acquire()
-
             const highlightedTableData: TableData[] = this.metaStore.tableData.map((entry: TableData) => {
                 const { field, label, display, searchKey, searchTerm } = entry
 
@@ -160,7 +154,6 @@ export class MetaSearchStore {
         } finally {
             this.currentHighlightIndex = 0
             this.loading = false
-            this.searchSemaphore.release()
         }
     }
 }

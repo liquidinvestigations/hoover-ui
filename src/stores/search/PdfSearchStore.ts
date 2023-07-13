@@ -1,7 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 import { RefObject } from 'react'
 
-import { Semaphore } from '../../utils/semaphore'
 import { DocumentSearchStore } from '../DocumentSearchStore'
 
 interface SearchResults {
@@ -12,12 +11,10 @@ interface SearchResults {
 export class PdfSearchStore {
     pdfDocument: any
     searchResults: SearchResults[] = []
-    searchSemaphore: Semaphore
     loading: boolean = false
     currentHighlightIndex: number = 0
 
     constructor(documentSearchStore: DocumentSearchStore) {
-        this.searchSemaphore = documentSearchStore.searchSemaphore
         makeAutoObservable(this)
     }
 
@@ -66,7 +63,6 @@ export class PdfSearchStore {
             const results: SearchResults[] = []
             const numPages: number = this.pdfDocument?.numPages
             const chunkSize: number = 5
-            const searchSemaphore = this.searchSemaphore
             let index = 0
 
             const processPage = async (pageNum: number) => {
@@ -120,9 +116,7 @@ export class PdfSearchStore {
                 const startIndex = i * chunkSize
                 const endIndex = startIndex + chunkSize
 
-                await searchSemaphore.acquire()
                 await processChunk(startIndex, endIndex)
-                searchSemaphore.release()
             }
 
             this.searchResults = results

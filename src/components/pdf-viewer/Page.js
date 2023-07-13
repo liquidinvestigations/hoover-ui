@@ -9,7 +9,7 @@ import SVGLayer from './layers/SVGLayer'
 import TextLayer from './layers/TextLayer'
 
 // eslint-disable-next-line react/display-name
-const Page = observer(forwardRef((
+export const Page = observer(forwardRef((
     { doc, containerRef, pagesRefs, renderer, pageIndex, width, height, rotation, scale, onVisibilityChanged },
     pageRef
 ) => {
@@ -113,5 +113,3 @@ const Page = observer(forwardRef((
         </div>
     )
 }))
-
-export default Page
