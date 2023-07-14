@@ -193,9 +193,6 @@ module.exports = withSentryConfig(
     // Suppresses source map uploading logs during build
     silent: true,
 
-    // Auth token webpack do not work (error 401 when using auth token)
-    // authToken: process.env.SENTRY_AUTH_TOKEN,
-
     org: "sentry",
     project: "hoover-ui",
   },
@@ -207,15 +204,15 @@ module.exports = withSentryConfig(
     widenClientFileUpload: true,
 
     // Transpiles SDK to be compatible with IE11 (increases bundle size)
-    transpileClientSDK: true,
+    transpileClientSDK: false,  // orig: true
 
     // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers (increases server load)
-    tunnelRoute: "/sentry-monitoring",
+    tunnelRoute: "/monitoring",
 
     // Hides source maps from generated client bundles
-    hideSourceMaps: true,
+    hideSourceMaps: false,  // orig: true
 
     // Automatically tree-shake Sentry logger statements to reduce bundle size
-    disableLogger: true,
+    disableLogger: false, // orig: true
   }
 );

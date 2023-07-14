@@ -70,7 +70,7 @@ export default function Home() {
 
         <p>
           Next, look for the error on the{" "}
-          <a href="http://10.66.60.1:9000/organizations/sentry/issues/?project=5">Issues Page</a>.
+          <a href="https://sentry.liquiddemo.org/organizations/sentry/issues/?project=5">Issues Page</a>.
         </p>
         <p style={{ marginTop: "24px" }}>
           For more information, see{" "}
