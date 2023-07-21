@@ -78,7 +78,7 @@ export class PdfSearchStore {
                     let startIndex = 0
 
                     while (startIndex !== -1) {
-                        startIndex = text.indexOf(query, startIndex)
+                        startIndex = text.indexOf(query.toLowerCase(), startIndex)
                         if (startIndex !== -1) {
                             const endIndex = startIndex + query.length
                             matches.push({ pageNum, index })

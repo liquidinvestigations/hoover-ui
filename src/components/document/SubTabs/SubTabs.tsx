@@ -45,7 +45,7 @@ export const SubTabs = observer(() => {
                                 label={
                                     <>
                                         {name}
-                                        {query && (
+                                        {query && query.length > 2 && (
                                             <span className={classes.searchCount}>
                                                 {textSearchStore.loading ? (
                                                     <Loading size={16} />

@@ -9,6 +9,10 @@ const useStyles = makeStyles()(() => ({
     container: {
         '&.textLayer': {
             opacity: 1,
+
+            '& ::selection': {
+                background: 'rgb(0, 0, 255, 0.2)',
+            }
         },
         '& mark': {
             color: 'inherit',

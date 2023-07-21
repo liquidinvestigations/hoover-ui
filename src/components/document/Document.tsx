@@ -239,7 +239,7 @@ export const Document = observer(() => {
     }
 
     const getSearchCount = (tabData: any, index: number) => {
-        if (!query) return undefined
+        if (!query || query.length < 3) return undefined
         if (!tabData.hasOwnProperty('searchLoading')) return undefined
         return (
             <span className={classes.searchCount}>
@@ -247,11 +247,6 @@ export const Document = observer(() => {
                     <Loading size={16} sx={{ color: index === tab ? '' : 'inherit' }} />
                 ) : (
                     <span className="totalCount">{tabData.searchCount}</span>
-                )}
-                {!index && (
-                    <Tooltip title="Currently, PDF search can only be performed while the PDF viewer is active">
-                        <span className="help">?</span>
-                    </Tooltip>
                 )}
             </span>
         )
