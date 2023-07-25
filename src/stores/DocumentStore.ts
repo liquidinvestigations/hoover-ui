@@ -149,6 +149,7 @@ export class DocumentStore {
                 })
             })
             .finally(() => {
+                this.documentSearchStore.search()
                 runInAction(() => {
                     this.loading = false
                 })

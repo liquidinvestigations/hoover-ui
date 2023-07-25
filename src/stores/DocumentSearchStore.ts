@@ -31,7 +31,7 @@ export class DocumentSearchStore {
 
         reaction(
             () => this.query,
-            () => this.query && this.search()
+            () => this.search()
         )
     }
 
@@ -48,6 +48,7 @@ export class DocumentSearchStore {
     }
 
     async search(): Promise<void> {
+        if(!this.query || this.query.length < 3) return
         this.loading = true
 
         const promises = [this.textSearchStore.search(this.query), this.metaSearchStore.search(this.query)]

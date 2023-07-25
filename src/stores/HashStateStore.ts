@@ -52,6 +52,6 @@ export class HashStateStore {
         })
 
         const hash = qs.stringify(rollupParams(this.hashState))
-        this.sharedStore.navigation?.merge({ hash }, !pushHistory)
+        this.sharedStore.navigation?.merge({ pathname: window.location.pathname, hash }, !pushHistory)
     }
 }

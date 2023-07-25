@@ -92,6 +92,7 @@ export class TextSearchStore {
     }
 
     runSearch = (query: string, content: string): SearchResult => {
+        if (!query || !content) return { occurrenceCount: 0, currentHighlightIndex: 0, highlightedText: '' }
         const lowerCaseQuery = query.toLowerCase()
         const lowerCaseContent = content.toLowerCase()
 
