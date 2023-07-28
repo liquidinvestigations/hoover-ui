@@ -5,6 +5,8 @@ import { makeStyles } from 'tss-react/mui'
 
 import { useSharedStore } from '../../SharedStoreProvider'
 
+import { generateHighlights } from './util/generateHighlights'
+
 const useStyles = makeStyles()(() => ({
     container: {
         '&.textLayer': {
@@ -12,17 +14,18 @@ const useStyles = makeStyles()(() => ({
 
             '& ::selection': {
                 background: 'rgb(0, 0, 255, 0.2)',
-            }
+            },
         },
         '& mark': {
             color: 'inherit',
-            border: '1px solid orange',
+            borderTop: '1px solid orange',
+            borderBottom: '1px solid orange',
             backgroundColor: 'rgb(255, 255, 0, 0.2)',
-            
         },
         '& mark.active': {
             backgroundColor: 'rgb(255, 165, 0, 0.2)',
-            border: '1px solid red',
+            borderTop: '1px solid red',
+            borderBottom: '1px solid red',
         },
     },
 }))
@@ -56,23 +59,6 @@ const TextLayer = observer(({ page, rotation, scale }) => {
         }
     }
 
-    const generateHighlights = (container) => {
-        let index = 0
-        const currentPageSearchResults = searchResults.filter((match) => match.pageNum === page.pageNumber)
-        if (!currentPageSearchResults.length) return
-        Array.from(container?.children)?.forEach((node) => {
-            if (node.textContent?.toLowerCase().includes(query)) {
-                node.innerHTML = node.innerHTML.replace(new RegExp(query, 'gi'), (matched) => {
-                    const matchedResult = `<mark ${
-                        currentPageSearchResults[index].index === currentHighlightIndex ? `class="active"` : ''
-                    }" id="highlight-${currentPageSearchResults[index].index}">${matched}</mark>`
-                    index++
-                    return matchedResult
-                })
-            }
-        })
-    }
-
     useEffect(() => {
         cancelTask()
 
@@ -88,15 +74,14 @@ const TextLayer = observer(({ page, rotation, scale }) => {
             })
 
             if (query && searchResults?.length) {
-                renderTask.current.promise.then(
-                    () => generateHighlights(container),
-                    () => {}
-                ).finally(() => scrollToHighlight(containerRef))
+                renderTask.current.promise
+                    .then(() => generateHighlights(searchResults, container, query, page, currentHighlightIndex))
+                    .finally(() => scrollToHighlight(containerRef))
             }
         })
 
         return cancelTask
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [rotation, scale, page, query, searchResults, currentHighlightIndex, scrollToHighlight])
 
     return <div ref={containerRef} className={classes.container + ' textLayer'} />
