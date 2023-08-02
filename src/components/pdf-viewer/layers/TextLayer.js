@@ -5,7 +5,7 @@ import { makeStyles } from 'tss-react/mui'
 
 import { useSharedStore } from '../../SharedStoreProvider'
 
-import { generateHighlights } from './util/generateHighlights'
+import { generateHighlights, addActiveClassToMarks } from './util/generateHighlights'
 
 const useStyles = makeStyles()(() => ({
     container: {
@@ -75,14 +75,22 @@ const TextLayer = observer(({ page, rotation, scale }) => {
 
             if (query && searchResults?.length) {
                 renderTask.current.promise
-                    .then(() => generateHighlights(searchResults, container, query, page, currentHighlightIndex))
-                    .finally(() => scrollToHighlight(containerRef))
+                    .then(() => {
+                        const currentPageSearchResults = searchResults.filter((match) => match.pageNum === page.pageNumber)
+                        if (query?.length > 3 && currentPageSearchResults?.length > 0) generateHighlights(currentPageSearchResults, container, query)
+                    })
+                    .finally(() => addActiveClassToMarks(containerRef.current, currentHighlightIndex))
             }
         })
 
         return cancelTask
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [rotation, scale, page, query, searchResults, currentHighlightIndex, scrollToHighlight])
+    }, [rotation, scale, page, query, searchResults, scrollToHighlight])
+      
+    useEffect(() => {
+        addActiveClassToMarks(containerRef.current, currentHighlightIndex)
+        scrollToHighlight(containerRef)
+    }, [currentHighlightIndex, scrollToHighlight])
 
     return <div ref={containerRef} className={classes.container + ' textLayer'} />
 })

@@ -4,40 +4,39 @@
 
 import path from 'path'
 
-import { generateHighlights, flattenDOMNodes } from '../index'
+import { generateHighlights, flattenDOMNodes, getTextContent, getMatchedIndexes } from '../index'
 
 describe('PDF viewer utilities', () => {
-    it('checks if all marks match the query', () => {
-        for (let index = 1; index < 3; index++) {
+    it('checks if all marks match the query for multiple words in each file', () => {
+        const files = ['1.html', '2.html', '3.html']
+
+        files.forEach((fileName) => {
+            const wordsSet = new Set()
             document.body.innerHTML = '' // reset document.body between files / use cases
-            const fileContent = require('fs').readFileSync(path.join(__dirname, `./${index}.html`))
+            const fileContent = require('fs').readFileSync(path.join(__dirname, `./${fileName}`))
             document.body.innerHTML = fileContent
 
-            const marks = generateHighlights([{ pageNum: 0, index: 0 }], document.body.children[0], 'metod', { pageNumber: 0 }, 0)
+            const nodes = flattenDOMNodes(document.body.children[0].children)
+            const textContent = getTextContent(nodes)
+            const words = textContent.split(' ').filter((word) => word?.length > 3)
+            words.forEach((word) => wordsSet.add(word.toLowerCase()))
 
-            for (const mark of marks) {
-                expect(mark.toLowerCase()).toContain('metod')
-            }
-        }
-    })
+            const uniqueWords = Array.from(wordsSet) // unique word set converted to array
 
-    it('checks if all marks match the query for multiple words', () => {
-        document.body.innerHTML = '' // reset document.body between files / use cases
-        const string = require('fs').readFileSync(path.join(__dirname, `./3.html`))
-        document.body.innerHTML = string
+            expect(uniqueWords.length).toBeGreaterThanOrEqual(10)
 
-        const nodes = flattenDOMNodes(document.body.children)
-        const words = nodes
-            .map((node) => node.innerHTML?.trim().split(/\s+/))
-            .flat()
-            .filter(Boolean)
+            uniqueWords.forEach((word) => {
+                const marks = generateHighlights([{ pageNum: 0, index: 0 }], document.body.children[0], word)
+                const matchedIndexes = getMatchedIndexes(textContent, word.toLowerCase())
 
-        words.forEach((word) => {
-            document.body.innerHTML = string // reset the content for each word
-            const marks = generateHighlights([{ pageNum: 0, index: 0 }], document.body.children[0], word, { pageNumber: 0 }, 0)
-            for (const mark of marks) {
-                expect(mark.toLowerCase()).toContain(word.toLowerCase())
-            }
+                expect(matchedIndexes.length).toBe(marks.length)
+
+                for (const mark of marks) {
+                    expect(mark.toLowerCase()).toBe(word.toLowerCase())
+                }
+
+                document.body.innerHTML = fileContent
+            })
         })
     })
 
@@ -46,7 +45,8 @@ describe('PDF viewer utilities', () => {
         const div = document.createElement('div')
         const span1 = document.createElement('span')
         const span2 = document.createElement('span')
-        div.append(span1, span2)
+        span1.append(span2)
+        div.append(span1)
         document.body.append(div)
 
         const result = flattenDOMNodes(document.body.children)
