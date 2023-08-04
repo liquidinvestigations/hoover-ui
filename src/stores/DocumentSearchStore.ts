@@ -31,13 +31,23 @@ export class DocumentSearchStore {
 
         reaction(
             () => this.query,
-            () => this.search()
+            () => {
+                if(!this.query || this.query.length < 3) {
+                    this.clearSearch()
+                } else {
+                    this.search()
+                }
+            }
         )
     }
 
     setQuery = debounce(() => {
         this.query = this.inputValue
     }, 500)
+
+    clearQuery = () => {
+        this.query = ''
+    }
 
     setInputValue = (value: string) => {
         this.inputValue = value
@@ -47,8 +57,13 @@ export class DocumentSearchStore {
         this.activeSearch = activeSearch
     }
 
+    clearSearch = () => {
+        this.pdfSearchStore.clearSearch()
+        this.textSearchStore.clearSearch()
+        this.metaSearchStore.clearSearch()
+    }
+
     async search(): Promise<void> {
-        if(!this.query || this.query.length < 3) return
         this.loading = true
 
         const promises = [this.textSearchStore.search(this.query), this.metaSearchStore.search(this.query)]

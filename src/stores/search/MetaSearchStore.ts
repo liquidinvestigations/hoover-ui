@@ -88,6 +88,14 @@ export class MetaSearchStore {
         this.currentHighlightIndex = (this.currentHighlightIndex - 1 + this.searchResults) % this.searchResults
     }
 
+    clearSearch = () => {
+        this.searchResults = 0
+        this.loading = false
+        this.currentHighlightIndex = 0
+        this.highlightedMetaData = []
+        this.highlightedTableData = []
+    }
+
     search = async (query: string) => {
         this.searchResults = 0
         this.loading = true
@@ -96,19 +104,22 @@ export class MetaSearchStore {
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // Escape special characters
         }
 
+        const highlightElement = (element: string) => {
+            return String(element)?.replace(new RegExp(escapeRegExp(query), 'gi'), (match) => {
+                const matched = `<mark id="highlight-${this.searchResults}" ${
+                    this.currentHighlightIndex === this.searchResults ? `class="active"` : ''
+                }>${match}</mark>`
+                this.searchResults++
+                return matched
+            })
+        }
+
         try {
             const highlightedTableData: TableData[] = this.metaStore.tableData.map((entry: TableData) => {
                 const { field, label, display, searchKey, searchTerm } = entry
 
                 if (String(display).toLowerCase().includes(query.toLowerCase())) {
-                    const highlightedDisplay = display.replace(new RegExp(escapeRegExp(query), 'gi'), (match) => {
-                        const matched = `<mark id="highlight-${this.searchResults}" ${
-                            this.currentHighlightIndex === this.searchResults ? `class="active"` : ''
-                        }>${match}</mark>`
-                        this.searchResults++
-                        return matched
-                    })
-
+                    const highlightedDisplay =  highlightElement(display)
                     return { field, label, display: highlightedDisplay, searchKey, searchTerm }
                 }
 
@@ -121,13 +132,7 @@ export class MetaSearchStore {
                 if (Array.isArray(value)) {
                     const highlightedValueArray = value.map((item) => {
                         if (String(item).toLowerCase().includes(query.toLowerCase())) {
-                            const highlightedItem = (item as string).replace(new RegExp(escapeRegExp(query), 'gi'), (match) => {
-                                const matched = `<mark id="highlight-${this.searchResults}" ${
-                                    this.currentHighlightIndex === this.searchResults ? `class="active"` : ''
-                                }>${match}</mark>`
-                                this.searchResults++
-                                return matched
-                            })
+                            const highlightedItem = highlightElement(item)
                             return highlightedItem
                         }
                         return item
@@ -137,14 +142,7 @@ export class MetaSearchStore {
                 }
 
                 if (String(value).toLowerCase().includes(query.toLowerCase())) {
-                    const highlightedValue = (value as string).replace(new RegExp(escapeRegExp(query), 'gi'), (match) => {
-                        const matched = `<mark id="highlight-${this.searchResults}" ${
-                            this.currentHighlightIndex === this.searchResults ? `class="active"` : ''
-                        }>${match}</mark>`
-                        this.searchResults++
-                        return matched
-                    })
-
+                    const highlightedValue = highlightElement(value)
                     return { key, value: highlightedValue, componentKey }
                 }
 

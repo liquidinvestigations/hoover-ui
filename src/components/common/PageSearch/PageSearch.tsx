@@ -1,5 +1,6 @@
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
+import CloseIcon from '@mui/icons-material/Close'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, IconButton, InputAdornment, TextField } from '@mui/material'
 import { observer } from 'mobx-react-lite'
@@ -13,12 +14,17 @@ export const PageSearch = observer(() => {
     const { classes } = useStyles()
     const {
         documentStore: {
-            documentSearchStore: { inputValue, setInputValue, activeSearch },
+            documentSearchStore: { inputValue, setInputValue, activeSearch, clearQuery },
         },
     } = useSharedStore()
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>): void => {
         setInputValue(event.target.value)
+    }
+
+    const handleClearInput = () => {
+        setInputValue('')
+        clearQuery()
     }
 
     return (
@@ -45,6 +51,9 @@ export const PageSearch = observer(() => {
                                 {activeSearch.getCurrentHighlightIndex() + 1} of {activeSearch.getSearchResultsCount()}
                             </Box>
                         )}
+                        <IconButton onClick={handleClearInput}>
+                            <CloseIcon />
+                        </IconButton>
                         <IconButton onClick={activeSearch.nextSearchResult}>
                             <ArrowDownwardIcon />
                         </IconButton>
