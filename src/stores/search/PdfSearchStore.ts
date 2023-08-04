@@ -3,7 +3,7 @@ import { RefObject } from 'react'
 
 import { DocumentSearchStore } from '../DocumentSearchStore'
 
-interface SearchResults {
+export interface SearchResults {
     pageNum: number
     index: number
 }
@@ -14,7 +14,7 @@ export class PdfSearchStore {
     loading: boolean = false
     currentHighlightIndex: number = 0
 
-    constructor(documentSearchStore: DocumentSearchStore) {
+    constructor() {
         makeAutoObservable(this)
     }
 
@@ -58,65 +58,39 @@ export class PdfSearchStore {
     search = async (query: string) => {
         if (!this.pdfDocument) return
         this.loading = true
+        this.currentHighlightIndex = 0
 
         try {
             const results: SearchResults[] = []
             const numPages: number = this.pdfDocument?.numPages
-            const chunkSize: number = 5
             let index = 0
 
             const processPage = async (pageNum: number) => {
-                try {
-                    const page = await this.pdfDocument.getPage(pageNum)
-                    const textContent = await page.getTextContent()
-                    const text = textContent.items
-                        .map((item: any) => item.str)
-                        .join('')
-                        .toLowerCase()
+                const page = await this.pdfDocument.getPage(pageNum)
+                const textContent = await page.getTextContent()
+                const text = textContent.items
+                    .map((item: any) => item.str)
+                    .join('')
+                    .toLowerCase()
 
-                    const matches: SearchResults[] = []
-                    let startIndex = 0
+                const matches: SearchResults[] = []
+                let startIndex = 0
 
-                    while (startIndex !== -1) {
-                        startIndex = text.indexOf(query.toLowerCase(), startIndex)
-                        if (startIndex !== -1) {
-                            const endIndex = startIndex + query.length
-                            matches.push({ pageNum, index })
-                            index++
-                            startIndex = endIndex
-                        }
+                while (startIndex !== -1) {
+                    startIndex = text.indexOf(query.toLowerCase(), startIndex)
+                    if (startIndex !== -1) {
+                        const endIndex = startIndex + query.length
+                        matches.push({ pageNum, index })
+                        index++
+                        startIndex = endIndex
                     }
-
-                    return matches
-                } catch (error) {
-                    console.error('An error occurred during PDF page processing:', error)
-                    throw error 
                 }
+                return matches
             }
 
-            const processChunk = async (start: number, end: number) => {
-                const promises: Promise<SearchResults[]>[] = []
-                for (let j = start; j < end; j++) {
-                    promises.push(processPage(j + 1))
-                }
-
-                const chunkResults = await Promise.allSettled(promises)
-                chunkResults.forEach((result) => {
-                    if (result.status === 'fulfilled') {
-                        results.push(...result.value)
-                    } else {
-                        console.error('An error occurred during PDF search:', result.reason)
-                    }
-                })
-            }
-
-            const totalPages = Math.ceil(numPages / chunkSize)
-
-            for (let i = 0; i < totalPages; i++) {
-                const startIndex = i * chunkSize
-                const endIndex = startIndex + chunkSize
-
-                await processChunk(startIndex, endIndex)
+            for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+                const pageMatches = await processPage(pageNum)
+                results.push(...pageMatches)
             }
 
             this.searchResults = results

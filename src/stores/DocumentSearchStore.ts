@@ -18,7 +18,7 @@ export class DocumentSearchStore {
 
     constructor(documentStore: DocumentStore) {
         this.documentStore = documentStore
-        this.pdfSearchStore = new PdfSearchStore(this)
+        this.pdfSearchStore = new PdfSearchStore()
         this.textSearchStore = new TextSearchStore(this)
         this.metaSearchStore = new MetaSearchStore(documentStore.metaStore)
         this.activeSearch = this.pdfSearchStore
