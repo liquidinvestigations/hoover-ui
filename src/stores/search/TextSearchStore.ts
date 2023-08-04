@@ -73,6 +73,12 @@ export class TextSearchStore {
         }
     }
 
+    clearSearch = () => {
+        this.searchResults = []
+        this.loading = false
+        this.totalOccurrenceCount = 0
+    }
+
     search = (query: string) => {
         this.loading = true
 
