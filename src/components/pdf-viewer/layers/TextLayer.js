@@ -77,7 +77,7 @@ const TextLayer = observer(({ page, rotation, scale }) => {
                 renderTask.current.promise
                     .then(() => {
                         const currentPageSearchResults = searchResults.filter((match) => match.pageNum === page.pageNumber)
-                        if (query?.length > 3 && currentPageSearchResults?.length > 0) generateHighlights(currentPageSearchResults, container, query)
+                        if (query?.length >= 3 && currentPageSearchResults?.length > 0) generateHighlights(currentPageSearchResults, container, query)
                     })
                     .finally(() => addActiveClassToMarks(containerRef.current, currentHighlightIndex))
             }

@@ -55,6 +55,12 @@ export class PdfSearchStore {
         }
     }
 
+    clearSearch = () => {
+        this.searchResults = []
+        this.loading = false
+        this.currentHighlightIndex = 0
+    }
+
     search = async (query: string) => {
         if (!this.pdfDocument) return
         this.loading = true
