@@ -22,8 +22,6 @@ const useStyles = makeStyles()((theme) => ({
     },
     viewer: {
         height: '100%',
-        display: 'flex',
-        flexFlow: 'column',
         '&:fullscreen': {
             '& $container': {
                 height: 'calc(100vh - 48px)',
@@ -41,7 +39,7 @@ const useStyles = makeStyles()((theme) => ({
         display: 'none',
     },
     container: {
-        flex: 1,
+        height: '100%',
         overflow: 'auto',
         position: 'relative',
         boxSizing: 'content-box',
@@ -183,7 +181,7 @@ export default function Document({ initialPageIndex, onPageIndexChange, renderer
                     viewerRef={viewerRef}
                     containerRef={containerRef}
                     pagesRefs={pagesRefs}
-                    initialPageIndex={initialPageIndex}
+                    currentPageIndex={currentPageIndex}
                     numPages={doc?.numPages}
                     firstPageData={firstPageData}
                     pageMargin={pageMargin}
