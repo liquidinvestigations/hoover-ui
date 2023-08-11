@@ -61,7 +61,7 @@ function Toolbar({
     viewerRef,
     containerRef,
     pagesRefs,
-    initialPageIndex,
+    currentPageIndex,
     numPages,
     firstPageData,
     pageMargin,
@@ -88,15 +88,15 @@ function Toolbar({
         } else {
             setScale(newScale)
         }
-        const pageSpaces = initialPageIndex * 27
+        const pageSpaces = currentPageIndex * 27
         const scrollTopPages = ((containerRef.current.scrollTop - pageSpaces) * newScale) / scale
         containerRef.current.scrollTop = scrollTopPages + pageSpaces
     }
 
     const scrollToPage = (index) => (containerRef.current.scrollTop = pagesRefs[index].current.offsetTop)
 
-    const onPrevPage = () => scrollToPage(initialPageIndex - 1)
-    const onNextPage = () => scrollToPage(initialPageIndex + 1)
+    const onPrevPage = () => scrollToPage(currentPageIndex - 1)
+    const onNextPage = () => scrollToPage(currentPageIndex + 1)
     const onPageFocus = () => pageInputRef.current.select()
     const onPageBlur = () => onPageChange()
     const onPageKey = (event) => {
@@ -118,12 +118,12 @@ function Toolbar({
         if (!isNaN(page) && page > 0 && page <= numPages) {
             scrollToPage(page - 1)
         } else {
-            pageInputRef.current.value = initialPageIndex + 1
+            pageInputRef.current.value = currentPageIndex + 1
         }
     }
     useEffect(() => {
-        pageInputRef.current.value = initialPageIndex + 1
-    }, [initialPageIndex])
+        pageInputRef.current.value = currentPageIndex + 1
+    }, [currentPageIndex])
 
     const onZoomOut = () => handleScaleSet(zoomOut(scale))()
     const onZoomIn = () => handleScaleSet(zoomIn(scale))()
@@ -152,7 +152,7 @@ function Toolbar({
                                 <IconButton
                                     size="small"
                                     onClick={onPrevPage}
-                                    disabled={!firstPageData || initialPageIndex === 0}
+                                    disabled={!firstPageData || currentPageIndex === 0}
                                     className={classes.toolbarIcon}>
                                     {reactIcons.arrowUp}
                                 </IconButton>
@@ -163,7 +163,7 @@ function Toolbar({
                                 <IconButton
                                     size="small"
                                     onClick={onNextPage}
-                                    disabled={!firstPageData || initialPageIndex === numPages - 1}
+                                    disabled={!firstPageData || currentPageIndex === numPages - 1}
                                     className={classes.toolbarIcon}>
                                     {reactIcons.arrowDown}
                                 </IconButton>
@@ -176,7 +176,7 @@ function Toolbar({
                                         size="small"
                                         variant="outlined"
                                         inputRef={pageInputRef}
-                                        defaultValue={initialPageIndex + 1}
+                                        defaultValue={currentPageIndex + 1}
                                         className={classes.pageNumber}
                                         onFocus={onPageFocus}
                                         onBlur={onPageBlur}
@@ -189,7 +189,7 @@ function Toolbar({
                             <span>{numPages}</span>
                         </div>
                     </Grid>
-                    <Grid item display='flex' alignItems='center'>
+                    <Grid item display="flex" alignItems="center">
                         <Tooltip title="Zoom out" PopperProps={popperProps}>
                             <span>
                                 <IconButton size="small" onClick={onZoomOut} className={classes.toolbarIcon} disabled={!firstPageData}>
