@@ -1,47 +1,58 @@
 import { makeAutoObservable } from 'mobx'
 import { RefObject } from 'react'
 
-import { DocumentSearchStore } from '../DocumentSearchStore'
+import { DocumentStore } from '../DocumentStore'
 
 export interface SearchResults {
+    [key: string]: PdfSearchResult[]
+}
+
+export interface PdfSearchResult {
     pageNum: number
     index: number
 }
 
 export class PdfSearchStore {
-    pdfDocument: any
-    searchResults: SearchResults[] = []
+    searchResults: SearchResults = {}
     loading: boolean = false
     currentHighlightIndex: number = 0
+    documentStore: DocumentStore
 
-    constructor() {
+    constructor(documentStore: DocumentStore) {
+        this.documentStore = documentStore
         makeAutoObservable(this)
     }
 
+    getTotalSearchResultsCount = () => {
+        return Object.keys(this.searchResults).reduce((prev, curr) => (prev + this.searchResults[curr].length), 0)
+    }
+
     getSearchResultsCount = () => {
-        return this.searchResults.length
+        const { tabs, subTab } = this.documentStore
+        return this.searchResults[tabs[subTab].tag]?.length || 0
     }
 
     getCurrentHighlightIndex = () => {
         return this.currentHighlightIndex
     }
 
-    setDocument = (pdfDocument: any) => {
-        this.pdfDocument = pdfDocument
-    }
-
     nextSearchResult = () => {
-        this.currentHighlightIndex = (this.currentHighlightIndex + 1) % this.searchResults.length
+        const { tabs, subTab } = this.documentStore
+        this.currentHighlightIndex = (this.currentHighlightIndex + 1) % this.searchResults[tabs[subTab].tag].length
     }
 
     previousSearchResult = () => {
-        this.currentHighlightIndex = (this.currentHighlightIndex - 1 + this.searchResults.length) % this.searchResults.length
+        const { tabs, subTab } = this.documentStore
+        this.currentHighlightIndex =
+            (this.currentHighlightIndex - 1 + this.searchResults[tabs[subTab].tag].length) % this.searchResults[tabs[subTab].tag].length
     }
 
     scrollToHighlight = (containerRef: RefObject<HTMLDivElement>) => {
         if (!containerRef.current) return
-        const activeSearchResult = containerRef.current.querySelector(`#highlight-${this.currentHighlightIndex}`)
-        const parentContainer = activeSearchResult?.closest('.pdfViewer')?.parentElement
+        const parentContainer = containerRef.current?.closest('.pdfViewer')
+        
+        if (!parentContainer) return
+        const activeSearchResult = parentContainer.querySelector(`#highlight-${this.currentHighlightIndex}`)
 
         if (activeSearchResult && parentContainer) {
             const parentRect = parentContainer.getBoundingClientRect()
@@ -50,54 +61,41 @@ export class PdfSearchStore {
 
             parentContainer.scrollTo({
                 top: parentContainer.scrollTop + scrollOffset,
-                behavior: 'smooth',
             })
         }
     }
 
     clearSearch = () => {
-        this.searchResults = []
+        this.searchResults = {}
         this.loading = false
         this.currentHighlightIndex = 0
     }
 
     search = async (query: string) => {
-        if (!this.pdfDocument) return
         this.loading = true
         this.currentHighlightIndex = 0
-
+        const { pdfTextContent } = this.documentStore
         try {
-            const results: SearchResults[] = []
-            const numPages: number = this.pdfDocument?.numPages
-            let index = 0
+            const results: SearchResults = {}
 
-            const processPage = async (pageNum: number) => {
-                const page = await this.pdfDocument.getPage(pageNum)
-                const textContent = await page.getTextContent()
-                const text = textContent.items
-                    .map((item: any) => item.str)
-                    .join('')
-                    .toLowerCase()
+            Object.keys(pdfTextContent).forEach((key) => {
+                let index = 0
+                results[key] = new Array()
 
-                const matches: SearchResults[] = []
-                let startIndex = 0
+                pdfTextContent[key].forEach(({ pageNum, text }) => {
+                    let startIndex = 0
 
-                while (startIndex !== -1) {
-                    startIndex = text.indexOf(query.toLowerCase(), startIndex)
-                    if (startIndex !== -1) {
-                        const endIndex = startIndex + query.length
-                        matches.push({ pageNum, index })
-                        index++
-                        startIndex = endIndex
+                    while (startIndex !== -1) {
+                        startIndex = text.indexOf(query.toLowerCase(), startIndex)
+                        if (startIndex !== -1) {
+                            const endIndex = startIndex + query.length
+                            results[key].push({ pageNum, index })
+                            index++
+                            startIndex = endIndex
+                        }
                     }
-                }
-                return matches
-            }
-
-            for (let pageNum = 1; pageNum <= numPages; pageNum++) {
-                const pageMatches = await processPage(pageNum)
-                results.push(...pageMatches)
-            }
+                })
+            })
 
             this.searchResults = results
         } catch (error) {

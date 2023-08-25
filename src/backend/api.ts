@@ -158,6 +158,8 @@ export const logError = (error: LogError) =>
         body: JSON.stringify(error),
     })
 
+export const fetchPdfTextContent = (url: string) => fetch('/api/get-pdf?' + new URLSearchParams({ url }))
+
 /*
  URL building only
  */

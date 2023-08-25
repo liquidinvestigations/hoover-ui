@@ -40,10 +40,6 @@ export const Page = observer(forwardRef((
     }, [doc, pageIndex])
 
     useEffect(() => {
-        if (!visible && searchResults[currentHighlightIndex]?.pageNum - 1 === pageIndex) getPageData()
-    }, [currentHighlightIndex, getPageData, pageIndex, searchResults, visible])
-
-    useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {

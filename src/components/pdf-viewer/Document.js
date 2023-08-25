@@ -1,4 +1,5 @@
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material'
+import { observer } from 'mobx-react-lite'
 import { cloneElement, createRef, useCallback, useEffect, useRef, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
 
@@ -93,21 +94,24 @@ const useStyles = makeStyles()((theme) => ({
 
 const pageMargin = 20
 
-export default function Document({ initialPageIndex, onPageIndexChange, renderer = 'canvas' }) {
+export const Document = observer(({ initialPageIndex, onPageIndexChange, renderer = 'canvas' }) => {
     const { classes, cx } = useStyles()
     const { doc, firstPageData, status, error, percent, externalLinks } = useDocument()
-    const {
-        documentStore: {
-            documentSearchStore: {
-                pdfSearchStore: { setDocument },
-            },
-        },
-    } = useSharedStore()
     const [rotation, setRotation] = useState(0)
     const [scale, setScale] = useState(1)
     const [currentPageIndex, setCurrentPageIndex] = useState(initialPageIndex)
     const [pagesRefs, setPagesRefs] = useState([])
     const [thumbnailsRefs, setThumbnailsRefs] = useState([])
+    const {
+        documentStore: {
+            tabs,
+            subTab,
+            getPdfTextContent,
+            documentSearchStore: {
+                pdfSearchStore: { searchResults, currentHighlightIndex },
+            },
+        },
+    } = useSharedStore()
 
     const viewerRef = useRef()
     const containerRef = useRef()
@@ -123,8 +127,6 @@ export default function Document({ initialPageIndex, onPageIndexChange, renderer
 
     useEffect(() => {
         if (doc?.numPages) {
-            // TODO: this will need to change in order to be able to search in PDF when viewer is not active
-            setDocument(doc)
             setPagesRefs((refs) =>
                 Array(doc.numPages)
                     .fill()
@@ -152,6 +154,21 @@ export default function Document({ initialPageIndex, onPageIndexChange, renderer
             goToPage(initialPageIndex)
         }
     }, [status, goToPage, initialPageIndex, pagesRefs])
+
+    useEffect(() => {
+        if (status === STATUS_COMPLETE) getPdfTextContent()
+    }, [getPdfTextContent, status])
+
+    useEffect(() => {
+        if(!pagesRefs?.length) return
+
+        const activeSearchResults = searchResults[tabs[subTab].tag]
+        if (!activeSearchResults?.length) return
+
+        const highlightPage = activeSearchResults[currentHighlightIndex].pageNum - 1
+        if (highlightPage !== currentPageIndex) goToPage(highlightPage)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchResults, currentHighlightIndex])
 
     const pageVisibility = Array(doc?.numPages || 0)
         .fill()
@@ -301,4 +318,6 @@ export default function Document({ initialPageIndex, onPageIndexChange, renderer
             )}
         </>
     )
-}
+})
+
+export default Document

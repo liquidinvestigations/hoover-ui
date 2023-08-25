@@ -7,18 +7,18 @@ import { PdfSearchStore } from './search/PdfSearchStore'
 import { TextSearchStore } from './search/TextSearchStore'
 
 export class DocumentSearchStore {
-    inputValue : string = ''
+    inputValue: string = ''
     query: string = ''
     loading: boolean = false
     pdfSearchStore: PdfSearchStore
     textSearchStore: TextSearchStore
     metaSearchStore: MetaSearchStore
     activeSearch: PdfSearchStore | TextSearchStore | MetaSearchStore
-    documentStore: DocumentStore;
+    documentStore: DocumentStore
 
     constructor(documentStore: DocumentStore) {
         this.documentStore = documentStore
-        this.pdfSearchStore = new PdfSearchStore()
+        this.pdfSearchStore = new PdfSearchStore(documentStore)
         this.textSearchStore = new TextSearchStore(this)
         this.metaSearchStore = new MetaSearchStore(documentStore.metaStore)
         this.activeSearch = this.pdfSearchStore
@@ -32,7 +32,7 @@ export class DocumentSearchStore {
         reaction(
             () => this.query,
             () => {
-                if(!this.query || this.query.length < 3) {
+                if (!this.query || this.query.length < 3) {
                     this.clearSearch()
                 } else {
                     this.search()
@@ -66,9 +66,7 @@ export class DocumentSearchStore {
     async search(): Promise<void> {
         this.loading = true
 
-        const promises = [this.textSearchStore.search(this.query), this.metaSearchStore.search(this.query)]
-        // For now, we can only search in the PDF when the viewer is active. Will be handled in a separate ticket
-        if (this.activeSearch instanceof PdfSearchStore) promises.push(this.pdfSearchStore.search(this.query))
+        const promises = [this.textSearchStore.search(this.query), this.metaSearchStore.search(this.query), this.pdfSearchStore.search(this.query)]
 
         try {
             await Promise.all(promises)
