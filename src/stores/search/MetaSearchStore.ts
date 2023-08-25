@@ -67,7 +67,6 @@ export class MetaSearchStore {
 
             container.scrollTo({
                 top: container.scrollTop + scrollOffset,
-                behavior: 'smooth',
             })
         }
     }

@@ -68,7 +68,6 @@ export class TextSearchStore {
 
             container.scrollTo({
                 top: container.scrollTop + scrollOffset,
-                behavior: 'smooth',
             })
         }
     }

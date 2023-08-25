@@ -1,4 +1,4 @@
-import { SearchResults } from '../../../../../stores/search/PdfSearchStore'
+import { PdfSearchResult } from '../../../../../stores/search/PdfSearchStore'
 
 // This type represents a tuple with two numbers, used to store the start and end positions of text content.
 type Tuple = [number, number]
@@ -42,8 +42,8 @@ export const getTuples = (nodes: any[]): Tuple[] => {
 // This function gets the text content of flattened DOM nodes and converts it to lowercase.
 export const getTextContent = (nodes: any[]) =>
     nodes.reduce((prev, curr) => {
-        if (curr.nodeName === BR_NODE_NAME) return (prev += ' ')
-        return (prev += curr?.innerHTML?.toLowerCase() || '')
+        if (curr.nodeName === BR_NODE_NAME) return prev + ' '
+        return prev + curr?.innerHTML?.toLowerCase() || ''
     }, '')
 
 // This function calculates the length of any existing "mark" tags in the provided text.
@@ -73,7 +73,7 @@ export const addActiveClassToMarks = (container: Element, currentHighlightIndex:
 export const createMark = (text: string, index: number): string => `<mark id="highlight-${index}">${text}</mark>`
 
 // This function generates the highlights for the search results on the current page, and returns a string array of all marks
-export const generateHighlights = (currentPageSearchResults: SearchResults[], container: Element, query: string): string[] => {
+export const generateHighlights = (currentPageSearchResults: PdfSearchResult[], container: Element, query: string): string[] => {
     let highlightIndex = 0
     const nodes = flattenDOMNodes(container.children)
     const textContent = getTextContent(nodes)

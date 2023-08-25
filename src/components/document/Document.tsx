@@ -168,7 +168,7 @@ export const Document = observer(() => {
             padding: 0,
             content: <PdfTab />,
             searchLoading: pdfSearchStore.loading,
-            searchCount: pdfSearchStore.getSearchResultsCount()
+            searchCount: pdfSearchStore.getTotalSearchResultsCount()
         },
         {
             name: 'Text',

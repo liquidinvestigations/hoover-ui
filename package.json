@@ -53,6 +53,7 @@
     "lucene": "2.1.1",
     "luxon": "1.28.1",
     "maplibre-gl": "2.1.7",
+    "memory-cache": "^0.2.0",
     "missing-dom-events": "^1.0.0",
     "mobx": "6.7.0",
     "mobx-observable-history": "2.0.3",

@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 
 import { createOcrUrl } from '../../../../../backend/api'
+import { Loading } from '../../../../common/Loading/Loading'
 import PDFViewer from '../../../../pdf-viewer/Dynamic'
 import { useSharedStore } from '../../../../SharedStoreProvider'
 import { useStyles } from '../../SubTabs.styles'
@@ -21,7 +22,7 @@ export const PdfTab = observer(() => {
             collection,
             subTab,
             handleSubTabChange,
-            documentSearchStore: { setActiveSearch, pdfSearchStore },
+            documentSearchStore: { query, setActiveSearch, pdfSearchStore },
         },
     } = useSharedStore()
 
@@ -39,7 +40,24 @@ export const PdfTab = observer(() => {
                 <Box>
                     <Tabs value={subTab} onChange={handleSubTabChange} variant="scrollable" scrollButtons="auto">
                         {tabs.map(({ icon, name }, index) => (
-                            <Tab key={index} icon={icon} label={name} />
+                            <Tab
+                                key={index}
+                                icon={icon}
+                                label={
+                                    <>
+                                        {name}
+                                        {query && query.length > 2 && (
+                                            <span className={classes.searchCount}>
+                                                {pdfSearchStore.loading ? (
+                                                    <Loading size={16} />
+                                                ) : (
+                                                    <span className="totalCount">{pdfSearchStore.getSearchResultsCount()}</span>
+                                                )}
+                                            </span>
+                                        )}
+                                    </>
+                                }
+                            />
                         ))}
                     </Tabs>
                 </Box>

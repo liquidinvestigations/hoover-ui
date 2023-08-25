@@ -36,6 +36,8 @@ const TextLayer = observer(({ page, rotation, scale }) => {
     const renderTask = useRef()
     const {
         documentStore: {
+            tabs,
+            subTab,
             documentSearchStore: {
                 query,
                 pdfSearchStore: { searchResults, currentHighlightIndex, scrollToHighlight },
@@ -73,10 +75,10 @@ const TextLayer = observer(({ page, rotation, scale }) => {
                 viewport,
             })
 
-            if (query && searchResults?.length) {
+            if (query && searchResults[tabs[subTab].tag]?.length) {
                 renderTask.current.promise
                     .then(() => {
-                        const currentPageSearchResults = searchResults.filter((match) => match.pageNum === page.pageNumber)
+                        const currentPageSearchResults = searchResults[tabs[subTab].tag].filter((match) => match.pageNum === page.pageNumber)
                         if (query?.length >= 3 && currentPageSearchResults?.length > 0) generateHighlights(currentPageSearchResults, container, query)
                     })
                     .finally(() => addActiveClassToMarks(containerRef.current, currentHighlightIndex))
@@ -85,12 +87,11 @@ const TextLayer = observer(({ page, rotation, scale }) => {
 
         return cancelTask
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [rotation, scale, page, query, searchResults, scrollToHighlight])
+    }, [rotation, scale, page, query, searchResults])
       
     useEffect(() => {
         addActiveClassToMarks(containerRef.current, currentHighlightIndex)
-        scrollToHighlight(containerRef)
-    }, [currentHighlightIndex, scrollToHighlight])
+    }, [currentHighlightIndex, scrollToHighlight, searchResults])
 
     return <div ref={containerRef} className={classes.container + ' textLayer'} />
 })
