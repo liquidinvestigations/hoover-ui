@@ -1,8 +1,6 @@
 import Typography from '@mui/material/Typography'
 import { Component, ErrorInfo, ReactNode } from 'react'
 
-import { logError } from '../backend/api'
-
 interface ErrorBoundaryProps {
     visible: boolean
     children: ReactNode | ReactNode[]
@@ -23,7 +21,6 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     componentDidCatch(error: Error, info: ErrorInfo) {
         console.error(error, info)
         this.setState({ error, info })
-        logError({ error: error.message, info: info.componentStack, url: window.location.href })
     }
 
     render() {

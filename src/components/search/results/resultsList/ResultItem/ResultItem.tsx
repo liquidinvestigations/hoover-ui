@@ -210,7 +210,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                             </Grid>
 
                             {Object.entries(specialTags).map(([tag, params], tagIndex) => {
-                                const tagsField = params.public ? fields.tags : fields[`priv-tags.${user.uuid}` as 'priv-tags.*']
+                                const tagsField = params.public ? fields.tags : fields[`priv-tags.${user?.uuid}` as 'priv-tags.*']
                                 if (tagsField?.includes(tag)) {
                                     return (
                                         <Grid item key={tagIndex}>
@@ -287,11 +287,11 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                             </Box>
                         )}
 
-                        {fields[`priv-tags.${user.uuid}` as 'priv-tags.*']?.filter((tag: string) => !specialTagsList.includes(tag)).length > 0 && (
+                        {fields[`priv-tags.${user?.uuid}` as 'priv-tags.*']?.filter((tag: string) => !specialTagsList.includes(tag)).length > 0 && (
                             <Box>
                                 <Typography variant="caption">
                                     <strong>Private tags:</strong>{' '}
-                                    {fields[`priv-tags.${user.uuid}` as 'priv-tags.*']
+                                    {fields[`priv-tags.${user?.uuid}` as 'priv-tags.*']
                                         .filter((tag: string) => !specialTagsList.includes(tag))
                                         .join(', ')}
                                 </Typography>

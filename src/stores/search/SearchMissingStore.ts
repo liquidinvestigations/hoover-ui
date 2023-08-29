@@ -3,6 +3,7 @@ import { Entries } from 'type-fest'
 
 import { Aggregations, AsyncTaskData, SearchQueryParams, SourceField } from '../../Types'
 import { AsyncQueryTaskRunner } from '../../utils/AsyncTaskRunner'
+import { SharedStore } from '../SharedStore'
 
 import { SearchStore } from './SearchStore'
 
@@ -15,7 +16,7 @@ export class SearchMissingStore {
 
     error: Record<string, string> = {}
 
-    constructor(private readonly searchStore: SearchStore) {
+    constructor(private readonly sharedStore: SharedStore, private readonly searchStore: SearchStore) {
         makeAutoObservable(this)
     }
 
@@ -33,7 +34,13 @@ export class SearchMissingStore {
                 this.missingLoading++
             })
 
-            const task = AsyncQueryTaskRunner.createAsyncQueryTask(singleCollectionQuery, 'missing', fieldList)
+            const task = AsyncQueryTaskRunner.createAsyncQueryTask(
+                singleCollectionQuery,
+                'missing',
+                fieldList,
+                this.sharedStore.fields!,
+                this.sharedStore.user?.uuid!
+            )
 
             task.addEventListener('done', (event) => {
                 const { detail: data } = event as CustomEvent<AsyncTaskData>

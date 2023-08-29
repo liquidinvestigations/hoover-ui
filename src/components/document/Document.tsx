@@ -129,9 +129,9 @@ export const Document = observer(() => {
         }
 
         Object.entries(specialTags).forEach(([tag, params]) => {
-            const present = tags.find((current: Tag) => current.tag === tag && current.public === params.public && current.user === user.username)
+            const present = tags.find((current: Tag) => current.tag === tag && current.public === params.public && current.user === user?.username)
             const count =
-                tags.filter((current: Tag) => current.tag === tag && current.public === params.public && current.user !== user.username)?.length || 0
+                tags.filter((current: Tag) => current.tag === tag && current.public === params.public && current.user !== user?.username)?.length || 0
             const link = {
                 icon: present ? reactIcons[params.present.icon] : reactIcons[params.absent.icon],
                 label: present ? params.present.label : params.absent.label,
@@ -154,7 +154,6 @@ export const Document = observer(() => {
         root: classes.tabsRoot,
         indicator: classes.tabsIndicator,
     }
-    
 
     const hasPreview =
         data.content['has-pdf-preview'] ||
@@ -168,7 +167,7 @@ export const Document = observer(() => {
             padding: 0,
             content: <PdfTab />,
             searchLoading: pdfSearchStore.loading,
-            searchCount: pdfSearchStore.getTotalSearchResultsCount()
+            searchCount: pdfSearchStore.getTotalSearchResultsCount(),
         },
         {
             name: 'Text',
@@ -177,7 +176,7 @@ export const Document = observer(() => {
             padding: 0,
             content: <SubTabs />,
             searchLoading: textSearchStore.loading,
-            searchCount: textSearchStore.getTotalSearchResultsCount()
+            searchCount: textSearchStore.getTotalSearchResultsCount(),
         },
         {
             name: 'Tags',
@@ -202,7 +201,7 @@ export const Document = observer(() => {
             visible: !printMode,
             content: <Meta />,
             searchLoading: metaSearchStore.loading,
-            searchCount: metaSearchStore.getSearchResultsCount()
+            searchCount: metaSearchStore.getSearchResultsCount(),
         },
         {
             name: 'HTML',

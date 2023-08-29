@@ -156,11 +156,7 @@ export const Document = observer(({ initialPageIndex, onPageIndexChange, rendere
     }, [status, goToPage, initialPageIndex, pagesRefs])
 
     useEffect(() => {
-        if (status === STATUS_COMPLETE) getPdfTextContent()
-    }, [getPdfTextContent, status])
-
-    useEffect(() => {
-        if(!pagesRefs?.length) return
+        if (!pagesRefs?.length) return
 
         const activeSearchResults = searchResults[tabs[subTab].tag]
         if (!activeSearchResults?.length) return

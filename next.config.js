@@ -114,12 +114,28 @@ const nextConfig = {
                       destination: API_URL + '/api/v1/batch',
                   },
                   {
+                      source: '/api/v1/limits',
+                      destination: API_URL + '/api/v1/limits',
+                  },
+                  {
                       source: '/api/v1/collections',
                       destination: API_URL + '/api/v1/collections',
                   },
                   {
+                      source: '/api/v1/search_fields',
+                      destination: API_URL + '/api/v1/search_fields',
+                  },
+                  {
+                      source: '/api/v1/upload/',
+                      destination: API_URL + '/api/v1/upload/',
+                  },
+                  {
                       source: '/api/v1/get_uploads',
                       destination: API_URL + '/api/v1/get_uploads',
+                  },
+                  {
+                      source: '/api/v1/async_search',
+                      destination: API_URL + '/api/v1/async_search',
                   },
                   {
                       source: '/api/v1/async_search/:uuid',
@@ -158,61 +174,11 @@ const nextConfig = {
                       destination: API_URL + '/api/v1/doc/:collection/:hash/thumbnail/:size.jpg',
                   },
                   {
-                      source: '/api/v1/get_uploads',
-                      destination: API_URL + '/api/v1/get_uploads',
-                  },
-                  {
                       source: '/api/v1/:collection/:directory/get_directory_uploads',
                       destination: API_URL + '/api/v1/:collection/:directory/get_directory_uploads',
-                  },
-                  {
-                      source: '/api/v1/limits',
-                      destination: API_URL + '/api/v1/limits',
-                  },
-                  {
-                      source: '/api/v1/upload/',
-                      destination: API_URL + '/api/v1/upload/',
                   },
               ]
             : [],
 }
 
-module.exports = () => [].reduce((acc, plugin) => plugin(acc), { ...nextConfig })
-
-
-// Injected content via Sentry wizard below
-
-const { withSentryConfig } = require("@sentry/nextjs");
-
-module.exports = withSentryConfig(
-  module.exports,
-  {
-    // For all available options, see:
-    // https://github.com/getsentry/sentry-webpack-plugin#options
-
-    // Suppresses source map uploading logs during build
-    silent: true,
-
-    org: "sentry",
-    project: "hoover-ui",
-  },
-  {
-    // For all available options, see:
-    // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
-
-    // Upload a larger set of source maps for prettier stack traces (increases build time)
-    widenClientFileUpload: true,
-
-    // Transpiles SDK to be compatible with IE11 (increases bundle size)
-    transpileClientSDK: false,  // orig: true
-
-    // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers (increases server load)
-    tunnelRoute: "/monitoring",
-
-    // Hides source maps from generated client bundles
-    hideSourceMaps: false,  // orig: true
-
-    // Automatically tree-shake Sentry logger statements to reduce bundle size
-    disableLogger: false, // orig: true
-  }
-);
+module.exports = nextConfig

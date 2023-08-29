@@ -1,6 +1,8 @@
 import { makeAutoObservable } from 'mobx'
 import { createObservableHistory, ObservableHistory } from 'mobx-observable-history'
 
+import { collections as collectionsAPI, limits as limitsAPI, searchFields, whoami } from '../backend/api'
+import { SearchFields } from '../backend/buildSearchQuery'
 import { Limits } from '../Types'
 
 import { DocumentStore } from './DocumentStore'
@@ -13,9 +15,13 @@ import { TagsStore } from './TagsStore'
 import type { CollectionData, User } from '../Types'
 
 export class SharedStore {
+    user: User | undefined
+
     collectionsData: CollectionData[] = []
 
-    limits: Limits | undefined = undefined
+    limits: Limits | undefined
+
+    fields: SearchFields | undefined
 
     fullPage = false
 
@@ -35,9 +41,10 @@ export class SharedStore {
 
     mapsStore
 
-    constructor(readonly user: User) {
+    constructor() {
         if (typeof window !== 'undefined') {
             this.navigation = createObservableHistory()
+            void this.loadData()
         }
 
         this.hashStore = new HashStateStore(this)
@@ -48,5 +55,14 @@ export class SharedStore {
         this.mapsStore = new MapsStore()
 
         makeAutoObservable(this)
+    }
+
+    loadData = async () => {
+        this.user = await whoami()
+        this.collectionsData = await collectionsAPI()
+        this.limits = await limitsAPI()
+
+        const fields = await searchFields()
+        this.fields = fields.fields
     }
 }

@@ -55,7 +55,13 @@ export class SearchResultsStore {
                 this.results.push({ collection })
             })
 
-            const task = AsyncQueryTaskRunner.createAsyncQueryTask(singleCollectionQuery, 'results', '*')
+            const task = AsyncQueryTaskRunner.createAsyncQueryTask(
+                singleCollectionQuery,
+                'results',
+                '*',
+                this.sharedStore.fields!,
+                this.sharedStore.user?.uuid!
+            )
 
             task.addEventListener('done', (event) => {
                 const { detail: data } = event as CustomEvent<AsyncTaskData>

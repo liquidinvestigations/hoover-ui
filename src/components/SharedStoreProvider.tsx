@@ -2,16 +2,14 @@ import { enableStaticRendering } from 'mobx-react-lite'
 import { createContext, FC, useContext } from 'react'
 
 import { SharedStore } from '../stores/SharedStore'
-import { User } from '../Types'
 
-enableStaticRendering(typeof window === 'undefined')
+enableStaticRendering(false)
 
 let clientStore: SharedStore
 
-export const initializeStore = (user: User) => {
-    const store = clientStore ?? new SharedStore(user)
+export const initializeStore = () => {
+    const store = clientStore ?? new SharedStore()
 
-    if (typeof window === 'undefined') return store
     if (!clientStore) clientStore = store
 
     return store
@@ -19,8 +17,8 @@ export const initializeStore = (user: User) => {
 
 const Context = createContext<SharedStore | null>(null)
 
-export const SharedStoreProvider: FC<{ children: React.ReactNode; user: User }> = ({ children, user }) => (
-    <Context.Provider value={initializeStore(user)}>{children}</Context.Provider>
+export const SharedStoreProvider: FC<{ children: React.ReactNode }> = ({ children }) => (
+    <Context.Provider value={initializeStore()}>{children}</Context.Provider>
 )
 
 export const useSharedStore = () => {

@@ -83,7 +83,7 @@ export const Menu = observer(() => {
             url: 'https://github.com/liquidinvestigations/docs/wiki/User-Guide:-Hoover',
         })
 
-        if (user.admin) {
+        if (user?.admin) {
             links.push({
                 name: 'Admin',
                 url: user.urls.admin,
@@ -91,20 +91,20 @@ export const Menu = observer(() => {
             })
         }
 
-        return links;
+        return links
     }
 
     const getMenuLinks = (): Link[] => {
         const links: Link[] = []
 
-        if (user.username) {
+        if (user?.username) {
             links.push({
                 name: `Logout`,
                 url: user.urls.logout,
             })
         }
 
-        if (!user.username) {
+        if (user && !user.username) {
             links.push({
                 name: 'Login',
                 url: user.urls.login,
@@ -141,9 +141,11 @@ export const Menu = observer(() => {
                 {reactIcons.accountCircle}
             </IconButton>
             <MenuMui anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleUserMenuClose}>
-                {!!user.username && (
+                {!!user?.username && (
                     <Box>
-                        <Typography variant="subtitle1" className={classes.menuHeader}>{user.username}</Typography>
+                        <Typography variant="subtitle1" className={classes.menuHeader}>
+                            {user.username}
+                        </Typography>
                         <Divider />
                     </Box>
                 )}

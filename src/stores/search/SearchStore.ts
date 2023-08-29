@@ -39,8 +39,8 @@ export class SearchStore {
 
     constructor(private readonly sharedStore: SharedStore) {
         this.searchViewStore = new SearchViewStore(sharedStore, this)
-        this.searchAggregationsStore = new SearchAggregationsStore(this)
-        this.searchMissingStore = new SearchMissingStore(this)
+        this.searchAggregationsStore = new SearchAggregationsStore(sharedStore, this)
+        this.searchMissingStore = new SearchMissingStore(sharedStore, this)
         this.searchResultsStore = new SearchResultsStore(sharedStore, this)
         this.filtersStore = new FiltersStore(this)
 

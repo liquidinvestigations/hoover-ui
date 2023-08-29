@@ -1,7 +1,7 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
 import { ReactElement, SyntheticEvent } from 'react'
 
-import { createDownloadUrl, createOcrUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI, fetchPdfTextContent } from '../backend/api'
+import { createDownloadUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI } from '../backend/api'
 import { LocalDocumentData } from '../components/finder/Types'
 import { parentLevels } from '../components/finder/utils'
 import { reactIcons } from '../constants/icons'
@@ -103,33 +103,6 @@ export class DocumentStore {
         )
     }
 
-    getPdfTextContent = async () => {
-        const { docRawUrl, digestUrl, tabs } = this;
-    
-        if (!docRawUrl || !digestUrl || this.data?.content['content-type'] !== 'application/pdf') return;
-    
-        const urls = [docRawUrl];
-    
-        for (let index = 1; index < tabs.length; index++) {
-            urls.push(createOcrUrl(digestUrl, tabs[index]?.tag));
-        }
-    
-        try {
-            const responses = await Promise.all(urls.map(url => fetchPdfTextContent(url))); 
-    
-            responses.forEach(async (response, index) => {
-                try {
-                    const { data } = await response.json();
-                    this.pdfTextContent[tabs[index]?.tag] = data;
-                } catch (error) {
-                    console.error('Error while fetching Pdf text content: ', error);
-                }
-            });
-        } catch (error) {
-            console.error('Error while fetching Pdf text content responses: ', error);
-        }
-    }
-    
     setTabs = () => {
         const tabs = []
         if (this.data?.content) {
