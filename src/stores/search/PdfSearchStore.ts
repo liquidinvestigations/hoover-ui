@@ -6,6 +6,7 @@ import { RefObject } from 'react'
 import { fetchWithHeaders, X_HOOVER_PDF_EXTRACT_TEXT, X_HOOVER_PDF_SPLIT_PAGE_RANGE } from '../../backend/api'
 import { DocumentChunks, DocumentRecord, PdfTextEntry } from '../../Types'
 import { DocumentStore } from '../DocumentStore'
+import { HashStateStore } from '../HashStateStore'
 
 export interface PdfSearchResult {
     pageNum: number
@@ -19,8 +20,10 @@ export class PdfSearchStore {
     loadingTime: number = 0
     estimatedTimeLeft: number = 0
     private abortController?: AbortController
+    documentStore: DocumentStore
 
-    constructor(private readonly documentStore: DocumentStore) {
+    constructor(documentStore: DocumentStore, private readonly hashStore: HashStateStore) {
+        this.documentStore = documentStore
         makeAutoObservable(this)
     }
 
@@ -155,9 +158,9 @@ export class PdfSearchStore {
     }
 
     search = async (query: string) => {
-        this.currentHighlightIndex = 0
         this.searchResults = {}
         const { pdfDocumentInfo } = this.documentStore
+        this.currentHighlightIndex = parseInt(this.hashStore.hashState.findIndex || '0')
         this.loading = true
 
         const signal = this.getAbortSignal()

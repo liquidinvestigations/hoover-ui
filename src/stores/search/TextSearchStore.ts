@@ -1,7 +1,7 @@
 import { makeAutoObservable, reaction } from 'mobx'
 
-import { DocumentSearchStore } from '../DocumentSearchStore'
 import { DocumentStore } from '../DocumentStore'
+import { HashStateStore } from '../HashStateStore'
 
 interface SearchResult {
     occurrenceCount: number
@@ -15,10 +15,8 @@ export class TextSearchStore {
     loading: boolean = false
     containerRef: React.Ref<any> = null
     totalOccurrenceCount: number = 0
-    documentStore: DocumentStore
 
-    constructor(documentSearchStore: DocumentSearchStore) {
-        this.documentStore = documentSearchStore.documentStore
+    constructor(private readonly documentStore: DocumentStore, private readonly hashStore: HashStateStore) {
         makeAutoObservable(this)
 
         reaction(
@@ -121,10 +119,12 @@ export class TextSearchStore {
 
         highlightedText += content.slice(startIndex)
 
+        const findIndex = parseInt(this.hashStore.hashState.findIndex || '0')
+
         const searchResult: SearchResult = {
             occurrenceCount,
             highlightedText,
-            currentHighlightIndex: 0,
+            currentHighlightIndex: findIndex < occurrenceCount ? findIndex : occurrenceCount - 1,
         }
 
         return searchResult

@@ -1,5 +1,6 @@
 import { makeAutoObservable, reaction } from 'mobx'
 
+import { HashStateStore } from '../HashStateStore'
 import { MetaData, MetaStore, TableData } from '../MetaStore'
 
 export class MetaSearchStore {
@@ -10,7 +11,7 @@ export class MetaSearchStore {
     highlightedMetaData: MetaData[] = []
     highlightedTableData: TableData[] = []
 
-    constructor(metaStore: MetaStore) {
+    constructor(metaStore: MetaStore, private readonly hashStore: HashStateStore) {
         this.metaStore = metaStore
         makeAutoObservable(this)
 
@@ -98,6 +99,7 @@ export class MetaSearchStore {
     search = async (query: string) => {
         this.searchResults = 0
         this.loading = true
+        const findIndex = parseInt(this.hashStore.hashState.findIndex || '0')
 
         const escapeRegExp = (string: string) => {
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // Escape special characters
@@ -153,7 +155,7 @@ export class MetaSearchStore {
         } catch (error) {
             console.error('An error occurred during search:', error)
         } finally {
-            this.currentHighlightIndex = 0
+            this.currentHighlightIndex = findIndex < this.searchResults ? findIndex : this.searchResults - 1
             this.loading = false
         }
     }

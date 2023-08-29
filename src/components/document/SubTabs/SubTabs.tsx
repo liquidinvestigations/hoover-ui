@@ -27,7 +27,9 @@ export const SubTabs = observer(() => {
 
     useEffect(() => {
         setActiveSearch(textSearchStore)
-    }, [setActiveSearch, textSearchStore])
+        textSearchStore.scrollToHighlight()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [textSearchStore])
 
     if (!data || !collection || !ocrData) {
         return null

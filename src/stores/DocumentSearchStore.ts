@@ -2,6 +2,7 @@ import debounce from 'lodash/debounce'
 import { makeAutoObservable, reaction } from 'mobx'
 
 import { DocumentStore } from './DocumentStore'
+import { HashStateStore } from './HashStateStore'
 import { MetaSearchStore } from './search/MetaSearchStore'
 import { PdfSearchStore } from './search/PdfSearchStore'
 import { TextSearchStore } from './search/TextSearchStore'
@@ -14,19 +15,26 @@ export class DocumentSearchStore {
     textSearchStore: TextSearchStore
     metaSearchStore: MetaSearchStore
     activeSearch: PdfSearchStore | TextSearchStore | MetaSearchStore
-    documentStore: DocumentStore
 
-    constructor(documentStore: DocumentStore) {
-        this.documentStore = documentStore
-        this.pdfSearchStore = new PdfSearchStore(documentStore)
-        this.textSearchStore = new TextSearchStore(this)
-        this.metaSearchStore = new MetaSearchStore(documentStore.metaStore)
+    constructor(documentStore: DocumentStore, private readonly hashStore: HashStateStore) {
+        this.pdfSearchStore = new PdfSearchStore(documentStore, this.hashStore)
+        this.textSearchStore = new TextSearchStore(documentStore, this.hashStore)
+        this.metaSearchStore = new MetaSearchStore(documentStore.metaStore, this.hashStore)
         this.activeSearch = this.pdfSearchStore
         makeAutoObservable(this)
 
         reaction(
             () => this.inputValue,
             () => this.inputValue && this.setQuery()
+        )
+
+        reaction(
+            () => this.hashStore.hashState.findQuery,
+            (findQuery) => {
+                if (!findQuery) return
+                this.inputValue = findQuery
+                this.query = findQuery
+            }
         )
 
         reaction(
@@ -43,10 +51,12 @@ export class DocumentSearchStore {
 
     setQuery = debounce(() => {
         this.query = this.inputValue
+        this.hashStore.setHashState({ fq: this.inputValue })
     }, 500)
 
     clearQuery = () => {
         this.query = ''
+        this.hashStore.setHashState({ fq: undefined })
     }
 
     setInputValue = (value: string) => {
@@ -64,6 +74,7 @@ export class DocumentSearchStore {
     }
 
     async search(): Promise<void> {
+        if (this.query.length < 3) return
         this.loading = true
 
         const promises = [this.pdfSearchStore.search(this.query), this.textSearchStore.search(this.query), this.metaSearchStore.search(this.query)]
