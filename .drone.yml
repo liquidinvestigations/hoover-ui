@@ -39,6 +39,14 @@ steps:
       from_secret: docker_password
 
 ---
+
+trigger:
+  status:
+  - success
+  event:
+  - push
+  - tag
+
 kind: pipeline
 name: test
 
@@ -60,6 +68,7 @@ steps:
   image: node:18
   commands:
   - npm test
+
 ---
 kind: secret
 name: docker_username
