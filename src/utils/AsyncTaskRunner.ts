@@ -2,14 +2,8 @@ import events from 'missing-dom-events'
 import { AbortSignal } from 'node-fetch/externals'
 
 import { buildUrl, fetchJson } from '../backend/api'
+import buildSearchQuery, { SearchFields } from '../backend/buildSearchQuery'
 import { AsyncTaskData, SearchQueryParams, SearchQueryType, SourceField } from '../Types'
-
-interface FetchParams extends SearchQueryParams {
-    type: SearchQueryType
-    async?: boolean
-    missing?: boolean
-    fieldList: SourceField[] | '*'
-}
 
 export class AsyncQueryTask extends EventTarget {
     isRunning: boolean = false
@@ -19,7 +13,13 @@ export class AsyncQueryTask extends EventTarget {
     private timeout?: NodeJS.Timeout
     private controller?: AbortController
 
-    constructor(readonly query: SearchQueryParams, private readonly type: SearchQueryType, private readonly fieldList: SourceField[] | '*') {
+    constructor(
+        readonly query: SearchQueryParams,
+        private readonly type: SearchQueryType,
+        private readonly fieldList: SourceField[] | '*',
+        private readonly searchFields: SearchFields,
+        private readonly uuid: string
+    ) {
         super()
     }
 
@@ -27,26 +27,24 @@ export class AsyncQueryTask extends EventTarget {
         if (!this.isRunning) {
             this.isRunning = true
 
-            const params: FetchParams = {
-                ...this.query,
-                type: this.type,
-                fieldList: this.fieldList,
-                async: true,
-            }
-
-            if (this.type === 'missing') {
-                params.type = 'aggregations'
-                params.missing = true
-            }
-
             this.controller = new AbortController()
             const signal = this.controller.signal as AbortSignal
 
-            this.data = await fetchJson<AsyncTaskData>('/api/search', {
+            this.data = await fetchJson<AsyncTaskData>(buildUrl('async_search'), {
                 signal,
                 method: 'POST',
-                body: JSON.stringify(params),
+                body: JSON.stringify(
+                    buildSearchQuery(
+                        this.query,
+                        this.type === 'missing' ? 'aggregations' : this.type,
+                        this.fieldList,
+                        this.type === 'missing',
+                        this.searchFields,
+                        this.uuid
+                    )
+                ),
             })
+
             this.initialEta = this.data.eta.total_sec
             this.dispatchEvent(new events.CustomEvent('eta', { detail: this.data.eta.total_sec }))
 
@@ -101,8 +99,14 @@ export class AsyncQueryTask extends EventTarget {
 export class AsyncQueryTaskRunner {
     static taskQueue: AsyncQueryTask[] = []
 
-    static createAsyncQueryTask(query: SearchQueryParams, type: SearchQueryType, fieldList: SourceField[] | '*'): AsyncQueryTask {
-        const task = new AsyncQueryTask(query, type, fieldList)
+    static createAsyncQueryTask(
+        query: SearchQueryParams,
+        type: SearchQueryType,
+        fieldList: SourceField[] | '*',
+        searchFields: SearchFields,
+        uuid: string
+    ): AsyncQueryTask {
+        const task = new AsyncQueryTask(query, type, fieldList, searchFields, uuid)
 
         this.taskQueue.push(task)
         this.runTaskQueue()

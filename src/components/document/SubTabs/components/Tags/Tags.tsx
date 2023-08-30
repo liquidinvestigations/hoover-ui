@@ -91,7 +91,7 @@ export const Tags: FC<{ toolbarButtons: ToolbarLink[] }> = observer(({ toolbarBu
     const otherUsersTags = useMemo(() => {
         const usersTags = {} as { [key: string]: Tag[] }
         tags.forEach((tag) => {
-            if (tag.user !== user.username) {
+            if (tag.user !== user?.username) {
                 if (!usersTags[tag.user]) {
                     usersTags[tag.user] = []
                 }
@@ -177,7 +177,7 @@ export const Tags: FC<{ toolbarButtons: ToolbarLink[] }> = observer(({ toolbarBu
         }
     }
 
-    const tagsValue = tags.filter((tag) => tag.user === user.username)
+    const tagsValue = tags.filter((tag) => tag.user === user?.username)
 
     const options =
         newTagVisibility === 'public'
@@ -245,7 +245,7 @@ export const Tags: FC<{ toolbarButtons: ToolbarLink[] }> = observer(({ toolbarBu
                                             )
                                         }
                                         icon={
-                                            chip.user === user.username && !specialTagsList.includes(chip.tag) ? (
+                                            chip.user === user?.username && !specialTagsList.includes(chip.tag) ? (
                                                 <Tooltip title={`make ${chip.public ? 'private' : 'public'}`}>
                                                     <IconButton size="small" onClick={handleTagLockClick(chip)}>
                                                         {chip.public ? reactIcons.publicTag : reactIcons.privateTag}

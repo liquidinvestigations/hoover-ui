@@ -39,7 +39,7 @@ export const TagTooltip: FC<TagTooltipProps> = ({ chip, count = 0, children }) =
                         )}
                     </Box>
                     <Box>
-                        {chip.user === user.username ? (
+                        {chip.user === user?.username ? (
                             <>Tagged by you</>
                         ) : (
                             <>

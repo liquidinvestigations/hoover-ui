@@ -109,20 +109,6 @@ export const DocPage: FC = observer(() => {
         <>
             <Head>
                 <title>{`Hoover ${data && `- ${fileName}`}`}</title>
-                {user.urls.hypothesis_embed && (
-                    <>
-                        <script async src={user.urls.hypothesis_embed} />
-                        <script
-                            dangerouslySetInnerHTML={{
-                                __html: `window.hypothesisConfig = function() {
-    return {
-        showHighlights: true,
-        appType: 'bookmarklet'
-    }
-}`,
-                            }}></script>
-                    </>
-                )}
             </Head>
             <HotKeysWithHelp keys={keys}>
                 <div tabIndex={-1}>{content}</div>

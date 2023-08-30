@@ -9,7 +9,6 @@ export interface User {
     title: string
     urls: {
         admin: string
-        hypothesis_embed: string
         login: string
         logout: string
         password_change: string

@@ -17,11 +17,11 @@ export const Header = observer(() => {
                 <Toolbar>
                     <Typography variant="h6" color="inherit" className={classes.flex}>
                         <Link href="/" className={classes.noLink}>
-                            {user.title}
+                            {user?.title}
                         </Link>
                         {' ⟶ '}
-                        <a href={user.liquid.url} className={classes.noLink}>
-                            {user.liquid.title}
+                        <a href={user?.liquid.url} className={classes.noLink}>
+                            {user?.liquid.title}
                         </a>
                     </Typography>
                     <Menu />

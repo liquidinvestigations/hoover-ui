@@ -15,8 +15,10 @@ import { InsightsTitle } from './InsightsTitle/InsightsTitle'
 import { TaskErrorsTable } from './TaskErrorsTable/TaskErrorsTable'
 import { TaskTable } from './TaskTable/TaskTable'
 
-export const Insights: FC<{ collectionsData: CollectionData[] }> = observer(({ collectionsData }) => {
+export const Insights: FC = observer(() => {
     const { classes } = useStyles()
+
+    const { collectionsData } = useSharedStore()
 
     const [collectionsState, setCollectionsState] = useState(collectionsData)
     const intervalRef: MutableRefObject<undefined | ReturnType<typeof setInterval>> = useRef(undefined)

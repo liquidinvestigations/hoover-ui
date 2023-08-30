@@ -4,6 +4,7 @@ import { Entries } from 'type-fest'
 import { aggregationFields } from '../../constants/aggregationFields'
 import { Aggregations, AggregationsKey, AsyncTaskData, SearchQueryParams, SourceField } from '../../Types'
 import { AsyncQueryTaskRunner } from '../../utils/AsyncTaskRunner'
+import { SharedStore } from '../SharedStore'
 
 import { SearchStore } from './SearchStore'
 
@@ -20,7 +21,7 @@ export class SearchAggregationsStore {
 
     keepFromClearing: AggregationsKey | undefined
 
-    constructor(private readonly searchStore: SearchStore) {
+    constructor(private readonly sharedStore: SharedStore, private readonly searchStore: SearchStore) {
         makeAutoObservable(this)
     }
 
@@ -84,7 +85,13 @@ export class SearchAggregationsStore {
             const { collections, ...queryParams } = query
             const singleCollectionQuery = { collections: [collection], ...queryParams }
 
-            const task = AsyncQueryTaskRunner.createAsyncQueryTask(singleCollectionQuery, 'aggregations', fieldList)
+            const task = AsyncQueryTaskRunner.createAsyncQueryTask(
+                singleCollectionQuery,
+                'aggregations',
+                fieldList,
+                this.sharedStore.fields!,
+                this.sharedStore.user?.uuid!
+            )
 
             task.addEventListener('done', (event) => {
                 const { detail: data } = event as CustomEvent<AsyncTaskData>

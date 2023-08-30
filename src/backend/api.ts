@@ -8,7 +8,7 @@ import { stringify } from 'qs'
 import { Tag } from '../stores/TagsStore'
 import { CollectionData, DocumentData, Limits, User } from '../Types'
 
-import buildSearchQuery, { FieldList, SearchFields } from './buildSearchQuery'
+import { SearchFields } from './buildSearchQuery'
 
 import type { SearchQueryParams, SearchQueryType } from '../Types'
 
@@ -79,33 +79,11 @@ export const fetchJson = <T>(url: string, opts: FetchOptions = {}) => {
     })
 }
 
-/*
- called only by node.js
- */
-export const whoami = (headers: OutgoingHttpHeaders): Promise<User> => fetchJson(buildUrl('whoami'), { headers })
-export const limits = (headers: OutgoingHttpHeaders): Promise<Limits> => fetchJson(buildUrl('limits'), { headers })
-export const collections = (headers: OutgoingHttpHeaders): Promise<CollectionData[]> => fetchJson(buildUrl('collections'), { headers })
-export const searchFields = (headers: OutgoingHttpHeaders): Promise<{ fields: SearchFields }> => fetchJson(buildUrl('search_fields'), { headers })
-export const search = async (
-    headers: OutgoingHttpHeaders,
-    params: SearchQueryParams,
-    type: SearchQueryType,
-    fieldList: FieldList,
-    missing: boolean,
-    refresh: boolean,
-    async: boolean,
-    searchFields: SearchFields,
-    uuid: string
-) =>
-    fetchJson(buildUrl(async ? 'async_search' : 'search', { refresh }), {
-        headers,
-        method: 'POST',
-        body: JSON.stringify(buildSearchQuery(params, type, fieldList, missing, searchFields, uuid)),
-    })
+export const whoami = (): Promise<User> => fetchJson(buildUrl('whoami'))
+export const limits = (): Promise<Limits> => fetchJson(buildUrl('limits'))
+export const collections = (): Promise<CollectionData[]> => fetchJson(buildUrl('collections'))
+export const searchFields = (): Promise<{ fields: SearchFields }> => fetchJson(buildUrl('search_fields'))
 
-/*
- called only by browser
- */
 export const doc = memoize(
     (docUrl, pageIndex = 1): Promise<DocumentData> => fetchJson(buildUrl(docUrl, 'json', { children_page: pageIndex })),
     (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`
@@ -151,14 +129,6 @@ export interface LogError {
     info: string
     url: string
 }
-
-export const logError = (error: LogError) =>
-    fetch('/api/save-error', {
-        method: 'POST',
-        body: JSON.stringify(error),
-    })
-
-export const fetchPdfTextContent = (url: string) => fetch('/api/get-pdf?' + new URLSearchParams({ url }))
 
 /*
  URL building only

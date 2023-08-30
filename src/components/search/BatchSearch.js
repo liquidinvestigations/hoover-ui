@@ -7,6 +7,7 @@ import { reactIcons } from '../../constants/icons'
 import { createSearchUrl } from '../../utils/queryUtils'
 import { Expandable } from '../common/Expandable/Expandable'
 import { Loading } from '../common/Loading/Loading'
+import { useSharedStore } from '../SharedStoreProvider'
 
 import BatchResults from './BatchResults'
 import { CollectionsFilter } from './filters/CollectionsFilter/CollectionsFilter'
@@ -24,8 +25,10 @@ const useStyles = makeStyles()((theme) => ({
     },
 }))
 
-export default function BatchSearch({ collectionsData, limits }) {
+export default function BatchSearch() {
     const { classes } = useStyles()
+
+    const { collectionsData, limits } = useSharedStore()
 
     const [selectedCollections, setSelectedCollections] = useState(collectionsData?.map((c) => c.name))
     const handleSelectedCollectionsChange = (collections) => {
