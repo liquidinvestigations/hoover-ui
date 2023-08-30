@@ -21,7 +21,10 @@ export const PdfTab = observer(() => {
             ocrData,
             collection,
             subTab,
+            chunkTab,
             handleSubTabChange,
+            handleChunkSubTabChange,
+            pdfDocumentInfo: { chunks },
             documentSearchStore: { query, setActiveSearch, pdfSearchStore },
         },
     } = useSharedStore()
@@ -65,10 +68,35 @@ export const PdfTab = observer(() => {
             <Box className={classes.subTab}>
                 {tabs.map(({ tag }, index) => {
                     if (subTab === index && !tag?.startsWith('translated_')) {
-                        if (index !== 0 && digestUrl && data.content['content-type'] === 'application/pdf') {
-                            return <PDFViewer key={index} url={createOcrUrl(digestUrl, tag)} />
+                        if (chunks?.length > 1) {
+                            return (
+                                <>
+                                    <Box key={tag}>
+                                        <Tabs value={chunkTab} onChange={handleChunkSubTabChange} variant="scrollable" scrollButtons="auto">
+                                            {chunks.map((chunk: string) => (
+                                                <Tab key={chunk} label={chunk} />
+                                            ))}
+                                        </Tabs>
+                                    </Box>
+                                    <Box className={classes.subTab}>
+                                        {chunks.map((chunk: string, chunkIndex: number) => {
+                                            if (chunkIndex === chunkTab) {
+                                                if (index !== 0 && digestUrl && data.content['content-type'] === 'application/pdf') {
+                                                    return <PDFViewer key={chunk} url={createOcrUrl(digestUrl, tag)} />
+                                                } else {
+                                                    return <Preview key={chunk} />
+                                                }
+                                            }
+                                        })}
+                                    </Box>
+                                </>
+                            )
                         } else {
-                            return <Preview key={index} />
+                            if (index !== 0 && digestUrl && data.content['content-type'] === 'application/pdf') {
+                                return <PDFViewer key={tag} url={createOcrUrl(digestUrl, tag)} />
+                            } else {
+                                return <Preview key={tag} />
+                            }
                         }
                     }
                 })}

@@ -40,6 +40,7 @@ export const Page = observer(forwardRef((
     }, [doc, pageIndex])
 
     useEffect(() => {
+        if (!pageRef) return
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {

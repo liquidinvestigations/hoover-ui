@@ -78,7 +78,7 @@ export class PdfSearchStore {
         try {
             const results: SearchResults = {}
 
-            Object.keys(pdfTextContent).forEach((key) => {
+            /* Object.keys(pdfTextContent).forEach((key) => {
                 let index = 0
                 results[key] = new Array()
 
@@ -95,7 +95,7 @@ export class PdfSearchStore {
                         }
                     }
                 })
-            })
+            }) */
 
             this.searchResults = results
         } catch (error) {

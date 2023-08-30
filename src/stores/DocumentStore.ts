@@ -1,7 +1,7 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
 import { ReactElement, SyntheticEvent } from 'react'
 
-import { createDownloadUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI } from '../backend/api'
+import { createDownloadUrl, createOcrUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI, fetchJson } from '../backend/api'
 import { LocalDocumentData } from '../components/finder/Types'
 import { parentLevels } from '../components/finder/utils'
 import { reactIcons } from '../constants/icons'
@@ -19,14 +19,17 @@ interface Tab {
     content: string
 }
 
-interface PdfPageContent {
-    pageNum: number
+interface PdfTextContent {
+    [key: string]: {
+        [chunk: string]: PdfTextEntry[]
+    }
+}
+
+interface PdfTextEntry {
+    pageNum: string
     text: string
 }
 
-interface PdfTextContent {
-    [key: string]: PdfPageContent[]
-}
 export class DocumentStore {
     id: string | undefined
 
@@ -58,6 +61,8 @@ export class DocumentStore {
 
     subTab = 0
 
+    chunkTab = 0
+
     hierarchy: LocalDocumentData | undefined = undefined
 
     metaStore: MetaStore
@@ -65,6 +70,8 @@ export class DocumentStore {
     documentSearchStore: DocumentSearchStore
 
     tabs: Tab[] = []
+
+    pdfDocumentInfo: any = {} //todo: add type
 
     pdfTextContent: PdfTextContent = {}
 
@@ -82,6 +89,8 @@ export class DocumentStore {
         })
 
         reaction(() => this.pathname, this.loadDocument)
+
+        reaction(() => this.docRawUrl, this.getDocumentInfo)
 
         reaction(
             () => this.hashStore.hashState.preview?.c && this.hashStore.hashState.preview?.i,
@@ -101,6 +110,40 @@ export class DocumentStore {
             () => this.hashStore.hashState.subTab,
             (subTab) => subTab && (this.subTab = parseInt(subTab))
         )
+    }
+
+    getDocumentInfo = () => {
+        if (!this.docRawUrl || this.data?.content['content-type'] !== 'application/pdf') return
+
+        fetchJson(this.docRawUrl + new URLSearchParams({ '?X-Hoover-PDF-Info': '1' })).then((response) => {
+            this.pdfDocumentInfo = response
+        })
+    }
+
+    getPdfTextContent = async () => {
+        const { chunks } = this.pdfDocumentInfo
+        const { docRawUrl, digestUrl, tabs } = this
+
+        if (!docRawUrl || !digestUrl || this.data?.content['content-type'] !== 'application/pdf') return
+
+        const urls = [docRawUrl]
+
+        for (let index = 1; index < tabs.length; index++) {
+            urls.push(createOcrUrl(digestUrl, tabs[index]?.tag))
+            this.pdfTextContent[tabs[index]?.tag ?? 'default'] = {}
+        }
+
+        for (let index = 0; index < urls.length; index++) {
+            for (const chunk of chunks) {
+                const queryParams = new URLSearchParams({
+                    'X-Hoover-PDF-Split-Page-Range': chunk,
+                    'X-Hoover-PDF-Extract-Text': '1',
+                })
+
+                const response: PdfTextEntry[] = await fetchJson(`${urls[index]}?${queryParams}`)
+                this.pdfTextContent[tabs[index]?.tag ?? 'default'][chunk] = response
+            }
+        }
     }
 
     setTabs = () => {
@@ -249,5 +292,10 @@ export class DocumentStore {
     handleSubTabChange = (_event: SyntheticEvent, subTab: number) => {
         this.subTab = subTab
         this.hashStore.setHashState({ subTab: subTab.toString() }, false)
+    }
+
+    handleChunkSubTabChange = (_event: SyntheticEvent, chunkTab: number) => {
+        this.chunkTab = chunkTab
+        this.hashStore.setHashState({ chunkTab: chunkTab.toString() }, false)
     }
 }
