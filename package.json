@@ -4,7 +4,7 @@
   "description": "React.js port of the hoover ui",
   "main": "index.js",
   "scripts": {
-    "build": "next build && next export",
+    "build": "next build && next export && node generate-nginx-config.js",
     "dev": "next dev -p 8000 -H 0.0.0.0",
     "start": "next start -p 8000 -H 0.0.0.0",
     "prod": "cross-env NODE_ENV=production next build && next start -p 8000 -H 0.0.0.0",
