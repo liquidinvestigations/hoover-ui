@@ -20,7 +20,7 @@ import { SelectChangeEvent } from '@mui/material/Select/SelectInput'
 import { observer } from 'mobx-react-lite'
 import { cloneElement, FC, ReactElement, SyntheticEvent, useEffect, useMemo, useState } from 'react'
 
-import { fetchJson } from '../../../../../backend/api'
+import { buildUrl, fetchJson } from '../../../../../backend/api'
 import { tooltips } from '../../../../../constants/help'
 import { reactIcons } from '../../../../../constants/icons'
 import { specialTagsList } from '../../../../../constants/specialTags'
@@ -56,7 +56,7 @@ export const Tags: FC<{ toolbarButtons: ToolbarLink[] }> = observer(({ toolbarBu
                 setTagsAggregationsLoading(true)
 
                 try {
-                    const results = await fetchJson<{ aggregations: Aggregations }>('/api/search', {
+                    const results = await fetchJson<{ aggregations: Aggregations }>(buildUrl('search'), {
                         method: 'POST',
                         body: JSON.stringify({
                             type: 'aggregations',
