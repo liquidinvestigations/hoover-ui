@@ -126,12 +126,8 @@ const nextConfig = {
                       destination: API_URL + '/api/v1/search_fields',
                   },
                   {
-                      source: '/api/v1/upload/',
-                      destination: API_URL + '/api/v1/upload/',
-                  },
-                  {
-                      source: '/api/v1/get_uploads',
-                      destination: API_URL + '/api/v1/get_uploads',
+                      source: '/api/v1/search',
+                      destination: API_URL + '/api/v1/search',
                   },
                   {
                       source: '/api/v1/async_search',
@@ -140,6 +136,18 @@ const nextConfig = {
                   {
                       source: '/api/v1/async_search/:uuid',
                       destination: API_URL + '/api/v1/async_search/:uuid',
+                  },
+                  {
+                      source: '/api/v1/upload/',
+                      destination: API_URL + '/api/v1/upload/',
+                  },
+                  {
+                      source: '/api/v1/get_uploads',
+                      destination: API_URL + '/api/v1/get_uploads',
+                  },
+                  {
+                      source: '/api/v1/:collection/:directory/get_directory_uploads',
+                      destination: API_URL + '/api/v1/:collection/:directory/get_directory_uploads',
                   },
                   {
                       source: '/api/v1/doc/:collection/:hash/json',
@@ -172,10 +180,6 @@ const nextConfig = {
                   {
                       source: '/api/v1/doc/:collection/:hash/thumbnail/:size(100|200|400).jpg',
                       destination: API_URL + '/api/v1/doc/:collection/:hash/thumbnail/:size.jpg',
-                  },
-                  {
-                      source: '/api/v1/:collection/:directory/get_directory_uploads',
-                      destination: API_URL + '/api/v1/:collection/:directory/get_directory_uploads',
                   },
               ]
             : [],
