@@ -1,16 +1,17 @@
 import { Button, Grid, List, TextField, Typography } from '@mui/material'
+import { observer } from 'mobx-react-lite'
 import { useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
 
-import { batch } from '../../backend/api'
-import { reactIcons } from '../../constants/icons'
-import { createSearchUrl } from '../../utils/queryUtils'
-import { Expandable } from '../common/Expandable/Expandable'
-import { Loading } from '../common/Loading/Loading'
-import { useSharedStore } from '../SharedStoreProvider'
+import { batch } from '../../../backend/api'
+import { reactIcons } from '../../../constants/icons'
+import { createSearchUrl } from '../../../utils/queryUtils'
+import { Expandable } from '../../common/Expandable/Expandable'
+import { Loading } from '../../common/Loading/Loading'
+import { useSharedStore } from '../../SharedStoreProvider'
+import { CollectionsFilter } from '../filters/CollectionsFilter/CollectionsFilter'
 
-import BatchResults from './BatchResults'
-import { CollectionsFilter } from './filters/CollectionsFilter/CollectionsFilter'
+import { BatchResults } from './BatchResults'
 
 const useStyles = makeStyles()((theme) => ({
     main: {
@@ -25,16 +26,15 @@ const useStyles = makeStyles()((theme) => ({
     },
 }))
 
-export default function BatchSearch() {
+export const BatchSearch = observer(() => {
     const { classes } = useStyles()
 
-    const { collectionsData, limits } = useSharedStore()
-
-    const [selectedCollections, setSelectedCollections] = useState(collectionsData?.map((c) => c.name))
-    const handleSelectedCollectionsChange = (collections) => {
-        setSelectedCollections(collections)
-        search(collections)
-    }
+    const {
+        limits,
+        searchStore: {
+            searchViewStore: { searchCollections },
+        },
+    } = useSharedStore()
 
     const [terms, setTerms] = useState()
     const handleTermsChange = (event) => {
@@ -46,8 +46,8 @@ export default function BatchSearch() {
     const [results, setResults] = useState()
     const [resultsLoading, setResultsLoading] = useState(false)
 
-    const search = (collections = selectedCollections, offset = 0) => {
-        if (!terms?.trim() || !selectedCollections) return null
+    const search = (collections = searchCollections, offset = 0) => {
+        if (!terms?.trim() || !searchCollections) return null
         const allTerms = terms.trim().split('\n')
 
         const searchResults = []
@@ -125,7 +125,7 @@ export default function BatchSearch() {
                     <TextField
                         variant="standard"
                         label="Batch search queries (one per line)"
-                        rows="4"
+                        minRows={4}
                         margin="normal"
                         maxRows={limits?.batch || Infinity}
                         value={terms}
@@ -167,4 +167,4 @@ export default function BatchSearch() {
             </Grid>
         </Grid>
     )
-}
+})

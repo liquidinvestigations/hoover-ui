@@ -1,4 +1,6 @@
-import { makeAutoObservable } from 'mobx'
+import { ParsedUrlQuery } from 'querystring'
+
+import { makeAutoObservable, reaction } from 'mobx'
 import qs from 'qs'
 
 import { AggregationsKey, SearchQueryParams, SourceField } from '../../Types'
@@ -37,6 +39,8 @@ export class SearchStore {
 
     searchResultsStore: SearchResultsStore
 
+    queuedQuery: ParsedUrlQuery | undefined = undefined
+
     constructor(private readonly sharedStore: SharedStore) {
         this.searchViewStore = new SearchViewStore(sharedStore, this)
         this.searchAggregationsStore = new SearchAggregationsStore(sharedStore, this)
@@ -45,6 +49,12 @@ export class SearchStore {
         this.filtersStore = new FiltersStore(this)
 
         makeAutoObservable(this)
+    }
+
+    queueSearch = (query: ParsedUrlQuery): void => {
+        if (query.q) {
+            this.queuedQuery = query
+        }
     }
 
     parseSearchParams = (search: string): Partial<SearchQueryParams> => {
