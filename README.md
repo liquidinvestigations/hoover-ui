@@ -35,13 +35,13 @@ You can work on this repository by either using some already existing backend se
 
 ### Only run the UI code, use existing backend
 
-To run UI on localhost set environment variable `API_URL=https://hoover.your.server.url` and `REWRITE_API=true`
+To run UI on localhost set environment variable `API_URL=https://hoover.your.server.url`
 Also add `NODE_TLS_REJECT_UNAUTHORIZED=0` to allow local proxy without SSL.
 You can set environment variables in your OS shell or as a part of the startup script in `package.json`
 
     "scripts": {
         ...
-        "dev": "cross-env API_URL=https://hoover.your.server.url REWRITE_API=1 NODE_TLS_REJECT_UNAUTHORIZED=0 next dev -p 8000 -H 0.0.0.0",
+        "dev": "cross-env API_URL=https://hoover.your.server.url NODE_TLS_REJECT_UNAUTHORIZED=0 next dev -p 8000 -H 0.0.0.0",
         ...
     }
 
@@ -98,7 +98,6 @@ Any additional library with icons in SVG format can be added, for example [Boots
 ## Environment variables
 
 - **API_URL (required)** - URL of the backend server
-- **REWRITE_API (boolean default unset)** - controls setting up proxy to backend API (for local development)
 - **AGGREGATIONS_SPLIT (default 1)** - divider number for queuing concurrent requests to aggregations search API endpoint (1 - all requsts are concurrent, 2 - requests are divided into two concurrent packs running one after another, 3 - three packs, etc.)
 - **MAX_SEARCH_RETRIES (default 1)** - number of search retries in synchronous search mode
 - **SEARCH_RETRY_DELAY (default 3000)** - search retry delay in synchronous mode in milliseconds

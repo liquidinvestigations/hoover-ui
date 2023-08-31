@@ -10,9 +10,7 @@ import { CollectionData, DocumentData, Limits, User } from '../Types'
 
 import { SearchFields } from './buildSearchQuery'
 
-import type { SearchQueryParams, SearchQueryType } from '../Types'
-
-const { API_URL } = process.env
+import type { SearchQueryParams } from '../Types'
 
 const prefix = '/api/v1/'
 
@@ -36,7 +34,7 @@ export const buildUrl = (...paths: PathPart[]) => {
 }
 
 export const fetchJson = <T>(url: string, opts: FetchOptions = {}) => {
-    const fetchUrl = (typeof window === 'undefined' ? API_URL : '') + url
+    const fetchUrl = (process.env.API_URL ?? '') + url
     const fetchInit = {
         ...opts,
         timeout: 100000,

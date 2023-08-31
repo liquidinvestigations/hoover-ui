@@ -3,7 +3,7 @@ const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
 
 const {
     API_URL,
-    REWRITE_API,
+
     API_RETRY_DELAY_MIN = 500,
     API_RETRY_DELAY_MAX = 10000,
     API_RETRY_COUNT = 4,
@@ -23,6 +23,8 @@ const {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     env: {
+        API_URL,
+
         API_RETRY_DELAY_MIN,
         API_RETRY_DELAY_MAX,
         API_RETRY_COUNT,
@@ -94,95 +96,6 @@ const nextConfig = {
             permanent: true,
         },
     ],
-    rewrites: () =>
-        REWRITE_API
-            ? [
-                  {
-                      source: '/api/geo',
-                      destination: API_URL + '/api/geo',
-                  },
-                  {
-                      source: '/api/map/:path*',
-                      destination: API_URL + '/api/map/:path*',
-                  },
-                  {
-                      source: '/api/v1/whoami',
-                      destination: API_URL + '/api/v1/whoami',
-                  },
-                  {
-                      source: '/api/v1/batch',
-                      destination: API_URL + '/api/v1/batch',
-                  },
-                  {
-                      source: '/api/v1/limits',
-                      destination: API_URL + '/api/v1/limits',
-                  },
-                  {
-                      source: '/api/v1/collections',
-                      destination: API_URL + '/api/v1/collections',
-                  },
-                  {
-                      source: '/api/v1/search_fields',
-                      destination: API_URL + '/api/v1/search_fields',
-                  },
-                  {
-                      source: '/api/v1/search',
-                      destination: API_URL + '/api/v1/search',
-                  },
-                  {
-                      source: '/api/v1/async_search',
-                      destination: API_URL + '/api/v1/async_search',
-                  },
-                  {
-                      source: '/api/v1/async_search/:uuid',
-                      destination: API_URL + '/api/v1/async_search/:uuid',
-                  },
-                  {
-                      source: '/api/v1/upload/',
-                      destination: API_URL + '/api/v1/upload/',
-                  },
-                  {
-                      source: '/api/v1/get_uploads',
-                      destination: API_URL + '/api/v1/get_uploads',
-                  },
-                  {
-                      source: '/api/v1/:collection/:directory/get_directory_uploads',
-                      destination: API_URL + '/api/v1/:collection/:directory/get_directory_uploads',
-                  },
-                  {
-                      source: '/api/v1/doc/:collection/:hash/json',
-                      destination: API_URL + '/api/v1/doc/:collection/:hash/json',
-                  },
-                  {
-                      source: '/api/v1/doc/:collection/:hash/locations',
-                      destination: API_URL + '/api/v1/doc/:collection/:hash/locations',
-                  },
-                  {
-                      source: '/api/v1/doc/:collection/:hash/tags',
-                      destination: API_URL + '/api/v1/doc/:collection/:hash/tags',
-                  },
-                  {
-                      source: '/api/v1/doc/:collection/:hash/tags/:id',
-                      destination: API_URL + '/api/v1/doc/:collection/:hash/tags/:id',
-                  },
-                  {
-                      source: '/api/v1/doc/:collection/:hash/raw/:filename',
-                      destination: API_URL + '/api/v1/doc/:collection/:hash/raw/:filename',
-                  },
-                  {
-                      source: '/api/v1/doc/:collection/:hash/pdf-preview',
-                      destination: API_URL + '/api/v1/doc/:collection/:hash/pdf-preview',
-                  },
-                  {
-                      source: '/api/v1/doc/:collection/:hash/ocr/:tag',
-                      destination: API_URL + '/api/v1/doc/:collection/:hash/ocr/:tag',
-                  },
-                  {
-                      source: '/api/v1/doc/:collection/:hash/thumbnail/:size(100|200|400).jpg',
-                      destination: API_URL + '/api/v1/doc/:collection/:hash/thumbnail/:size.jpg',
-                  },
-              ]
-            : [],
 }
 
 module.exports = nextConfig
