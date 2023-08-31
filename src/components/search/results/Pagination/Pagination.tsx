@@ -25,7 +25,7 @@ export const Pagination: FC = observer(() => {
         },
     } = useSharedStore()
 
-    if (!query) {
+    if (!query || !collectionsData) {
         return null
     }
 
