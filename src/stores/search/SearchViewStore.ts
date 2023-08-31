@@ -1,10 +1,8 @@
-import { Button } from '@mui/material'
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
 import { ChangeEvent, ReactNode, RefObject } from 'react'
 import { Entry } from 'type-fest'
 
 import { availableColumns } from '../../constants/availableColumns'
-import { reactIcons } from '../../constants/icons'
 import { Category } from '../../Types'
 import { SharedStore } from '../SharedStore'
 
@@ -130,14 +128,17 @@ export class SearchViewStore {
             selection.add(name)
         }
 
-        this.setSearchCollections(this.sharedStore.collectionsData.map((c) => c.name).filter((name) => selection.has(name)))
+        if (this.sharedStore.collectionsData) {
+            this.setSearchCollections(this.sharedStore.collectionsData.map((c) => c.name).filter((name) => selection.has(name)))
+        }
+
         this.searchStore.search()
     }
 
     handleAllSearchCollectionsToggle = () => {
-        if (this.sharedStore.collectionsData.length === this.searchCollections.length) {
+        if (this.sharedStore.collectionsData?.length === this.searchCollections.length) {
             this.setSearchCollections([])
-        } else {
+        } else if (this.sharedStore.collectionsData) {
             this.setSearchCollections(this.sharedStore.collectionsData.map((c) => c.name))
         }
         this.searchStore.search()

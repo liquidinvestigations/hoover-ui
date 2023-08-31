@@ -4,6 +4,7 @@ import { FC } from 'react'
 import Highlighter from 'react-highlight-words'
 
 import { formatThousands } from '../../../../utils/utils'
+import { Loading } from '../../../common/Loading/Loading'
 import { useSharedStore } from '../../../SharedStoreProvider'
 
 import { useStyles } from './CollectionsFilter.styles'
@@ -20,8 +21,10 @@ export const CollectionsFilter: FC = observer(() => {
 
     return (
         <List dense disablePadding>
-            {!collectionsData?.length ? (
-                <Typography>no collections available</Typography>
+            {!collectionsData ? (
+                <Loading />
+            ) : !collectionsData?.length ? (
+                <Typography className={classes.noCollections}>no collections available</Typography>
             ) : (
                 <>
                     {collectionsData

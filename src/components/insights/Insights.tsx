@@ -18,44 +18,28 @@ import { TaskTable } from './TaskTable/TaskTable'
 export const Insights: FC = observer(() => {
     const { classes } = useStyles()
 
-    const { collectionsData } = useSharedStore()
-
-    const [collectionsState, setCollectionsState] = useState(collectionsData)
-    const intervalRef: MutableRefObject<undefined | ReturnType<typeof setInterval>> = useRef(undefined)
-    useEffect(() => {
-        if (collectionsState) {
-            search({ collections: [collectionsState[0].name] })
-        }
-
-        intervalRef.current = setInterval(async () => {
-            setCollectionsState(await collectionsInsights())
-        }, 60000)
-
-        return () => {
-            clearInterval(intervalRef.current)
-        }
-    }, [])
+    const { collectionsData, fields, user } = useSharedStore()
 
     const { query, search } = useSharedStore().searchStore
 
     useEffect(() => {
         if (query?.collections) {
-            setCurrentCollection(collectionsData.find((collection) => collection.name === query.collections[0]) as CollectionData)
-        } else {
-            search({ collections: [collectionsState[0].name] })
+            setCurrentCollection(collectionsData?.find((collection) => collection.name === query.collections[0]) as CollectionData)
+        } else if (collectionsData && fields && user) {
+            search({ collections: [collectionsData[0].name], q: '*' })
         }
-    }, [query?.collections])
+    }, [query?.collections, collectionsData, fields, user])
 
-    const [currentCollection, setCurrentCollection] = useState(collectionsData[0])
+    const [currentCollection, setCurrentCollection] = useState(collectionsData?.[0])
     const handleMenuClick = (collection: CollectionData) => () => {
-        search({ collections: [collection.name] })
+        search({ collections: [collection.name], q: '*' })
     }
 
     return (
         <SplitPaneLayout
             left={
                 <div>
-                    {collectionsState.map((collection) => (
+                    {collectionsData?.map((collection) => (
                         <InsightsTitle
                             key={collection.name}
                             name={collection.title}
@@ -65,8 +49,8 @@ export const Insights: FC = observer(() => {
                     ))}
                 </div>
             }>
-            {currentCollection && (
-                <div className={classes.root}>
+            <div className={classes.root}>
+                {currentCollection && (
                     <Grid container spacing={2}>
                         <Grid item xs={3}>
                             <Paper>
@@ -156,8 +140,8 @@ export const Insights: FC = observer(() => {
                             </Paper>
                         </Grid>
                     </Grid>
-                </div>
-            )}
+                )}
+            </div>
         </SplitPaneLayout>
     )
 })

@@ -174,21 +174,6 @@ interface HighlightField {
     require_field_match: boolean
 }
 
-export type FileType =
-    | 'archive'
-    | 'audio'
-    | 'default'
-    | 'doc'
-    | 'email'
-    | 'email-archive'
-    | 'folder'
-    | 'html'
-    | 'image'
-    | 'pdf'
-    | 'text'
-    | 'video'
-    | 'xls'
-
 export interface Hit {
     highlight: Record<ResultField, string[]>
     _collection: string
@@ -243,6 +228,32 @@ export interface Result {
         skipped: number
         successful: number
     }
+}
+
+export interface BatchResponse {
+    hits: Hit[]
+    took: number
+    status: number
+    _shards: {
+        total: number
+        failed: number
+        skipped: number
+        successful: number
+    }
+    timed_out: boolean
+    _query_string: string
+}
+
+export interface BatchSearchResponse {
+    status: string
+    responses: BatchResponse[]
+}
+
+export interface BatchResult {
+    term: string
+    url: string
+    error?: boolean
+    count?: number
 }
 
 export interface Eta {

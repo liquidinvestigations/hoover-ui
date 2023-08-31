@@ -1,41 +1,22 @@
 import { Box, Typography } from '@mui/material'
-import { makeStyles } from 'tss-react/mui'
+import { FC } from 'react'
 
-const useStyles = makeStyles()((theme) => ({
-    progress: {
-        float: 'right',
-    },
-    results: {
-        padding: 0,
-        listStyle: 'none',
-        marginTop: theme.spacing(1),
-    },
-    noHits: {
-        '& a': {
-            color: '#888',
-        },
-    },
-    resultLink: {
-        display: 'block',
-        fontSize: '16px',
-    },
-    result: {
-        width: '7em',
-        fontSize: '80%',
-        fontWeight: 'normal',
-        textDecoration: 'none',
-        display: 'inline-block',
-        color: '#888',
-    },
-    error: {
-        color: 'red',
-    },
-}))
+import { BatchResult } from '../../../Types'
 
-const getResultsCount = (results) => (results.count === undefined ? Infinity : results.count)
-const resultsCompareFn = (a, b) => getResultsCount(b) - getResultsCount(a)
+import { useStyles } from './BatchResults.styles'
 
-export default function BatchResults({ loading, results, batchSize, offset, terms }) {
+const getResultsCount = (results: BatchResult) => (results.count === undefined ? Infinity : results.count)
+const resultsCompareFn = (a: BatchResult, b: BatchResult) => getResultsCount(b) - getResultsCount(a)
+
+interface BatchResultsProps {
+    loading: boolean
+    results: BatchResult[]
+    batchSize: number
+    offset: number
+    terms: string[]
+}
+
+export const BatchResults: FC<BatchResultsProps> = ({ loading, results, batchSize, offset, terms }) => {
     const { classes, cx } = useStyles()
 
     const page = offset / batchSize

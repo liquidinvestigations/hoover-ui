@@ -61,7 +61,7 @@ export const Tags: FC<{ toolbarButtons: ToolbarLink[] }> = observer(({ toolbarBu
                         body: JSON.stringify({
                             type: 'aggregations',
                             fieldList: ['tags', 'priv-tags'],
-                            collections: collectionsData.map((c: CollectionData) => c.name),
+                            collections: collectionsData?.map((c: CollectionData) => c.name),
                         }),
                     })
 
