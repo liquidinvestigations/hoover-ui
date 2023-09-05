@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 
+import { X_HOOVER_PDF_SPLIT_PAGE_RANGE } from '../../backend/api'
 import { useSharedStore } from '../SharedStoreProvider'
 
 import Document from './Document'
@@ -17,8 +18,9 @@ export default function Viewer({ url, cMapUrl = '/build/static/cmaps', cMapPacke
     const {
         hashStore: { hashState, setHashState },
         documentStore: {
+            subTab,
             chunkTab,
-            pdfDocumentInfo: { chunks },
+            pdfDocumentInfo,
         },
     } = useSharedStore()
     const [pageIndex, setPageIndex] = useState(0)
@@ -41,8 +43,9 @@ export default function Viewer({ url, cMapUrl = '/build/static/cmaps', cMapPacke
     }, 300)
 
     const getDocumentUrl = () => {
+        const { chunks } = pdfDocumentInfo[subTab] ?? {}
         if (!chunks?.length) return url
-        return `${url}?X-Hoover-PDF-Split-Page-Range=${chunks[chunkTab]}`
+        return `${url}?${X_HOOVER_PDF_SPLIT_PAGE_RANGE}=${chunks[chunkTab]}`
     }
 
     return (

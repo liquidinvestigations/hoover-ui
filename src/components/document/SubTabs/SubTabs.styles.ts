@@ -29,7 +29,7 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         },
 
         '& .totalCount': {
-            padding: `${theme.spacing(0.25)} ${theme.spacing(1)}`,
+            padding: `0 ${theme.spacing(1)}`,
             borderRadius: theme.spacing(1),
             color: theme.palette.common.white,
             fontSize: '12px',

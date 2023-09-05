@@ -1,7 +1,7 @@
 import { OutgoingHttpHeaders } from 'http'
 
 import memoize from 'lodash/memoize'
-import fetch from 'node-fetch'
+import fetch, { Response } from 'node-fetch'
 import { AbortSignal } from 'node-fetch/externals'
 import { stringify } from 'qs'
 
@@ -10,17 +10,22 @@ import { CollectionData, DocumentData, Limits, User } from '../Types'
 
 import { SearchFields } from './buildSearchQuery'
 
-import type { SearchQueryParams, SearchQueryType } from '../Types'
+import type { SearchQueryParams } from '../Types'
 
 const { API_URL } = process.env
 
 const prefix = '/api/v1/'
+
+export const X_HOOVER_REQUEST_HANDLE_DURATION_MS = 'x-hoover-request-handle-duration-ms'
+export const X_HOOVER_PDF_SPLIT_PAGE_RANGE = 'X-Hoover-PDF-Split-Page-Range'
+export const X_HOOVER_PDF_EXTRACT_TEXT = 'X-Hoover-PDF-Extract-Text'
 
 interface FetchOptions {
     headers?: OutgoingHttpHeaders
     method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
     body?: string
     signal?: AbortSignal
+    maxRetryCount?: number
 }
 
 type PathPart = string | Record<string, string | boolean> | undefined
@@ -35,7 +40,7 @@ export const buildUrl = (...paths: PathPart[]) => {
     return [prefix, ...paths].join('/').replace(/\/+/g, '/') + (queryObj ? `?${stringify(queryObj)}` : '')
 }
 
-export const fetchJson = <T>(url: string, opts: FetchOptions = {}) => {
+export const fetchWithHeaders = (url: string, opts: FetchOptions = {}): Promise<Response> => {
     const fetchUrl = (typeof window === 'undefined' ? API_URL : '') + url
     const fetchInit = {
         ...opts,
@@ -49,34 +54,39 @@ export const fetchJson = <T>(url: string, opts: FetchOptions = {}) => {
 
     const min = process.env.API_RETRY_DELAY_MIN as unknown as number
     const max = process.env.API_RETRY_DELAY_MAX as unknown as number
-    const maxRetryCount = process.env.API_RETRY_COUNT as unknown as number
+    const maxRetryCount = opts.maxRetryCount ?? (process.env.API_RETRY_COUNT as unknown as number) ?? 1
 
     let retryCounter = 0
     const retryDelay = () => min + (retryCounter / (maxRetryCount - 1)) * (max - min)
 
-    return new Promise<T>((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         const fetchFn = () =>
             fetch(fetchUrl, fetchInit)
                 .then((res) => {
                     if (res.ok) {
-                        if (res.status === 204) {
-                            resolve(true as T)
-                        } else {
-                            resolve(res.json())
-                        }
+                        resolve(res)
                     } else {
                         if (retryCounter >= maxRetryCount) {
                             reject(`status (${res.status}) -> ${res.url}`)
+                        } else {
+                            retryCounter++
+                            setTimeout(fetchFn, retryDelay())
                         }
-
-                        retryCounter++
-                        setTimeout(fetchFn, retryDelay())
                     }
                 })
                 .catch((reason) => reject(reason))
 
         void fetchFn()
     })
+}
+
+export const fetchJson = async <T>(url: string, opts: FetchOptions = {}) => {
+    const response = await fetchWithHeaders(url, opts)
+    if (response.status === 204) {
+        return true as T
+    } else {
+        return await response.json() as T
+    }
 }
 
 export const whoami = (): Promise<User> => fetchJson(buildUrl('whoami'))

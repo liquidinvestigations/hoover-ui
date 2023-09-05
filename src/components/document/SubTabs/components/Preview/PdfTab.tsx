@@ -24,7 +24,7 @@ export const PdfTab = observer(() => {
             chunkTab,
             handleSubTabChange,
             handleChunkSubTabChange,
-            pdfDocumentInfo: { chunks },
+            pdfDocumentInfo,
             documentSearchStore: { query, setActiveSearch, pdfSearchStore },
         },
     } = useSharedStore()
@@ -42,7 +42,9 @@ export const PdfTab = observer(() => {
             {!printMode && tabs.length > 1 && (
                 <Box>
                     <Tabs value={subTab} onChange={handleSubTabChange} variant="scrollable" scrollButtons="auto">
-                        {tabs.map(({ icon, name }, index) => (
+                        {tabs.map(({ icon, name }, index) => {
+                            const documentSearchCount = pdfSearchStore.getDocumentSearchResultsCount(index)
+                            return (
                             <Tab
                                 key={index}
                                 icon={icon}
@@ -51,31 +53,51 @@ export const PdfTab = observer(() => {
                                         {name}
                                         {query && query.length > 2 && (
                                             <span className={classes.searchCount}>
-                                                {pdfSearchStore.loading ? (
-                                                    <Loading size={16} />
+                                                {pdfSearchStore.getDocumentLoadingState(index) && !Boolean(documentSearchCount)  ? (
+                                                    <Loading size={12} />
                                                 ) : (
-                                                    <span className="totalCount">{pdfSearchStore.getSearchResultsCount()}</span>
+                                                    <span className="totalCount">{documentSearchCount}</span>
                                                 )}
                                             </span>
                                         )}
                                     </>
                                 }
                             />
-                        ))}
+                        )})}
                     </Tabs>
                 </Box>
             )}
             <Box className={classes.subTab}>
                 {tabs.map(({ tag }, index) => {
+                    if (!pdfDocumentInfo[index]) return
+                    const { chunks } = pdfDocumentInfo[index]
                     if (subTab === index && !tag?.startsWith('translated_')) {
                         if (chunks?.length > 1) {
                             return (
                                 <>
                                     <Box key={tag}>
                                         <Tabs value={chunkTab} onChange={handleChunkSubTabChange} variant="scrollable" scrollButtons="auto">
-                                            {chunks.map((chunk: string) => (
-                                                <Tab key={chunk} label={chunk} />
-                                            ))}
+                                            {chunks.map((chunk: string) => {
+                                                const chunkResultsCount = pdfSearchStore.getChunkSearchResultsCount(chunk)
+                                                return (
+                                                <Tab
+                                                    key={chunk}
+                                                    label={
+                                                        <>
+                                                            {chunk}
+                                                            {query && query.length > 2 && (
+                                                                <span className={classes.searchCount}>
+                                                                    {chunkResultsCount === undefined ? (
+                                                                        <Loading size={12} />
+                                                                    ) : (
+                                                                        <span className="totalCount">{chunkResultsCount}</span>
+                                                                    )}
+                                                                </span>
+                                                            )}
+                                                        </>
+                                                    }
+                                                />
+                                            )})}
                                         </Tabs>
                                     </Box>
                                     <Box className={classes.subTab}>

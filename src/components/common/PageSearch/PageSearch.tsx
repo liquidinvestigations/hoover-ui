@@ -6,7 +6,9 @@ import { Box, IconButton, InputAdornment, TextField } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import React, { ChangeEvent } from 'react'
 
+import { formatETATime } from '../../../utils/utils'
 import { useSharedStore } from '../../SharedStoreProvider'
+import { Loading } from '../Loading/Loading'
 
 import { useStyles } from './PageSearch.styles'
 
@@ -15,7 +17,13 @@ export const PageSearch = observer(() => {
     const {
         searchStore: { query },
         documentStore: {
-            documentSearchStore: { inputValue, setInputValue, activeSearch, clearQuery },
+            documentSearchStore: {
+                inputValue,
+                setInputValue,
+                activeSearch,
+                clearQuery,
+                pdfSearchStore: { getEstimatedTimeLeft, getLoadingPercentage, loading },
+            },
         },
     } = useSharedStore()
 
@@ -30,19 +38,25 @@ export const PageSearch = observer(() => {
 
     const handleChipClick = (chip: string) => {
         if (inputValue && !inputValue.endsWith(' ')) {
-            setInputValue(`${inputValue} ${chip}`);
+            setInputValue(`${inputValue} ${chip}`)
         } else {
-            setInputValue(chip);
+            setInputValue(chip)
         }
     }
-    
+
+    const loadingPercentage = getLoadingPercentage();
+    const estimatedTimeLeft = formatETATime(getEstimatedTimeLeft());
+
     return (
         <>
-            {query?.q.split(' ').filter((chip) => !inputValue.includes(chip)).map((chip) => (
-                <Box key={chip} className={classes.chip} onClick={() => handleChipClick(chip)}>
-                    {chip}
-                </Box>
-            ))}
+            {query?.q
+                .split(' ')
+                .filter((chip) => !inputValue.includes(chip))
+                .map((chip) => (
+                    <Box key={chip} className={classes.chip} onClick={() => handleChipClick(chip)}>
+                        {chip}
+                    </Box>
+                ))}
             <TextField
                 autoComplete="off"
                 sx={{ display: 'block' }}
@@ -55,14 +69,19 @@ export const PageSearch = observer(() => {
                 onChange={handleInputChange}
                 InputProps={{
                     startAdornment: (
-                        <InputAdornment position="start">
-                            <SearchIcon />
+                        <InputAdornment position="start" className={classes.startAdornment}>
+                            {loading ? <Loading size={16} /> : <SearchIcon />}
                         </InputAdornment>
                     ),
                     endAdornment: (
                         <InputAdornment position="end">
-                            {inputValue && activeSearch.getSearchResultsCount() > 0 && (
-                                <Box className={classes.searchCount}>
+                            {inputValue && inputValue.length >= 3 && loading && loadingPercentage && loadingPercentage <= 100 && (
+                                <Box className={classes.adornment}>
+                                    {estimatedTimeLeft} | {loadingPercentage}%
+                                </Box>
+                            )}
+                            {inputValue && inputValue.length >= 3 && activeSearch.getSearchResultsCount() > 0 && (
+                                <Box className={classes.adornment}>
                                     {activeSearch.getCurrentHighlightIndex() + 1} of {activeSearch.getSearchResultsCount()}
                                 </Box>
                             )}

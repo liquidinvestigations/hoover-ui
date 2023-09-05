@@ -50,7 +50,16 @@ export const useStyles = makeStyles()((theme) => ({
             },
         },
     },
-    searchCount: {
+    startAdornment: {
+        '&>div': {
+            padding: 0,
+        },
+    },
+    adornment: {
         color: theme.palette.common.white,
+        padding: '0 8px',
+        borderRadius: '25px',
+        marginRight: '8px',
+        backgroundColor: '#30b0ff',
     },
 }))

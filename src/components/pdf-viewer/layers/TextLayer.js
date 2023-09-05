@@ -36,11 +36,12 @@ const TextLayer = observer(({ page, rotation, scale }) => {
     const renderTask = useRef()
     const {
         documentStore: {
-            tabs,
             subTab,
+            chunkTab,
+            pdfDocumentInfo,
             documentSearchStore: {
                 query,
-                pdfSearchStore: { searchResults, currentHighlightIndex, scrollToHighlight },
+                pdfSearchStore: { searchResults, currentHighlightIndex },
             },
         },
     } = useSharedStore()
@@ -75,10 +76,11 @@ const TextLayer = observer(({ page, rotation, scale }) => {
                 viewport,
             })
 
-            if (query && searchResults[tabs[subTab].tag]?.length) {
+            const currentPdfSearchResults = searchResults[subTab]?.[pdfDocumentInfo[subTab]?.chunks?.[chunkTab]]
+            if (query && currentPdfSearchResults?.length) {
                 renderTask.current.promise
                     .then(() => {
-                        const currentPageSearchResults = searchResults[tabs[subTab].tag].filter((match) => match.pageNum === page.pageNumber)
+                        const currentPageSearchResults = currentPdfSearchResults.filter((match) => match.pageNum === page.pageNumber)
                         if (query?.length >= 3 && currentPageSearchResults?.length > 0) generateHighlights(currentPageSearchResults, container, query)
                     })
                     .finally(() => addActiveClassToMarks(containerRef.current, currentHighlightIndex))
@@ -91,7 +93,7 @@ const TextLayer = observer(({ page, rotation, scale }) => {
       
     useEffect(() => {
         addActiveClassToMarks(containerRef.current, currentHighlightIndex)
-    }, [currentHighlightIndex, scrollToHighlight, searchResults])
+    }, [currentHighlightIndex, searchResults])
 
     return <div ref={containerRef} className={classes.container + ' textLayer'} />
 })
