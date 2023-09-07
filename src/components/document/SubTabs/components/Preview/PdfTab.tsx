@@ -53,10 +53,10 @@ export const PdfTab = observer(() => {
                                         {name}
                                         {query && query.length > 2 && (
                                             <span className={classes.searchCount}>
-                                                {pdfSearchStore.getDocumentLoadingState(index) && !Boolean(documentSearchCount)  ? (
+                                                {pdfSearchStore.getDocumentLoadingState(index) && !documentSearchCount  ? (
                                                     <Loading size={12} />
                                                 ) : (
-                                                    <span className="totalCount">{documentSearchCount}</span>
+                                                    <span className={`total-count${!documentSearchCount ? ' no-results' : ''}`}>{documentSearchCount}</span>
                                                 )}
                                             </span>
                                         )}
@@ -69,13 +69,12 @@ export const PdfTab = observer(() => {
             )}
             <Box className={classes.subTab}>
                 {tabs.map(({ tag }, index) => {
-                    if (!pdfDocumentInfo[index]) return
-                    const { chunks } = pdfDocumentInfo[index]
+                    const { chunks } = pdfDocumentInfo
                     if (subTab === index && !tag?.startsWith('translated_')) {
                         if (chunks?.length > 1) {
                             return (
                                 <>
-                                    <Box key={tag}>
+                                    <Box key={tag} className={classes.chunkTabsContainer}>
                                         <Tabs value={chunkTab} onChange={handleChunkSubTabChange} variant="scrollable" scrollButtons="auto">
                                             {chunks.map((chunk: string) => {
                                                 const chunkResultsCount = pdfSearchStore.getChunkSearchResultsCount(chunk)
@@ -90,7 +89,7 @@ export const PdfTab = observer(() => {
                                                                     {chunkResultsCount === undefined ? (
                                                                         <Loading size={12} />
                                                                     ) : (
-                                                                        <span className="totalCount">{chunkResultsCount}</span>
+                                                                        <span className={`total-count${!chunkResultsCount ? ' no-results' : ''}`}>{chunkResultsCount}</span>
                                                                     )}
                                                                 </span>
                                                             )}

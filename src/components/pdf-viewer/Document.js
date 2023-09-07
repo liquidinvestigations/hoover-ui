@@ -156,7 +156,7 @@ export const Document = observer(({ initialPageIndex, onPageIndexChange, rendere
     }, [status, goToPage, initialPageIndex, pagesRefs])
     
     useEffect(() => {
-        const { chunks } = pdfDocumentInfo[subTab]
+        const { chunks } = pdfDocumentInfo
         if (!pagesRefs?.length) return
 
         const activeSearchResults = searchResults[subTab]?.[chunks[chunkTab]]

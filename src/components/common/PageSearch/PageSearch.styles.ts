@@ -56,10 +56,19 @@ export const useStyles = makeStyles()((theme) => ({
         },
     },
     adornment: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         color: theme.palette.common.white,
-        padding: '0 8px',
+        padding: `0 ${theme.spacing(1)}`,
         borderRadius: '25px',
         marginRight: '8px',
-        backgroundColor: '#30b0ff',
+        backgroundColor: '#24abff',
+
+        '&>div': {
+            padding: 0,
+            paddingRight: theme.spacing(1),
+            height: '18px',
+        },
     },
 }))

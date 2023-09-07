@@ -43,8 +43,8 @@ export default function Viewer({ url, cMapUrl = '/build/static/cmaps', cMapPacke
     }, 300)
 
     const getDocumentUrl = () => {
-        const { chunks } = pdfDocumentInfo[subTab] ?? {}
-        if (!chunks?.length) return url
+        const { chunks } = pdfDocumentInfo ?? {}
+        if (!chunks || chunks.length < 2) return url
         return `${url}?${X_HOOVER_PDF_SPLIT_PAGE_RANGE}=${chunks[chunkTab]}`
     }
 

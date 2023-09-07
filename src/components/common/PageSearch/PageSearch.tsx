@@ -44,8 +44,9 @@ export const PageSearch = observer(() => {
         }
     }
 
-    const loadingPercentage = getLoadingPercentage();
-    const estimatedTimeLeft = formatETATime(getEstimatedTimeLeft());
+    const loadingPercentage = getLoadingPercentage()
+    const estimatedTimeLeft = formatETATime(getEstimatedTimeLeft())
+    const hasSearchResults = inputValue && inputValue.length >= 3 && activeSearch.getSearchResultsCount() > 0
 
     return (
         <>
@@ -70,30 +71,38 @@ export const PageSearch = observer(() => {
                 InputProps={{
                     startAdornment: (
                         <InputAdornment position="start" className={classes.startAdornment}>
-                            {loading ? <Loading size={16} /> : <SearchIcon />}
+                            <SearchIcon />
                         </InputAdornment>
                     ),
                     endAdornment: (
                         <InputAdornment position="end">
-                            {inputValue && inputValue.length >= 3 && loading && loadingPercentage && loadingPercentage <= 100 && (
+                            {inputValue && inputValue.length >= 3 && loading && !!loadingPercentage && loadingPercentage <= 100 && (
                                 <Box className={classes.adornment}>
+                                    <Loading size={18} variant={loadingPercentage > 0 ? 'determinate' : 'indeterminate'} value={loadingPercentage} />
                                     {estimatedTimeLeft} | {loadingPercentage}%
                                 </Box>
                             )}
-                            {inputValue && inputValue.length >= 3 && activeSearch.getSearchResultsCount() > 0 && (
+                            {hasSearchResults && (
                                 <Box className={classes.adornment}>
                                     {activeSearch.getCurrentHighlightIndex() + 1} of {activeSearch.getSearchResultsCount()}
                                 </Box>
                             )}
-                            <IconButton onClick={handleClearInput}>
-                                <CloseIcon />
-                            </IconButton>
-                            <IconButton onClick={activeSearch.nextSearchResult}>
-                                <ArrowDownwardIcon />
-                            </IconButton>
-                            <IconButton onClick={activeSearch.previousSearchResult}>
-                                <ArrowUpwardIcon />
-                            </IconButton>
+                            {inputValue && (
+                                <IconButton onClick={handleClearInput}>
+                                    <CloseIcon />
+                                </IconButton>
+                            )}
+
+                            {hasSearchResults && (
+                                <>
+                                    <IconButton onClick={activeSearch.nextSearchResult}>
+                                        <ArrowDownwardIcon />
+                                    </IconButton>
+                                    <IconButton onClick={activeSearch.previousSearchResult}>
+                                        <ArrowUpwardIcon />
+                                    </IconButton>
+                                </>
+                            )}
                         </InputAdornment>
                     ),
                 }}

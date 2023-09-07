@@ -38,26 +38,31 @@ export const SubTabs = observer(() => {
             {!printMode && tabs.length > 1 && (
                 <Box>
                     <Tabs value={subTab} onChange={handleSubTabChange} variant="scrollable" scrollButtons="auto">
-                        {tabs.map(({ icon, name }, index) => (
-                            <Tab
-                                key={index}
-                                icon={icon}
-                                label={
-                                    <>
-                                        {name}
-                                        {query && query.length > 2 && (
-                                            <span className={classes.searchCount}>
-                                                {textSearchStore.loading ? (
-                                                    <Loading size={16} />
-                                                ) : (
-                                                    <span className="totalCount">{textSearchStore.searchResults[index]?.occurrenceCount || 0}</span>
-                                                )}
-                                            </span>
-                                        )}
-                                    </>
-                                }
-                            />
-                        ))}
+                        {tabs.map(({ icon, name }, index) => {
+                            const textSubTabSearchCount = textSearchStore.searchResults[index]?.occurrenceCount || 0
+                            return (
+                                <Tab
+                                    key={index}
+                                    icon={icon}
+                                    label={
+                                        <>
+                                            {name}
+                                            {query && query.length > 2 && (
+                                                <span className={classes.searchCount}>
+                                                    {textSearchStore.loading ? (
+                                                        <Loading size={16} />
+                                                    ) : (
+                                                        <span className={`total-count${!textSubTabSearchCount ? ' no-results' : ''}`}>
+                                                            {textSubTabSearchCount}
+                                                        </span>
+                                                    )}
+                                                </span>
+                                            )}
+                                        </>
+                                    }
+                                />
+                            )
+                        })}
                     </Tabs>
                 </Box>
             )}

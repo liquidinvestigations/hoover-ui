@@ -267,6 +267,8 @@ export const numberArray = (start: number, count: number) =>
 export function formatETATime(milliseconds: number) {
     const seconds = milliseconds / 1000
 
+    if (!seconds) return '0m'
+
     if (seconds < 3600) {
         const minutes = Math.floor(seconds / 60)
         return `${minutes}m`

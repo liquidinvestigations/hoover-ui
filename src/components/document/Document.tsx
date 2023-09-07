@@ -245,7 +245,7 @@ export const Document = observer(() => {
                 {tabData.searchLoading ? (
                     <Loading size={12} sx={{ color: index === tab ? '' : 'inherit' }} />
                 ) : (
-                    <span className="totalCount">{tabData.searchCount}</span>
+                    <span className={`total-count${!tabData.searchCount ? ' no-results' : ''}`}>{tabData.searchCount}</span>
                 )}
             </span>
         )

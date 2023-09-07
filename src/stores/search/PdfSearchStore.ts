@@ -45,16 +45,16 @@ export class PdfSearchStore {
 
     getDocumentLoadingState = (index: number) => {
         const { pdfDocumentInfo } = this.documentStore
-        if (!pdfDocumentInfo[index] || !this.searchResults[index]) return true
-        const totalChunks = Object.values(pdfDocumentInfo[index])?.reduce((prev, { chunks }) => prev + chunks?.length, 0)
-        const loadedChunks = Object.values(this.searchResults[index])?.reduce((prev, curr) => prev + Object.keys(curr)?.length, 0)
+        if (!pdfDocumentInfo || !this.searchResults[index]) return true
+        const totalChunks = this.getTotalChunks()
+        const loadedChunks = this.getLoadedChunks()
 
         return loadedChunks < totalChunks
     }
 
     getSearchResultsCount = () => {
         const { subTab, chunkTab, pdfDocumentInfo } = this.documentStore
-        const { chunks } = pdfDocumentInfo[subTab]
+        const { chunks } = pdfDocumentInfo
         return this.searchResults[subTab]?.[chunks[chunkTab]]?.length || 0
     }
 
@@ -69,7 +69,7 @@ export class PdfSearchStore {
 
     nextSearchResult = () => {
         const { subTab, chunkTab, pdfDocumentInfo } = this.documentStore
-        const { chunks } = pdfDocumentInfo[subTab]
+        const { chunks } = pdfDocumentInfo
         const chunkResults = this.searchResults[subTab]?.[chunks[chunkTab]]
         if (chunkResults) {
             this.currentHighlightIndex = (this.currentHighlightIndex + 1) % chunkResults.length
@@ -78,7 +78,7 @@ export class PdfSearchStore {
 
     previousSearchResult = () => {
         const { subTab, chunkTab, pdfDocumentInfo } = this.documentStore
-        const { chunks } = pdfDocumentInfo[subTab]
+        const { chunks } = pdfDocumentInfo
         const chunkResults = this.searchResults[subTab]?.[chunks[chunkTab]]
         if (chunkResults) {
             this.currentHighlightIndex = (this.currentHighlightIndex - 1 + chunkResults.length) % chunkResults.length
@@ -104,22 +104,25 @@ export class PdfSearchStore {
     }
 
     clearSearch = () => {
+        this.abortController?.abort()
         this.searchResults = {}
         this.currentHighlightIndex = 0
     }
 
+    getTotalChunks = () => this.documentStore.pdfDocumentInfo?.chunks?.length * this.documentStore.getDocumentUrls().length || 0
+
+    getLoadedChunks = () => Object.values(this.searchResults)?.reduce((prev, curr) => prev + Object.keys(curr)?.length, 0)
+
     getEstimatedTimeLeft = () => {
-        const { pdfDocumentInfo } = this.documentStore
-        const totalChunks = Object.values(pdfDocumentInfo)?.reduce((prev, { chunks }) => prev + chunks?.length, 0)
-        const loadedChunks = Object.values(this.searchResults)?.reduce((prev, curr) => prev + Object.keys(curr)?.length, 0)
+        const totalChunks = this.getTotalChunks()
+        const loadedChunks = this.getLoadedChunks()
         const averageLoadingTime = this.loadingPercentage / loadedChunks
         return averageLoadingTime * totalChunks - this.loadingPercentage
     }
 
     getLoadingPercentage = () => {
-        const { pdfDocumentInfo } = this.documentStore
-        const totalChunks = Object.values(pdfDocumentInfo)?.reduce((prev, { chunks }) => prev + chunks?.length, 0)
-        const loadedChunks = Object.values(this.searchResults)?.reduce((prev, curr) => prev + Object.keys(curr)?.length, 0)
+        const totalChunks = this.getTotalChunks()
+        const loadedChunks = this.getLoadedChunks()
         return Math.floor((loadedChunks * 100) / totalChunks)
     }
 
@@ -161,40 +164,48 @@ export class PdfSearchStore {
         this.currentHighlightIndex = 0
         this.searchResults = {}
         const { pdfDocumentInfo } = this.documentStore
-        let delay = 500
         this.loading = true
+
+        const signal = this.getAbortSignal()
 
         try {
             const documentUrls = this.documentStore.getDocumentUrls()
 
             for (let i = 0; i < documentUrls.length; i++) {
-                for (const chunk of pdfDocumentInfo[i]?.chunks || []) {
+                for (const chunk of pdfDocumentInfo?.chunks || []) {
+                    if (signal?.aborted) return
+
                     const queryParams = new URLSearchParams({
                         [X_HOOVER_PDF_SPLIT_PAGE_RANGE]: chunk,
                         [X_HOOVER_PDF_EXTRACT_TEXT]: '1',
                     })
 
                     const response = await fetchWithHeaders(`${documentUrls[i]}?${queryParams}`, {
-                        signal: this.getAbortSignal(),
+                        signal,
                         maxRetryCount: 1,
                     })
 
                     if (response.status === 200) {
-                        delay = this.getRequestLoadingTime(response)
-
+                        const delay = this.getRequestLoadingTime(response)
                         const pdfTextContent: PdfTextEntry[] = await response.json()
                         const chunkResults = this.searchPdfTextContent(pdfTextContent, query)
-
                         this.setChunkResults(i, { [chunk]: chunkResults })
+
+                        await new Promise((resolve) => setTimeout(resolve, delay * 1000))
                     } else {
                         this.setChunkResults(i, { [chunk]: [] })
                     }
                 }
             }
         } catch (error) {
-            console.error('An error occurred during PDF search: ', error)
+            if (error instanceof DOMException && error.name === 'AbortError') {
+                console.log('Request aborted')
+            } else {
+                console.error('An error occurred during PDF search: ', error)
+                this.loading = false
+            }
         } finally {
-            this.loading = false
+            if (this.getLoadedChunks() === this.getTotalChunks()) this.loading = false
         }
     }
 }

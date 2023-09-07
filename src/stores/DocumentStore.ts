@@ -1,7 +1,7 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
 import { ReactElement, SyntheticEvent } from 'react'
 
-import { createDownloadUrl, createOcrUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI, fetchJson } from '../backend/api'
+import { createDownloadUrl, createOcrUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI, fetchJson, X_HOOVER_PDF_INFO } from '../backend/api'
 import { LocalDocumentData } from '../components/finder/Types'
 import { parentLevels } from '../components/finder/utils'
 import { reactIcons } from '../constants/icons'
@@ -53,7 +53,7 @@ export class DocumentStore {
 
     tabs: Tab[] = []
 
-    pdfDocumentInfo: Record<number, DocumentInfo> = {}
+    pdfDocumentInfo: DocumentInfo = {} as DocumentInfo
 
     pdfTextContent: DocumentRecord<PdfTextEntry> = {}
 
@@ -106,39 +106,19 @@ export class DocumentStore {
         return urls
     }
 
-    getDocumentInfo = () => {
+    getDocumentInfo = async () => {
         if (!this.docRawUrl || this.data?.content['content-type'] !== 'application/pdf') return
 
-        this.getDocumentUrls().forEach(async (url, index) => {
-            const response = await fetchJson(url + new URLSearchParams({ '?X-Hoover-PDF-Info': '1' }))
-            this.pdfDocumentInfo[index] = response as DocumentInfo
+        const responses: DocumentInfo[] = await Promise.all(
+            this.getDocumentUrls().map(async (url) => await fetchJson(url + new URLSearchParams({ [`?${X_HOOVER_PDF_INFO}`]: '1' })))
+        )
+
+        const documentWithMostChunks = responses.reduce((prev, current) => {
+            return current.chunks.length > prev.chunks.length ? current : prev
         })
+
+        this.pdfDocumentInfo = documentWithMostChunks
     }
-
-/*     getPdfTextContent = async () => {
-        const { docRawUrl, digestUrl } = this
-
-        if (!docRawUrl || !digestUrl || this.data?.content['content-type'] !== 'application/pdf') return
-
-        const documentUrls = this.getDocumentUrls()
-
-        for (let i = 0; i < documentUrls.length; i++) {
-            const url = documentUrls[i]
-            const chunkResults: DocumentChunks<PdfTextEntry> = {}
-            if (!this.pdfDocumentInfo[i].chunks?.length) break
-            for (const chunk of this.pdfDocumentInfo[i].chunks) {
-                const queryParams = new URLSearchParams({
-                    'X-Hoover-PDF-Split-Page-Range': chunk,
-                    'X-Hoover-PDF-Extract-Text': '1',
-                })
-
-                const response: PdfTextEntry[] = await fetchJson(`${url}?${queryParams}`)
-                chunkResults[chunk] = response
-            }
-
-            this.pdfTextContent[i] = chunkResults
-        }
-    } */
 
     setTabs = () => {
         const tabs = []

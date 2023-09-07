@@ -16,6 +16,7 @@ const { API_URL } = process.env
 
 const prefix = '/api/v1/'
 
+export const X_HOOVER_PDF_INFO = 'X-Hoover-PDF-Info'
 export const X_HOOVER_REQUEST_HANDLE_DURATION_MS = 'x-hoover-request-handle-duration-ms'
 export const X_HOOVER_PDF_SPLIT_PAGE_RANGE = 'X-Hoover-PDF-Split-Page-Range'
 export const X_HOOVER_PDF_EXTRACT_TEXT = 'X-Hoover-PDF-Extract-Text'

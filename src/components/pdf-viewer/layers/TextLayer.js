@@ -76,7 +76,7 @@ const TextLayer = observer(({ page, rotation, scale }) => {
                 viewport,
             })
 
-            const currentPdfSearchResults = searchResults[subTab]?.[pdfDocumentInfo[subTab]?.chunks?.[chunkTab]]
+            const currentPdfSearchResults = searchResults[subTab]?.[pdfDocumentInfo?.chunks?.[chunkTab]]
             if (query && currentPdfSearchResults?.length) {
                 renderTask.current.promise
                     .then(() => {
