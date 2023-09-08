@@ -6,6 +6,18 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
+
+        '& .total-count': {
+            padding: `0 ${theme.spacing(1)}`,
+            borderRadius: theme.spacing(1),
+            color: theme.palette.common.white,
+            fontSize: '12px',
+            background: theme.palette.primary.light,
+
+            '&.no-results': {
+                opacity: 0.5,
+            },
+        },
     },
 
     header: {
@@ -89,14 +101,6 @@ export const useStyles = makeStyles()((theme: Theme) => ({
 
         '& > div': {
             padding: theme.spacing(0.5),
-        },
-
-        '& .totalCount': {
-            padding: `${theme.spacing(0.25)} ${theme.spacing(1)}`,
-            borderRadius: theme.spacing(1),
-            color: theme.palette.common.white,
-            fontSize: '12px',
-            background: '#ff0000d9',
         },
 
         '& .help': {

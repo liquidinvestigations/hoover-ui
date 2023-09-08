@@ -104,9 +104,9 @@ export const Document = observer(({ initialPageIndex, onPageIndexChange, rendere
     const [thumbnailsRefs, setThumbnailsRefs] = useState([])
     const {
         documentStore: {
-            tabs,
             subTab,
-            getPdfTextContent,
+            pdfDocumentInfo,
+            chunkTab,
             documentSearchStore: {
                 pdfSearchStore: { searchResults, currentHighlightIndex },
             },
@@ -154,11 +154,12 @@ export const Document = observer(({ initialPageIndex, onPageIndexChange, rendere
             goToPage(initialPageIndex)
         }
     }, [status, goToPage, initialPageIndex, pagesRefs])
-
+    
     useEffect(() => {
+        const { chunks } = pdfDocumentInfo
         if (!pagesRefs?.length) return
 
-        const activeSearchResults = searchResults[tabs[subTab].tag]
+        const activeSearchResults = searchResults[subTab]?.[chunks[chunkTab]]
         if (!activeSearchResults?.length) return
 
         const highlightPage = activeSearchResults[currentHighlightIndex].pageNum - 1
@@ -233,7 +234,7 @@ export const Document = observer(({ initialPageIndex, onPageIndexChange, rendere
                     leftResizerStyle={{ visibility: sidePanelOpen ? 'visible' : 'hidden', width: sidePanelOpen ? 11 : 10 }}>
                     <div className={cx(classes.container, 'pdfViewer')} ref={containerRef}>
                         {status === STATUS_LOADING && <Loading variant={percent > 0 ? 'determinate' : 'indeterminate'} value={percent} />}
-                        {status === STATUS_ERROR && (
+                        {status === STATUS_ERROR && error?.message && (
                             <div className={classes.error}>
                                 <Typography color="error">{error.message}</Typography>
                             </div>

@@ -1,6 +1,8 @@
 import { getDocument, GlobalWorkerOptions, PasswordResponses, PDFWorker } from 'pdfjs-dist/build/pdf'
 import { createContext, useContext, useEffect, useState } from 'react'
 
+import { fetchWithHeaders } from '../../backend/api'
+
 if (typeof window !== 'undefined' && 'Worker' in window) {
     GlobalWorkerOptions.workerSrc = '/_next/static/pdf.worker.js'
 }
@@ -20,7 +22,7 @@ export default function DocumentProvider({ url, cMaps, cMapsPacked, withCredenti
         height: 0,
         scale: 1,
     })
-    const [error, setError] = useState(null)
+    const [error, setError] = useState({})
     const [percent, setPercent] = useState(0)
     const [status, setStatus] = useState(STATUS_LOADING)
     const [bookmarks, setBookmarks] = useState([])
@@ -28,48 +30,51 @@ export default function DocumentProvider({ url, cMaps, cMapsPacked, withCredenti
 
     useEffect(() => {
         setStatus(STATUS_LOADING)
-
         const worker = new PDFWorker({ name: `PDFWorker_${Date.now()}` })
-        const loadingTask = getDocument({
-            url,
-            cMaps,
-            cMapsPacked,
-            withCredentials,
-            worker,
-        })
-        loadingTask.onPassword = (verifyPassword, reason) => {
-            switch (reason) {
-                case PasswordResponses.NEED_PASSWORD:
-                    setStatus(STATUS_NEED_PASSWORD)
-                    break
+        let loadingTask = {}
 
-                case PasswordResponses.INCORRECT_PASSWORD:
-                    setStatus(STATUS_INCORRECT_PASSWORD)
-                    break
+        fetchWithHeaders(url).then(() => {
+            loadingTask = getDocument({
+                url,
+                cMaps,
+                cMapsPacked,
+                withCredentials,
+                worker,
+            })
+            loadingTask.onPassword = (verifyPassword, reason) => {
+                switch (reason) {
+                    case PasswordResponses.NEED_PASSWORD:
+                        setStatus(STATUS_NEED_PASSWORD)
+                        break
+
+                    case PasswordResponses.INCORRECT_PASSWORD:
+                        setStatus(STATUS_INCORRECT_PASSWORD)
+                        break
+                }
             }
-        }
-        loadingTask.onProgress = (progress) => {
-            progress.total > 0 ? setPercent(Math.min(100, (100 * progress.loaded) / progress.total)) : setPercent(100)
-        }
-        loadingTask.promise.then(
-            (doc) => {
-                setDoc(doc)
-                doc.getPage(1).then((page) => {
-                    const { width, height, scale } = page.getViewport({ scale: 1 })
+            loadingTask.onProgress = (progress) => {
+                progress.total > 0 ? setPercent(Math.min(100, (100 * progress.loaded) / progress.total)) : setPercent(100)
+            }
+            loadingTask.promise.then(
+                (doc) => {
+                    setDoc(doc)
+                    doc.getPage(1).then((page) => {
+                        const { width, height, scale } = page.getViewport({ scale: 1 })
 
-                    setFirstPageData({
-                        width,
-                        height,
-                        scale,
+                        setFirstPageData({
+                            width,
+                            height,
+                            scale,
+                        })
+                        setStatus(STATUS_COMPLETE)
                     })
-                    setStatus(STATUS_COMPLETE)
-                })
-            },
-            (err) => {
-                setError(err)
-                setStatus(STATUS_ERROR)
-            }
-        )
+                },
+                (err) => {
+                    setError(err)
+                    setStatus(STATUS_ERROR)
+                }
+            )
+        })
 
         return () => {
             loadingTask.destroy?.()

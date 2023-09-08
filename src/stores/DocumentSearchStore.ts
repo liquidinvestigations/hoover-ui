@@ -66,7 +66,7 @@ export class DocumentSearchStore {
     async search(): Promise<void> {
         this.loading = true
 
-        const promises = [this.textSearchStore.search(this.query), this.metaSearchStore.search(this.query), this.pdfSearchStore.search(this.query)]
+        const promises = [this.pdfSearchStore.search(this.query), this.textSearchStore.search(this.query), this.metaSearchStore.search(this.query)]
 
         try {
             await Promise.all(promises)

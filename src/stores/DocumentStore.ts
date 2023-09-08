@@ -1,32 +1,17 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
 import { ReactElement, SyntheticEvent } from 'react'
 
-import { createDownloadUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI } from '../backend/api'
+import { createDownloadUrl, createOcrUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI, fetchJson, X_HOOVER_PDF_INFO } from '../backend/api'
 import { LocalDocumentData } from '../components/finder/Types'
 import { parentLevels } from '../components/finder/utils'
 import { reactIcons } from '../constants/icons'
-import { DocumentData, OcrData, RequestError } from '../Types'
+import { DocumentChunks, DocumentData, DocumentInfo, DocumentRecord, OcrData, PdfTextEntry, RequestError, Tab } from '../Types'
 import { collectionUrl, documentViewUrl, getBasePath } from '../utils/utils'
 
 import { DocumentSearchStore } from './DocumentSearchStore'
 import { HashStateStore } from './HashStateStore'
 import { MetaStore } from './MetaStore'
 
-interface Tab {
-    tag: string
-    name: string
-    icon: ReactElement
-    content: string
-}
-
-interface PdfPageContent {
-    pageNum: number
-    text: string
-}
-
-interface PdfTextContent {
-    [key: string]: PdfPageContent[]
-}
 export class DocumentStore {
     id: string | undefined
 
@@ -58,6 +43,8 @@ export class DocumentStore {
 
     subTab = 0
 
+    chunkTab = 0
+
     hierarchy: LocalDocumentData | undefined = undefined
 
     metaStore: MetaStore
@@ -66,7 +53,9 @@ export class DocumentStore {
 
     tabs: Tab[] = []
 
-    pdfTextContent: PdfTextContent = {}
+    pdfDocumentInfo: DocumentInfo = {} as DocumentInfo
+
+    pdfTextContent: DocumentRecord<PdfTextEntry> = {}
 
     constructor(private readonly hashStore: HashStateStore) {
         this.metaStore = new MetaStore()
@@ -93,6 +82,11 @@ export class DocumentStore {
         )
 
         reaction(
+            () => this.hashStore.hashState.chunkTab,
+            (chunkTab) => chunkTab && (this.chunkTab = parseInt(chunkTab))
+        )
+
+        reaction(
             () => this.hashStore.hashState.tab,
             (tab) => tab && (this.tab = parseInt(tab))
         )
@@ -101,6 +95,34 @@ export class DocumentStore {
             () => this.hashStore.hashState.subTab,
             (subTab) => subTab && (this.subTab = parseInt(subTab))
         )
+    }
+
+    getDocumentUrls = () => {
+        const { docRawUrl, digestUrl, tabs } = this
+
+        if (!docRawUrl || !digestUrl) return []
+
+        const urls = [docRawUrl]
+
+        for (let index = 1; index < tabs.length; index++) {
+            urls.push(createOcrUrl(digestUrl, tabs[index]?.tag))
+        }
+
+        return urls
+    }
+
+    getDocumentInfo = async () => {
+        if (!this.docRawUrl || this.data?.content['content-type'] !== 'application/pdf') return
+
+        const responses: DocumentInfo[] = await Promise.all(
+            this.getDocumentUrls().map(async (url) => await fetchJson(url + new URLSearchParams({ [`?${X_HOOVER_PDF_INFO}`]: '1' })))
+        )
+
+        const documentWithMostChunks = responses.reduce((prev, current) => {
+            return current.chunks.length > prev.chunks.length ? current : prev
+        })
+
+        this.pdfDocumentInfo = documentWithMostChunks
     }
 
     setTabs = () => {
@@ -159,8 +181,10 @@ export class DocumentStore {
                 })
             })
             .finally(() => {
-                this.documentSearchStore.search()
                 runInAction(() => {
+                    this.documentSearchStore.clearQuery()
+                    this.documentSearchStore.clearSearch()
+                    this.getDocumentInfo()
                     this.loading = false
                 })
             })
@@ -249,5 +273,10 @@ export class DocumentStore {
     handleSubTabChange = (_event: SyntheticEvent, subTab: number) => {
         this.subTab = subTab
         this.hashStore.setHashState({ subTab: subTab.toString() }, false)
+    }
+
+    handleChunkSubTabChange = (_event: SyntheticEvent, chunkTab: number) => {
+        this.chunkTab = chunkTab
+        this.hashStore.setHashState({ chunkTab: chunkTab.toString() }, false)
     }
 }
