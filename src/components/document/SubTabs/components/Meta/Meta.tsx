@@ -27,6 +27,10 @@ export const Meta = observer(() => {
         setActiveSearch(metaSearchStore)
     }, [setActiveSearch, metaSearchStore])
 
+    useEffect(() => {
+        metaSearchStore.scrollToHighlight()
+    }, [metaSearchStore])
+
     const [menuPosition, setMenuPosition] = useState<{ left: number; top: number } | undefined>()
     const [currentLink, setCurrentLink] = useState<{ field: string; term: string | string[] } | undefined>()
 

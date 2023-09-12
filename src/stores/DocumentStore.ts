@@ -59,7 +59,7 @@ export class DocumentStore {
 
     constructor(private readonly hashStore: HashStateStore) {
         this.metaStore = new MetaStore()
-        this.documentSearchStore = new DocumentSearchStore(this)
+        this.documentSearchStore = new DocumentSearchStore(this, hashStore)
         makeAutoObservable(this)
 
         runInAction(() => {
@@ -181,10 +181,9 @@ export class DocumentStore {
                 })
             })
             .finally(() => {
-                runInAction(() => {
-                    this.documentSearchStore.clearQuery()
-                    this.documentSearchStore.clearSearch()
-                    this.getDocumentInfo()
+                runInAction(async () => {
+                    await this.getDocumentInfo()
+                    this.documentSearchStore.search()
                     this.loading = false
                 })
             })
