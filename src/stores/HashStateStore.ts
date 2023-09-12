@@ -12,8 +12,11 @@ export interface HashState {
     }
     tab?: string
     subTab?: string
+    chunkTab?: string
     previewPage?: string
     histogram?: Record<string, boolean>
+    findQuery?: string
+    findIndex?: string
 }
 
 export class HashStateStore {

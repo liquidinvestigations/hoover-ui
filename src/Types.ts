@@ -1,3 +1,5 @@
+import { ReactElement } from 'react'
+
 import { AggregationCategory } from './constants/aggregationFields'
 
 export interface User {
@@ -352,4 +354,25 @@ export interface DocumentData {
     has_locations: boolean
     version: string
     safe_html?: string
+}
+
+export type ChunkResults<T> = T[]
+export type DocumentChunks<T> = Record<string, ChunkResults<T>>
+export type DocumentRecord<T> = Record<string, DocumentChunks<T>>
+export interface Tab {
+    tag: string
+    name: string
+    icon: ReactElement
+    content: string
+}
+
+export interface PdfTextEntry {
+    pageNum: string
+    text: string
+}
+export interface DocumentInfo {
+    chunks: string[]
+    expected_chunk_size_mb: number
+    page_count: number
+    size_mb: number
 }

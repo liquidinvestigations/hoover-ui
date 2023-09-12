@@ -50,7 +50,25 @@ export const useStyles = makeStyles()((theme) => ({
             },
         },
     },
-    searchCount: {
+    startAdornment: {
+        '&>div': {
+            padding: 0,
+        },
+    },
+    adornment: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         color: theme.palette.common.white,
+        padding: `0 ${theme.spacing(1)}`,
+        borderRadius: '25px',
+        marginRight: theme.spacing(1),
+        backgroundColor: theme.palette.primary.light,
+
+        '&>div': {
+            padding: 0,
+            paddingRight: theme.spacing(1),
+            height: '18px',
+        },
     },
 }))

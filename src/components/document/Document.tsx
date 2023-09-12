@@ -166,7 +166,7 @@ export const Document = observer(() => {
             visible: hasPreview,
             padding: 0,
             content: <PdfTab />,
-            searchLoading: pdfSearchStore.loading,
+            searchLoading: pdfSearchStore.loading && !pdfSearchStore.getTotalSearchResultsCount(),
             searchCount: pdfSearchStore.getTotalSearchResultsCount(),
         },
         {
@@ -243,9 +243,9 @@ export const Document = observer(() => {
         return (
             <span className={classes.searchCount}>
                 {tabData.searchLoading ? (
-                    <Loading size={16} sx={{ color: index === tab ? '' : 'inherit' }} />
+                    <Loading size={12} sx={{ color: index === tab ? '' : 'inherit' }} />
                 ) : (
-                    <span className="totalCount">{tabData.searchCount}</span>
+                    <span className={`total-count${!tabData.searchCount ? ' no-results' : ''}`}>{tabData.searchCount}</span>
                 )}
             </span>
         )

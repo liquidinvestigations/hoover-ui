@@ -263,3 +263,18 @@ export const numberArray = (start: number, count: number) =>
         },
         (_, i) => i + start
     )
+
+export function formatETATime(milliseconds: number) {
+    const seconds = milliseconds / 1000
+
+    if (!seconds || seconds < 60) {
+        return '<1m'
+    } else if (seconds < 3600) {
+        const minutes = Math.floor(seconds / 60)
+        return `${minutes}m`
+    } else {
+        const hours = Math.floor(seconds / 3600)
+        const remainingMinutes = Math.floor((seconds % 3600) / 60)
+        return `${hours}h ${remainingMinutes}m `
+    }
+}

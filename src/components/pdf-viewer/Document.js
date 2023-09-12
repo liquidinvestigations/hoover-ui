@@ -104,9 +104,9 @@ export const Document = observer(({ initialPageIndex, onPageIndexChange, rendere
     const [thumbnailsRefs, setThumbnailsRefs] = useState([])
     const {
         documentStore: {
-            tabs,
             subTab,
-            getPdfTextContent,
+            pdfDocumentInfo,
+            chunkTab,
             documentSearchStore: {
                 pdfSearchStore: { searchResults, currentHighlightIndex },
             },
@@ -120,7 +120,9 @@ export const Document = observer(({ initialPageIndex, onPageIndexChange, rendere
     const goToPage = useCallback(
         (index) => {
             setCurrentPageIndex(index)
-            containerRef.current.scrollTop = pagesRefs[index].current.offsetTop
+            if (pagesRefs[index]) {
+                containerRef.current.scrollTop = pagesRefs[index].current.offsetTop
+            }
         },
         [containerRef, pagesRefs]
     )
@@ -150,21 +152,16 @@ export const Document = observer(({ initialPageIndex, onPageIndexChange, rendere
     }, [firstPageData])
 
     useEffect(() => {
-        if (status === STATUS_COMPLETE && initialPageIndex > 0 && pagesRefs[initialPageIndex]) {
-            goToPage(initialPageIndex)
-        }
-    }, [status, goToPage, initialPageIndex, pagesRefs])
-
-    useEffect(() => {
+        const { chunks } = pdfDocumentInfo
         if (!pagesRefs?.length) return
 
-        const activeSearchResults = searchResults[tabs[subTab].tag]
+        const activeSearchResults = searchResults[subTab]?.[chunks[chunkTab]]
         if (!activeSearchResults?.length) return
 
-        const highlightPage = activeSearchResults[currentHighlightIndex].pageNum - 1
+        const highlightPage = activeSearchResults[currentHighlightIndex]?.pageNum - 1
         if (highlightPage !== currentPageIndex) goToPage(highlightPage)
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchResults, currentHighlightIndex])
+    }, [currentHighlightIndex])
 
     const pageVisibility = Array(doc?.numPages || 0)
         .fill()
@@ -175,7 +172,6 @@ export const Document = observer(({ initialPageIndex, onPageIndexChange, rendere
             pageVisibility[changedPageIndex] = ratio
             const maxRatioPage = pageVisibility.reduce((maxIndex, item, index, array) => (item > array[maxIndex] ? index : maxIndex), 0)
             setCurrentPageIndex(maxRatioPage)
-            onPageIndexChange(maxRatioPage)
         }
     }
 
@@ -233,7 +229,7 @@ export const Document = observer(({ initialPageIndex, onPageIndexChange, rendere
                     leftResizerStyle={{ visibility: sidePanelOpen ? 'visible' : 'hidden', width: sidePanelOpen ? 11 : 10 }}>
                     <div className={cx(classes.container, 'pdfViewer')} ref={containerRef}>
                         {status === STATUS_LOADING && <Loading variant={percent > 0 ? 'determinate' : 'indeterminate'} value={percent} />}
-                        {status === STATUS_ERROR && (
+                        {status === STATUS_ERROR && error?.message && (
                             <div className={classes.error}>
                                 <Typography color="error">{error.message}</Typography>
                             </div>
