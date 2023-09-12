@@ -152,10 +152,10 @@ export const Document = observer(({ initialPageIndex, onPageIndexChange, rendere
     }, [firstPageData])
 
     useEffect(() => {
-        if (status === STATUS_COMPLETE && initialPageIndex > 0 && pagesRefs[initialPageIndex]) {
+        if (status === STATUS_COMPLETE && initialPageIndex > 0 && pagesRefs[initialPageIndex] && scale !== 1) {
             goToPage(initialPageIndex)
         }
-    }, [status, goToPage, initialPageIndex, pagesRefs])
+    }, [status, goToPage, initialPageIndex, pagesRefs, scale])
 
     useEffect(() => {
         const { chunks } = pdfDocumentInfo

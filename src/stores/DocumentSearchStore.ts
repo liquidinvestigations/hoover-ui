@@ -40,7 +40,7 @@ export class DocumentSearchStore {
         reaction(
             () => this.activeSearch.getCurrentHighlightIndex(),
             (currentHighlightIndex) => {
-                this.hashStore.setHashState({ fi: currentHighlightIndex })
+                this.hashStore.setHashState({ findIndex: currentHighlightIndex })
             }
         )
 
@@ -78,7 +78,7 @@ export class DocumentSearchStore {
         this.pdfSearchStore.clearSearch()
         this.textSearchStore.clearSearch()
         this.metaSearchStore.clearSearch()
-        this.hashStore.setHashState({ fi: undefined })
+        this.hashStore.setHashState({ findIndex: undefined })
     }
 
     async search(): Promise<void> {
