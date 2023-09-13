@@ -152,6 +152,12 @@ export const Document = observer(({ initialPageIndex, onPageIndexChange, rendere
     }, [firstPageData])
 
     useEffect(() => {
+        if (status === STATUS_COMPLETE && initialPageIndex > 0 && pagesRefs[initialPageIndex] && scale !== 1) {
+            goToPage(initialPageIndex)
+        }
+    }, [status, goToPage, initialPageIndex, pagesRefs, scale])
+
+    useEffect(() => {
         const { chunks } = pdfDocumentInfo
         if (!pagesRefs?.length) return
 
@@ -172,6 +178,7 @@ export const Document = observer(({ initialPageIndex, onPageIndexChange, rendere
             pageVisibility[changedPageIndex] = ratio
             const maxRatioPage = pageVisibility.reduce((maxIndex, item, index, array) => (item > array[maxIndex] ? index : maxIndex), 0)
             setCurrentPageIndex(maxRatioPage)
+            onPageIndexChange(maxRatioPage)
         }
     }
 
