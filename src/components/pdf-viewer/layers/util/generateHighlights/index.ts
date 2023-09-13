@@ -58,6 +58,7 @@ export const getMarkedTagLength = (text: string): number => {
 
 // This function adds the "active" class to the appropriate "mark" tags based on the currentHighlightIndex.
 export const addActiveClassToMarks = (container: Element, currentHighlightIndex: number): void => {
+    if (!container) return
     const markTags = container.querySelectorAll('mark')
     markTags.forEach((markTag) => {
         const index = parseInt(markTag.getAttribute('id')?.split('-')[1] || '', 10)
