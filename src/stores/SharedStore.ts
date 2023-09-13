@@ -1,4 +1,4 @@
-import { makeAutoObservable, reaction } from 'mobx'
+import { makeAutoObservable, reaction, runInAction } from 'mobx'
 import { createObservableHistory, ObservableHistory } from 'mobx-observable-history'
 
 import { collections as collectionsAPI, limits as limitsAPI, searchFields, whoami } from '../backend/api'
@@ -68,11 +68,16 @@ export class SharedStore {
     }
 
     loadData = async () => {
-        this.user = await whoami()
-        this.collectionsData = await collectionsAPI()
-        this.limits = await limitsAPI()
-
+        const user = await whoami()
+        const collectionsData = await collectionsAPI()
+        const limits = await limitsAPI()
         const fields = await searchFields()
-        this.fields = fields.fields
+
+        runInAction(() => {
+            this.user = user
+            this.collectionsData = collectionsData
+            this.limits = limits
+            this.fields = fields.fields
+        })
     }
 }

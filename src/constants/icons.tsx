@@ -58,6 +58,7 @@ import {
     LocalOfferOutlined,
     Lock,
     LockOpen,
+    ManageSearch,
     MoreHoriz,
     MoreVert,
     Print,
@@ -79,7 +80,6 @@ import {
 import { createElement, CSSProperties, ReactElement } from 'react'
 
 import type { IconDefinition } from '@fortawesome/fontawesome-common-types'
-
 
 interface FAIconProps {
     icon: IconDefinition
@@ -152,6 +152,7 @@ export const reactIcons: Record<string, ReactElement> = {
     codeTab: <CodeOutlined />,
     headersTab: <AccountTreeOutlined />,
     moreFiles: <MoreHoriz />,
+    searchFields: <ManageSearch />,
     search: <FAIcon icon={faSearch} />,
     batchSearch: <FAIcon icon={faSearchPlus} />,
     refresh: <FAIcon icon={faRedoAlt} />,

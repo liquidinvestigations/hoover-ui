@@ -9,9 +9,19 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         borderBottomStyle: 'solid',
     },
 
+    searchFieldsButton: {
+        marginLeft: 11,
+        position: 'absolute',
+    },
+
     collapseButton: {
         marginLeft: 'auto',
         marginRight: 11,
+        backgroundColor: theme.palette.grey[100],
+
+        '&:hover': {
+            backgroundColor: theme.palette.grey[200],
+        },
     },
 
     collapseIcon: {
