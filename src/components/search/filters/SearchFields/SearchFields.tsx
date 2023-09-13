@@ -11,8 +11,8 @@ import { useStyles } from './SearchFields.styles'
 export const SearchFields: FC = observer(() => {
     const { classes, cx } = useStyles()
     const {
+        user,
         fields,
-        user: { uuid },
         searchStore: {
             searchViewStore: { searchFieldsOpen },
         },
@@ -35,7 +35,7 @@ export const SearchFields: FC = observer(() => {
                             <Checkbox size="small" tabIndex={-1} disableRipple indeterminate classes={{ root: classes.checkbox }} />
 
                             <ListItemText
-                                primary={field.replace(`\.${uuid}`, '')}
+                                primary={field.replace(`\.${user?.uuid}`, '')}
                                 primaryTypographyProps={{
                                     className: classes.label,
                                 }}
