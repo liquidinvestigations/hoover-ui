@@ -27,8 +27,6 @@ export class SearchViewStore {
 
     searchText = ''
 
-    wideFilters = true
-
     searchFieldsOpen = false
 
     resultsViewType: ResultsViewType = 'list'
@@ -144,16 +142,6 @@ export class SearchViewStore {
             this.setSearchCollections(this.sharedStore.collectionsData.map((c) => c.name))
         }
         this.searchStore.search()
-    }
-
-    setWideFilters = (wideFilters: boolean) => {
-        runInAction(() => {
-            this.wideFilters = wideFilters
-
-            if (!wideFilters && this.searchFieldsOpen) {
-                this.searchFieldsOpen = false
-            }
-        })
     }
 
     setSearchFieldsOpen = (searchFieldsOpen: boolean) => {

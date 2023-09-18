@@ -7,10 +7,10 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         borderBottomColor: theme.palette.grey[400],
         borderBottomWidth: 1,
         borderBottomStyle: 'solid',
+        justifyContent: 'center',
     },
 
     searchFieldsButton: {
-        marginLeft: 11,
         position: 'absolute',
     },
 
