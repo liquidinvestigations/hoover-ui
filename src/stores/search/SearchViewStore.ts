@@ -15,7 +15,9 @@ export class SearchViewStore {
 
     drawerRef: HTMLDivElement | undefined = undefined
 
-    drawerWidth: number | undefined
+    drawerWidth?: number
+
+    middleColumnWidth?: number
 
     categoryQuickFilter: Partial<Record<Category, string>> = {}
 
@@ -39,9 +41,19 @@ export class SearchViewStore {
         makeAutoObservable(this)
 
         reaction(
-            () => this.drawerRef,
-            (drawerRef) => {
-                this.drawerWidth = drawerRef?.getBoundingClientRect().width
+            () => this.inputRef,
+            () => {
+                if (typeof window !== 'undefined') {
+                    const storedDrawerWidth = localStorage.getItem('drawerWidth')
+                    if (storedDrawerWidth !== null) {
+                        this.drawerWidth = parseFloat(storedDrawerWidth)
+                    }
+
+                    const storedMiddleColumnWidth = localStorage.getItem('middleColumnWidth')
+                    if (storedMiddleColumnWidth !== null) {
+                        this.middleColumnWidth = parseFloat(storedMiddleColumnWidth)
+                    }
+                }
             }
         )
 
@@ -76,6 +88,14 @@ export class SearchViewStore {
     setDrawerWidth = (width: number) => {
         runInAction(() => {
             this.drawerWidth = width
+            localStorage.setItem('drawerWidth', width.toString())
+        })
+    }
+
+    setMiddleColumnWidth = (width: number) => {
+        runInAction(() => {
+            this.middleColumnWidth = width
+            localStorage.setItem('middleColumnWidth', width.toString())
         })
     }
 

@@ -1,7 +1,7 @@
 import { Button, FormControl, Grid, IconButton, InputAdornment, Snackbar, TextField, Tooltip, Typography } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import Router from 'next/router'
-import { cloneElement, FC, FormEvent, KeyboardEvent, useEffect, useRef, useState } from 'react'
+import { cloneElement, FC, FormEvent, KeyboardEvent, useEffect, useRef } from 'react'
 
 import { tooltips } from '../../constants/help'
 import { reactIcons } from '../../constants/icons'
@@ -30,6 +30,8 @@ export const Search: FC = observer(() => {
                 setDrawerRef,
                 drawerWidth,
                 setDrawerWidth,
+                middleColumnWidth,
+                setMiddleColumnWidth,
                 drawerPinned,
                 setOpenCategory,
                 searchText,
@@ -84,9 +86,11 @@ export const Search: FC = observer(() => {
 
                 <Grid item style={{ flex: 1 }}>
                     <SplitPaneLayout
-                        left={drawerPinned && <div ref={setDrawerRef} />}
-                        onLeftChange={(size) => setDrawerWidth(size)}
                         defaultSizeLeft={drawerWidth}
+                        defaultSizeMiddle={middleColumnWidth}
+                        left={drawerPinned && <div ref={setDrawerRef} />}
+                        onLeftChange={setDrawerWidth}
+                        onMiddleChange={setMiddleColumnWidth}
                         right={<Document />}>
                         <div className={classes.main} ref={drawerPinned ? undefined : setDrawerRef}>
                             <Grid container>
