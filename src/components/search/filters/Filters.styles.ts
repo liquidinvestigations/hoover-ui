@@ -7,6 +7,9 @@ export const useStyles = makeStyles()((theme: Theme) => ({
     },
 
     loading: {
+        top: 4,
+        right: 4,
+        position: 'absolute',
         verticalAlign: 'middle',
         marginLeft: theme.spacing(1),
     },
