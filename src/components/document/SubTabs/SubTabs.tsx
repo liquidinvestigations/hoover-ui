@@ -46,6 +46,7 @@ export const SubTabs = observer(() => {
                                 <Tab
                                     key={index}
                                     icon={icon}
+                                    iconPosition="start"
                                     label={
                                         <>
                                             {name}

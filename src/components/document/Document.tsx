@@ -338,6 +338,7 @@ export const Document = observer(() => {
                         .map((tabData, index) => (
                             <StyledTab
                                 key={index}
+                                iconPosition='start'
                                 icon={tabData.icon}
                                 label={
                                     <>
