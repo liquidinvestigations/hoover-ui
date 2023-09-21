@@ -56,7 +56,7 @@ export class TextSearchStore {
         if (!container) return
 
         const searchResult = this.searchResults[this.documentStore.subTab]
-        const highlightId = `highlight-${searchResult.currentHighlightIndex}`
+        const highlightId = `highlight-${searchResult?.currentHighlightIndex}`
         const activeSearchResult = container.querySelector(`#${highlightId}`)
 
         if (activeSearchResult) {
