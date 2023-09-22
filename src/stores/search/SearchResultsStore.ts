@@ -49,7 +49,11 @@ export class SearchResultsStore {
 
         for (const collection of query.collections) {
             const { collections, ...queryParams } = query
-            const singleCollectionQuery = { collections: [collection], ...queryParams }
+            const singleCollectionQuery = {
+                collections: [collection],
+                dedup_collections: query.collections,
+                    ...queryParams,
+            }
 
             runInAction(() => {
                 this.results.push({ collection })

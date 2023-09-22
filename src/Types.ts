@@ -65,6 +65,7 @@ export interface SearchQueryParams {
     order?: string[][]
     facets?: Record<string, any>
     filters?: Record<string, any>
+    dedup_collections?: string[]
 }
 
 export type ResultField =
