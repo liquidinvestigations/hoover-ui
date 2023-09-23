@@ -23,7 +23,7 @@ export const CategoriesToolbar: FC = observer(() => {
             </Tooltip>
 
             <Tooltip title={wideFilters ? 'Collapse' : 'Expand'}>
-                <IconButton size="small" className={classes.collapseButton} onClick={handleCollapse}>
+                <IconButton size="small" className={cx(classes.collapseButton, { [classes.hidden]: searchFieldsOpen })} onClick={handleCollapse}>
                     {cloneElement(reactIcons.doubleArrow, {
                         className: cx(classes.collapseIcon, { [classes.expanded]: wideFilters }),
                     })}

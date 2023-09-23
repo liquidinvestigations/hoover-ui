@@ -23,6 +23,8 @@ export class SharedStore {
 
     fields: SearchFields | undefined
 
+    excludedFields: string[] = []
+
     fullPage = false
 
     printMode = false

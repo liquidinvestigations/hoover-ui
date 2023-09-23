@@ -24,9 +24,10 @@ const PARAMS_MAP: Record<string, string> = {
     b: 'tab',
     a: 'subTab',
     g: 'previewPage',
+    x: 'excludedFields',
     ct: 'chunkTab',
     fq: 'findQuery',
-    fi: 'findIndex'
+    fi: 'findIndex',
 }
 
 const LEGACY_PARAMS: Record<string, string> = {

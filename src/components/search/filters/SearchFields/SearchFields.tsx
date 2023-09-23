@@ -13,7 +13,9 @@ export const SearchFields: FC = observer(() => {
     const {
         user,
         fields,
+        excludedFields,
         searchStore: {
+            onFieldInclusionChange,
             searchViewStore: { searchFieldsOpen },
         },
     } = useSharedStore()
@@ -30,9 +32,17 @@ export const SearchFields: FC = observer(() => {
                     className={cx(classes.root, {
                         [classes.open]: state === 'entering' || state === 'entered',
                     })}>
-                    {fields?._source.map((field) => (
-                        <ListItem key={field} role={undefined} dense button>
-                            <Checkbox size="small" tabIndex={-1} disableRipple indeterminate classes={{ root: classes.checkbox }} />
+                    {fields?.all.map((field) => (
+                        <ListItem key={field} role={undefined} dense button onClick={onFieldInclusionChange(field)}>
+                            <Checkbox
+                                size="small"
+                                tabIndex={-1}
+                                disableRipple
+                                value={field}
+                                checked
+                                indeterminate={excludedFields.includes(field)}
+                                classes={{ root: classes.checkbox }}
+                            />
 
                             <ListItemText
                                 primary={field.replace(`\.${user?.uuid}`, '')}

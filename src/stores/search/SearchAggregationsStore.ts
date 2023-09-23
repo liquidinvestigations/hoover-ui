@@ -82,7 +82,7 @@ export class SearchAggregationsStore {
         }
 
         for (const collection of query.collections) {
-            const { collections, ...queryParams } = query
+            const { collections, excludedFields, ...queryParams } = query
             const singleCollectionQuery = { collections: [collection], ...queryParams }
 
             const task = AsyncQueryTaskRunner.createAsyncQueryTask(
@@ -90,6 +90,7 @@ export class SearchAggregationsStore {
                 'aggregations',
                 fieldList,
                 this.sharedStore.fields!,
+                excludedFields || [],
                 this.sharedStore.user?.uuid!
             )
 

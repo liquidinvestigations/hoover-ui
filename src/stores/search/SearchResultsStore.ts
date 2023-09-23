@@ -48,7 +48,7 @@ export class SearchResultsStore {
         })
 
         for (const collection of query.collections) {
-            const { collections, ...queryParams } = query
+            const { collections, excludedFields, ...queryParams } = query
             const singleCollectionQuery = { collections: [collection], ...queryParams }
 
             runInAction(() => {
@@ -60,6 +60,7 @@ export class SearchResultsStore {
                 'results',
                 '*',
                 this.sharedStore.fields!,
+                excludedFields || [],
                 this.sharedStore.user?.uuid!
             )
 

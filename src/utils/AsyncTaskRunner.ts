@@ -18,6 +18,7 @@ export class AsyncQueryTask extends EventTarget {
         private readonly type: SearchQueryType,
         private readonly fieldList: SourceField[] | '*',
         private readonly searchFields: SearchFields,
+        private readonly excludedFields: string[],
         private readonly uuid: string
     ) {
         super()
@@ -40,6 +41,7 @@ export class AsyncQueryTask extends EventTarget {
                         this.fieldList,
                         this.type === 'missing',
                         this.searchFields,
+                        this.excludedFields,
                         this.uuid
                     )
                 ),
@@ -104,9 +106,10 @@ export class AsyncQueryTaskRunner {
         type: SearchQueryType,
         fieldList: SourceField[] | '*',
         searchFields: SearchFields,
+        excludedFields: string[],
         uuid: string
     ): AsyncQueryTask {
-        const task = new AsyncQueryTask(query, type, fieldList, searchFields, uuid)
+        const task = new AsyncQueryTask(query, type, fieldList, searchFields, excludedFields, uuid)
 
         this.taskQueue.push(task)
         this.runTaskQueue()

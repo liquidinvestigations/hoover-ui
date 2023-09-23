@@ -24,6 +24,10 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         },
     },
 
+    hidden: {
+        display: 'none',
+    },
+
     collapseIcon: {
         transition: theme.transitions.create('transform', {
             duration: theme.transitions.duration.shortest,

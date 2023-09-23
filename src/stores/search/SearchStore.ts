@@ -1,6 +1,6 @@
 import { ParsedUrlQuery } from 'querystring'
 
-import { makeAutoObservable, reaction } from 'mobx'
+import { makeAutoObservable, reaction, runInAction } from 'mobx'
 import qs from 'qs'
 
 import { AggregationsKey, SearchQueryParams, SourceField } from '../../Types'
@@ -65,6 +65,7 @@ export class SearchStore {
 
         this.searchViewStore.searchText = parsedQuery.q || ''
         this.searchViewStore.searchCollections = parsedQuery.collections || []
+        this.sharedStore.excludedFields = parsedQuery.excludedFields || []
 
         return parsedQuery
     }
@@ -83,7 +84,7 @@ export class SearchStore {
 
         const mergedParams = {
             ...this.query,
-            ...{ q: searchText, collections: searchCollections },
+            ...{ q: searchText, collections: searchCollections, excludedFields: this.sharedStore.excludedFields },
             ...defaultSearchParams,
             ...params,
         }
@@ -114,5 +115,20 @@ export class SearchStore {
         }
 
         this.query = query as SearchQueryParams
+    }
+
+    onFieldInclusionChange = (field: string) => () => {
+        if (this.sharedStore.excludedFields.includes(field)) {
+            runInAction(() => {
+                this.sharedStore.excludedFields = this.sharedStore.excludedFields.filter((f) => f !== field)
+            })
+        } else {
+            runInAction(() => {
+                this.sharedStore.excludedFields = [...this.sharedStore.excludedFields, field]
+            })
+        }
+        if (this.query?.q) {
+            this.search()
+        }
     }
 }
