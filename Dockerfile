@@ -1,5 +1,10 @@
 FROM node:18
 
+# ARM64 does not have the chromium binary from NPM
+RUN apt-get update -y \
+ && apt-get install -y --no-install-recommends chromium \
+ && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 RUN mkdir -p /opt/hoover/ui
 WORKDIR /opt/hoover/ui
 
