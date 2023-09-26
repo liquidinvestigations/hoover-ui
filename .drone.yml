@@ -15,13 +15,16 @@ steps:
 - name: install only ts lint
   image: node:18-alpine
   commands:
-    # - apk add jq
+  - apk add jq
   - rm -rf node_modules || true
+
+  - export PACKAGES_GREP="typescript|@types/|eslint|@babel|webpack|next"
+  - export PACKAGES_LIST=$(cat package.json | jq '.dependencies * .devDependencies' | tr -d '", ' | sed 's/:/@/g' | egrep "$PACKAGES_GREP")
 
   - mv package-lock.json package-lock.json.orig
   - mv package.json package.json.orig
 
-  - npm install --unsafe-perm  --ignore-scripts --no-package-lock eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-config-next eslint-config-prettier
+  - npm install --unsafe-perm  --ignore-scripts --no-package-lock $PACKAGES_LIST
 
   - mv package-lock.json.orig package-lock.json
   - mv package.json.orig package.json
@@ -31,6 +34,10 @@ steps:
   commands:
   - npm run lint-ts
 
+- name: next lint
+  image: node:18-alpine
+  commands:
+  - npm run lint-next
 
 ---
 

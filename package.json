@@ -13,7 +13,8 @@
     "test:watch": "cross-env NODE_ENV=test jest --watch",
     "postinstall": "node postinstall-fixes.js",
     "lint-next": "next lint",
-    "lint-ts": "eslint {src,pages}/**/*.{ts,tsx} --config .eslintrc-typescript.json --no-eslintrc || echo 'TS LINT FAILED!'",
+    "lint-ts": "next lint --config .eslintrc-typescript.json",
+    "lint-ts-without-next": "eslint {src,pages}/**/*.{ts,tsx} --config .eslintrc-typescript.json --no-eslintrc",
     "lint": "npm run lint-ts && npm run lint-next"
   },
   "engine": {
