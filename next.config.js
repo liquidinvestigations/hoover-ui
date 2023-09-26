@@ -183,6 +183,10 @@ const nextConfig = {
                   },
               ]
             : [],
+    // disable lint on builds -- use the pre-commit hook for that
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
 }
 
 module.exports = nextConfig
