@@ -7,6 +7,7 @@ docker run -it  --rm --name hoover-ui-npm \
   --user $USERID:$GROUPID \
   --volume "$PWD:$PWD" \
   --workdir "$PWD" \
+  --net host \
   -p "8000:8000" \
   liquidinvestigations/hoover-ui:latest \
   $@
