@@ -210,7 +210,7 @@ steps:
   commands:
   # ############### ARM64 DEV EXTRAS ######################
   - apt-get update -y
-  - apt-get install -y --no-install-recommends chromium libpangocairo-1.0-0
+  - apt-get install -y --no-install-recommends chromium libpangocairo-1.0-0 build-essential libpixman-1-dev libpixman-1-0 pkg-config libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
 
   - rm -rf node_modules || true
   - cp -a /opt/hoover/ui/node_modules .
@@ -229,7 +229,7 @@ steps:
   commands:
   # ############### ARM64 DEV EXTRAS ######################
   - apt-get update -y
-  - apt-get install -y --no-install-recommends chromium libpangocairo-1.0-0
+  - apt-get install -y --no-install-recommends chromium libpangocairo-1.0-0 build-essential libpixman-1-dev libpixman-1-0 pkg-config libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
 
   - rm -rf node_modules || true
   - cp -a /opt/hoover/ui/node_modules .

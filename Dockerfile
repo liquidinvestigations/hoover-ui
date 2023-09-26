@@ -1,4 +1,5 @@
 FROM node:18
+ARG TARGETPLATFORM
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
@@ -6,10 +7,13 @@ ENV NODE_ENV=production
 RUN mkdir -p /opt/hoover/ui
 WORKDIR /opt/hoover/ui
 
-ADD package*.json /opt/hoover/ui/
-ADD postinstall-fixes.js /opt/hoover/ui/
-RUN npm --max-old-space-size=1000 install --unsafe-perm
+ADD .dockerfile-add-extra-packages.sh ./
+RUN bash .dockerfile-add-extra-packages.sh
+
+ADD package*.json ./
+ADD postinstall-fixes.js ./
+RUN npm --max-old-space-size=1000 install --unsafe-perm --omit=dev
 
 ADD . /opt/hoover/ui/
 
-RUN pwd && ls -alh && pwd && npm run build
+RUN npm run build
