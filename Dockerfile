@@ -10,4 +10,5 @@ RUN npm install --unsafe-perm
 ADD . /opt/hoover/ui/
 ENV NEXT_TELEMETRY_DISABLED=1
 
+RUN npm run lint
 RUN npm run build

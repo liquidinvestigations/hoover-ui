@@ -1,5 +1,87 @@
+# #########################################################
+#                       LINT
+# #########################################################
+
+trigger:
+  event:
+  - push
+  - tag
+  - cron
+
 kind: pipeline
-name: publish
+name: lint
+
+steps:
+- name: install only ts lint
+  image: node:18-alpine
+  commands:
+    # - apk add jq
+  - rm -rf node_modules
+
+  - mv package-lock.json package-lock.json.orig
+  - mv package.json package.json.orig
+
+  - npm install --unsafe-perm  --ignore-scripts --no-package-lock eslint @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint-config-next eslint-config-prettier
+
+  - mv package-lock.json.orig package-lock.json
+  - mv package.json.orig package.json
+
+- name: typescript lint
+  image: node:18-alpine
+  commands:
+  - npm run lint-ts
+
+
+---
+
+# #########################################################
+#                       TEST
+# #########################################################
+
+trigger:
+  event:
+  - push
+  - tag
+  - cron
+
+depends_on:
+- lint
+
+kind: pipeline
+name: test
+
+steps:
+- name: npm install
+  image: node:18
+  commands:
+  - rm -rf node_modules
+  - npm install --unsafe-perm
+
+- name: next lint
+  image: node:18
+  commands:
+  - npm run lint-next
+
+- name: npm run build
+  image: node:18
+  commands:
+  - npm run build
+
+- name: npm test
+  image: node:18
+  commands:
+  - npm test
+
+---
+# #########################################################
+#                       BUILD x86
+# #########################################################
+
+kind: pipeline
+name: build x86
+
+depends_on:
+- lint
 
 trigger:
   event:
@@ -38,36 +120,112 @@ steps:
       from_secret: docker_password
 
 ---
+# #########################################################
+#                       BUILD arm64
+# #########################################################
+
+kind: pipeline
+name: build arm64
+
+platform:
+  os: linux
+  arch: arm64
 
 trigger:
+  status:
+  - success
   event:
   - push
   - tag
   - cron
 
-kind: pipeline
-name: test
-
 depends_on:
-- publish
+- lint
 
 steps:
-- name: npm install
-  image: node:18
-  commands:
-  - npm install --unsafe-perm
+- name: docker push branch ${DRONE_COMMIT_BRANCH}
+  image: plugins/docker
+  settings:
+    repo: liquidinvestigations/hoover-ui
+    tags: ${DRONE_COMMIT_BRANCH}-arm64
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+  when:
+    event:
+    - push
+    branch:
+      exclude:
+      - dependabot/**
 
-- name: npm run build
-  image: node:18
-  commands:
-  - npm run build
-
-- name: npm test
-  image: node:18
-  commands:
-  - npm test
+- name: docker push autotag + latest
+  image: plugins/docker
+  settings:
+    repo: liquidinvestigations/hoover-ui
+    auto_tag: true
+    auto_tag_suffix: arm64
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
 
 ---
+
+# #########################################################
+#                   build multiplatform
+# #########################################################
+
+kind: pipeline
+name: build multiplatform
+
+depends_on:
+- build x86
+- build arm64
+
+clone:
+  disable: true
+
+
+steps:
+- name: docker multiplatform branch
+  image: docker
+  pull: if-not-exists
+  environment:
+    IMG: "liquidinvestigations/hoover-ui:${DRONE_COMMIT_BRANCH}"
+    DOCKER_USERNAME:
+      from_secret: docker_username
+    DOCKER_PASSWORD:
+      from_secret: docker_password
+  commands:
+  - "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+  - "docker buildx imagetools  create --append $IMG --append $IMG-arm64 --tag  $IMG"
+  when:
+    event:
+    - push
+    - cron
+
+- name: docker multiplatform tag
+  image: docker
+  pull: if-not-exists
+  environment:
+    IMG: "liquidinvestigations/hoover-ui:${DRONE_TAG:1}"
+    DOCKER_USERNAME:
+      from_secret: docker_username
+    DOCKER_PASSWORD:
+      from_secret: docker_password
+  commands:
+  - "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+  - "docker buildx imagetools  create --append $IMG --append $IMG-arm64 --tag  $IMG"
+  when:
+    event:
+    - tag
+---
+
+# #########################################################
+#                       SECRETS
+# #########################################################
+
 kind: secret
 name: docker_username
 get:
