@@ -116,6 +116,8 @@ steps:
   settings:
     repo: liquidinvestigations/hoover-ui
     tags: ${DRONE_COMMIT_BRANCH}-arm64
+    build_args:
+    - BUILD_EXTRA_LIBS_ARM64=1
     username:
       from_secret: docker_username
     password:
@@ -133,6 +135,8 @@ steps:
     repo: liquidinvestigations/hoover-ui
     auto_tag: true
     auto_tag_suffix: arm64
+    build_args:
+    - BUILD_EXTRA_LIBS_ARM64=1
     username:
       from_secret: docker_username
     password:
