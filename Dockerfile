@@ -8,8 +8,8 @@ WORKDIR /opt/hoover/ui
 
 ADD package*.json /opt/hoover/ui/
 ADD postinstall-fixes.js /opt/hoover/ui/
-RUN npm install --unsafe-perm
+RUN npm --max-old-space-size=1000 install --unsafe-perm
 
 ADD . /opt/hoover/ui/
 
-RUN npm run build
+RUN pwd && ls -alh && pwd && npm run build
