@@ -16,7 +16,7 @@ steps:
   image: node:18-alpine
   commands:
     # - apk add jq
-  - rm -rf node_modules
+  - rm -rf node_modules || true
 
   - mv package-lock.json package-lock.json.orig
   - mv package.json package.json.orig
@@ -34,45 +34,6 @@ steps:
 
 ---
 
-# #########################################################
-#                       TEST
-# #########################################################
-
-trigger:
-  event:
-  - push
-  - tag
-  - cron
-
-depends_on:
-- lint
-
-kind: pipeline
-name: test
-
-steps:
-- name: npm install
-  image: node:18
-  commands:
-  - rm -rf node_modules
-  - npm install --unsafe-perm
-
-- name: next lint
-  image: node:18
-  commands:
-  - npm run lint-next
-
-- name: npm run build
-  image: node:18
-  commands:
-  - npm run build
-
-- name: npm test
-  image: node:18
-  commands:
-  - npm test
-
----
 # #########################################################
 #                       BUILD x86
 # #########################################################
@@ -118,8 +79,8 @@ steps:
       from_secret: docker_username
     password:
       from_secret: docker_password
-
 ---
+
 # #########################################################
 #                       BUILD arm64
 # #########################################################
@@ -169,7 +130,114 @@ steps:
       from_secret: docker_username
     password:
       from_secret: docker_password
+---
 
+# #########################################################
+#                       TEST x86
+# #########################################################
+kind: pipeline
+name: test x86
+
+depends_on:
+- build x86
+
+trigger:
+  event:
+  - push
+  - tag
+  - cron
+
+steps:
+- name: "lint, test on branch"
+  image: "liquidinvestigations/hoover-ui:${DRONE_COMMIT_BRANCH}"
+  pull: always
+  commands:
+  - rm -rf node_modules || true
+  - cp -a /opt/hoover/ui/node_modules .
+  - export NODE_ENV=development
+  - npm install --unsafe-perm
+  - npm run lint
+  - npm run build
+  - npm test
+  when:
+    event:
+    - push
+    - cron
+
+- name: "lint, test on tag"
+  image: "liquidinvestigations/hoover-ui:${DRONE_TAG:1}"
+  pull: always
+  commands:
+  - rm -rf node_modules || true
+  - cp -a /opt/hoover/ui/node_modules .
+  - export NODE_ENV=development
+  - npm install --unsafe-perm
+  - npm run lint
+  - npm run build
+  - npm test
+  when:
+    event:
+    - tag
+---
+
+# #########################################################
+#                       TEST arm64
+# #########################################################
+kind: pipeline
+name: test arm64
+
+depends_on:
+- build arm64
+
+platform:
+  os: linux
+  arch: arm64
+
+trigger:
+  event:
+  - push
+  - tag
+  - cron
+
+steps:
+- name: "lint, test on branch"
+  image: "liquidinvestigations/hoover-ui:${DRONE_COMMIT_BRANCH}-arm64"
+  pull: always
+  when:
+    event:
+    - push
+    - cron
+  commands:
+  # ############### ARM64 DEV EXTRAS ######################
+  - apt-get update -y
+  - apt-get install -y --no-install-recommends chromium libpangocairo-1.0-0
+
+  - rm -rf node_modules || true
+  - cp -a /opt/hoover/ui/node_modules .
+  - export NODE_ENV=development
+  - npm install --unsafe-perm
+  - npm run lint
+  - npm run build
+  - npm test
+
+- name: "lint, test on tag"
+  image: "liquidinvestigations/hoover-ui:${DRONE_TAG:1}-arm64"
+  pull: always
+  when:
+    event:
+    - tag
+  commands:
+  # ############### ARM64 DEV EXTRAS ######################
+  - apt-get update -y
+  - apt-get install -y --no-install-recommends chromium libpangocairo-1.0-0
+
+  - rm -rf node_modules || true
+  - cp -a /opt/hoover/ui/node_modules .
+  - export NODE_ENV=development
+  - npm install --unsafe-perm
+  - npm run lint
+  - npm run build
+  - npm test
 ---
 
 # #########################################################
@@ -185,7 +253,6 @@ depends_on:
 
 clone:
   disable: true
-
 
 steps:
 - name: docker multiplatform branch
