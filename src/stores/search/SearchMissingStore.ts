@@ -26,7 +26,7 @@ export class SearchMissingStore {
         }
 
         for (const collection of query.collections) {
-            const { collections, ...queryParams } = query
+            const { collections, excludedFields, ...queryParams } = query
             const singleCollectionQuery = { collections: [collection], ...queryParams }
 
             runInAction(() => {
@@ -39,6 +39,7 @@ export class SearchMissingStore {
                 'missing',
                 fieldList,
                 this.sharedStore.fields!,
+                excludedFields || [],
                 this.sharedStore.user?.uuid!
             )
 

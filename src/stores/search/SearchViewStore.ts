@@ -21,13 +21,15 @@ export class SearchViewStore {
 
     openCategory: Category | undefined = 'collections'
 
-    drawerPinned: boolean = true
+    drawerPinned = true
 
     searchCollections: string[] = []
 
-    searchText: string = ''
+    searchText = ''
 
-    wideFilters: boolean = true
+    wideFilters = true
+
+    searchFieldsOpen = false
 
     resultsViewType: ResultsViewType = 'list'
 
@@ -147,6 +149,16 @@ export class SearchViewStore {
     setWideFilters = (wideFilters: boolean) => {
         runInAction(() => {
             this.wideFilters = wideFilters
+
+            if (!wideFilters && this.searchFieldsOpen) {
+                this.searchFieldsOpen = false
+            }
+        })
+    }
+
+    setSearchFieldsOpen = (searchFieldsOpen: boolean) => {
+        runInAction(() => {
+            this.searchFieldsOpen = searchFieldsOpen
         })
     }
 

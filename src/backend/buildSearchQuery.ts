@@ -41,12 +41,12 @@ const expandPrivate = (field: SourceField, uuid: string) => {
     return field
 }
 
-const buildQuery = (q: string, filters: Record<SourceField, any>, searchFields: SearchFields) => {
+const buildQuery = (q: string, filters: Record<SourceField, any>, searchFields: SearchFields, excludedFields: string[]) => {
     const qs = {
         query_string: {
             query: q,
             default_operator: DEFAULT_OPERATOR,
-            fields: searchFields.all,
+            fields: searchFields.all.filter((field) => !excludedFields.includes(field)),
             lenient: true,
         },
     }
@@ -389,9 +389,10 @@ const buildSearchQuery = (
     fieldList: FieldList,
     missing: boolean,
     searchFields: SearchFields,
+    excludedFields: string[],
     uuid: string
 ) => {
-    const query = buildQuery(q, filters, searchFields)
+    const query = buildQuery(q, filters, searchFields, excludedFields)
     const sort = buildSortQuery(order)
     const significantFields = fieldList === '*' ? '*' : [...fieldList, ...Object.keys(filters)]
 
