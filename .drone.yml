@@ -2,12 +2,6 @@
 #                       LINT
 # #########################################################
 
-trigger:
-  event:
-  - push
-  - tag
-  - cron
-
 kind: pipeline
 name: lint
 
@@ -257,6 +251,12 @@ steps:
 
 kind: pipeline
 name: build multiplatform
+
+trigger:
+  event:
+  - push
+  - tag
+  - cron
 
 depends_on:
 - build x86
