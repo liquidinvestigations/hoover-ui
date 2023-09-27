@@ -6,22 +6,27 @@ kind: pipeline
 name: lint
 
 steps:
-- name: install only ts lint
+  # - name: install only ts lint
+  #   image: node:18-alpine
+  #   commands:
+  #   - apk add jq
+  #   - rm -rf node_modules || true
+  # 
+  #   - export PACKAGES_GREP="typescript|@types/|eslint|@babel|webpack|next"
+  #   - export PACKAGES_LIST=$(cat package.json | jq '.dependencies * .devDependencies' | tr -d '", ' | sed 's/:/@/g' | egrep "$PACKAGES_GREP")
+  # 
+  #   - mv package-lock.json package-lock.json.orig
+  #   - mv package.json package.json.orig
+  # 
+  #   - npm install --unsafe-perm  --ignore-scripts --no-package-lock $PACKAGES_LIST
+  # 
+  #   - mv package-lock.json.orig package-lock.json
+  #   - mv package.json.orig package.json
+  #
+- name: install all packages
   image: node:18-alpine
   commands:
-  - apk add jq
-  - rm -rf node_modules || true
-
-  - export PACKAGES_GREP="typescript|@types/|eslint|@babel|webpack|next"
-  - export PACKAGES_LIST=$(cat package.json | jq '.dependencies * .devDependencies' | tr -d '", ' | sed 's/:/@/g' | egrep "$PACKAGES_GREP")
-
-  - mv package-lock.json package-lock.json.orig
-  - mv package.json package.json.orig
-
-  - npm install --unsafe-perm  --ignore-scripts --no-package-lock $PACKAGES_LIST
-
-  - mv package-lock.json.orig package-lock.json
-  - mv package.json.orig package.json
+  - npm install --unsafe-perm
 
 - name: typescript lint
   image: node:18-alpine
@@ -32,6 +37,17 @@ steps:
   image: node:18-alpine
   commands:
   - npm run lint-next
+
+- name: next build
+  image: node:18-alpine
+  commands:
+  - npm run build
+
+    # can't run tests without installing pixman library
+    # - name: run tests
+    #   image: node:18-alpine
+    #   commands:
+    #   - npm run test
 
 ---
 
@@ -159,8 +175,6 @@ steps:
   commands:
   - rm -rf node_modules || true
   - cp -a /opt/hoover/ui/node_modules .
-  - export NODE_ENV=development
-  - npm install --unsafe-perm
   - npm run lint
   - npm run build
   - npm test
@@ -175,8 +189,6 @@ steps:
   commands:
   - rm -rf node_modules || true
   - cp -a /opt/hoover/ui/node_modules .
-  - export NODE_ENV=development
-  - npm install --unsafe-perm
   - npm run lint
   - npm run build
   - npm test
@@ -213,14 +225,8 @@ steps:
     - push
     - cron
   commands:
-  # ############### ARM64 DEV EXTRAS ######################
-  - apt-get update -y
-  - apt-get install -y --no-install-recommends chromium libpangocairo-1.0-0 build-essential libpixman-1-dev libpixman-1-0 pkg-config libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
-
   - rm -rf node_modules || true
   - cp -a /opt/hoover/ui/node_modules .
-  - export NODE_ENV=development
-  - npm install --unsafe-perm
   - npm run lint
   - npm run build
   - npm test
@@ -232,14 +238,8 @@ steps:
     event:
     - tag
   commands:
-  # ############### ARM64 DEV EXTRAS ######################
-  - apt-get update -y
-  - apt-get install -y --no-install-recommends chromium libpangocairo-1.0-0 build-essential libpixman-1-dev libpixman-1-0 pkg-config libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
-
   - rm -rf node_modules || true
   - cp -a /opt/hoover/ui/node_modules .
-  - export NODE_ENV=development
-  - npm install --unsafe-perm
   - npm run lint
   - npm run build
   - npm test

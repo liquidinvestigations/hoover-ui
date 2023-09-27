@@ -2,7 +2,6 @@ FROM node:18
 ARG BUILD_EXTRA_LIBS_ARM64
 
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
 
 RUN mkdir -p /opt/hoover/ui
 WORKDIR /opt/hoover/ui
@@ -20,8 +19,7 @@ fi
 
 ADD package*.json ./
 ADD postinstall-fixes.js ./
-RUN npm --max-old-space-size=1000 install --unsafe-perm --omit=dev
+RUN npm --max-old-space-size=1000 install --unsafe-perm
 
 ADD . /opt/hoover/ui/
-
 RUN npm run build
