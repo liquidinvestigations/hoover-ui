@@ -5,18 +5,19 @@
   "parserOptions": { "project": ["./tsconfig.json"] },
   "ignorePatterns": ["src/**/*.js", "pages/**/*.js"],
   "rules": {
-    "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/no-unused-vars": "warn",
-    "@typescript-eslint/no-non-null-asserted-optional-chain": "warn",
     "@typescript-eslint/ban-ts-comment": "warn",
     "@typescript-eslint/ban-types": "warn",
-    "no-prototype-builtins": "warn",
-    "no-dupe-else-if": "warn",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-non-null-asserted-optional-chain": "warn",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "no-case-declarations": "warn",
     "no-constant-condition": "warn",
+    "no-dupe-else-if": "warn",
     "no-extra-boolean-cast": "warn",
-    "prefer-const": "warn",
-    "no-unsafe-optional-chaining": "warn",
     "no-extra-semi": "warn",
-    "no-case-declarations": "warn"
+    "no-prototype-builtins": "warn",
+    "no-unsafe-optional-chaining": "warn",
+    "no-useless-escape": "warn",
+    "prefer-const": "warn"
   }
 }
