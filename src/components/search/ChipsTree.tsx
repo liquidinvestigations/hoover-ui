@@ -19,8 +19,9 @@ const useStyles = makeStyles()((theme: Theme) => ({
     },
     chips: {
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'row',
         alignItems: 'flex-start',
+        flexWrap: 'wrap',
     },
     operator: {
         display: 'block',

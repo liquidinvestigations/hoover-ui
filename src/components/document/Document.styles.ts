@@ -83,6 +83,10 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         minHeight: 65,
         color: theme.palette.primary.contrastText,
         backgroundColor: theme.palette.primary.main,
+
+        '.MuiTab-root':{
+            fontSize: '0.825em',
+        }
     },
 
     tabsIndicator: {

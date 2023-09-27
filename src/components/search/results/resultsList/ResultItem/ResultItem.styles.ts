@@ -33,6 +33,7 @@ export const useStyles = makeStyles()((theme: Theme) => ({
     },
 
     title: {
+        fontSize: '1.4rem',
         display: 'block',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
