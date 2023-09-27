@@ -30,13 +30,13 @@ export class TextSearchStore {
         return this.searchResults.reduce((prev, curr) => prev + curr.occurrenceCount, 0)
     }
 
-    getSearchResultsCount = () => {
-        if (!this.searchResults) return
+    getSearchResultsCount = (): number => {
+        if (!this.searchResults) return 0
         return this.searchResults[this.documentStore.subTab]?.occurrenceCount || 0
     }
 
-    getCurrentHighlightIndex = () => {
-        if (!this.searchResults) return
+    getCurrentHighlightIndex = (): number => {
+        if (!this.searchResults) return 0
         return this.searchResults[this.documentStore.subTab]?.currentHighlightIndex || 0
     }
 

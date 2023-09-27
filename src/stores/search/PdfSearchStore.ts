@@ -56,7 +56,7 @@ export class PdfSearchStore {
         return loadedChunks < totalChunks
     }
 
-    getSearchResultsCount = () => {
+    getSearchResultsCount = (): number => {
         const { subTab, chunkTab, pdfDocumentInfo } = this.documentStore
         const { chunks } = pdfDocumentInfo
         return this.searchResults[subTab]?.[chunks[chunkTab]]?.length || 0
@@ -67,7 +67,7 @@ export class PdfSearchStore {
         return this.searchResults[subTab]?.[chunk]?.length
     }
 
-    getCurrentHighlightIndex = () => {
+    getCurrentHighlightIndex = (): number => {
         return this.currentHighlightIndex
     }
 

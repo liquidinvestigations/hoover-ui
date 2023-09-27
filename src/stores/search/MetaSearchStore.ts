@@ -72,11 +72,11 @@ export class MetaSearchStore {
         }
     }
 
-    getSearchResultsCount = () => {
+    getSearchResultsCount = (): number => {
         return this.searchResults
     }
 
-    getCurrentHighlightIndex = () => {
+    getCurrentHighlightIndex = (): number => {
         return this.currentHighlightIndex
     }
 
@@ -120,7 +120,7 @@ export class MetaSearchStore {
                 const { field, label, display, searchKey, searchTerm } = entry
 
                 if (String(display).toLowerCase().includes(query.toLowerCase())) {
-                    const highlightedDisplay =  highlightElement(display)
+                    const highlightedDisplay = highlightElement(display)
                     return { field, label, display: highlightedDisplay, searchKey, searchTerm }
                 }
 
