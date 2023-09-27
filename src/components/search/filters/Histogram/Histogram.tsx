@@ -187,7 +187,7 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
             <ListItem onClick={toggle} button dense className={classes.histogramTitle}>
                 <Grid container className={classes.histogramTitle} justifyContent="space-between" alignItems="center" wrap="nowrap">
                     <Grid item>
-                        <Typography variant="h6">{title}</Typography>
+                        <Typography className={classes.title}>{title}</Typography>
                     </Grid>
                     <Grid item>
                         <IconButton

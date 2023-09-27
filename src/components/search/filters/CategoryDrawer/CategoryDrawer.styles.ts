@@ -29,20 +29,25 @@ export const useStyles = makeStyles()((theme: Theme) => ({
     },
 
     title: {
-        minHeight: 32,
         textTransform: 'uppercase',
-        paddingTop: 6,
-        paddingBottom: 6,
     },
 
     bold: {
         fontWeight: 'bold',
     },
 
-    icon: {
+    listItem: {
         display: 'flex',
-        alignSelf: 'center',
-        marginRight: theme.spacing(2),
+        flexFlow: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: theme.spacing(1),
+
+        '&': {
+            'svg': {
+                marginBottom: theme.spacing(0.5)
+            }
+        },
     },
 
     label: {
@@ -59,6 +64,7 @@ export const useStyles = makeStyles()((theme: Theme) => ({
     },
 
     openCollapsed: {
-        borderRight: `3px solid ${theme.palette.grey[700]}`,
+        boxShadow: `inset -2px 0 0 0  ${theme.palette.grey[700]}`,
+        backgroundColor: theme.palette.grey[100]
     },
 }))

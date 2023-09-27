@@ -34,7 +34,7 @@ export const CategoryDrawer: FC<CategoryDrawerProps> = observer(
     ({ category, title, icon, children, toolbar, loading, loadingETA, greyed = false, highlight = true }) => {
         const { classes, cx } = useStyles()
         const [position, setPosition] = useState<Partial<CSSProperties>>({ top: 0, left: 0, width: 100 })
-        const { drawerPinned, drawerRef, drawerWidth, openCategory, setOpenCategory, wideFilters } = useSharedStore().searchStore.searchViewStore
+        const { drawerPinned, drawerRef, drawerWidth, openCategory, setOpenCategory } = useSharedStore().searchStore.searchViewStore
 
         const updatePosition = () => {
             const clientRect = drawerRef?.getBoundingClientRect()
@@ -53,7 +53,7 @@ export const CategoryDrawer: FC<CategoryDrawerProps> = observer(
             if (drawerRef) {
                 updatePosition()
             }
-        }, [drawerRef, drawerWidth, wideFilters, drawerPinned])
+        }, [drawerRef, drawerWidth, drawerPinned])
 
         const titleBar = useMemo(
             () => (
@@ -62,38 +62,25 @@ export const CategoryDrawer: FC<CategoryDrawerProps> = observer(
                     button
                     data-disable-click-away
                     onClick={() => setOpenCategory(category)}
-                    className={cx({ [classes.openCollapsed]: !wideFilters && openCategory === category })}>
+                    className={cx(classes.listItem, { [classes.openCollapsed]: openCategory === category })}>
                     <Fade in={loading} unmountOnExit>
                         <div>
                             <ThinProgress eta={loadingETA || 0} />
                         </div>
                     </Fade>
 
-                    <Grid container alignItems="baseline" justifyContent="space-between" wrap="nowrap">
-                        <Grid item className={classes.icon}>
-                            {cloneElement(reactIcons[icon], { color: highlight ? 'secondary' : 'inherit' })}
-                        </Grid>
-
-                        <Grid item className={classes.label}>
-                            <Typography
-                                noWrap
-                                variant="body2"
-                                component="div"
-                                className={cx(classes.title, { [classes.bold]: openCategory === category })}
-                                color={greyed ? 'textSecondary' : highlight ? 'secondary' : 'initial'}>
-                                {title}
-                            </Typography>
-                        </Grid>
-
-                        {openCategory === category && (
-                            <Grid item className={classes.open}>
-                                {cloneElement(reactIcons.chevronRight, { color: highlight ? 'secondary' : 'action' })}
-                            </Grid>
-                        )}
-                    </Grid>
+                    {cloneElement(reactIcons[icon], { color: highlight ? 'secondary' : 'inherit' })}
+                    <Typography
+                        noWrap
+                        variant="xs"
+                        component="div"
+                        className={cx(classes.title, { [classes.bold]: openCategory === category })}
+                        color={greyed ? 'textSecondary' : highlight ? 'secondary' : 'initial'}>
+                        {title}
+                    </Typography>
                 </ListItem>
             ),
-            [category, title, greyed, highlight, wideFilters, openCategory, setOpenCategory, loading, loadingETA]
+            [category, title, greyed, highlight, openCategory, setOpenCategory, loading, loadingETA]
         )
 
         return (

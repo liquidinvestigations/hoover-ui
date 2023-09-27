@@ -20,30 +20,35 @@ export class TextSearchStore {
         makeAutoObservable(this)
 
         reaction(
-            () => this.searchResults[this.documentStore.subTab]?.currentHighlightIndex,
+            () => this.searchResults?.[this.documentStore.subTab]?.currentHighlightIndex,
             () => this.searchResults.length && this.generateHighlightedText()
         )
     }
 
     getTotalSearchResultsCount = () => {
+        if (!this.searchResults) return
         return this.searchResults.reduce((prev, curr) => prev + curr.occurrenceCount, 0)
     }
 
-    getSearchResultsCount = () => {
+    getSearchResultsCount = (): number => {
+        if (!this.searchResults) return 0
         return this.searchResults[this.documentStore.subTab]?.occurrenceCount || 0
     }
 
-    getCurrentHighlightIndex = () => {
+    getCurrentHighlightIndex = (): number => {
+        if (!this.searchResults) return 0
         return this.searchResults[this.documentStore.subTab]?.currentHighlightIndex || 0
     }
 
     nextSearchResult = () => {
         const searchResult = this.searchResults[this.documentStore.subTab]
+        if (!searchResult) return
         searchResult.currentHighlightIndex = (searchResult.currentHighlightIndex + 1) % searchResult.occurrenceCount
     }
 
     previousSearchResult = () => {
         const searchResult = this.searchResults[this.documentStore.subTab]
+        if (!searchResult) return
         searchResult.currentHighlightIndex = (searchResult.currentHighlightIndex - 1 + searchResult.occurrenceCount) % searchResult.occurrenceCount
     }
 
@@ -85,8 +90,8 @@ export class TextSearchStore {
 
         try {
             const searchResults = content.map((content) => this.runSearch(query, content))
-            this.searchResults = searchResults.filter((result) => result !== null) as SearchResult[]
-            this.totalOccurrenceCount = this.searchResults.reduce((prev, { occurrenceCount }) => prev + occurrenceCount, 0)
+            this.searchResults = searchResults?.filter((result) => result !== null) as SearchResult[]
+            this.totalOccurrenceCount = this.searchResults?.reduce((prev, { occurrenceCount }) => prev + occurrenceCount, 0)
         } catch (error) {
             console.error('An error occurred during text search:', error)
         } finally {
@@ -137,8 +142,8 @@ export class TextSearchStore {
 
             if (occurrenceCount > 0) {
                 const activeHighlight = `id='highlight-${currentHighlightIndex}'`
-                highlightedText = highlightedText.replace(new RegExp(' class="active"', 'g'), '')
-                highlightedText = highlightedText.replace(new RegExp(activeHighlight, 'g'), `class="active" ${activeHighlight}`)
+                highlightedText = highlightedText?.replace(new RegExp(' class="active"', 'g'), '')
+                highlightedText = highlightedText?.replace(new RegExp(activeHighlight, 'g'), `class="active" ${activeHighlight}`)
                 this.searchResults[this.documentStore.subTab].highlightedText = highlightedText
             }
         }

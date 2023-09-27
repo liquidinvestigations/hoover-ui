@@ -52,7 +52,7 @@ export const PageSearch = observer(() => {
 
     const loadingPercentage = getLoadingPercentage()
     const estimatedLoadingTimeLeft = formatETATime(estimatedTimeLeft)
-    const hasSearchResults = inputValue && inputValue.length >= 3 && activeSearch.getSearchResultsCount() > 0
+    const hasSearchResults = !!inputValue && activeSearch && inputValue.length >= 3 && activeSearch.getSearchResultsCount() > 0
 
     return (
         <>

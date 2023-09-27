@@ -30,8 +30,8 @@ export const SplitPaneLayout: FC<SplitPaneLayoutProps> = ({
     leftStyle,
     leftResizerStyle,
     className,
-    defaultSizeLeft = '20%',
-    defaultSizeMiddle = '60%',
+    defaultSizeLeft = '15%',
+    defaultSizeMiddle = '45%',
     container = true,
 }) => {
     const { classes, cx } = useStyles()

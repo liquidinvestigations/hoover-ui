@@ -18,19 +18,32 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         flexDirection: 'column',
     },
 
-
     searchCount: {
         position: 'absolute',
-        top: theme.spacing(0.5),
-        right: theme.spacing(0.5),
+        top: 0,
+        right: 0,
 
         '& > div': {
             padding: theme.spacing(0.5),
         },
     },
-    chunkTabsContainer:{
-        '& .MuiTabs-flexContainer button': {
-            paddingBottom: 0
-        }
-    }
+    chunkTabsContainer: {
+        '.MuiTabs-flexContainer button': {
+            paddingBottom: 0,
+        },
+
+        '&& .MuiTabs-root ': {
+            minHeight: 40,
+        },
+
+        '.MuiTab-root ': {
+            fontSize: '0.85em',
+        },
+    },
+
+    pdfTabsContainer: {
+        '.MuiTab-root ': {
+            fontSize: '0.775em',
+        },
+    },
 }))

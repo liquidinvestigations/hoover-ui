@@ -7,15 +7,31 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         flexDirection: 'column',
         height: '100%',
 
-        '& .total-count': {
-            padding: `0 ${theme.spacing(1)}`,
-            borderRadius: theme.spacing(1),
-            color: theme.palette.common.white,
-            fontSize: '12px',
-            background: theme.palette.primary.light,
+        '&': {
+            '.total-count': {
+                padding: `0 ${theme.spacing(1)}`,
+                borderRadius: theme.spacing(1),
+                color: theme.palette.common.white,
+                fontSize: '12px',
+                background: theme.palette.primary.light,
 
-            '&.no-results': {
-                opacity: 0.5,
+                '&.no-results': {
+                    opacity: 0.5,
+                },
+            },
+
+            '.MuiTabs-root ': {
+                minHeight: '48px',
+            },
+
+            '.MuiTab-root': {
+                minHeight: 'fit-content',
+                paddingTop: theme.spacing(2),
+            },
+
+            '.MuiTabs-scrollButtons.Mui-disabled': {
+                opacity: 0.3,
+                cursor: 'not-allowed'
             },
         },
     },
@@ -67,6 +83,10 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         minHeight: 65,
         color: theme.palette.primary.contrastText,
         backgroundColor: theme.palette.primary.main,
+
+        '.MuiTab-root':{
+            fontSize: '0.825em',
+        }
     },
 
     tabsIndicator: {

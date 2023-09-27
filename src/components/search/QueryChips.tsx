@@ -17,6 +17,7 @@ export interface ExtendedNodeTerm extends NodeTerm {
 
 const useStyles = makeStyles()((theme: Theme) => ({
     treeTitle: {
+        fontWeight: '500',
         marginTop: theme.spacing(1),
     },
 
@@ -149,7 +150,7 @@ export const QueryChips: FC = observer(() => {
 
     return query?.q && parsedQuery ? (
         <Box>
-            <Typography variant="h6" className={classes.treeTitle}>
+            <Typography className={classes.treeTitle}>
                 Query
             </Typography>
             <FormControl variant="standard" margin="normal">

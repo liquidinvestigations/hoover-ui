@@ -127,6 +127,14 @@ export class DocumentStore {
 
     setTabs = () => {
         const tabs = []
+
+        const getName = (tag: string): string => {
+            if (tag.startsWith('translated_')) return tag
+
+            const ocrTag = tag.split('_')
+            return `OCR ${ocrTag[ocrTag.length - 1]}`
+        }
+
         if (this.data?.content) {
             tabs.push({
                 name: 'Extracted from file',
@@ -138,7 +146,7 @@ export class DocumentStore {
             tabs.push(
                 ...this.ocrData.map(({ tag, text }) => ({
                     tag,
-                    name: (tag.startsWith('translated_') ? '' : 'OCR ') + tag,
+                    name: getName(tag),
                     icon: reactIcons.ocr,
                     content: text,
                 }))

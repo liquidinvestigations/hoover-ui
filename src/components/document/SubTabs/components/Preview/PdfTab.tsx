@@ -59,12 +59,12 @@ export const PdfTab = observer(() => {
     return (
         <>
             {!printMode && tabs.length > 1 && (
-                <Box>
+                <Box className={classes.pdfTabsContainer}>
                     <Tabs value={subTab} onChange={handleSubTabChange} variant="scrollable" scrollButtons="auto">
                         {tabs.map(({ icon, name }, index) => {
                             const documentSearchCount = pdfSearchStore.getDocumentSearchResultsCount(index)
                             const loading = pdfSearchStore.getDocumentLoadingState(index) && !documentSearchCount
-                            return <Tab key={index} icon={icon} label={getTabLabel(name, loading, documentSearchCount)} />
+                            return <Tab key={index} icon={icon} iconPosition='start' label={getTabLabel(name, loading, documentSearchCount)} />
                         })}
                     </Tabs>
                 </Box>

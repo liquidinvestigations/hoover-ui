@@ -264,7 +264,7 @@ export const Document = observer(() => {
             <Grid container justifyContent="space-between" wrap="nowrap" className={classes.header}>
                 <Grid item className={classes.titleWrapper}>
                     <Box>
-                        <Typography variant="h5" className={classes.filename}>
+                        <Typography variant="h6" className={classes.filename}>
                             {data.content?.filename?.[0] ?? ''}
                         </Typography>
                     </Box>
@@ -338,6 +338,7 @@ export const Document = observer(() => {
                         .map((tabData, index) => (
                             <StyledTab
                                 key={index}
+                                iconPosition='start'
                                 icon={tabData.icon}
                                 label={
                                     <>
