@@ -1,0 +1,22 @@
+{
+  "root": true,
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": { "project": ["./tsconfig.json"] },
+  "ignorePatterns": ["src/**/*.js", "pages/**/*.js"],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-non-null-asserted-optional-chain": "warn",
+    "@typescript-eslint/ban-ts-comment": "warn",
+    "@typescript-eslint/ban-types": "warn",
+    "no-prototype-builtins": "warn",
+    "no-dupe-else-if": "warn",
+    "no-constant-condition": "warn",
+    "no-extra-boolean-cast": "warn",
+    "prefer-const": "warn",
+    "no-unsafe-optional-chaining": "warn",
+    "no-extra-semi": "warn",
+    "no-case-declarations": "warn"
+  }
+}
