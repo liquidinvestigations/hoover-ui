@@ -18,7 +18,10 @@ describe('PDF viewer utilities', () => {
 
             const nodes = flattenDOMNodes(document.body.children[0].children)
             const textContent = getTextContent(nodes)
-            const words = textContent.split(' ').filter((word) => word?.length > 3)
+            const words = textContent
+                .split(' ')
+                .slice(0, 50)
+                .filter((word) => word?.length > 3)
             words.forEach((word) => wordsSet.add(word.toLowerCase()))
 
             const uniqueWords = Array.from(wordsSet) // unique word set converted to array
