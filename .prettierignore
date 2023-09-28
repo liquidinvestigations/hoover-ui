@@ -1,3 +1,6 @@
+*.md
+*.yml
+*.html
 .coverage
 .next
 static
@@ -6,3 +9,4 @@ styles
 *.snap
 node_modules
 build
+__test__
