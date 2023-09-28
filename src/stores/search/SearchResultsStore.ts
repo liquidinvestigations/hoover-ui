@@ -27,7 +27,10 @@ export class SearchResultsStore {
 
     previewOnLoad: PreviewOnLoad
 
-    constructor(private readonly sharedStore: SharedStore, private readonly searchStore: SearchStore) {
+    constructor(
+        private readonly sharedStore: SharedStore,
+        private readonly searchStore: SearchStore,
+    ) {
         makeAutoObservable(this)
 
         reaction(
@@ -38,7 +41,7 @@ export class SearchResultsStore {
                 } else if (this.previewOnLoad === 'last' && hits[hits.length - 1]) {
                     this.openPreview(hits[hits.length - 1])
                 }
-            }
+            },
         )
     }
 
@@ -61,7 +64,7 @@ export class SearchResultsStore {
                 '*',
                 this.sharedStore.fields!,
                 excludedFields || [],
-                this.sharedStore.user?.uuid!
+                this.sharedStore.user?.uuid!,
             )
 
             task.addEventListener('done', (event) => {

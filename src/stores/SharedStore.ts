@@ -65,7 +65,7 @@ export class SharedStore {
                     this.searchStore.search(queuedQuery)
                     this.searchStore.queuedQuery = undefined
                 }
-            }
+            },
         )
     }
 

@@ -43,11 +43,7 @@ export const PREVIEWABLE_MIME_TYPE_SUFFEXES = [
 export const Preview: FC = () => {
     const { classes } = useStyles()
     const {
-        documentStore: {
-            data,
-            docRawUrl,
-            docPreviewUrl,
-        },
+        documentStore: { data, docRawUrl, docPreviewUrl },
     } = useSharedStore()
 
     if (data?.content['has-pdf-preview']) {

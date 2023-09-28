@@ -43,7 +43,8 @@ export const SplitPaneLayout: FC<SplitPaneLayoutProps> = ({
             allowResize
             onChange={onMiddleChange}
             pane1ClassName={classes.middle}
-            pane2ClassName={classes.right}>
+            pane2ClassName={classes.right}
+        >
             {children}
             {right}
         </SplitPane>
@@ -64,7 +65,8 @@ export const SplitPaneLayout: FC<SplitPaneLayoutProps> = ({
                     allowResize
                     onChange={onLeftChange}
                     pane1ClassName={classes.left}
-                    pane2ClassName={right ? undefined : classes.middle}>
+                    pane2ClassName={right ? undefined : classes.middle}
+                >
                     {left}
                     {rightPanel}
                 </SplitPane>

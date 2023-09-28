@@ -31,7 +31,7 @@ export const useStyles = makeStyles()((theme: Theme) => ({
 
             '.MuiTabs-scrollButtons.Mui-disabled': {
                 opacity: 0.3,
-                cursor: 'not-allowed'
+                cursor: 'not-allowed',
             },
         },
     },
@@ -84,9 +84,9 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         color: theme.palette.primary.contrastText,
         backgroundColor: theme.palette.primary.main,
 
-        '.MuiTab-root':{
+        '.MuiTab-root': {
             fontSize: '0.825em',
-        }
+        },
     },
 
     tabsIndicator: {

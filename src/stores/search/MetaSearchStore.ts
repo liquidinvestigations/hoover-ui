@@ -11,7 +11,10 @@ export class MetaSearchStore {
     highlightedMetaData: MetaData[] = []
     highlightedTableData: TableData[] = []
 
-    constructor(metaStore: MetaStore, private readonly hashStore: HashStateStore) {
+    constructor(
+        metaStore: MetaStore,
+        private readonly hashStore: HashStateStore,
+    ) {
         this.metaStore = metaStore
         makeAutoObservable(this)
 
@@ -38,7 +41,7 @@ export class MetaSearchStore {
                 if (tableDataEntryWithHighlightId) {
                     tableDataEntryWithHighlightId.display = tableDataEntryWithHighlightId.display.replace(
                         highlightId,
-                        (match: string) => `${match} ${activeClass}`
+                        (match: string) => `${match} ${activeClass}`,
                     )
                 }
 
@@ -51,7 +54,7 @@ export class MetaSearchStore {
                 })
 
                 this.scrollToHighlight()
-            }
+            },
         )
     }
 

@@ -109,7 +109,7 @@ export const Document = observer(() => {
                 tooltip: `OCR ${tag}`,
                 icon: reactIcons.ocr,
                 target: fullPage ? undefined : '_blank',
-            }))
+            })),
         )
 
         if (previewNextDoc) {
@@ -231,7 +231,8 @@ export const Document = observer(() => {
                 variant="text"
                 component="a"
                 href={'/upload/' + collection + '/' + data.id}
-                color="inherit">
+                color="inherit"
+            >
                 {'Upload File'}
             </Button>
         )
@@ -338,7 +339,7 @@ export const Document = observer(() => {
                         .map((tabData, index) => (
                             <StyledTab
                                 key={index}
-                                iconPosition='start'
+                                iconPosition="start"
                                 icon={tabData.icon}
                                 label={
                                     <>

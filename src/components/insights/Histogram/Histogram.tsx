@@ -32,8 +32,8 @@ export const Histogram: FC = observer(() => {
                 query?.collections as string | string[],
                 {
                     histogram: { date: true },
-                }
-            )
+                },
+            ),
         )
     }
 

@@ -16,12 +16,15 @@ export class TextSearchStore {
     containerRef: React.Ref<any> = null
     totalOccurrenceCount: number = 0
 
-    constructor(private readonly documentStore: DocumentStore, private readonly hashStore: HashStateStore) {
+    constructor(
+        private readonly documentStore: DocumentStore,
+        private readonly hashStore: HashStateStore,
+    ) {
         makeAutoObservable(this)
 
         reaction(
             () => this.searchResults?.[this.documentStore.subTab]?.currentHighlightIndex,
-            () => this.searchResults.length && this.generateHighlightedText()
+            () => this.searchResults.length && this.generateHighlightedText(),
         )
     }
 
@@ -114,7 +117,7 @@ export class TextSearchStore {
             highlightedText += content.slice(startIndex, currentIndex)
             highlightedText += `<mark ${!occurrenceCount ? 'class="active"' : ''} id='highlight-${occurrenceCount}'>${content.slice(
                 currentIndex,
-                currentIndex + query.length
+                currentIndex + query.length,
             )}</mark>`
             occurrenceCount++
 

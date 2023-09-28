@@ -28,7 +28,7 @@ function AttachmentsView() {
                             : Object.keys(response).map((file) => ({
                                   data: response[file].content,
                                   fileName: response[file].filename?.[0] ?? '',
-                              }))
+                              })),
                     )
                 })
             })

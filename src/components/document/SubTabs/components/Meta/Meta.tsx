@@ -16,11 +16,7 @@ export const Meta = observer(() => {
         collection,
         collectionBaseUrl,
         metaStore: { tableData, metaData },
-        documentSearchStore: {
-            query,
-            setActiveSearch,
-            metaSearchStore,
-        },
+        documentSearchStore: { query, setActiveSearch, metaSearchStore },
     } = useSharedStore().documentStore
 
     useEffect(() => {
@@ -77,7 +73,7 @@ export const Meta = observer(() => {
 
     const renderElement = (key: string, value: any, componentKey: string) => {
         const fieldValue = getFieldValue(key, value)
-        
+
         return (
             <Typography key={componentKey} component="pre" variant="caption" className={classes.raw}>
                 <strong>{key}:</strong>{' '}
@@ -130,7 +126,7 @@ export const Meta = observer(() => {
 
             <Box>
                 {(query ? metaSearchStore.highlightedMetaData : metaData).map(({ key, value, componentKey }) =>
-                    Array.isArray(value) ? value.map((v) => renderElement(key, v, componentKey)) : renderElement(key, value, componentKey)
+                    Array.isArray(value) ? value.map((v) => renderElement(key, v, componentKey)) : renderElement(key, value, componentKey),
                 )}
             </Box>
 

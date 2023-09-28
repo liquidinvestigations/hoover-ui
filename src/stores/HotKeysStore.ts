@@ -9,7 +9,11 @@ import { SearchStore } from './search/SearchStore'
 export class HotKeysStore {
     keys: Record<string, any>
 
-    constructor(private readonly hashStore: HashStateStore, private readonly documentStore: DocumentStore, private readonly searchStore: SearchStore) {
+    constructor(
+        private readonly hashStore: HashStateStore,
+        private readonly documentStore: DocumentStore,
+        private readonly searchStore: SearchStore,
+    ) {
         makeAutoObservable(this)
 
         const isInputFocused = () => searchStore.searchViewStore.inputRef?.current === document.activeElement
@@ -61,7 +65,7 @@ export class HotKeysStore {
                                     _collection: hashStore.hashState.preview.c,
                                     _id: hashStore.hashState.preview.i,
                                 }),
-                                '_blank'
+                                '_blank',
                             ))
                 },
             },

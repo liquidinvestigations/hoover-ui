@@ -49,7 +49,8 @@ export const TagTooltip: FC<TagTooltipProps> = ({ chip, count = 0, children }) =
                     </Box>
                     {count > 1 && <Box>...and {count - 1} other(s)</Box>}
                 </>
-            }>
+            }
+        >
             {children}
         </Tooltip>
     )

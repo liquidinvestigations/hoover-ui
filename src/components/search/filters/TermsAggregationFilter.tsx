@@ -53,7 +53,7 @@ export const TermsAggregationFilter: FC<TermsAggregationFilterProps> = observer(
                                   {formatThousands(
                                       aggregationFields[field]?.bucketsMax
                                           ? aggregations?.values?.buckets.reduce((acc, { doc_count }) => Math.max(acc, doc_count), 0)
-                                          : aggregations?.values?.buckets.reduce((acc, { doc_count }) => acc + doc_count, 0)
+                                          : aggregations?.values?.buckets.reduce((acc, { doc_count }) => acc + doc_count, 0),
                                   )}{' '}
                                   hits
                                   {', '}
@@ -61,7 +61,8 @@ export const TermsAggregationFilter: FC<TermsAggregationFilterProps> = observer(
                               </Typography>
                           ) as unknown as string)
                         : undefined
-                }>
+                }
+            >
                 <AggregationFilter
                     field={field}
                     queryFilter={queryFilter}
@@ -75,5 +76,5 @@ export const TermsAggregationFilter: FC<TermsAggregationFilterProps> = observer(
                 />
             </Expandable>
         )
-    }
+    },
 )

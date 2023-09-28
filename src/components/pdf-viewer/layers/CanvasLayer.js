@@ -31,7 +31,7 @@ export default function CanvasLayer({ page, width, height, rotation, scale }) {
                 canvasEl.style.removeProperty('opacity')
                 canvasEl.style.transform = `scale(${1 / devicePixelRatio})`
             },
-            () => {}
+            () => {},
         )
 
         return cancelTask

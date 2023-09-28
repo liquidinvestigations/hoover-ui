@@ -27,7 +27,7 @@ export const MoreButton: FC<{ field: SourceField }> = observer(({ field }) => {
         const facets = query?.facets || {}
         search(
             { facets: { ...facets, [field]: page + 1 }, page: defaultSearchParams.page },
-            { searchType: SearchType.Aggregations, keepFromClearing: field, fieldList: [field] }
+            { searchType: SearchType.Aggregations, keepFromClearing: field, fieldList: [field] },
         )
     }
 

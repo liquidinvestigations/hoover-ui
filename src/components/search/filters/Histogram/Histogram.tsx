@@ -95,7 +95,7 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
         handleIntervalsChange(
             (intervals?.include || []).filter((v: string) => {
                 return !selectedBars?.includes(v)
-            })
+            }),
         )
     }, [query, search, selectedBars])
 
@@ -177,7 +177,7 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
                         barHeight: ((chartHeight - axisHeight) * Math.log(count + 1)) / Math.log(maxCount + 1),
                         barPosition: (index + missingBarsCount) * (barWidth + barMargin) * xScale,
                         labelPosition: ((index + missingBarsCount) * (barWidth + barMargin) + barWidth / 2) * xScale,
-                    } as HistogramBar)
+                    }) as HistogramBar,
             )
         }
     }, [buckets])
@@ -194,7 +194,8 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
                             size="small"
                             className={cx(classes.expand, { [classes.expandOpen]: open })}
                             aria-expanded={open}
-                            aria-label="Show histogram">
+                            aria-label="Show histogram"
+                        >
                             {cloneElement(reactIcons.chevronDown, { color: 'action' })}
                         </IconButton>
                     </Grid>

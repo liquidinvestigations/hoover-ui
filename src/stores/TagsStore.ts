@@ -58,7 +58,7 @@ export class TagsStore {
                             this.setTagsLoading(false)
                         })
                 }
-            }
+            },
         )
     }
 

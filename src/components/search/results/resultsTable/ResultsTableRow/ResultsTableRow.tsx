@@ -132,7 +132,8 @@ export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index 
                                         boundary: 'clippingParents',
                                     },
                                 },
-                            ]}>
+                            ]}
+                        >
                             <Paper elevation={10} className={classes.preview}>
                                 {previewLoading && <Loading />}
                                 <img

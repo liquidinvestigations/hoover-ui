@@ -81,7 +81,7 @@ const buildSortQuery = (order: string[][] | undefined) =>
     order
         ?.reverse()
         .map(([field, direction = 'asc']) =>
-            field.startsWith('_') ? { [field]: { order: direction } } : { [field]: { order: direction, missing: '_last' } }
+            field.startsWith('_') ? { [field]: { order: direction } } : { [field]: { order: direction, missing: '_last' } },
         ) || []
 
 const buildTermsField = (field: SourceField, uuid: string, terms: Terms, page = 1, size = DEFAULT_FACET_SIZE): Field => {
@@ -177,7 +177,7 @@ const buildHistogramField = (
     uuid: string,
     { interval = DEFAULT_INTERVAL, intervals }: HistogramParams = {},
     page = 1,
-    size = DEFAULT_FACET_SIZE
+    size = DEFAULT_FACET_SIZE,
 ) => {
     const fieldKey = expandPrivate(field, uuid)
 
@@ -371,7 +371,7 @@ const buildAggs = (fields: Field[]) =>
                 filter: buildFilter(fields.filter((other) => other.originalField !== field.originalField)),
             },
         }),
-        {}
+        {},
     )
 
 export type FieldList = '*' | string[]
@@ -390,7 +390,7 @@ const buildSearchQuery = (
     missing: boolean,
     searchFields: SearchFields,
     excludedFields: string[],
-    uuid: string
+    uuid: string,
 ) => {
     const query = buildQuery(q, filters, searchFields, excludedFields)
     const sort = buildSortQuery(order)

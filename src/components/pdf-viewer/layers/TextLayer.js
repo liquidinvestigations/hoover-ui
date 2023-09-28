@@ -90,7 +90,7 @@ const TextLayer = observer(({ page, rotation, scale }) => {
         return cancelTask
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [rotation, scale, page, query, searchResults])
-      
+
     useEffect(() => {
         addActiveClassToMarks(containerRef.current, currentHighlightIndex)
     }, [currentHighlightIndex, searchResults])

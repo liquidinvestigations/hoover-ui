@@ -64,7 +64,7 @@ export const PdfTab = observer(() => {
                         {tabs.map(({ icon, name }, index) => {
                             const documentSearchCount = pdfSearchStore.getDocumentSearchResultsCount(index)
                             const loading = pdfSearchStore.getDocumentLoadingState(index) && !documentSearchCount
-                            return <Tab key={index} icon={icon} iconPosition='start' label={getTabLabel(name, loading, documentSearchCount)} />
+                            return <Tab key={index} icon={icon} iconPosition="start" label={getTabLabel(name, loading, documentSearchCount)} />
                         })}
                     </Tabs>
                 </Box>

@@ -119,5 +119,5 @@ export const AggregationFilter: FC<AggregationFilterProps> = observer(
                 </ListItem>
             </List>
         )
-    }
+    },
 )

@@ -34,7 +34,7 @@ export const Files = observer(() => {
     }
 
     useEffect(() => {
-        if (!data) return;
+        if (!data) return
         setFiles(data.children)
         setCurrentPage(data.children_page)
         setCurrentHasNextPage(data.children_has_next_page)
@@ -52,7 +52,8 @@ export const Files = observer(() => {
                         target={fullPage ? undefined : '_blank'}
                         rel="noreferrer"
                         title="Original file"
-                        className={classes.link}>
+                        className={classes.link}
+                    >
                         {reactIcons.download}
                     </a>
                 )}

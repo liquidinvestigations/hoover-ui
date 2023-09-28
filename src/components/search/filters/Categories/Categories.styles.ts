@@ -8,6 +8,6 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         transition: theme.transitions.create('width', {
             duration: theme.transitions.duration.shortest,
         }),
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
 }))

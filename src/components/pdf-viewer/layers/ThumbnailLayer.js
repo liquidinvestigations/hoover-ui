@@ -42,7 +42,7 @@ export default function ThumbnailLayer({ page, pageWidth, pageHeight, rotation, 
         renderTask.current = page.render({ canvasContext, viewport })
         renderTask.current.promise.then(
             () => setSrc(canvas.toDataURL()),
-            () => {}
+            () => {},
         )
 
         return cancelTask

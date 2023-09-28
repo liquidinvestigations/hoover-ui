@@ -44,9 +44,9 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         padding: theme.spacing(1),
 
         '&': {
-            'svg': {
-                marginBottom: theme.spacing(0.5)
-            }
+            svg: {
+                marginBottom: theme.spacing(0.5),
+            },
         },
     },
 
@@ -65,6 +65,6 @@ export const useStyles = makeStyles()((theme: Theme) => ({
 
     openCollapsed: {
         boxShadow: `inset -2px 0 0 0  ${theme.palette.grey[700]}`,
-        backgroundColor: theme.palette.grey[100]
+        backgroundColor: theme.palette.grey[100],
     },
 }))

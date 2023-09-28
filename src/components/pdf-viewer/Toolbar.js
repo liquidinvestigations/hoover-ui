@@ -153,7 +153,8 @@ function Toolbar({
                                     size="small"
                                     onClick={onPrevPage}
                                     disabled={!firstPageData || currentPageIndex === 0}
-                                    className={classes.toolbarIcon}>
+                                    className={classes.toolbarIcon}
+                                >
                                     {reactIcons.arrowUp}
                                 </IconButton>
                             </span>
@@ -164,7 +165,8 @@ function Toolbar({
                                     size="small"
                                     onClick={onNextPage}
                                     disabled={!firstPageData || currentPageIndex === numPages - 1}
-                                    className={classes.toolbarIcon}>
+                                    className={classes.toolbarIcon}
+                                >
                                     {reactIcons.arrowDown}
                                 </IconButton>
                             </span>
@@ -209,7 +211,8 @@ function Toolbar({
                                 className={cx('MuiInputBase-root', 'MuiOutlinedInput-root', 'MuiInputBase-formControl', classes.scaleSelect, {
                                     'Mui-disabled': !firstPageData,
                                 })}
-                                onClick={!!firstPageData ? handleScaleMenuClick : null}>
+                                onClick={!!firstPageData ? handleScaleMenuClick : null}
+                            >
                                 <span className={cx('MuiInputBase-input', 'MuiOutlinedInput-input')}>{Math.round(scale * 100) + '%'}</span>
                                 {cloneElement(reactIcons.dropDown, {
                                     className: cx('MuiSelect-icon', 'MuiSelect-iconOutlined'),

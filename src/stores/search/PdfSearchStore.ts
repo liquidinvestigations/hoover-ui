@@ -22,7 +22,10 @@ export class PdfSearchStore {
     private abortController?: AbortController
     documentStore: DocumentStore
 
-    constructor(documentStore: DocumentStore, private readonly hashStore: HashStateStore) {
+    constructor(
+        documentStore: DocumentStore,
+        private readonly hashStore: HashStateStore,
+    ) {
         this.documentStore = documentStore
         makeAutoObservable(this)
     }
@@ -38,7 +41,7 @@ export class PdfSearchStore {
     getTotalSearchResultsCount = () => {
         return Object.values(this.searchResults).reduce(
             (total, chunkResults) => total + Object.values(chunkResults)?.reduce((count, results) => count + results?.length, 0),
-            0
+            0,
         )
     }
 

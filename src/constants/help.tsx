@@ -14,7 +14,8 @@ export const tooltips = {
                     href="https://github.com/liquidinvestigations/docs/wiki/User-Guide:-Hoover#tags"
                     style={{ color: 'white' }}
                     target="_blank"
-                    rel="noreferrer">
+                    rel="noreferrer"
+                >
                     here
                 </a>
                 .

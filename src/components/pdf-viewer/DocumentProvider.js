@@ -72,7 +72,7 @@ export default function DocumentProvider({ url, cMaps, cMapsPacked, withCredenti
                 (err) => {
                     setError(err)
                     setStatus(STATUS_ERROR)
-                }
+                },
             )
         })
 
@@ -94,7 +94,8 @@ export default function DocumentProvider({ url, cMaps, cMapsPacked, withCredenti
                 setBookmarks,
                 externalLinks,
                 setExternalLinks,
-            }}>
+            }}
+        >
             {children}
         </DocumentContext.Provider>
     )
