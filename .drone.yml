@@ -43,11 +43,11 @@ steps:
   commands:
   - npm run build
 
-    # can't run tests without installing pixman library
-    # - name: run tests
-    #   image: node:18-alpine
-    #   commands:
-    #   - npm run test
+- name: run tests
+  image: node:18
+  commands:
+  - apt-get update -y && apt-get install -y libpangocairo-1.0-0 build-essential libpixman-1-dev libpixman-1-0 pkg-config libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
+  - npm run test
 
 ---
 
