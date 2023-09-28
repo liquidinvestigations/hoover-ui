@@ -87,7 +87,8 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ hits }) => {
                                     key={field}
                                     align={align}
                                     className={sortable ? 'sortable' : undefined}
-                                    onClick={sortable ? handleClick(field) : undefined}>
+                                    onClick={sortable ? handleClick(field) : undefined}
+                                >
                                     {label}
                                     {orderIcon}
                                 </TableCell>
@@ -104,7 +105,8 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ hits }) => {
                                         key={field}
                                         value={field}
                                         selected={!!resultsColumns.find(([visibleField]) => visibleField === field)}
-                                        onClick={handleColumnMenuClick(field)}>
+                                        onClick={handleColumnMenuClick(field)}
+                                    >
                                         {label}
                                     </MenuItem>
                                 ))}
@@ -112,11 +114,7 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ hits }) => {
                         </TableCell>
                     </TableRow>
                 </TableHead>
-                <TableBody>
-                    {hits?.hits.map((hit, i) => (
-                        <ResultsTableRow key={hit._id} index={i} hit={hit} />
-                    ))}
-                </TableBody>
+                <TableBody>{hits?.hits.map((hit, i) => <ResultsTableRow key={hit._id} index={i} hit={hit} />)}</TableBody>
             </Table>
         </TableContainer>
     )

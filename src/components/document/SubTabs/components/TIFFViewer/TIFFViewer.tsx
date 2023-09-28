@@ -90,7 +90,7 @@ export const TIFFViewer: FC<{ url: string }> = ({ url }) => {
                         ctx.putImageData(imageData, 0, 0)
 
                         return canvas.toDataURL()
-                    })
+                    }),
                 )
             } else {
                 setError(response.statusText)
@@ -108,9 +108,7 @@ export const TIFFViewer: FC<{ url: string }> = ({ url }) => {
                 />
             )}
             {error && <Typography color="error">{error}</Typography>}
-            {pages?.map((data) => (
-                <img key={data} src={data} />
-            ))}
+            {pages?.map((data) => <img key={data} src={data} />)}
         </div>
     )
 }

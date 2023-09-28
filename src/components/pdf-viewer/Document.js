@@ -124,7 +124,7 @@ export const Document = observer(({ initialPageIndex, onPageIndexChange, rendere
                 containerRef.current.scrollTop = pagesRefs[index].current.offsetTop
             }
         },
-        [containerRef, pagesRefs]
+        [containerRef, pagesRefs],
     )
 
     useEffect(() => {
@@ -132,12 +132,12 @@ export const Document = observer(({ initialPageIndex, onPageIndexChange, rendere
             setPagesRefs((refs) =>
                 Array(doc.numPages)
                     .fill()
-                    .map((_, i) => refs[i] || createRef())
+                    .map((_, i) => refs[i] || createRef()),
             )
             setThumbnailsRefs((refs) =>
                 Array(doc.numPages)
                     .fill()
-                    .map((_, i) => refs[i] || createRef())
+                    .map((_, i) => refs[i] || createRef()),
             )
         }
     }, [doc])
@@ -233,7 +233,8 @@ export const Document = observer(({ initialPageIndex, onPageIndexChange, rendere
                     leftSize={sidePanelOpen ? '194px' : '0'}
                     leftMinSize={194}
                     leftStyle={{ visibility: sidePanelOpen ? 'visible' : 'hidden', overflowY: 'hidden' }}
-                    leftResizerStyle={{ visibility: sidePanelOpen ? 'visible' : 'hidden', width: sidePanelOpen ? 11 : 10 }}>
+                    leftResizerStyle={{ visibility: sidePanelOpen ? 'visible' : 'hidden', width: sidePanelOpen ? 11 : 10 }}
+                >
                     <div className={cx(classes.container, 'pdfViewer')} ref={containerRef}>
                         {status === STATUS_LOADING && <Loading variant={percent > 0 ? 'determinate' : 'indeterminate'} value={percent} />}
                         {status === STATUS_ERROR && error?.message && (
@@ -278,7 +279,8 @@ export const Document = observer(({ initialPageIndex, onPageIndexChange, rendere
                                 {cloneElement(reactIcons.link, { className: classes.icon })}
                                 External links
                             </>
-                        }>
+                        }
+                    >
                         <div className={classes.externalLinks}>
                             <div className={classes.externalLinksTitle}>
                                 <Typography>

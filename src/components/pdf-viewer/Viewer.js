@@ -17,10 +17,7 @@ function debounce(fn, wait) {
 export default function Viewer({ url, cMapUrl = '/build/static/cmaps', cMapPacked = true, withCredentials = true }) {
     const {
         hashStore: { hashState, setHashState },
-        documentStore: {
-            chunkTab,
-            pdfDocumentInfo,
-        },
+        documentStore: { chunkTab, pdfDocumentInfo },
     } = useSharedStore()
     const [pageIndex, setPageIndex] = useState(0)
 

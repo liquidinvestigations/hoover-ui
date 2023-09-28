@@ -4,8 +4,8 @@ import { makeStyles } from 'tss-react/mui'
 export const useStyles = makeStyles()((theme: Theme) => ({
     container: {
         '& mark.active': {
-            backgroundColor: 'orange'
-        }
+            backgroundColor: 'orange',
+        },
     },
     icon: {
         transform: 'rotate(-90deg)',

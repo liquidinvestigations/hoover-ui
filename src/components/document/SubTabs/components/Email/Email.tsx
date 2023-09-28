@@ -106,7 +106,8 @@ export const Email = observer(() => {
                                     <Link
                                         href={createSearchUrl(messageId, 'in-reply-to' as SourceField, collection as Category, hash)}
                                         shallow
-                                        target="_blank">
+                                        target="_blank"
+                                    >
                                         search e-mails replying to this one
                                     </Link>
                                 </TableCell>

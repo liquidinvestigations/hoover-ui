@@ -55,4 +55,3 @@ export const filenameFor = (item: Partial<LocalDocumentData & ChildDocument>) =>
     const something = Array.isArray(path) ? path[0] : path
     return something?.split('/').filter(Boolean).pop()
 }
-  

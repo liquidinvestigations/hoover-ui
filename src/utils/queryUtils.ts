@@ -44,7 +44,7 @@ export const rollupParams = (query: Record<string, any>) =>
         Object.entries(query).map(([field, value]) => {
             const key = Object.keys(PARAMS_MAP).find((keyE) => PARAMS_MAP[keyE] === field)
             return key ? [key, value] : [field, value]
-        })
+        }),
     )
 
 export const unwindParams = (query: ParsedQs) =>
@@ -56,7 +56,7 @@ export const buildSearchQuerystring = (params: Partial<SearchQueryParams>) =>
             ...defaultSearchParams,
             ...params,
             collections: params?.collections?.join?.('+'),
-        })
+        }),
     )
 
 export const clearQuotedParam = (param: string) => param.replace(/#/g, ' ').replace(/"/g, '')
@@ -136,7 +136,7 @@ export const createSearchUrl = (
     term: Term | string,
     field: SourceField,
     collections: string | string[],
-    hash: Record<string, any> | undefined = undefined
+    hash: Record<string, any> | undefined = undefined,
 ) => {
     const params = createSearchParams(field, term)
     const hashParams = hash ? '#' + qs.stringify(rollupParams(hash)) : ''

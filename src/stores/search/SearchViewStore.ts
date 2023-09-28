@@ -37,7 +37,10 @@ export class SearchViewStore {
 
     snackbarMessage: ReactNode | undefined
 
-    constructor(private readonly sharedStore: SharedStore, private readonly searchStore: SearchStore) {
+    constructor(
+        private readonly sharedStore: SharedStore,
+        private readonly searchStore: SearchStore,
+    ) {
         makeAutoObservable(this)
 
         reaction(
@@ -54,7 +57,7 @@ export class SearchViewStore {
                         this.middleColumnWidth = parseFloat(storedMiddleColumnWidth)
                     }
                 }
-            }
+            },
         )
 
         reaction(
@@ -69,7 +72,7 @@ export class SearchViewStore {
                             this.sharedStore.tagsStore.setTagsRefreshQueue(undefined)
                         })
                 }
-            }
+            },
         )
     }
 

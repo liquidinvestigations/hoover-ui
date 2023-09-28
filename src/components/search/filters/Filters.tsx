@@ -47,7 +47,8 @@ export const Filters: FC = observer(() => {
                         category={category}
                         loading={loading}
                         loadingETA={loadingETA}
-                        toolbar={<CategoryDrawerToolbar category={category} />}>
+                        toolbar={<CategoryDrawerToolbar category={category} />}
+                    >
                         {filters.map(({ field, type, buckets, filterLabel }) => {
                             let FilterComponent,
                                 filterTypeProps: { bucketLabel?: (bucket: Bucket) => string } = {}

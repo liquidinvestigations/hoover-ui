@@ -101,7 +101,7 @@ export default function AnnotationLayer({ page, pageIndex, containerRef, pagesRe
                         }
                         if (!Array.isArray(explicitDest)) {
                             console.error(
-                                `PDFLinkService.goToDestination: "${explicitDest}" is not ` + `a valid destination array, for dest="${dest}".`
+                                `PDFLinkService.goToDestination: "${explicitDest}" is not ` + `a valid destination array, for dest="${dest}".`,
                             )
                             return
                         }

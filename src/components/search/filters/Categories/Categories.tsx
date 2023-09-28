@@ -19,12 +19,10 @@ export const Categories: FC = observer(() => {
             timeout={{
                 enter: duration.enteringScreen,
                 exit: duration.leavingScreen,
-            }}>
+            }}
+        >
             {() => (
-                <Grid
-                    item
-                    className={classes.container}
-                    data-test="categories">
+                <Grid item className={classes.container} data-test="categories">
                     <CategoriesToolbar />
                     <SearchFields />
                     <Collections />

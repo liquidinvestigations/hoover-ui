@@ -16,7 +16,10 @@ export class DocumentSearchStore {
     metaSearchStore: MetaSearchStore
     activeSearch: PdfSearchStore | TextSearchStore | MetaSearchStore
 
-    constructor(documentStore: DocumentStore, private readonly hashStore: HashStateStore) {
+    constructor(
+        documentStore: DocumentStore,
+        private readonly hashStore: HashStateStore,
+    ) {
         this.pdfSearchStore = new PdfSearchStore(documentStore, this.hashStore)
         this.textSearchStore = new TextSearchStore(documentStore, this.hashStore)
         this.metaSearchStore = new MetaSearchStore(documentStore.metaStore, this.hashStore)
@@ -25,7 +28,7 @@ export class DocumentSearchStore {
 
         reaction(
             () => this.inputValue,
-            () => this.inputValue && this.setQuery()
+            () => this.inputValue && this.setQuery(),
         )
 
         reaction(
@@ -34,14 +37,14 @@ export class DocumentSearchStore {
                 if (!findQuery) return
                 this.inputValue = findQuery
                 this.query = findQuery
-            }
+            },
         )
 
         reaction(
             () => this.activeSearch.getCurrentHighlightIndex(),
             (currentHighlightIndex) => {
                 this.hashStore.setHashState({ findIndex: currentHighlightIndex })
-            }
+            },
         )
 
         reaction(
@@ -52,7 +55,7 @@ export class DocumentSearchStore {
                 } else {
                     this.search()
                 }
-            }
+            },
         )
     }
 

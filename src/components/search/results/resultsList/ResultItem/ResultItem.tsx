@@ -88,7 +88,8 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
-            data-test="result">
+            data-test="result"
+        >
             <CardHeader
                 classes={cardHeaderClasses}
                 title={
@@ -169,7 +170,8 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                                                     boundary: 'clippingParents',
                                                 },
                                             },
-                                        ]}>
+                                        ]}
+                                    >
                                         <Paper elevation={10} className={classes.preview}>
                                             {previewLoading && <Loading />}
                                             <img

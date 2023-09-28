@@ -86,7 +86,7 @@ export const QueryChips: FC = observer(() => {
         (node: AST | Node) => {
             parsedQuery && search({ q: lucene.toString(rebuildTree(parsedQuery, node) as AST), page: defaultSearchParams.page })
         },
-        [parsedQuery, search]
+        [parsedQuery, search],
     )
 
     const getChip = useCallback((q: Partial<ExtendedNodeTerm>) => {
@@ -137,7 +137,8 @@ export const QueryChips: FC = observer(() => {
                                 </Box>
                             )}
                         </>
-                    }>
+                    }
+                >
                     <Chip label={label} className={className + ' ' + classes.tooltipChip} />
                 </Tooltip>
             )
@@ -150,9 +151,7 @@ export const QueryChips: FC = observer(() => {
 
     return query?.q && parsedQuery ? (
         <Box>
-            <Typography className={classes.treeTitle}>
-                Query
-            </Typography>
+            <Typography className={classes.treeTitle}>Query</Typography>
             <FormControl variant="standard" margin="normal">
                 <ChipsTree
                     tree={parsedQuery}

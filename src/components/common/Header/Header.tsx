@@ -14,7 +14,7 @@ export const Header = observer(() => {
     return (
         <div className={classes.root}>
             <AppBar position="sticky">
-                <Toolbar variant='dense'>
+                <Toolbar variant="dense">
                     <Typography variant="h6" color="inherit" className={classes.flex}>
                         <Link href="/" className={classes.noLink}>
                             {user?.title}

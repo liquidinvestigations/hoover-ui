@@ -76,7 +76,8 @@ export const FinderItem: FC<FinderItemProps> = ({ pathname, item, active, select
             ref={ref}
             component={ButtonBase as any}
             onClick={handleClick}
-            className={cx(classes.item, { [classes.active]: isActive, [classes.selected]: isSelected && !isActive })}>
+            className={cx(classes.item, { [classes.active]: isActive, [classes.selected]: isSelected && !isActive })}
+        >
             <ListItemIcon classes={{ root: classes.iconRoot }}>{getTypeIcon((item as any).filetype)}</ListItemIcon>
             <ListItemText classes={{ root: classes.itemRoot, primary: classes.itemText }}>{filenameFor(item)}</ListItemText>
         </ListItem>

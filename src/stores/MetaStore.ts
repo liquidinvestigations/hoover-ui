@@ -127,7 +127,7 @@ export class MetaStore {
         const filteredEntries = entries.filter(
             ([key, value]) =>
                 !['text', 'ocrtext', 'path-text', 'path-parts'].includes(key) &&
-                ((!Array.isArray(value) && value) || (Array.isArray(value) && value.length))
+                ((!Array.isArray(value) && value) || (Array.isArray(value) && value.length)),
         )
 
         const mappedEntries = filteredEntries.flatMap(([key, value]) => {

@@ -43,7 +43,7 @@ export class FiltersStore {
             }
             return acc
         },
-        {} as Record<Category, CategoryProps>
+        {} as Record<Category, CategoryProps>,
     )
 
     expandedFilters: ExpandedFilters

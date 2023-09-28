@@ -135,7 +135,7 @@ export const Menu = observer(() => {
                             {link.name}
                         </Button>
                     </NextLink>
-                )
+                ),
             )}
             <IconButton edge="end" color="inherit" onClick={handleUserMenuClick}>
                 {reactIcons.accountCircle}

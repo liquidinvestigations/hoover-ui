@@ -25,7 +25,7 @@ it('builds a query with a filetype filter', () => {
         false,
         searchFields,
         [],
-        'testuser'
+        'testuser',
     )
 
     expect(query.post_filter).toMatchObject({
@@ -72,7 +72,7 @@ it('builds a query with a date histogram by years filter', () => {
         false,
         searchFields,
         [],
-        'testuser'
+        'testuser',
     )
 
     const yearFilter = {
@@ -142,7 +142,7 @@ it('builds a query with multiple fields filtered', () => {
         false,
         searchFields,
         [],
-        'testuser'
+        'testuser',
     )
 
     expect(query.post_filter).toMatchObject({

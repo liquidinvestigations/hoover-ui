@@ -21,7 +21,10 @@ export class SearchAggregationsStore {
 
     keepFromClearing: AggregationsKey | undefined
 
-    constructor(private readonly sharedStore: SharedStore, private readonly searchStore: SearchStore) {
+    constructor(
+        private readonly sharedStore: SharedStore,
+        private readonly searchStore: SearchStore,
+    ) {
         makeAutoObservable(this)
     }
 
@@ -91,7 +94,7 @@ export class SearchAggregationsStore {
                 fieldList,
                 this.sharedStore.fields!,
                 excludedFields || [],
-                this.sharedStore.user?.uuid!
+                this.sharedStore.user?.uuid!,
             )
 
             task.addEventListener('done', (event) => {

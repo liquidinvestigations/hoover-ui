@@ -96,12 +96,12 @@ export const searchFields = (): Promise<{ fields: SearchFields }> => fetchJson(b
 
 export const doc = memoize(
     (docUrl, pageIndex = 1): Promise<DocumentData> => fetchJson(buildUrl(docUrl, 'json', { children_page: pageIndex })),
-    (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`
+    (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`,
 )
 
 export const locations = memoize(
     (docUrl, pageIndex) => fetchJson(buildUrl(docUrl, 'locations', { page: pageIndex })),
-    (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`
+    (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`,
 )
 
 export const tags = (docUrl: string): Promise<Tag[]> => fetchJson(buildUrl(docUrl, 'tags'))

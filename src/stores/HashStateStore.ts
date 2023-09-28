@@ -44,7 +44,7 @@ export class HashStateStore {
                 () => this.sharedStore.navigation?.location.hash,
                 (hashString) => {
                     this.hashState = unwindParams(qs.parse(hashString.substring(1)))
-                }
+                },
             )
         }
     }

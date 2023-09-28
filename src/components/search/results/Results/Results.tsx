@@ -25,7 +25,8 @@ export const Results: FC = observer(() => {
                             size="small"
                             color={resultsViewType === 'list' ? 'primary' : 'default'}
                             className={classes.viewTypeIcon}
-                            onClick={() => setResultsViewType('list')}>
+                            onClick={() => setResultsViewType('list')}
+                        >
                             {reactIcons.listView}
                         </Fab>
                     </Grid>
@@ -34,7 +35,8 @@ export const Results: FC = observer(() => {
                             size="small"
                             color={resultsViewType === 'table' ? 'primary' : 'default'}
                             className={classes.viewTypeIcon}
-                            onClick={() => setResultsViewType('table')}>
+                            onClick={() => setResultsViewType('table')}
+                        >
                             {reactIcons.tableView}
                         </Fab>
                     </Grid>

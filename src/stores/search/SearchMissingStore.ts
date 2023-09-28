@@ -16,7 +16,10 @@ export class SearchMissingStore {
 
     error: Record<string, string> = {}
 
-    constructor(private readonly sharedStore: SharedStore, private readonly searchStore: SearchStore) {
+    constructor(
+        private readonly sharedStore: SharedStore,
+        private readonly searchStore: SearchStore,
+    ) {
         makeAutoObservable(this)
     }
 
@@ -40,7 +43,7 @@ export class SearchMissingStore {
                 fieldList,
                 this.sharedStore.fields!,
                 excludedFields || [],
-                this.sharedStore.user?.uuid!
+                this.sharedStore.user?.uuid!,
             )
 
             task.addEventListener('done', (event) => {

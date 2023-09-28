@@ -49,7 +49,8 @@ export const SearchSize: FC<SearchSizeProps> = ({ page, size }) => {
                         {
                             'data-test': 'size-menu',
                         } as any
-                    }>
+                    }
+                >
                     {SIZE_OPTIONS.map((option) => (
                         <MenuItem key={option} value={option}>
                             {option}

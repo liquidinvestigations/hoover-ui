@@ -14,7 +14,7 @@ export const SortingMenu: FC = observer(() => {
     const order = query?.order || []
 
     const sortOptions = (Object.entries(SORTABLE_FIELDS) as Entries<typeof SORTABLE_FIELDS>).filter(
-        ([field]) => order.findIndex(([v]) => v === field) === -1
+        ([field]) => order.findIndex(([v]) => v === field) === -1,
     )
     const [anchorEl, setAnchorEl] = useState<Element | undefined>()
     const handleSortingMenuClick = (event: MouseEvent) => sortOptions.length && setAnchorEl(event.currentTarget)

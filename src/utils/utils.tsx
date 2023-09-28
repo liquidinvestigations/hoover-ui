@@ -158,20 +158,19 @@ export const formatThousands = (number: number) => {
 }
 
 export const copyMetadata = (doc: DocumentData) => {
-    const { md5, path } = doc.content;
-  
-    let string = md5;
+    const { md5, path } = doc.content
+
+    let string = md5
     if (path && Array.isArray(path) && path.length > 0) {
-      string += `\n${path[0]}`;
+        string += `\n${path[0]}`
     }
-  
+
     if (copy(string)) {
-      return `Copied MD5 and path to clipboard`;
+        return `Copied MD5 and path to clipboard`
     } else {
-      return `Could not copy meta metadata - unsupported browser?`;
+        return `Could not copy meta metadata - unsupported browser?`
     }
-  };
-  
+}
 
 const documentUrlPrefix = '/doc'
 export const collectionUrl = (collection: string) => [documentUrlPrefix, collection].join('/')
@@ -230,9 +229,9 @@ export const flatten = (obj: Record<string, any>, roots: Record<string, any> = [
                         ? // keep working if value is an object
                           flatten(obj[prop], roots.concat([prop]))
                         : // include current prop and value and prefix prop with the roots
-                          { [roots.concat([prop]).join(sep)]: obj[prop] }
+                          { [roots.concat([prop]).join(sep)]: obj[prop] },
                 ),
-            {}
+            {},
         )
 
 export const getFileName = (url: string) => {
@@ -261,7 +260,7 @@ export const numberArray = (start: number, count: number) =>
         {
             length: count,
         },
-        (_, i) => i + start
+        (_, i) => i + start,
     )
 
 export function formatETATime(milliseconds: number) {

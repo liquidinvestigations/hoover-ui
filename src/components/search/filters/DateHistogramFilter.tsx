@@ -58,7 +58,7 @@ export const DateHistogramFilter: FC<DateHistogramFilterProps> = observer(
 
         const formatValue = useCallback(
             (bucket: Bucket) => DateTime.fromISO(bucket.key_as_string || '', { setZone: true }).toFormat(formatsValue[interval]),
-            [interval]
+            [interval],
         )
 
         return (
@@ -82,7 +82,8 @@ export const DateHistogramFilter: FC<DateHistogramFilterProps> = observer(
                               </Typography>
                           ) as unknown as string)
                         : undefined
-                }>
+                }
+            >
                 <DateRangeFilter
                     defaultFrom={queryFilter?.from}
                     defaultTo={queryFilter?.to}
@@ -108,5 +109,5 @@ export const DateHistogramFilter: FC<DateHistogramFilterProps> = observer(
                 />
             </Expandable>
         )
-    }
+    },
 )

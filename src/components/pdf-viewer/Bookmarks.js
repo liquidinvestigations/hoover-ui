@@ -48,7 +48,7 @@ export default function Bookmarks({ onSelect }) {
                           {renderTree(subItems)}
                       </TreeItem>
                   )),
-        [bookmarks, handleItemClick, id]
+        [bookmarks, handleItemClick, id],
     )
 
     return !bookmarks.length ? <TreeItem nodeId="0" label="No bookmarks" /> : renderTree(bookmarks)

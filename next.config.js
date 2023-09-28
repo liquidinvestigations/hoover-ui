@@ -57,7 +57,7 @@ const nextConfig = {
                         to: './static/pdf.worker.js',
                     },
                 ],
-            })
+            }),
         )
 
         config.module.rules.push(
@@ -71,7 +71,7 @@ const nextConfig = {
                 options: {
                     filename: 'static/[name].js',
                 },
-            }
+            },
         )
 
         return config

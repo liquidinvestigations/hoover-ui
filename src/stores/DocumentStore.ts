@@ -78,22 +78,22 @@ export class DocumentStore {
                 if (this.hashStore.hashState.preview?.c && this.hashStore.hashState.preview?.i) {
                     this.setDocument(this.hashStore.hashState.preview.c, this.hashStore.hashState.preview.i)
                 }
-            }
+            },
         )
 
         reaction(
             () => this.hashStore.hashState.chunkTab,
-            (chunkTab) => chunkTab && (this.chunkTab = parseInt(chunkTab))
+            (chunkTab) => chunkTab && (this.chunkTab = parseInt(chunkTab)),
         )
 
         reaction(
             () => this.hashStore.hashState.tab,
-            (tab) => tab && (this.tab = parseInt(tab))
+            (tab) => tab && (this.tab = parseInt(tab)),
         )
 
         reaction(
             () => this.hashStore.hashState.subTab,
-            (subTab) => subTab && (this.subTab = parseInt(subTab))
+            (subTab) => subTab && (this.subTab = parseInt(subTab)),
         )
     }
 
@@ -115,7 +115,7 @@ export class DocumentStore {
         if (!this.docRawUrl || this.data?.content['content-type'] !== 'application/pdf') return
 
         const responses: DocumentInfo[] = await Promise.all(
-            this.getDocumentUrls().map(async (url) => await fetchJson(url + new URLSearchParams({ [`?${X_HOOVER_PDF_INFO}`]: '1' })))
+            this.getDocumentUrls().map(async (url) => await fetchJson(url + new URLSearchParams({ [`?${X_HOOVER_PDF_INFO}`]: '1' }))),
         )
 
         const documentWithMostChunks = responses.reduce((prev, current) => {
@@ -149,7 +149,7 @@ export class DocumentStore {
                     name: getName(tag),
                     icon: reactIcons.ocr,
                     content: text,
-                }))
+                })),
             )
         }
 

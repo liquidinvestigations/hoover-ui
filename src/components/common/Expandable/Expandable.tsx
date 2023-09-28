@@ -76,7 +76,7 @@ export const Expandable: FC<ExpandableProps> = ({
             window.removeEventListener('mouseup', handleMouseUp)
             window.removeEventListener('mousemove', handleMouseMove)
         },
-        [handleMouseMove]
+        [handleMouseMove],
     )
 
     const handleMouseDown = useCallback(
@@ -87,7 +87,7 @@ export const Expandable: FC<ExpandableProps> = ({
             window.addEventListener('mouseup', handleMouseUp, { once: true })
             window.addEventListener('mousemove', handleMouseMove)
         },
-        [handleMouseMove, handleMouseUp]
+        [handleMouseMove, handleMouseUp],
     )
 
     const headerBar = useMemo(
@@ -105,7 +105,8 @@ export const Expandable: FC<ExpandableProps> = ({
                             variant="body2"
                             component="div"
                             className={classes.title}
-                            color={greyed ? 'textSecondary' : highlight ? 'secondary' : 'initial'}>
+                            color={greyed ? 'textSecondary' : highlight ? 'secondary' : 'initial'}
+                        >
                             {title}
                             {loading && <CircularProgress size={16} thickness={4} className={classes.loading} />}
                         </Typography>
@@ -126,7 +127,8 @@ export const Expandable: FC<ExpandableProps> = ({
                                 })}
                                 onClick={toggle}
                                 aria-expanded={openState}
-                                aria-label="Show more">
+                                aria-label="Show more"
+                            >
                                 {cloneElement(reactIcons.chevronDown, { color: highlight ? 'secondary' : 'action' })}
                             </IconButton>
                         </Grid>
@@ -149,7 +151,7 @@ export const Expandable: FC<ExpandableProps> = ({
             classes.header,
             classes.loading,
             classes.title,
-        ]
+        ],
     )
 
     return (

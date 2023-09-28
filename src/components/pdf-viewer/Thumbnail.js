@@ -67,7 +67,7 @@ export default forwardRef(function Thumbnail({ containerRef, pageIndex, rotation
                 threshold: Array(10)
                     .fill()
                     .map((_, i) => i / 10),
-            }
+            },
         )
         const ref = thumbnailRef.current
         observer.observe(ref)

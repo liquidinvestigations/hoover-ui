@@ -103,7 +103,8 @@ export const Pagination: FC = observer(() => {
                                         component="a"
                                         variant="caption"
                                         onClick={page !== p ? handleSet(p) : undefined}
-                                        className={cx(classes.pageLink, { [classes.pageLinkCurrent]: page === p })}>
+                                        className={cx(classes.pageLink, { [classes.pageLinkCurrent]: page === p })}
+                                    >
                                         {p}
                                     </Typography>
                                 ))}
