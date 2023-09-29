@@ -48,14 +48,6 @@ export const PdfTab = observer(() => {
         </>
     )
 
-    const getPreviewContainer = (index: number, key: string, tag: string) => {
-        if (index !== 0 && digestUrl && data.content['content-type'] === 'application/pdf') {
-            return <PDFViewer key={key} url={createOcrUrl(digestUrl, tag)} />
-        } else {
-            return <Preview key={key} />
-        }
-    }
-
     return (
         <>
             {!printMode && tabs.length > 1 && (
@@ -87,15 +79,18 @@ export const PdfTab = observer(() => {
                                     </Box>
                                     <Box className={classes.subTab}>
                                         {chunks.map((chunk: string, chunkIndex: number) => {
-                                            if (chunkIndex === chunkTab) {
-                                                return getPreviewContainer(index, chunk, tag)
-                                            }
+                                            if (chunkIndex !== chunkTab) return undefined
+                                            if (index && digestUrl && data.content['content-type'] === 'application/pdf')
+                                                return <PDFViewer key={chunk} url={createOcrUrl(digestUrl, tag)} />
+                                            return <Preview key={chunk} />
                                         })}
                                     </Box>
                                 </>
                             )
                         } else {
-                            getPreviewContainer(index, tag, tag)
+                            if (index && digestUrl && data.content['content-type'] === 'application/pdf')
+                                return <PDFViewer key={tag} url={createOcrUrl(digestUrl, tag)} />
+                            return <Preview key={tag} />
                         }
                     }
                 })}
