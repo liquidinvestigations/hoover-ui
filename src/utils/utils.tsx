@@ -49,7 +49,7 @@ export const getLanguageName = (key: string) => {
     return found ? found.name : key
 }
 
-export const formatDateTime = (dateTime: string) => DateTime.fromISO(dateTime, { locale: 'en-US' }).toLocaleString(DateTime.DATETIME_FULL)
+export const formatDateTime = (dateTime: string, locale = 'en-US') => DateTime.fromISO(dateTime, { locale }).toLocaleString(DateTime.DATETIME_FULL)
 
 export const daysInMonth = (date: string) => {
     const [, year, month] = /(\d{4})-(\d{2})/.exec(date) as string[]

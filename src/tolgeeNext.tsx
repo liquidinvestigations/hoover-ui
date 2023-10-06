@@ -2,6 +2,7 @@ import { FormatIcu } from '@tolgee/format-icu'
 import { Tolgee, TolgeeProvider, DevTools, useTolgeeSSR, useTolgee } from '@tolgee/react'
 
 type Props = {
+    language: string
     locales: any
 }
 
@@ -21,13 +22,8 @@ const tolgee = Tolgee()
         },
     })
 
-export const TolgeeNextProvider = ({ locales, children }: React.PropsWithChildren<Props>) => {
-    let lang = 'en'
-    if (typeof window !== 'undefined') {
-        lang = localStorage.getItem('language') || lang
-    }
-
-    const tolgeeSSR = useTolgeeSSR(tolgee, lang, locales)
+export const TolgeeNextProvider = ({ language, locales, children }: React.PropsWithChildren<Props>) => {
+    const tolgeeSSR = useTolgeeSSR(tolgee, language, locales)
 
     return (
         <TolgeeProvider tolgee={tolgeeSSR} fallback="Loading..." options={{ useSuspense: true }}>

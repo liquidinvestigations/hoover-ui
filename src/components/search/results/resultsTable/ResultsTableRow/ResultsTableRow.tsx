@@ -1,4 +1,5 @@
 import { IconButton, Paper, Popper, TableCell, TableRow, Tooltip } from '@mui/material'
+import { useTolgee } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import { cloneElement, FC, ReactElement, useEffect, useRef, useState } from 'react'
 
@@ -24,6 +25,7 @@ export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index 
         query: { page, size } = defaultSearchParams,
         searchViewStore: { resultsColumns },
     } = useSharedStore().searchStore
+    const tolgee = useTolgee(['language'])
 
     const start = 1 + (page - 1) * size
 
@@ -77,7 +79,7 @@ export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index 
             case 'boolean':
                 return value ? 'yes' : 'no'
             case 'date':
-                return value ? formatDateTime(value) : null
+                return value ? formatDateTime(value, tolgee.getLanguage()) : null
             case 'size':
                 return value ? humanFileSize(value) : null
             case 'icon':

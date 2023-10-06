@@ -27,7 +27,7 @@ export class MetaStore {
                 label: ReactElement | string
                 searchKey?: SourceField
                 visible?: (content?: Partial<DocumentContent>) => boolean
-                format?: (term?: any) => string
+                format?: (term?: any, locale?: any) => string
                 searchTerm?: (term: any) => string
             }
         >
@@ -106,7 +106,9 @@ export class MetaStore {
             .map(([field, config]) => {
                 const fieldContent = data?.content[field as keyof DocumentContent] as string
                 const fieldValue = Array.isArray(fieldContent) ? fieldContent[0] : fieldContent
-                const display = config.format ? config.format(data?.content?.[field as keyof DocumentContent]) : fieldValue
+                const display = config.format
+                    ? config.format(data?.content?.[field as keyof DocumentContent], localStorage.getItem('language') || 'en')
+                    : fieldValue
                 const searchKey = config.searchKey || (field as SourceField)
                 const searchTerm = config.searchTerm ? config.searchTerm(data?.content?.[field as keyof DocumentContent]) : fieldValue
 

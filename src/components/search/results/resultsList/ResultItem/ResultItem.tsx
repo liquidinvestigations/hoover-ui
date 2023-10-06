@@ -1,5 +1,5 @@
 import { Box, Card, CardContent, CardHeader, Grid, IconButton, Paper, Popper, Tooltip, Typography } from '@mui/material'
-import { T, useTranslate } from '@tolgee/react'
+import { T, useTolgee, useTranslate } from '@tolgee/react'
 import { DateTime } from 'luxon'
 import { observer } from 'mobx-react-lite'
 import { cloneElement, useEffect, useRef, useState } from 'react'
@@ -34,6 +34,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
             searchResultsStore: { openPreview },
         },
     } = useSharedStore()
+    const tolgee = useTolgee(['language'])
 
     const isPreview = hit._collection === hashState.preview?.c && hit._id === hashState.preview.i
     const unsearchable = !!hashState.preview
@@ -261,7 +262,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                             <Box>
                                 <Typography variant="caption">
                                     <strong>{fields.filetype === 'email' ? t('date', 'Date') : t('modified', 'Modified')}:</strong>{' '}
-                                    {DateTime.fromISO(fields.date, { locale: 'en-US' }).toLocaleString(DateTime.DATE_FULL)}
+                                    {DateTime.fromISO(fields.date, { locale: tolgee.getLanguage() }).toLocaleString(DateTime.DATE_FULL)}
                                 </Typography>
                             </Box>
                         )}
@@ -294,7 +295,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                                     <strong>
                                         <T keyName="created">Created</T>:
                                     </strong>{' '}
-                                    {DateTime.fromISO(fields['date-created'], { locale: 'en-US' }).toLocaleString(DateTime.DATE_FULL)}
+                                    {DateTime.fromISO(fields['date-created'], { locale: tolgee.getLanguage() }).toLocaleString(DateTime.DATE_FULL)}
                                 </Typography>
                             </Box>
                         )}

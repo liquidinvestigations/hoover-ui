@@ -1,5 +1,5 @@
 import { Table, TableBody, TableCell, TableRow } from '@mui/material'
-import { T } from '@tolgee/react'
+import { T, useTolgee } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
 import { useState, MouseEvent, ReactElement } from 'react'
@@ -14,7 +14,10 @@ import { LinkMenu } from '../../../LinkMenu'
 import { useStyles } from './Email.styles'
 
 const tableFields: Partial<
-    Record<SourceField, { label: ReactElement; searchKey?: SourceField; linkVisible: (term: any) => boolean; format?: (term: string) => string }>
+    Record<
+        SourceField,
+        { label: ReactElement; searchKey?: SourceField; linkVisible: (term: any) => boolean; format?: (term: string, locale?: string) => string }
+    >
 > = {
     from: {
         label: <T keyName="email_from">From</T>,
@@ -45,6 +48,7 @@ export const Email = observer(() => {
         hashStore: { hashState },
         documentStore: { data, collection, digest },
     } = useSharedStore()
+    const tolgee = useTolgee(['language'])
 
     const [menuPosition, setMenuPosition] = useState<{ left: number; top: number } | undefined>()
     const [currentLink, setCurrentLink] = useState<{ field: SourceField; term: string | string[] } | undefined>()
@@ -68,7 +72,7 @@ export const Email = observer(() => {
                 <TableBody>
                     {(Object.entries(tableFields) as Entry<typeof tableFields>[]).map(([field, config]) => {
                         const term = data?.content[field as keyof DocumentContent] as string | string[]
-                        const formatted = config?.format ? config.format(term as string) : (term as string)
+                        const formatted = config?.format ? config.format(term as string, tolgee.getLanguage()) : (term as string)
                         const searchKey = config?.searchKey || field
 
                         return (
