@@ -43,7 +43,7 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
         } else {
             setOpen(false)
         }
-    }, [hashState?.histogram])
+    }, [field, hashState?.histogram])
 
     const toggle = () => {
         setOpen(!open)
@@ -86,7 +86,7 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
         const { intervals } = prevFilter || {}
 
         handleIntervalsChange(Array.from(new Set([...(intervals?.include || []), ...(selectedBars || [])])))
-    }, [query, search, selectedBars])
+    }, [field, handleIntervalsChange, query?.filters, selectedBars])
 
     const handleIntervalsRemove = useCallback(() => {
         const { [field]: prevFilter } = query?.filters || {}
@@ -97,7 +97,7 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
                 return !selectedBars?.includes(v)
             }),
         )
-    }, [query, search, selectedBars])
+    }, [field, handleIntervalsChange, query?.filters, selectedBars])
 
     const getDatesRange = () => {
         let first = selectedBars?.[selectedBars.length - 1] as string
@@ -135,7 +135,7 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
             facets: { ...restFacets },
             page: defaultSearchParams.page,
         })
-    }, [query, search, selectedBars])
+    }, [field, getDatesRange, query?.facets, query?.filters, search])
 
     const interval = query?.filters?.[field]?.interval || DEFAULT_INTERVAL
     const selected = query?.filters?.[field]?.intervals?.include
@@ -180,7 +180,7 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
                     }) as HistogramBar,
             )
         }
-    }, [buckets])
+    }, [axisHeight, buckets, formatLabel, formatValue, interval])
 
     return (
         <>

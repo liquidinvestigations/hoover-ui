@@ -5,9 +5,9 @@ import { useStyles } from './Toolbar.styles'
 
 export interface ToolbarLink {
     icon: ReactElement
-    label?: string
+    label?: ReactElement | string
     style?: CSSProperties
-    tooltip?: string
+    tooltip?: ReactElement | string
     disabled?: boolean
     count?: number
     onClick?: (event: MouseEvent) => void

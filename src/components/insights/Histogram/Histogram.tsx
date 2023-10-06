@@ -28,8 +28,8 @@ export const Histogram: FC = observer(() => {
                     interval: 'month',
                     term: bar,
                 },
-                'date',
                 query?.collections as string | string[],
+                'date',
                 {
                     histogram: { date: true },
                 },

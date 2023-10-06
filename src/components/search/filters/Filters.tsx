@@ -1,6 +1,6 @@
 import { CircularProgress, Typography } from '@mui/material'
 import { observer } from 'mobx-react-lite'
-import { FC } from 'react'
+import { FC, ReactElement } from 'react'
 import { Entries } from 'type-fest'
 
 import { getLanguageName } from '../../../utils/utils'
@@ -51,7 +51,7 @@ export const Filters: FC = observer(() => {
                     >
                         {filters.map(({ field, type, buckets, filterLabel }) => {
                             let FilterComponent,
-                                filterTypeProps: { bucketLabel?: (bucket: Bucket) => string } = {}
+                                filterTypeProps: { bucketLabel?: (bucket: Bucket) => ReactElement | string } = {}
 
                             if (type === 'date') {
                                 FilterComponent = DateHistogramFilter

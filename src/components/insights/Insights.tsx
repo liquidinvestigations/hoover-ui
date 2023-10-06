@@ -1,4 +1,5 @@
 import { Grid, List, ListItem, Paper, Typography } from '@mui/material'
+import { T } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import { FC, MutableRefObject, useEffect, useRef, useState } from 'react'
 
@@ -28,7 +29,7 @@ export const Insights: FC = observer(() => {
         } else if (collectionsData && fields && user) {
             search({ collections: [collectionsData[0].name], q: '*' })
         }
-    }, [query?.collections, collectionsData, fields, user])
+    }, [query?.collections, collectionsData, fields, user, search])
 
     const [currentCollection, setCurrentCollection] = useState(collectionsData?.[0])
     const handleMenuClick = (collection: CollectionData) => () => {
@@ -56,7 +57,7 @@ export const Insights: FC = observer(() => {
                         <Grid item xs={3}>
                             <Paper>
                                 <Typography variant="h5" className={classes.sectionTitle}>
-                                    File types
+                                    <T keyName="file_types">File types</T>
                                 </Typography>
                                 <AggregationsTable field="filetype" />
                             </Paper>
@@ -65,7 +66,7 @@ export const Insights: FC = observer(() => {
                         <Grid item xs={3}>
                             <Paper>
                                 <Typography variant="h5" className={classes.sectionTitle}>
-                                    Content types
+                                    <T keyName="content_types">Content types</T>
                                 </Typography>
                                 <AggregationsTable field="content-type" />
                             </Paper>
@@ -74,7 +75,7 @@ export const Insights: FC = observer(() => {
                         <Grid item xs={3}>
                             <Paper>
                                 <Typography variant="h5" className={classes.sectionTitle}>
-                                    Email domains
+                                    <T keyName="email_domains">Email domains</T>
                                 </Typography>
                                 <AggregationsTable field="email-domains" />
                             </Paper>
@@ -83,7 +84,7 @@ export const Insights: FC = observer(() => {
                         <Grid item xs={3}>
                             <Paper>
                                 <Typography variant="h5" className={classes.sectionTitle}>
-                                    Tags
+                                    <T keyName="tags">Tags</T>
                                 </Typography>
                                 <AggregationsTable field="tags" />
                             </Paper>
@@ -92,7 +93,7 @@ export const Insights: FC = observer(() => {
                         <Grid item xs={12}>
                             <Paper>
                                 <Typography variant="h5" className={classes.sectionTitle}>
-                                    Years
+                                    <T keyName="years">Years</T>
                                 </Typography>
                                 <Histogram />
                             </Paper>
@@ -101,23 +102,26 @@ export const Insights: FC = observer(() => {
                         <Grid item xs={6}>
                             <Paper>
                                 <Typography variant="h5" className={classes.sectionTitle}>
-                                    Counts
+                                    <T keyName="counts">Counts</T>
                                 </Typography>
                                 <List>
                                     <ListItem>
-                                        <strong>{currentCollection.stats.counts.files}</strong>&nbsp;files
+                                        <strong>{currentCollection.stats.counts.files}</strong>&nbsp;<T keyName="counts_files">files</T>
                                     </ListItem>
                                     <ListItem>
-                                        <strong>{currentCollection.stats.counts.directories}</strong>&nbsp;directories
+                                        <strong>{currentCollection.stats.counts.directories}</strong>&nbsp;
+                                        <T keyName="counts_directories">directories</T>
                                     </ListItem>
                                     <ListItem>
-                                        <strong>{currentCollection.stats.counts.blob_count}</strong>&nbsp;blobs
+                                        <strong>{currentCollection.stats.counts.blob_count}</strong>&nbsp;<T keyName="counts_blobs">blobs</T>
                                     </ListItem>
                                     <ListItem>
-                                        <strong>{humanFileSize(currentCollection.stats.counts.blob_total_size)}</strong>&nbsp;in blob storage
+                                        <strong>{humanFileSize(currentCollection.stats.counts.blob_total_size)}</strong>&nbsp;
+                                        <T keyName="counts_in_blob_storage">in blob storage</T>
                                     </ListItem>
                                     <ListItem>
-                                        <strong>{humanFileSize(currentCollection.stats.db_size)}</strong>&nbsp;in database
+                                        <strong>{humanFileSize(currentCollection.stats.db_size)}</strong>&nbsp;
+                                        <T keyName="counts_in_database">in database</T>
                                     </ListItem>
                                 </List>
                             </Paper>
@@ -126,7 +130,7 @@ export const Insights: FC = observer(() => {
                         <Grid item xs={6}>
                             <Paper>
                                 <Typography variant="h5" className={classes.sectionTitle}>
-                                    Task errors
+                                    <T keyName="task_errors">Task errors</T>
                                 </Typography>
                                 <TaskErrorsTable errors={currentCollection.stats.error_counts} />
                             </Paper>
@@ -135,7 +139,7 @@ export const Insights: FC = observer(() => {
                         <Grid item xs={12}>
                             <Paper>
                                 <Typography variant="h5" className={classes.sectionTitle}>
-                                    Tasks
+                                    <T keyName="tasks">Tasks</T>
                                 </Typography>
                                 <TaskTable header={currentCollection.stats.task_matrix_header} tasks={currentCollection.stats.task_matrix} />
                             </Paper>

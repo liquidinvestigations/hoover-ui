@@ -1,4 +1,5 @@
 import { Fab, Menu, MenuItem } from '@mui/material'
+import { useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import { FC, useState, MouseEvent } from 'react'
 import { Entries } from 'type-fest'
@@ -10,6 +11,7 @@ import { defaultSearchParams } from '../../../../utils/queryUtils'
 import { useSharedStore } from '../../../SharedStoreProvider'
 
 export const SortingMenu: FC = observer(() => {
+    const { t } = useTranslate()
     const { query, search } = useSharedStore().searchStore
     const order = query?.order || []
 
@@ -35,7 +37,8 @@ export const SortingMenu: FC = observer(() => {
             <Menu anchorEl={anchorEl} keepMounted open={!!anchorEl} onClose={handleSortingMenuClose} data-test="sort-menu">
                 {sortOptions.map(([field, name]) => (
                     <MenuItem key={field} value={field} onClick={handleSortingClick(field)}>
-                        {name}
+                        {/* @tolgee-ignore */}
+                        {t(field, name)}
                     </MenuItem>
                 ))}
             </Menu>

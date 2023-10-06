@@ -1,6 +1,7 @@
 import { Typography } from '@mui/material'
+import { T } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
-import { FC } from 'react'
+import { FC, ReactElement } from 'react'
 
 import { aggregationFields } from '../../../constants/aggregationFields'
 import { formatThousands } from '../../../utils/utils'
@@ -13,7 +14,7 @@ import type { Terms } from '../../../backend/buildSearchQuery'
 import type { Aggregation, Bucket, SourceField } from '../../../Types'
 
 interface TermsAggregationFilterProps {
-    title: string
+    title: ReactElement | string
     field: SourceField
     queryFilter: Terms
     queryFacets: number
@@ -23,7 +24,7 @@ interface TermsAggregationFilterProps {
     open: boolean
     onToggle?: (open: boolean) => void
     quickFilter?: string
-    bucketLabel?: (bucket: Bucket) => string
+    bucketLabel?: (bucket: Bucket) => ReactElement | string
 }
 
 export const TermsAggregationFilter: FC<TermsAggregationFilterProps> = observer(
@@ -46,18 +47,25 @@ export const TermsAggregationFilter: FC<TermsAggregationFilterProps> = observer(
                     aggregations?.values?.buckets !== undefined
                         ? ((
                               <Typography variant="caption" display="block">
-                                  {!aggregationFields[field]?.buckets &&
-                                      !aggregationFields[field]?.bucketsMax &&
-                                      aggregations?.count.value > aggregations?.values?.buckets.length &&
-                                      '> '}
-                                  {formatThousands(
-                                      aggregationFields[field]?.bucketsMax
-                                          ? aggregations?.values?.buckets.reduce((acc, { doc_count }) => Math.max(acc, doc_count), 0)
-                                          : aggregations?.values?.buckets.reduce((acc, { doc_count }) => acc + doc_count, 0),
-                                  )}{' '}
-                                  hits
-                                  {', '}
-                                  {aggregations?.count.value} buckets
+                                  <T
+                                      keyName="hits_buckets"
+                                      params={{
+                                          moreThen:
+                                              !aggregationFields[field]?.buckets &&
+                                              !aggregationFields[field]?.bucketsMax &&
+                                              aggregations?.count.value > aggregations?.values?.buckets.length
+                                                  ? 'yes'
+                                                  : 'no',
+                                          hits: formatThousands(
+                                              aggregationFields[field]?.bucketsMax
+                                                  ? aggregations?.values?.buckets.reduce((acc, { doc_count }) => Math.max(acc, doc_count), 0)
+                                                  : aggregations?.values?.buckets.reduce((acc, { doc_count }) => acc + doc_count, 0),
+                                          ),
+                                          buckets: aggregations?.count.value,
+                                      }}
+                                  >
+                                      {'{moreThen, select, yes {> } other {}}{hits} hits, {buckets} buckets'}
+                                  </T>
                               </Typography>
                           ) as unknown as string)
                         : undefined

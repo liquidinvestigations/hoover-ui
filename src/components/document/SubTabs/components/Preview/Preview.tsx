@@ -46,7 +46,7 @@ export const Preview: FC = () => {
         documentStore: { data, docRawUrl, docPreviewUrl },
     } = useSharedStore()
 
-    if (data?.content['has-pdf-preview']) {
+    if (data?.content['has-pdf-preview'] && docPreviewUrl) {
         return <PDFViewer url={docPreviewUrl} />
     }
 
@@ -72,7 +72,7 @@ export const Preview: FC = () => {
 
     switch (data?.content['content-type']) {
         case 'application/pdf':
-            return <PDFViewer url={docRawUrl} />
+            return <PDFViewer url={docRawUrl || ''} />
 
         case 'image/tiff':
             return docRawUrl ? <TIFFViewer url={docRawUrl} /> : null

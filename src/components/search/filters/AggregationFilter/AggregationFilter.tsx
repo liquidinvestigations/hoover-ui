@@ -1,6 +1,7 @@
 import { Button, Checkbox, CircularProgress, Divider, Fade, Grid, List, ListItem, ListItemText, Typography } from '@mui/material'
+import { T, useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
-import { FC } from 'react'
+import { FC, ReactElement } from 'react'
 
 import { aggregationFields } from '../../../../constants/aggregationFields'
 import { formatThousands } from '../../../../utils/utils'
@@ -23,14 +24,15 @@ interface AggregationFilterProps {
     loading: boolean
     onChange: (field: SourceField, ...rest: any) => () => void
     triState?: boolean
-    bucketLabel?: (bucket: Bucket) => string
-    bucketSubLabel?: (bucket: Bucket) => string
+    bucketLabel?: (bucket: Bucket) => ReactElement | string
+    bucketSubLabel?: (bucket: Bucket) => ReactElement | string
     bucketValue?: (bucket: Bucket) => string
     quickFilter?: string
 }
 
 export const AggregationFilter: FC<AggregationFilterProps> = observer(
     ({ field, queryFilter, queryFacets, aggregations, loading, onChange, triState = false, bucketLabel, bucketSubLabel, bucketValue, quickFilter }) => {
+        const { t } = useTranslate()
         const { classes, cx } = useStyles()
         const {
             filtersStore: { handleMissingChange, handleReset },
@@ -54,7 +56,7 @@ export const AggregationFilter: FC<AggregationFilterProps> = observer(
                     />
 
                     <ListItemText
-                        primary="N/A"
+                        primary={t('missing_buckets', 'N/A')}
                         className={cx(classes.label, classes.italic, classes.empty)}
                         secondaryTypographyProps={{
                             className: classes.subLabel,
@@ -86,7 +88,7 @@ export const AggregationFilter: FC<AggregationFilterProps> = observer(
                 {aggregations?.buckets
                     ?.filter((bucket) => {
                         const label = bucketLabel ? bucketLabel(bucket) : bucket.key_as_string || bucket.key
-                        return !quickFilter || label.includes(quickFilter)
+                        return !quickFilter || (label as string).includes(quickFilter)
                     })
                     .map((bucket) => (
                         <AggregationFilterBucket
@@ -112,7 +114,7 @@ export const AggregationFilter: FC<AggregationFilterProps> = observer(
                         </Grid>
                         <Grid item>
                             <Button size="small" variant="text" disabled={disableReset} onClick={handleReset(field)}>
-                                Reset
+                                <T keyName="reset">Reset</T>
                             </Button>
                         </Grid>
                     </Grid>

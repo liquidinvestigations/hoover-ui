@@ -1,4 +1,5 @@
 import { CircularProgress, Typography } from '@mui/material'
+import { T, useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import Head from 'next/head'
 import { FC } from 'react'
@@ -9,13 +10,14 @@ import { copyMetadata, shortenName } from '../../../utils/utils'
 import { HotKeysWithHelp } from '../../common/HotKeysWithHelp/HotKeysWithHelp'
 import { SplitPaneLayout } from '../../common/SplitPaneLayout/SplitPaneLayout'
 import { Finder } from '../../finder/Finder'
-import Locations from '../../Locations'
 import { useSharedStore } from '../../SharedStoreProvider'
 import { Document } from '../Document'
+import { Locations } from '../Locations/Locations'
 
 import { useStyles } from './DocPage.styles'
 
 export const DocPage: FC = observer(() => {
+    const { t } = useTranslate()
     const { classes } = useStyles()
     const {
         user,
@@ -33,7 +35,9 @@ export const DocPage: FC = observer(() => {
                 message={
                     (
                         <>
-                            Request to <a href={error.url}>{error.url}</a> returned HTTP {error.status} {error.statusText}
+                            <T keyName="request_to_url_error" params={{ url: error.url, status: error.status, statusText: error.statusText }}>
+                                {'Request to {url} returned HTTP {status} {statusText}'}
+                            </T>
                         </>
                     ) as unknown as string
                 }
@@ -63,7 +67,8 @@ export const DocPage: FC = observer(() => {
             <>
                 {data && (
                     <Typography variant="subtitle2" className={classes.title}>
-                        Document <b>{data?.id}</b> filename: <b>{shortenName(fileName, 50)}</b> - please pick a location to see the Finder
+                        {t('document', 'Document')} <b>{data?.id}</b> {t('filename', 'Filename').toLowerCase()}: <b>{shortenName(fileName, 50)}</b> -{' '}
+                        {t('pick_location_for_finder', 'please pick a location to see the Finder')}
                     </Typography>
                 )}
                 <div className={classes.splitPane}>{infoPane}</div>
@@ -73,7 +78,7 @@ export const DocPage: FC = observer(() => {
                 <Typography variant="subtitle2" className={classes.title}>
                     {data ? (
                         <>
-                            {!!digest ? 'File' : 'Directory'} <b>{data.content?.path?.[0] ?? ''}</b>
+                            {!!digest ? t('file', 'File') : t('directory', 'Directory')} <b>{data.content?.path?.[0] ?? ''}</b>
                         </>
                     ) : (
                         <CircularProgress size={16} thickness={4} />
@@ -98,7 +103,7 @@ export const DocPage: FC = observer(() => {
     const keys = {
         copyMetadata: {
             key: 'c',
-            help: 'Copy MD5 and path to clipboard',
+            help: t('help_copy_md5_path', 'Copy MD5 and path to clipboard'),
             handler: (_event: Event, showMessage: (s: string) => void) => {
                 if (data?.content) {
                     showMessage(copyMetadata(data))

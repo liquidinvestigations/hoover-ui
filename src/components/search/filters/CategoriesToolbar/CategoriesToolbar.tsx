@@ -1,4 +1,5 @@
 import { IconButton, Toolbar, Tooltip } from '@mui/material'
+import { useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 
@@ -8,6 +9,7 @@ import { useSharedStore } from '../../../SharedStoreProvider'
 import { useStyles } from './CategoriesToolbar.styles'
 
 export const CategoriesToolbar: FC = observer(() => {
+    const { t } = useTranslate()
     const { classes } = useStyles()
     const { searchFieldsOpen, setSearchFieldsOpen } = useSharedStore().searchStore.searchViewStore
 
@@ -15,7 +17,7 @@ export const CategoriesToolbar: FC = observer(() => {
 
     return (
         <Toolbar variant="dense" className={classes.toolbar} disableGutters>
-            <Tooltip title="Manage search fields">
+            <Tooltip title={t('manage_search_fields_tooltip', 'Manage search fields')}>
                 <IconButton size="small" className={classes.searchFieldsButton} onClick={handleSearchFields}>
                     {reactIcons.searchFields}
                 </IconButton>

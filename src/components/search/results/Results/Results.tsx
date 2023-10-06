@@ -1,4 +1,5 @@
 import { Fab, Grid } from '@mui/material'
+import { T } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 
@@ -46,7 +47,9 @@ export const Results: FC = observer(() => {
             <Pagination />
 
             {!searchCollections.length ? (
-                <i>no collections selected</i>
+                <i>
+                    <T keyName="no_collections_selected">no collections selected</T>
+                </i>
             ) : (
                 <>
                     {results.map(({ collection, hits }) => (

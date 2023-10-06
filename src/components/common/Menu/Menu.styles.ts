@@ -12,4 +12,11 @@ export const useStyles = makeStyles()((theme) => ({
         color: 'white',
         textDecoration: 'none',
     },
+    languageMenu: {
+        padding: `${theme.spacing(0.75)} ${theme.spacing(2)}`,
+
+        p: {
+            padding: 0,
+        },
+    },
 }))

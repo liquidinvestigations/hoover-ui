@@ -1,5 +1,7 @@
 import { Button, IconButton, MenuItem, Menu as MenuMui, Typography, Divider, Box, MenuList } from '@mui/material'
+import { T, useTolgee, useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
+import { NestedMenuItem } from 'mui-nested-menu'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
@@ -18,10 +20,12 @@ interface Link {
 }
 
 export const Menu = observer(() => {
+    const { t } = useTranslate()
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
     const { classes } = useStyles()
     const router = useRouter()
     const { user } = useSharedStore()
+    const tolgee = useTolgee(['language'])
 
     const { query } = router
     const printMode = query.print && query.print !== 'false'
@@ -33,19 +37,19 @@ export const Menu = observer(() => {
     const getNavLinks = (): Link[] => {
         const links: Link[] = [
             {
-                name: 'Search',
+                name: t('search', 'Search'),
                 url: '/',
                 next: true,
                 active: router.asPath === '/',
             },
             {
-                name: 'Batch',
+                name: t('batch', 'Batch'),
                 url: '/batch-search',
                 next: true,
                 active: router.asPath === '/batch-search',
             },
             {
-                name: 'Insights',
+                name: t('insights', 'Insights'),
                 url: '/insights',
                 next: true,
                 active: router.asPath === '/insights',
@@ -54,7 +58,7 @@ export const Menu = observer(() => {
 
         if (process.env.HOOVER_UPLOADS_ENABLED) {
             links.push({
-                name: 'Uploads',
+                name: t('uploads', 'Uploads'),
                 url: '/uploads',
                 next: true,
                 active: router.asPath === '/uploads',
@@ -63,7 +67,7 @@ export const Menu = observer(() => {
 
         if (process.env.HOOVER_MAPS_ENABLED) {
             links.push({
-                name: 'Maps',
+                name: t('maps', 'Maps'),
                 url: '/maps',
                 next: true,
                 active: router.asPath === '/maps',
@@ -72,20 +76,20 @@ export const Menu = observer(() => {
 
         if (process.env.HOOVER_TRANSLATION_ENABLED) {
             links.push({
-                name: 'Translate',
+                name: t('translate', 'Translate'),
                 url: '/libre_translate',
                 active: router.asPath === '/libre_translate',
             })
         }
 
         links.push({
-            name: 'Docs',
+            name: t('docs', 'Docs'),
             url: 'https://github.com/liquidinvestigations/docs/wiki/User-Guide:-Hoover',
         })
 
         if (user?.admin) {
             links.push({
-                name: 'Admin',
+                name: t('admin', 'Admin'),
                 url: user.urls.admin,
                 active: router.asPath === user.urls.admin,
             })
@@ -99,14 +103,14 @@ export const Menu = observer(() => {
 
         if (user?.username) {
             links.push({
-                name: `Logout`,
+                name: t('logout', 'Logout'),
                 url: user.urls.logout,
             })
         }
 
         if (user && !user.username) {
             links.push({
-                name: 'Login',
+                name: t('login', 'Login'),
                 url: user.urls.login,
             })
         }
@@ -120,6 +124,11 @@ export const Menu = observer(() => {
 
     const handleUserMenuClose = () => {
         setAnchorEl(null)
+    }
+
+    const handleLanguageChange = (lang: string) => () => {
+        localStorage.setItem('language', lang)
+        tolgee.changeLanguage(lang)
     }
 
     return (
@@ -150,6 +159,14 @@ export const Menu = observer(() => {
                     </Box>
                 )}
                 <MenuList>
+                    <NestedMenuItem label={t('language', 'Language')} parentMenuOpen={Boolean(anchorEl)} className={classes.languageMenu}>
+                        <MenuItem onClick={handleLanguageChange('en')} selected={tolgee.getLanguage() === 'en'}>
+                            🇺🇸 <T keyName="english">English</T>
+                        </MenuItem>
+                        <MenuItem onClick={handleLanguageChange('pl')} selected={tolgee.getLanguage() === 'pl'}>
+                            🇵🇱 <T keyName="polish">Polish</T>
+                        </MenuItem>
+                    </NestedMenuItem>
                     {getMenuLinks().map((link) => (
                         <MenuItem key={link.name}>
                             <NextLink href={link.url} shallow className={classes.menuItem}>

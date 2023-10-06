@@ -1,4 +1,5 @@
 import { Button, FormControl, Grid, IconButton, InputAdornment, Snackbar, TextField, Tooltip, Typography } from '@mui/material'
+import { T, useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import Router from 'next/router'
 import { cloneElement, FC, FormEvent, KeyboardEvent, useEffect, useRef } from 'react'
@@ -9,17 +10,18 @@ import { SplitPaneLayout } from '../common/SplitPaneLayout/SplitPaneLayout'
 import { Document } from '../document/Document'
 import { useSharedStore } from '../SharedStoreProvider'
 
+import { QueryChips } from './chips/QueryChips/QueryChips'
 import { Categories } from './filters/Categories/Categories'
 import { FiltersChips } from './filters/FiltersChips/FiltersChips'
 import { Histogram } from './filters/Histogram/Histogram'
 import { HotKeys } from './HotKeys'
-import { QueryChips } from './QueryChips'
 import { Results } from './results/Results/Results'
 import { useStyles } from './Search.styles'
 import { SortingChips } from './sorting/SortingChips/SortingChips'
 import { SortingMenu } from './sorting/SortingMenu/SortingMenu'
 
 export const Search: FC = observer(() => {
+    const { t } = useTranslate()
     const { classes } = useStyles()
     const inputRef = useRef<HTMLInputElement>(null)
     const {
@@ -102,7 +104,7 @@ export const Search: FC = observer(() => {
                                                 <TextField
                                                     variant="standard"
                                                     inputRef={inputRef}
-                                                    label="Search"
+                                                    label={t('search_button', 'Search')}
                                                     margin="normal"
                                                     value={searchText}
                                                     onKeyDown={handleInputKey}
@@ -131,7 +133,7 @@ export const Search: FC = observer(() => {
                                             <Grid item style={{ marginLeft: 20 }}>
                                                 <FormControl variant="standard" margin="normal">
                                                     <Button variant="contained" color="primary" type="submit" size="large" endIcon={reactIcons.search}>
-                                                        Search
+                                                        <T keyName="search_button">Search</T>
                                                     </Button>
                                                 </FormControl>
                                             </Grid>
@@ -142,9 +144,9 @@ export const Search: FC = observer(() => {
 
                                     <QueryChips />
 
-                                    <Histogram title="Date modified" field="date" />
+                                    <Histogram title={t('date-modified', 'Date modified')} field="date" />
 
-                                    <Histogram title="Date created" field="date-created" />
+                                    <Histogram title={t('date-created', 'Date created')} field="date-created" />
 
                                     <div className={classes.sorting}>
                                         <SortingChips />

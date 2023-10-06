@@ -1,7 +1,8 @@
 import { Table, TableBody, TableCell, TableRow } from '@mui/material'
+import { T } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
-import { useState, MouseEvent } from 'react'
+import { useState, MouseEvent, ReactElement } from 'react'
 import { Entry } from 'type-fest'
 
 import { Category, DocumentContent, SourceField } from '../../../../../Types'
@@ -13,25 +14,25 @@ import { LinkMenu } from '../../../LinkMenu'
 import { useStyles } from './Email.styles'
 
 const tableFields: Partial<
-    Record<SourceField, { label: string; searchKey?: SourceField; linkVisible: (term: any) => boolean; format?: (term: string) => string }>
+    Record<SourceField, { label: ReactElement; searchKey?: SourceField; linkVisible: (term: any) => boolean; format?: (term: string) => string }>
 > = {
     from: {
-        label: 'From',
+        label: <T keyName="email_from">From</T>,
         searchKey: 'from.keyword',
         linkVisible: (term: string[]) => !!term?.length,
     },
     to: {
-        label: 'To',
+        label: <T keyName="email_to">To</T>,
         searchKey: 'to.keyword',
         linkVisible: (term: string[]) => !!term?.length,
     },
     date: {
-        label: 'Date',
+        label: <T keyName="email_date">Date</T>,
         format: formatDateTime,
         linkVisible: (term: string) => !!term,
     },
     subject: {
-        label: 'Subject',
+        label: <T keyName="email_subject">Subject</T>,
         format: (term: string) => term || '---',
         linkVisible: (term: string[]) => !!term?.length,
     },
@@ -104,11 +105,11 @@ export const Email = observer(() => {
                             <TableRow key={index}>
                                 <TableCell colSpan={2}>
                                     <Link
-                                        href={createSearchUrl(messageId, 'in-reply-to' as SourceField, collection as Category, hash)}
+                                        href={createSearchUrl(messageId, collection as Category, 'in-reply-to' as SourceField, hash)}
                                         shallow
                                         target="_blank"
                                     >
-                                        search e-mails replying to this one
+                                        <T keyName="search_replying_emails">search e-mails replying to this one</T>
                                     </Link>
                                 </TableCell>
                             </TableRow>
@@ -119,8 +120,8 @@ export const Email = observer(() => {
                         ensureArray(data?.content['thread-index' as keyof DocumentContent]).map((threadIndex, index) => (
                             <TableRow key={index}>
                                 <TableCell colSpan={2}>
-                                    <Link href={createSearchUrl(threadIndex, 'thread-index', collection as Category, hash)} shallow target="_blank">
-                                        search e-mails in this thread
+                                    <Link href={createSearchUrl(threadIndex, collection as Category, 'thread-index', hash)} shallow target="_blank">
+                                        <T keyName="search_thread_emails">search e-mails in this thread</T>
                                     </Link>
                                 </TableCell>
                             </TableRow>

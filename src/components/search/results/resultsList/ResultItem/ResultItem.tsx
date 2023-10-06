@@ -1,4 +1,5 @@
 import { Box, Card, CardContent, CardHeader, Grid, IconButton, Paper, Popper, Tooltip, Typography } from '@mui/material'
+import { T, useTranslate } from '@tolgee/react'
 import { DateTime } from 'luxon'
 import { observer } from 'mobx-react-lite'
 import { cloneElement, useEffect, useRef, useState } from 'react'
@@ -24,6 +25,7 @@ interface ResultItemProps {
 }
 
 export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) => {
+    const { t } = useTranslate()
     const { classes, cx } = useStyles()
     const {
         user,
@@ -192,7 +194,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                     <>
                         <Grid container alignItems="center">
                             <Grid item>
-                                <Tooltip title="Download original file">
+                                <Tooltip title={t('download_original_file', 'Download original file')}>
                                     <IconButton size="small">
                                         <a href={downloadUrl} className={classes.buttonLink}>
                                             {cloneElement(reactIcons.downloadOutlined, { className: classes.actionIcon })}
@@ -202,7 +204,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                             </Grid>
 
                             <Grid item>
-                                <Tooltip title="Open in new tab">
+                                <Tooltip title={t('open_in_new_tab', 'Open in new tab')}>
                                     <IconButton size="small" style={{ marginRight: 15 }}>
                                         <a href={url} target="_blank" rel="noreferrer" className={classes.buttonLink}>
                                             {cloneElement(reactIcons.openNewTab, { className: classes.actionIcon })}
@@ -235,14 +237,22 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                     <Grid item md={4}>
                         {!!fields['word-count'] && (
                             <Box>
-                                <Typography variant="caption">{fields['word-count']} words</Typography>
+                                <Typography variant="caption">
+                                    {fields['word-count']}{' '}
+                                    <T keyName="word_count" params={{ words: fields['word-count'] }}>
+                                        {'{words, plural, one {word} other {words}}'}
+                                    </T>
+                                </Typography>
                             </Box>
                         )}
 
                         {!!fields.size && (
                             <Box>
                                 <Typography variant="caption">
-                                    <strong>Size:</strong> {humanFileSize(fields.size)}
+                                    <strong>
+                                        <T keyName="size">Size</T>:
+                                    </strong>{' '}
+                                    {humanFileSize(fields.size)}
                                 </Typography>
                             </Box>
                         )}
@@ -250,7 +260,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                         {!!fields.date && (
                             <Box>
                                 <Typography variant="caption">
-                                    <strong>{fields.filetype === 'email' ? 'Date' : 'Modified'}:</strong>{' '}
+                                    <strong>{fields.filetype === 'email' ? t('date', 'Date') : t('modified', 'Modified')}:</strong>{' '}
                                     {DateTime.fromISO(fields.date, { locale: 'en-US' }).toLocaleString(DateTime.DATE_FULL)}
                                 </Typography>
                             </Box>
@@ -259,7 +269,10 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                         {fields.filetype === 'email' && fields.from && (
                             <Box>
                                 <Typography variant="caption" className={classes.textField}>
-                                    <strong>From:</strong> {fields.from}
+                                    <strong>
+                                        <T keyName="email_from">From</T>:
+                                    </strong>{' '}
+                                    {fields.from}
                                 </Typography>
                             </Box>
                         )}
@@ -267,7 +280,10 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                         {fields.filetype === 'email' && fields.subject && (
                             <Box>
                                 <Typography variant="caption">
-                                    <strong>Subject:</strong> {fields.subject}
+                                    <strong>
+                                        <T keyName="email_subject">Subject</T>:
+                                    </strong>{' '}
+                                    {fields.subject}
                                 </Typography>
                             </Box>
                         )}
@@ -275,7 +291,9 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                         {!!fields['date-created'] && (
                             <Box>
                                 <Typography variant="caption">
-                                    <strong>Created:</strong>{' '}
+                                    <strong>
+                                        <T keyName="created">Created</T>:
+                                    </strong>{' '}
                                     {DateTime.fromISO(fields['date-created'], { locale: 'en-US' }).toLocaleString(DateTime.DATE_FULL)}
                                 </Typography>
                             </Box>
@@ -284,7 +302,10 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                         {fields.tags?.filter((tag: string) => !specialTagsList.includes(tag)).length > 0 && (
                             <Box>
                                 <Typography variant="caption">
-                                    <strong>Public tags:</strong> {fields.tags.filter((tag: string) => !specialTagsList.includes(tag)).join(', ')}
+                                    <strong>
+                                        <T keyName="tags_public">Public tags</T>:
+                                    </strong>{' '}
+                                    {fields.tags.filter((tag: string) => !specialTagsList.includes(tag)).join(', ')}
                                 </Typography>
                             </Box>
                         )}
@@ -292,7 +313,9 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                         {fields[`priv-tags.${user?.uuid}` as 'priv-tags.*']?.filter((tag: string) => !specialTagsList.includes(tag)).length > 0 && (
                             <Box>
                                 <Typography variant="caption">
-                                    <strong>Private tags:</strong>{' '}
+                                    <strong>
+                                        <T keyName="tags_private">Private tags</T>:
+                                    </strong>{' '}
                                     {fields[`priv-tags.${user?.uuid}` as 'priv-tags.*']
                                         .filter((tag: string) => !specialTagsList.includes(tag))
                                         .join(', ')}

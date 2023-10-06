@@ -64,10 +64,13 @@ export const HistogramChart: FC<HistogramChartProps> = ({
         }
     }
 
-    const handleMouseMove = useCallback((event: MouseEvent) => {
-        event.preventDefault()
-        setCurrentDragPosition(getChartPosition(event.clientX))
-    }, [])
+    const handleMouseMove = useCallback(
+        (event: MouseEvent) => {
+            event.preventDefault()
+            setCurrentDragPosition(getChartPosition(event.clientX))
+        },
+        [getChartPosition],
+    )
 
     const handleMouseUp = (startDragPosition: number) => (event: MouseEvent) => {
         event.preventDefault()

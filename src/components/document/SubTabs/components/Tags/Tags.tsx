@@ -17,6 +17,7 @@ import {
 } from '@mui/material'
 import { blue } from '@mui/material/colors'
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput'
+import { T, useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import { cloneElement, FC, ReactElement, SyntheticEvent, useEffect, useMemo, useState } from 'react'
 
@@ -39,6 +40,7 @@ const forbiddenCharsRegex = /[^a-z0-9_!@#$%^&*()-=+:,./?]/gi
 export const getChipColor = (chip: Tag) => (chip.public ? blue[200] : undefined)
 
 export const Tags: FC<{ toolbarButtons: ToolbarLink[] }> = observer(({ toolbarButtons }) => {
+    const { t } = useTranslate()
     const { classes, cx } = useStyles()
     const {
         user,
@@ -265,7 +267,9 @@ export const Tags: FC<{ toolbarButtons: ToolbarLink[] }> = observer(({ toolbarBu
                             <TextField
                                 variant="standard"
                                 {...params}
-                                placeholder={(tagsValue.length === 0 ? 'no tags, ' : '') + 'start typing to add'}
+                                placeholder={t('tag_add_placeholder', '{tagsCount, plural, =0 {no tags, } other {}}start typing to add', {
+                                    tagsCount: tagsValue.length,
+                                })}
                                 InputProps={{
                                     ...params.InputProps,
                                     endAdornment: (
@@ -294,8 +298,12 @@ export const Tags: FC<{ toolbarButtons: ToolbarLink[] }> = observer(({ toolbarBu
                 <Grid item>
                     <FormControl size="small" color="primary" variant="outlined">
                         <Select variant="standard" value={newTagVisibility} onChange={handleNewTagVisibilityChange}>
-                            <MenuItem value="public">Public</MenuItem>
-                            <MenuItem value="private">Private</MenuItem>
+                            <MenuItem value="public">
+                                <T keyName="public">Public</T>
+                            </MenuItem>
+                            <MenuItem value="private">
+                                <T keyName="private">Private</T>
+                            </MenuItem>
                         </Select>
                     </FormControl>
                 </Grid>

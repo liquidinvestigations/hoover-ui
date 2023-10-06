@@ -1,7 +1,8 @@
 import { ListItem, Typography } from '@mui/material'
+import { T } from '@tolgee/react'
 import { DateTime } from 'luxon'
 import { observer } from 'mobx-react-lite'
-import { FC, useCallback } from 'react'
+import { FC, ReactElement, useCallback } from 'react'
 
 import { HistogramParams } from '../../../backend/buildSearchQuery'
 import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL } from '../../../constants/general'
@@ -32,7 +33,7 @@ export const formatsValue: Record<string, string> = {
 }
 
 interface DateHistogramFilterProps {
-    title: string
+    title: ReactElement | string
     field: SourceField
     queryFilter?: HistogramParams
     queryFacets?: number
@@ -42,8 +43,8 @@ interface DateHistogramFilterProps {
     open: boolean
     onToggle?: (open: boolean) => void
     quickFilter?: string
-    bucketLabel?: (bucket: Bucket) => string
-    bucketSubLabel?: (bucket: Bucket) => string
+    bucketLabel?: (bucket: Bucket) => ReactElement | string
+    bucketSubLabel?: (bucket: Bucket) => ReactElement | string
 }
 
 export const DateHistogramFilter: FC<DateHistogramFilterProps> = observer(
@@ -75,10 +76,16 @@ export const DateHistogramFilter: FC<DateHistogramFilterProps> = observer(
                     aggregations?.values?.buckets !== undefined
                         ? ((
                               <Typography variant="caption" display="block">
-                                  {aggregations?.values?.buckets.length >= DEFAULT_FACET_SIZE && '> '}
-                                  {formatThousands(aggregations?.values?.buckets.reduce((acc, { doc_count }) => acc + doc_count, 0))} hits
-                                  {', '}
-                                  {aggregations?.values?.buckets.length} buckets
+                                  <T
+                                      keyName="hits_buckets"
+                                      params={{
+                                          moreThen: aggregations?.values?.buckets.length >= DEFAULT_FACET_SIZE ? 'yes' : 'no',
+                                          hits: formatThousands(aggregations?.values?.buckets.reduce((acc, { doc_count }) => acc + doc_count, 0)),
+                                          buckets: aggregations?.values?.buckets.length,
+                                      }}
+                                  >
+                                      {'{moreThen, select, yes {> } other {}}{hits} hits, {buckets} buckets'}
+                                  </T>
                               </Typography>
                           ) as unknown as string)
                         : undefined

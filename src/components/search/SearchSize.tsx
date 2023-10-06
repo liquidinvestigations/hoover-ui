@@ -1,5 +1,6 @@
 import { Grid, MenuItem, Select, Theme, Typography } from '@mui/material'
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput'
+import { T } from '@tolgee/react'
 import { FC } from 'react'
 import { makeStyles } from 'tss-react/mui'
 
@@ -35,7 +36,7 @@ export const SearchSize: FC<SearchSizeProps> = ({ page, size }) => {
         <Grid container alignItems="center">
             <Grid item>
                 <Typography variant="caption" className={classes.label}>
-                    Hits / page
+                    <T keyName="hits_per_page">Hits / page</T>
                 </Typography>
             </Grid>
             <Grid item>

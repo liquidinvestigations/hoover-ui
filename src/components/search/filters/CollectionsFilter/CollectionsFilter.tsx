@@ -1,4 +1,5 @@
 import { Checkbox, List, ListItem, ListItemText, Typography } from '@mui/material'
+import { T, useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 import Highlighter from 'react-highlight-words'
@@ -10,6 +11,7 @@ import { useSharedStore } from '../../../SharedStoreProvider'
 import { useStyles } from './CollectionsFilter.styles'
 
 export const CollectionsFilter: FC = observer(() => {
+    const { t } = useTranslate()
     const { classes } = useStyles()
     const {
         collectionsData,
@@ -24,7 +26,9 @@ export const CollectionsFilter: FC = observer(() => {
             {!collectionsData ? (
                 <Loading />
             ) : !collectionsData?.length ? (
-                <Typography className={classes.noCollections}>no collections available</Typography>
+                <Typography className={classes.noCollections}>
+                    <T keyName="no_collections_available">no collections available</T>
+                </Typography>
             ) : (
                 <>
                     {collectionsData
@@ -80,7 +84,7 @@ export const CollectionsFilter: FC = observer(() => {
                                 onChange={handleAllSearchCollectionsToggle}
                             />
 
-                            <ListItemText primary="Select all" />
+                            <ListItemText primary={t('select_all', 'Select all')} />
                         </ListItem>
                     )}
                 </>

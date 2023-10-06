@@ -1,5 +1,6 @@
 import { AST, Node } from 'lucene'
 import { makeAutoObservable, runInAction } from 'mobx'
+import { ReactElement } from 'react'
 import { Entries } from 'type-fest'
 
 import { deleteFilterOperands } from '../../components/search/filters/FiltersChips/utils'
@@ -16,7 +17,7 @@ interface FilterField extends AggregationField {
 }
 
 interface CategoryProps {
-    label: string
+    label: ReactElement | string
     icon: keyof typeof reactIcons
     filters: FilterField[]
 }

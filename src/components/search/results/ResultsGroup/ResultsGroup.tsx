@@ -1,4 +1,5 @@
-import { Grid, ListItem, ListItemText, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
+import { T } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 
@@ -28,7 +29,11 @@ export const ResultsGroup: FC<ResultsProps> = observer(({ collection, hits }) =>
             title={collection}
             summary={
                 <Typography variant="caption" display="block">
-                    {hits && `${formatThousands(hits.total)} result${hits.total === 1 ? '' : 's'}`}
+                    {hits && (
+                        <T keyName="results_count" params={{ total: formatThousands(hits.total) }}>
+                            {'{total} {total, plural, one {result} other {results}}'}
+                        </T>
+                    )}
                 </Typography>
             }
             loading={!!resultsLoadingETA[collection]}
