@@ -1,4 +1,6 @@
+import { T } from '@tolgee/react'
 import { makeAutoObservable } from 'mobx'
+import { ReactElement } from 'react'
 
 import { copyMetadata, documentViewUrl } from '../utils/utils'
 
@@ -21,7 +23,7 @@ export class HotKeysStore {
         this.keys = {
             nextItem: {
                 key: 'j',
-                help: 'Preview next result',
+                help: <T keyName="help_preview_next">Preview next result</T>,
                 handler: (event: KeyboardEvent) => {
                     event.preventDefault()
                     if (!isInputFocused()) {
@@ -31,7 +33,7 @@ export class HotKeysStore {
             },
             previousItem: {
                 key: 'k',
-                help: 'Preview the previous result',
+                help: <T keyName="help_preview_previous">Preview the previous result</T>,
                 handler: (event: KeyboardEvent) => {
                     event.preventDefault()
                     if (!isInputFocused()) {
@@ -41,8 +43,8 @@ export class HotKeysStore {
             },
             copyMetadata: {
                 key: 'c',
-                help: 'Copy metadata (MD5 and path) of the currently previewed item to the clipboard.',
-                handler: (event: KeyboardEvent, showMessage: (message: string) => void) => {
+                help: <T keyName="help_copy_md5">Copy metadata (MD5 and path) of the currently previewed item to the clipboard.</T>,
+                handler: (event: KeyboardEvent, showMessage: (message: ReactElement | string) => void) => {
                     if (isInputFocused()) {
                         return
                     }
@@ -56,7 +58,7 @@ export class HotKeysStore {
             },
             openItem: {
                 key: 'o',
-                help: 'Open the currently previewed result',
+                help: <T keyName="help_open_current">Open the currently previewed result</T>,
                 handler: () => {
                     isInputFocused() ||
                         (!!hashStore.hashState.preview &&
@@ -71,7 +73,7 @@ export class HotKeysStore {
             },
             focusInputField: {
                 key: '/',
-                help: 'Focus the search field',
+                help: <T keyName="help_focus_search">Focus the search field</T>,
                 handler: (event: KeyboardEvent) => {
                     if (!isInputFocused()) {
                         event.preventDefault()

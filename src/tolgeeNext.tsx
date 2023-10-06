@@ -13,11 +13,15 @@ const tolgee = Tolgee()
         availableLanguages: ['en', 'fr', 'de', 'ar', 'pl', 'zh'],
         defaultLanguage: 'en',
         staticData: {
-            en: () => import('./i18n/en.json'),
-            de: () => import('./i18n/de.json'),
             ar: () => import('./i18n/ar.json'),
+            de: () => import('./i18n/de.json'),
+            en: () => import('./i18n/en.json'),
+            es: () => import('./i18n/es.json'),
             fr: () => import('./i18n/fr.json'),
+            he: () => import('./i18n/he.json'),
+            hi: () => import('./i18n/hi.json'),
             pl: () => import('./i18n/pl.json'),
+            pt: () => import('./i18n/pt.json'),
             zh: () => import('./i18n/zh.json'),
         },
     })

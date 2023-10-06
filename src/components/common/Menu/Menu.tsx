@@ -131,6 +131,8 @@ export const Menu = observer(() => {
         tolgee.changeLanguage(lang)
     }
 
+    const lang = tolgee.getLanguage()
+
     return (
         <>
             {getNavLinks().map((link) =>
@@ -160,11 +162,35 @@ export const Menu = observer(() => {
                 )}
                 <MenuList>
                     <NestedMenuItem label={t('language', 'Language')} parentMenuOpen={Boolean(anchorEl)} className={classes.languageMenu}>
-                        <MenuItem onClick={handleLanguageChange('en')} selected={tolgee.getLanguage() === 'en'}>
+                        <MenuItem onClick={handleLanguageChange('ar')} selected={lang === 'ar'}>
+                            🇪🇬 <T keyName="arabic">Arabic</T>
+                        </MenuItem>
+                        <MenuItem onClick={handleLanguageChange('de')} selected={lang === 'de'}>
+                            🇩🇪 <T keyName="german">German</T>
+                        </MenuItem>
+                        <MenuItem onClick={handleLanguageChange('en')} selected={lang === 'en'}>
                             🇺🇸 <T keyName="english">English</T>
                         </MenuItem>
-                        <MenuItem onClick={handleLanguageChange('pl')} selected={tolgee.getLanguage() === 'pl'}>
+                        <MenuItem onClick={handleLanguageChange('es')} selected={lang === 'es'}>
+                            🇪🇸 <T keyName="spanish">Spanish</T>
+                        </MenuItem>
+                        <MenuItem onClick={handleLanguageChange('fr')} selected={lang === 'fr'}>
+                            🇫🇷 <T keyName="french">French</T>
+                        </MenuItem>
+                        <MenuItem onClick={handleLanguageChange('he')} selected={lang === 'he'}>
+                            🇮🇱 <T keyName="hebrew">Hebrew</T>
+                        </MenuItem>
+                        <MenuItem onClick={handleLanguageChange('hi')} selected={lang === 'hi'}>
+                            🇮🇳 <T keyName="hindi">Hindi</T>
+                        </MenuItem>
+                        <MenuItem onClick={handleLanguageChange('pl')} selected={lang === 'pl'}>
                             🇵🇱 <T keyName="polish">Polish</T>
+                        </MenuItem>
+                        <MenuItem onClick={handleLanguageChange('pt')} selected={lang === 'pt'}>
+                            🇧🇷 <T keyName="portuguese">Portuguese</T>
+                        </MenuItem>
+                        <MenuItem onClick={handleLanguageChange('zh')} selected={lang === 'zh'}>
+                            🇨🇳 <T keyName="chinese">Chinese</T>
                         </MenuItem>
                     </NestedMenuItem>
                     {getMenuLinks().map((link) => (

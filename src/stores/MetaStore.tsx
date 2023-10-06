@@ -27,7 +27,7 @@ export class MetaStore {
                 label: ReactElement | string
                 searchKey?: SourceField
                 visible?: (content?: Partial<DocumentContent>) => boolean
-                format?: (term?: any, locale?: any) => string
+                format?: (term?: any, locale?: any) => ReactElement | string
                 searchTerm?: (term: any) => string
             }
         >

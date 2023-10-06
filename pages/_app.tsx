@@ -4,7 +4,7 @@ import { CacheProvider } from '@emotion/react'
 import { CssBaseline, ThemeProvider } from '@mui/material'
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon'
-import { deDE, frFR, plPL, zhCN } from '@mui/x-date-pickers/locales'
+import { deDE, esES, enUS, frFR, plPL, ptBR, zhCN } from '@mui/x-date-pickers/locales'
 import { AppProps } from 'next/app'
 
 import { Layout } from '../src/components/Layout'
@@ -27,11 +27,20 @@ const getLocaleText = () => {
         case 'de':
             return deDE.components.MuiLocalizationProvider.defaultProps.localeText
 
+        case 'es':
+            return esES.components.MuiLocalizationProvider.defaultProps.localeText
+
+        case 'en':
+            return enUS.components.MuiLocalizationProvider.defaultProps.localeText
+
         case 'fr':
             return frFR.components.MuiLocalizationProvider.defaultProps.localeText
 
         case 'pl':
             return plPL.components.MuiLocalizationProvider.defaultProps.localeText
+
+        case 'pt':
+            return ptBR.components.MuiLocalizationProvider.defaultProps.localeText
 
         case 'zh':
             return zhCN.components.MuiLocalizationProvider.defaultProps.localeText

@@ -2,7 +2,7 @@ import { CircularProgress, Typography } from '@mui/material'
 import { T, useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import Head from 'next/head'
-import { FC } from 'react'
+import { FC, ReactElement } from 'react'
 import SplitPane from 'react-split-pane'
 
 import Error from '../../../../pages/_error'
@@ -104,7 +104,7 @@ export const DocPage: FC = observer(() => {
         copyMetadata: {
             key: 'c',
             help: t('help_copy_md5_path', 'Copy MD5 and path to clipboard'),
-            handler: (_event: Event, showMessage: (s: string) => void) => {
+            handler: (_event: Event, showMessage: (s: ReactElement | string) => void) => {
                 if (data?.content) {
                     showMessage(copyMetadata(data))
                 }
