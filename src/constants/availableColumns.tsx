@@ -70,7 +70,7 @@ export const availableColumns: Record<string, ResultColumn> = {
         path: '_source.private-tags',
     },
     'word-count': {
-        label: <T keyName="words">Words</T>,
+        label: <T keyName="word-count">Word count</T>,
         align: 'right',
         sortable: true,
         hidden: false,
@@ -142,7 +142,7 @@ export const availableColumns: Record<string, ResultColumn> = {
         path: '_source.ocr',
     },
     pgp: {
-        label: <T keyName="encrypted">Encrypted</T>,
+        label: <T keyName="encryption">Encryption</T>,
         align: 'center',
         sortable: true,
         hidden: true,

@@ -1,17 +1,17 @@
 import { Chip } from '@mui/material'
+import { useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
 
-import { SORTABLE_FIELDS } from '../../../../constants/general'
 import { reactIcons } from '../../../../constants/icons'
 import { defaultSearchParams } from '../../../../utils/queryUtils'
-import { titleCase } from '../../../../utils/utils'
 import { useSharedStore } from '../../../SharedStoreProvider'
 
 import { useStyles } from './SortingChips.styles'
 
 export const SortingChips: FC = observer(() => {
+    const { t } = useTranslate()
     const { classes, cx } = useStyles()
     const { query, search } = useSharedStore().searchStore
 
@@ -62,7 +62,8 @@ export const SortingChips: FC = observer(() => {
                                         {...draggableProvided.dragHandleProps}
                                         size="small"
                                         icon={reactIcons.arrowUp}
-                                        label={SORTABLE_FIELDS[field] || titleCase(field)}
+                                        /* @tolgee-ignore */
+                                        label={t(field)}
                                         onClick={handleClick(field)}
                                         onDelete={handleDelete(field)}
                                         classes={{
