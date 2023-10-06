@@ -1,8 +1,8 @@
-import { Badge, Box, Button, Chip, Grid, Tabs, Tooltip, Typography } from '@mui/material'
+import { Badge, Box, Button, Chip, Grid, Tabs, Typography } from '@mui/material'
 import { T, useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
-import { cloneElement, ReactElement, useEffect, useRef, useState } from 'react'
+import { cloneElement, ReactElement, useEffect, useRef } from 'react'
 
 import { createOcrUrl } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
@@ -290,7 +290,7 @@ export const Document = observer(() => {
                                                 <Chip
                                                     size="small"
                                                     label={
-                                                        !!getTagIcon(chip.tag, chip.public) ? (
+                                                        getTagIcon(chip.tag, chip.public) ? (
                                                             <>
                                                                 {cloneElement(getTagIcon(chip.tag, chip.public) as ReactElement, {
                                                                     style: {

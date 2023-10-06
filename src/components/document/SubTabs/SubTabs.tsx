@@ -1,6 +1,6 @@
 import { Box, Tab, Tabs, Typography } from '@mui/material'
 import { observer } from 'mobx-react-lite'
-import { ReactElement, useEffect } from 'react'
+import { useEffect } from 'react'
 
 import { Loading } from '../../common/Loading/Loading'
 import { useSharedStore } from '../../SharedStoreProvider'

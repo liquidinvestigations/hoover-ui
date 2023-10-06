@@ -1,4 +1,4 @@
-import { FC, memo, RefObject } from 'react'
+import { FC, RefObject } from 'react'
 import { makeStyles } from 'tss-react/mui'
 
 import { useDocument } from '../DocumentProvider'

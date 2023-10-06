@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { PDFPageProxy } from 'pdfjs-dist'
 import { PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api'
-import { FC, forwardRef, ForwardRefExoticComponent, RefObject, useCallback, useEffect, useState } from 'react'
+import { forwardRef, RefObject, useCallback, useEffect, useState } from 'react'
 
 import { useSharedStore } from '../SharedStoreProvider'
 

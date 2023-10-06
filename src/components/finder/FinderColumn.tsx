@@ -4,7 +4,7 @@ import { makeStyles } from 'tss-react/mui'
 
 import { doc as docAPI } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
-import { ChildDocument, DocumentData } from '../../Types'
+import { ChildDocument } from '../../Types'
 import { Loading } from '../common/Loading/Loading'
 
 import { FinderItem } from './FinderItem'

@@ -1,4 +1,4 @@
-import { Box, Chip, FormControl, Theme, Tooltip, Typography } from '@mui/material'
+import { Box, Chip, FormControl, Tooltip, Typography } from '@mui/material'
 import { T, useTranslate } from '@tolgee/react'
 import lucene, { AST, Node, NodeTerm } from 'lucene'
 import { observer } from 'mobx-react-lite'

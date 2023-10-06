@@ -25,7 +25,7 @@ export const AggregationsTable: FC<{ field: SourceField }> = observer(({ field }
 
     return (
         <List dense>
-            {!!loading ? (
+            {loading ? (
                 <Loading />
             ) : buckets?.length ? (
                 buckets.map(({ key, doc_count }) => (

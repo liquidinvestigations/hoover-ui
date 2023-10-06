@@ -1,9 +1,8 @@
 import { Grid, List, ListItem, Paper, Typography } from '@mui/material'
 import { T } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
-import { FC, MutableRefObject, useEffect, useRef, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 
-import { collectionsInsights } from '../../backend/api'
 import { CollectionData } from '../../Types'
 import { humanFileSize } from '../../utils/utils'
 import { SplitPaneLayout } from '../common/SplitPaneLayout/SplitPaneLayout'

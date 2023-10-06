@@ -46,7 +46,6 @@ export const Bookmarks: FC<BookmarksProps> = ({ onSelect }) => {
         })()
     }, [doc, createItemsTree, setBookmarks])
 
-    let id = 1
     const renderTree = useCallback(
         (items: BookmarkItem[]) => {
             const handleItemClick = (index: number) => (event: SyntheticEvent) => {
@@ -55,13 +54,13 @@ export const Bookmarks: FC<BookmarksProps> = ({ onSelect }) => {
             }
             return !items?.length
                 ? null
-                : items.map(({ title, index, items: subItems }) => (
+                : items.map(({ title, index, items: subItems }, id) => (
                       <TreeItem key={id} nodeId={title} label={<span onClick={handleItemClick(index)}>{title}</span>}>
                           {renderTree(subItems)}
                       </TreeItem>
                   ))
         },
-        [id, onSelect],
+        [onSelect],
     )
 
     return !bookmarks?.length ? <TreeItem nodeId="0" label={t('no_bookmarks', 'No bookmarks')} /> : <>{renderTree(bookmarks)}</>

@@ -58,7 +58,7 @@ export const HotKeysWithHelp: FC<HotKeysWithHelpProps> = ({ keys, children }) =>
                     <Typography variant="h6">Keyboard shortcuts</Typography>
 
                     <List dense>
-                        {Object.entries(keysWithHelp).map(([name, { key, help }]) => (
+                        {Object.entries(keysWithHelp).map(([, { key, help }]) => (
                             <ListItem key={Array.isArray(key) ? key.join() : key}>
                                 <span className="mono">{Array.isArray(key) ? key.join(' or ') : key}</span>
                                 <ListItemText primary={help} className={classes.helpDescription} />

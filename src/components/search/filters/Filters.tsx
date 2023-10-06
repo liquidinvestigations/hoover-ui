@@ -1,4 +1,4 @@
-import { CircularProgress, Typography } from '@mui/material'
+import { CircularProgress } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import { FC, ReactElement } from 'react'
 import { Entries } from 'type-fest'
@@ -50,8 +50,8 @@ export const Filters: FC = observer(() => {
                         toolbar={<CategoryDrawerToolbar category={category} />}
                     >
                         {filters.map(({ field, type, buckets, filterLabel }) => {
-                            let FilterComponent,
-                                filterTypeProps: { bucketLabel?: (bucket: Bucket) => ReactElement | string } = {}
+                            const filterTypeProps: { bucketLabel?: (bucket: Bucket) => ReactElement | string } = {}
+                            let FilterComponent
 
                             if (type === 'date') {
                                 FilterComponent = DateHistogramFilter

@@ -230,7 +230,7 @@ export const Tags: FC<{ toolbarButtons: ToolbarLink[] }> = observer(({ toolbarBu
                                 <TagTooltip key={index} chip={chip}>
                                     <Chip
                                         label={
-                                            !!getTagIcon(chip.tag, chip.public) ? (
+                                            getTagIcon(chip.tag, chip.public) ? (
                                                 <>
                                                     {cloneElement(getTagIcon(chip.tag, chip.public) as ReactElement, {
                                                         style: {
@@ -321,7 +321,7 @@ export const Tags: FC<{ toolbarButtons: ToolbarLink[] }> = observer(({ toolbarBu
                                 <TagTooltip key={key} chip={chip}>
                                     <Chip
                                         label={
-                                            !!getTagIcon(chip.tag, chip.public) ? (
+                                            getTagIcon(chip.tag, chip.public) ? (
                                                 <>
                                                     {cloneElement(getTagIcon(chip.tag, chip.public) as ReactElement, {
                                                         style: {

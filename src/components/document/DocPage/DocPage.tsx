@@ -20,7 +20,6 @@ export const DocPage: FC = observer(() => {
     const { t } = useTranslate()
     const { classes } = useStyles()
     const {
-        user,
         printMode,
         documentStore: { data, loading, error, digest, digestUrl, urlIsSha },
     } = useSharedStore()
@@ -78,7 +77,7 @@ export const DocPage: FC = observer(() => {
                 <Typography variant="subtitle2" className={classes.title}>
                     {data ? (
                         <>
-                            {!!digest ? t('file', 'File') : t('directory', 'Directory')} <b>{data.content?.path?.[0] ?? ''}</b>
+                            {digest ? t('file', 'File') : t('directory', 'Directory')} <b>{data.content?.path?.[0] ?? ''}</b>
                         </>
                     ) : (
                         <CircularProgress size={16} thickness={4} />

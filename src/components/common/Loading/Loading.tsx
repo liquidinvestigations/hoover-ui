@@ -1,6 +1,6 @@
 import { CircularProgress } from '@mui/material'
 import { CircularProgressProps } from '@mui/material/CircularProgress/CircularProgress'
-import { FC, memo } from 'react'
+import { FC } from 'react'
 
 import { useStyles } from './Loading.styles'
 

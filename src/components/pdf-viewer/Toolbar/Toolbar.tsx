@@ -189,7 +189,7 @@ export const Toolbar: FC<ToolbarProps> = ({
                                 className={cx('MuiInputBase-root', 'MuiOutlinedInput-root', 'MuiInputBase-formControl', classes.scaleSelect, {
                                     'Mui-disabled': !firstPageData,
                                 })}
-                                onClick={!!firstPageData ? handleScaleMenuClick : undefined}
+                                onClick={firstPageData ? handleScaleMenuClick : undefined}
                             >
                                 <span className={cx('MuiInputBase-input', 'MuiOutlinedInput-input')}>{Math.round(scale * 100) + '%'}</span>
                                 {cloneElement(reactIcons.dropDown, {

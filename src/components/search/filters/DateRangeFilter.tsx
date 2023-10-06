@@ -38,13 +38,6 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({ defaultFrom, default
 
     const unedited = defaultFrom === from && defaultTo === to
 
-    const labelFunc = (field?: string) => (date: DateTime, invalidLabel: string) => {
-        if (!field) {
-            return ''
-        }
-        return date?.isValid ? date.toFormat(DATE_FORMAT) : invalidLabel
-    }
-
     useEffect(() => {
         setFrom(defaultFrom)
         setTo(defaultTo)

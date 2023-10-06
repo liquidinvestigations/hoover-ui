@@ -47,14 +47,17 @@ export const HistogramChart: FC<HistogramChartProps> = ({
         }
     }, [preserveDragArea])
 
-    const getChartPosition = (position: number) => {
-        const chartRect = ref.current?.getBoundingClientRect()
-        if (chartRect) {
-            const chartScale = width / (chartRect.right - chartRect.left)
-            return (position - chartRect.left) * chartScale
-        }
-        return 0
-    }
+    const getChartPosition = useCallback(
+        (position: number) => {
+            const chartRect = ref.current?.getBoundingClientRect()
+            if (chartRect) {
+                const chartScale = width / (chartRect.right - chartRect.left)
+                return (position - chartRect.left) * chartScale
+            }
+            return 0
+        },
+        [width],
+    )
 
     const handleBarClick = (bar: string) => (event: React.MouseEvent) => {
         if (onSelect) {

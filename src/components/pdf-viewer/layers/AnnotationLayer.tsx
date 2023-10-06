@@ -1,7 +1,7 @@
 import { PDFPageProxy } from 'pdfjs-dist'
 import { AnnotationLayer as PDFJSAnnotationLayer } from 'pdfjs-dist/build/pdf'
 import { AnnotationType } from 'pdfjs-dist/lib/shared/util'
-import { RefObject, useEffect, useRef, useState } from 'react'
+import { RefObject, useCallback, useEffect, useRef, useState } from 'react'
 import { FC } from 'react'
 
 import { useDocument } from '../DocumentProvider'
@@ -31,46 +31,49 @@ export const AnnotationLayer: FC<AnnotationLayerProps> = ({ page, pageIndex, con
         }
     }
 
-    const goToDestinationHelper = (rawDest: string, namedDest: string | null = null, explicitDest: string[]) => {
-        // Dest array looks like that: <page-ref> </XYZ|/FitXXX> <args..>
-        const destRef = explicitDest[0]
-        let linkPageIndex: number
+    const goToDestinationHelper = useCallback(
+        (rawDest: string, namedDest: string | null = null, explicitDest: string[]) => {
+            // Dest array looks like that: <page-ref> </XYZ|/FitXXX> <args..>
+            const destRef = explicitDest[0]
+            let linkPageIndex: number
 
-        if (typeof destRef === 'object' && destRef !== null) {
-            linkPageIndex = cachedPageIndices[destRef]
+            if (typeof destRef === 'object' && destRef !== null) {
+                linkPageIndex = cachedPageIndices[destRef]
 
-            if (linkPageIndex === undefined) {
-                // Fetch the page reference if it's not yet available. This could
-                // only occur during loading, before all pages have been resolved.
-                doc
-                    ?.getPageIndex(destRef)
-                    .then((index) => {
-                        setCachedPageIndices((numbers) => {
-                            numbers[destRef] = index
-                            return numbers
+                if (linkPageIndex === undefined) {
+                    // Fetch the page reference if it's not yet available. This could
+                    // only occur during loading, before all pages have been resolved.
+                    doc
+                        ?.getPageIndex(destRef)
+                        .then((index) => {
+                            setCachedPageIndices((numbers) => {
+                                numbers[destRef] = index
+                                return numbers
+                            })
+                            goToDestinationHelper(rawDest, namedDest, explicitDest)
                         })
-                        goToDestinationHelper(rawDest, namedDest, explicitDest)
-                    })
-                    .catch(() => {
-                        console.error(`goToDestinationHelper: "${destRef}" is not ` + `a valid page reference, for dest="${rawDest}".`)
-                    })
+                        .catch(() => {
+                            console.error(`goToDestinationHelper: "${destRef}" is not ` + `a valid page reference, for dest="${rawDest}".`)
+                        })
+                    return
+                }
+            } else if (Number.isInteger(destRef)) {
+                linkPageIndex = destRef as unknown as number
+            } else {
+                console.error(`goToDestinationHelper: "${destRef}" is not ` + `a valid destination reference, for dest="${rawDest}".`)
                 return
             }
-        } else if (Number.isInteger(destRef)) {
-            linkPageIndex = destRef as unknown as number
-        } else {
-            console.error(`goToDestinationHelper: "${destRef}" is not ` + `a valid destination reference, for dest="${rawDest}".`)
-            return
-        }
-        if (!doc || linkPageIndex === null || linkPageIndex < 0 || linkPageIndex > doc.numPages - 1) {
-            console.error(`goToDestinationHelper: "${linkPageIndex}" is not ` + `a valid page index, for dest="${rawDest}".`)
-            return
-        }
+            if (!doc || linkPageIndex === null || linkPageIndex < 0 || linkPageIndex > doc.numPages - 1) {
+                console.error(`goToDestinationHelper: "${linkPageIndex}" is not ` + `a valid page index, for dest="${rawDest}".`)
+                return
+            }
 
-        if (containerRef.current) {
-            containerRef.current.scrollTop = pagesRefs[linkPageIndex].current?.offsetTop || 0
-        }
-    }
+            if (containerRef.current) {
+                containerRef.current.scrollTop = pagesRefs[linkPageIndex].current?.offsetTop || 0
+            }
+        },
+        [cachedPageIndices, containerRef, doc, pagesRefs],
+    )
 
     useEffect(() => {
         const container = annotationLayerRef.current

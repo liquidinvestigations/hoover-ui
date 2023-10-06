@@ -1,5 +1,5 @@
 import { PDFPageProxy } from 'pdfjs-dist'
-import { FC, forwardRef, RefObject, useEffect, useState } from 'react'
+import { forwardRef, RefObject, useEffect, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
 
 import { useDocument } from '../DocumentProvider'

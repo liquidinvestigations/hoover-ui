@@ -12,7 +12,6 @@ import { useSharedStore } from '../../../SharedStoreProvider'
 import { ChipsTree } from '../../chips/ChipsTree/ChipsTree'
 
 import { useStyles } from './FiltersChips.styles'
-import { deleteFilterOperands } from './utils'
 
 export const FiltersChips: FC = observer(() => {
     const { classes } = useStyles()
@@ -36,8 +35,6 @@ export const FiltersChips: FC = observer(() => {
                 const intervalsArray = []
                 if (values.intervals?.missing === 'true') {
                     intervalsArray.push(`(${key}:"N/A"^1)`)
-                } else if (values.intervals?.missing === 'true') {
-                    intervalsArray.push(`(${key}:-"N/A"^1)`)
                 }
                 values.intervals?.include?.forEach((value: string) => {
                     intervalsArray.push(`${key}:${value}`)

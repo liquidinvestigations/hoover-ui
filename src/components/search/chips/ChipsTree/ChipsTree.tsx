@@ -1,4 +1,4 @@
-import { Box, ButtonBase, Menu, MenuItem, Theme } from '@mui/material'
+import { Box, ButtonBase, Menu, MenuItem } from '@mui/material'
 import { AST, Node, NodeTerm, Operator } from 'lucene'
 import { cloneElement, FC, useState, MouseEvent } from 'react'
 
@@ -61,8 +61,9 @@ export const ChipsTree: FC<ChipsTreeProps> = ({ tree, renderChip, renderMenu, on
 
     const build = (q: AST | Node, parentOperator?: Operator): JSX.Element | null => {
         let operator: 'AND' | 'OR',
-            leftNegation = 'start' in q && q.start === 'NOT',
             rightNegation = false
+
+        const leftNegation = 'start' in q && q.start === 'NOT'
 
         switch ('operator' in q ? q.operator : '') {
             case '<implicit>':
