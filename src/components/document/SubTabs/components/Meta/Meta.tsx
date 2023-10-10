@@ -1,4 +1,5 @@
 import { Box, Divider, List, ListItem, ListItemText, Typography } from '@mui/material'
+import { useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
 import { MouseEvent, useEffect, useState } from 'react'
@@ -10,6 +11,7 @@ import { LinkMenu } from '../../../LinkMenu'
 import { useStyles } from './Meta.styles'
 
 export const Meta = observer(() => {
+    const { t } = useTranslate()
     const { classes } = useStyles()
     const {
         data,
@@ -90,7 +92,7 @@ export const Meta = observer(() => {
         <Box className={classes.container}>
             <List dense>
                 <ListItem disableGutters>
-                    <ListItemText primary="Collection" secondary={collection} />
+                    <ListItemText primary={t('collection', 'Collection')} secondary={collection} />
                 </ListItem>
 
                 {!!data?.digest && (
@@ -98,7 +100,7 @@ export const Meta = observer(() => {
                         <ListItemText
                             primary="ID"
                             secondary={
-                                <Link href={`${collectionBaseUrl}/${data.digest}`} title="open digest URL" shallow>
+                                <Link href={`${collectionBaseUrl}/${data.digest}`} title={t('open_digest_url', 'open digest URL')} shallow>
                                     {data.digest}
                                 </Link>
                             }

@@ -1,4 +1,5 @@
 import { Box, Chip, FormControl, Typography } from '@mui/material'
+import { T } from '@tolgee/react'
 import lucene, { AST, Node, NodeRangedTerm, NodeTerm } from 'lucene'
 import { observer } from 'mobx-react-lite'
 import { cloneElement, FC, useCallback, useEffect, useState } from 'react'
@@ -8,10 +9,9 @@ import { SourceField } from '../../../../Types'
 import { clearQuotedParam } from '../../../../utils/queryUtils'
 import { getTagIcon, shortenName } from '../../../../utils/utils'
 import { useSharedStore } from '../../../SharedStoreProvider'
-import { ChipsTree } from '../../ChipsTree'
+import { ChipsTree } from '../../chips/ChipsTree/ChipsTree'
 
 import { useStyles } from './FiltersChips.styles'
-import { deleteFilterOperands } from './utils'
 
 export const FiltersChips: FC = observer(() => {
     const { classes } = useStyles()
@@ -35,8 +35,6 @@ export const FiltersChips: FC = observer(() => {
                 const intervalsArray = []
                 if (values.intervals?.missing === 'true') {
                     intervalsArray.push(`(${key}:"N/A"^1)`)
-                } else if (values.intervals?.missing === 'true') {
-                    intervalsArray.push(`(${key}:-"N/A"^1)`)
                 }
                 values.intervals?.include?.forEach((value: string) => {
                     intervalsArray.push(`${key}:${value}`)
@@ -93,63 +91,66 @@ export const FiltersChips: FC = observer(() => {
         }
     }, [query])
 
-    const getChip = useCallback((q: Node) => {
-        const n = q as NodeTerm & NodeRangedTerm
-        let className = classes.chip
-        if (n.prefix === '-' || n.prefix === '!') {
-            className += ' ' + classes.negationChip
-        }
-
-        let label
-        const name = aggregationFields[n.field as SourceField]?.chipLabel
-        if (n.term_min && n.term_max) {
-            className += ' ' + classes.dateChip
-            label = (
-                <span>
-                    <strong>{name}:</strong> {n.term_min} to {n.term_max}
-                </span>
-            )
-        } else {
-            let term: JSX.Element | string = n.term
-
-            let buckets
-            if ((buckets = aggregationFields[n.field as SourceField]?.buckets)) {
-                const bucket = buckets.find((bucket) => bucket.key === term)
-                term = bucket ? bucket.label || bucket.key : term
+    const getChip = useCallback(
+        (q: Node) => {
+            const n = q as NodeTerm & NodeRangedTerm
+            let className = classes.chip
+            if (n.prefix === '-' || n.prefix === '!') {
+                className += ' ' + classes.negationChip
             }
 
-            const icon = getTagIcon(term, n.field === 'tags', n.prefix === '-' || n.prefix === '!')
-            if ((n.field === 'tags' || n.field === 'priv-tags') && !!icon) {
-                term = (
-                    <>
-                        {cloneElement(icon, {
-                            style: {
-                                ...icon.props.style,
-                                fontSize: 18,
-                                verticalAlign: 'middle',
-                            },
-                        })}{' '}
-                        {term}
-                    </>
+            let label
+            const name = aggregationFields[n.field as SourceField]?.chipLabel
+            if (n.term_min && n.term_max) {
+                className += ' ' + classes.dateChip
+                label = (
+                    <span>
+                        <strong>{name}:</strong> {n.term_min} to {n.term_max}
+                    </span>
+                )
+            } else {
+                let term: JSX.Element | string = n.term
+
+                let buckets
+                if ((buckets = aggregationFields[n.field as SourceField]?.buckets)) {
+                    const bucket = buckets.find((bucket) => bucket.key === term)
+                    term = bucket ? bucket.label || bucket.key : term
+                }
+
+                const icon = getTagIcon(term as string, n.field === 'tags', n.prefix === '-' || n.prefix === '!')
+                if ((n.field === 'tags' || n.field === 'priv-tags') && !!icon) {
+                    term = (
+                        <>
+                            {cloneElement(icon, {
+                                style: {
+                                    ...icon.props.style,
+                                    fontSize: 18,
+                                    verticalAlign: 'middle',
+                                },
+                            })}{' '}
+                            {term}
+                        </>
+                    )
+                }
+
+                label = (
+                    <span>
+                        <strong>{name}:</strong> {n.boost === 1 ? <i>{term}</i> : shortenName(term as string)}
+                    </span>
                 )
             }
 
-            label = (
-                <span>
-                    <strong>{name}:</strong> {n.boost === 1 ? <i>{term}</i> : shortenName(term as string)}
-                </span>
-            )
-        }
-
-        return <Chip label={label} className={className} />
-    }, [])
+            return <Chip label={label} className={className} />
+        },
+        [classes.chip, classes.dateChip, classes.negationChip],
+    )
 
     const renderMenu = useCallback((isExpression: boolean) => `delete selected ${isExpression ? 'expression' : 'filter'}`, [])
 
     return query && parsedFilters ? (
         <Box>
             <Typography variant="h6" className={classes.treeTitle}>
-                Filters
+                <T keyName="filters">Filters</T>
             </Typography>
             <FormControl variant="standard" margin="normal">
                 <ChipsTree

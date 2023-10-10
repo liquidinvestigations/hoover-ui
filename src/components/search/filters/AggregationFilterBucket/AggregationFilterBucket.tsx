@@ -1,5 +1,5 @@
 import { Checkbox, ListItem, ListItemText, Typography } from '@mui/material'
-import { cloneElement, FC } from 'react'
+import { cloneElement, FC, ReactElement } from 'react'
 import Highlighter from 'react-highlight-words'
 
 import { Terms } from '../../../../backend/buildSearchQuery'
@@ -15,8 +15,8 @@ interface AggregationFilterBucketProps {
     loading: boolean
     onChange: (field: SourceField, ...rest: any) => () => void
     triState?: boolean
-    bucketLabel?: (bucket: Bucket) => string
-    bucketSubLabel?: (bucket: Bucket) => string
+    bucketLabel?: (bucket: Bucket) => ReactElement | string
+    bucketSubLabel?: (bucket: Bucket) => ReactElement | string
     bucketValue?: (bucket: Bucket) => string
     quickFilter?: string
 }
@@ -35,7 +35,7 @@ export const AggregationFilterBucket: FC<AggregationFilterBucketProps> = ({
 }) => {
     const { classes, cx } = useStyles()
 
-    const label = bucketLabel ? bucketLabel(bucket) : bucket.key_as_string || bucket.key
+    const label = bucketLabel ? (bucketLabel(bucket) as string) : bucket.key_as_string || bucket.key
     const subLabel = bucketSubLabel ? bucketSubLabel(bucket) : undefined
     const value = bucketValue ? (bucketValue(bucket) as SourceField) : (bucket.key_as_string as SourceField) || (bucket.key as SourceField)
     const included = queryFilter?.include?.includes(value)

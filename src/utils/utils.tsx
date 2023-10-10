@@ -1,10 +1,11 @@
 import url from 'url'
 
 import { Tooltip } from '@mui/material'
+import { T } from '@tolgee/react'
 import copy from 'copy-text-to-clipboard'
 import langs from 'langs'
 import { DateTime, DurationObjectUnits } from 'luxon'
-import { cloneElement } from 'react'
+import { cloneElement, ReactElement } from 'react'
 
 import { ELLIPSIS_TERM_LENGTH } from '../constants/general'
 import { reactIcons } from '../constants/icons'
@@ -49,7 +50,7 @@ export const getLanguageName = (key: string) => {
     return found ? found.name : key
 }
 
-export const formatDateTime = (dateTime: string) => DateTime.fromISO(dateTime, { locale: 'en-US' }).toLocaleString(DateTime.DATETIME_FULL)
+export const formatDateTime = (dateTime: string, locale = 'en-US') => DateTime.fromISO(dateTime, { locale }).toLocaleString(DateTime.DATETIME_FULL)
 
 export const daysInMonth = (date: string) => {
     const [, year, month] = /(\d{4})-(\d{2})/.exec(date) as string[]
@@ -138,26 +139,9 @@ export const shortenName = (name: string | undefined, length = ELLIPSIS_TERM_LEN
     }
 }
 
-export const formatThousands = (number: number) => {
-    let decimalPart = ''
-    let n: string | number = number.toString()
-    if (n.indexOf('.') !== -1) {
-        decimalPart = '.' + n.split('.')[1]
-        n = parseInt(n.split('.')[0])
-    }
+export const formatThousands = (number: number) => number.toLocaleString(localStorage.getItem('language') || 'en')
 
-    const array = n.toString().split('')
-    let index = -3
-    while (array.length + index > 0) {
-        array.splice(index, 0, ',')
-        // Decrement by 4 since we just added another unit to the array.
-        index -= 4
-    }
-
-    return array?.join('') + decimalPart
-}
-
-export const copyMetadata = (doc: DocumentData) => {
+export const copyMetadata = (doc: DocumentData): ReactElement => {
     const { md5, path } = doc.content
 
     let string = md5
@@ -166,9 +150,9 @@ export const copyMetadata = (doc: DocumentData) => {
     }
 
     if (copy(string)) {
-        return `Copied MD5 and path to clipboard`
+        return <T keyName="md5_copied">Copied MD5 and path to clipboard</T>
     } else {
-        return `Could not copy meta metadata - unsupported browser?`
+        return <T keyName="md5_copy_error">Could not copy meta metadata - unsupported browser?</T>
     }
 }
 
@@ -177,23 +161,31 @@ export const collectionUrl = (collection: string) => [documentUrlPrefix, collect
 export const documentViewUrl = (item: Pick<Hit, '_collection' | '_id'>) => [documentUrlPrefix, item._collection, item._id].join('/')
 export const getPreviewParams = (item: Pick<Hit, '_collection' | '_id'>) => ({ preview: { c: item._collection, i: item._id } })
 
-export const humanFileSize = (bytes: number, si = true, dp = 1) => {
-    const thresh = si ? 1000 : 1024
+export const humanFileSize = (bytes: number): ReactElement => {
+    const thresh = 1000
 
     if (Math.abs(bytes) < thresh) {
-        return bytes + ' B'
+        return (
+            <T keyName="size_with_unit" params={{ size: bytes, unit: 'B' }}>
+                {'{size} {unit, select, B {B} kB {kB} MB {MB} GB {GB} TB {TB} PB {PB} EB {EB} ZB {ZB} YB {YB} other {{unit}}}'}
+            </T>
+        )
     }
 
-    const units = si ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+    const units = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
     let u = -1
-    const r = 10 ** dp
+    const r = 10 ** 1
 
     do {
         bytes /= thresh
         ++u
     } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1)
 
-    return bytes.toFixed(dp) + ' ' + units[u]
+    return (
+        <T keyName="size_with_unit" params={{ size: bytes.toFixed(1), unit: units[u] }}>
+            {'{size} {unit, select, B {B} kB {kB} MB {MB} GB {GB} TB {TB} PB {PB} EB {EB} ZB {ZB} YB {YB} other {{unit}}}'}
+        </T>
+    )
 }
 
 export const titleCase = (string: string) => {

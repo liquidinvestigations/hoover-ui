@@ -3,6 +3,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import CloseIcon from '@mui/icons-material/Close'
 import SearchIcon from '@mui/icons-material/Search'
 import { Box, IconButton, InputAdornment, TextField } from '@mui/material'
+import { useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import React, { ChangeEvent, useEffect } from 'react'
 
@@ -13,6 +14,7 @@ import { Loading } from '../Loading/Loading'
 import { useStyles } from './PageSearch.styles'
 
 export const PageSearch = observer(() => {
+    const { t } = useTranslate()
     const { classes } = useStyles()
     const {
         searchStore: { query },
@@ -71,7 +73,7 @@ export const PageSearch = observer(() => {
                 variant="standard"
                 className={classes.input}
                 type="text"
-                placeholder="Search..."
+                placeholder={t('search_placeholder', 'Search...')}
                 value={inputValue}
                 onChange={handleInputChange}
                 InputProps={{

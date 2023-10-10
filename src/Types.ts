@@ -20,8 +20,10 @@ export interface User {
 }
 
 export interface Limits {
-    requests: number
     batch: number
+    requests: {
+        interval: number
+    }
 }
 
 export interface ErrorCounts {
@@ -55,6 +57,19 @@ export interface CollectionData {
     max_result_window: number
 }
 
+export interface LocationData {
+    id: string
+    filename: string
+    parent_id: string
+    parent_path: string
+}
+
+export interface LocationsData {
+    locations: LocationData[]
+    page: number
+    has_next_page: boolean
+}
+
 export type SearchQueryType = 'aggregations' | 'missing' | 'results'
 
 export interface SearchQueryParams {
@@ -66,6 +81,31 @@ export interface SearchQueryParams {
     order?: string[][]
     facets?: Record<string, any>
     filters?: Record<string, any>
+}
+
+export interface BatchSearchQueryParams {
+    query_strings: string[]
+    collections: string[]
+}
+
+export interface UploadsState {
+    started: string
+    finished: string
+    uploader: string
+    collection: string
+    directory_id: string
+    directory_path: string
+    filename: string
+    processed: boolean | string
+    tasks_done?: number
+    tasks_total?: number
+}
+
+export interface DirectoryUploadsState {
+    uploads: UploadsState[]
+    collection?: string
+    directory_name?: string
+    directory_path?: string
 }
 
 export type ResultField =
@@ -234,7 +274,9 @@ export interface Result {
 }
 
 export interface BatchResponse {
-    hits: Hit[]
+    hits: {
+        total: number
+    }
     took: number
     status: number
     _shards: {
@@ -243,12 +285,14 @@ export interface BatchResponse {
         skipped: number
         successful: number
     }
+    error?: boolean
     timed_out: boolean
     _query_string: string
 }
 
 export interface BatchSearchResponse {
     status: string
+    message: string
     responses: BatchResponse[]
 }
 
@@ -362,7 +406,7 @@ export type DocumentChunks<T> = Record<string, ChunkResults<T>>
 export type DocumentRecord<T> = Record<string, DocumentChunks<T>>
 export interface Tab {
     tag: string
-    name: string
+    name: ReactElement | string
     icon: ReactElement
     content: string
 }

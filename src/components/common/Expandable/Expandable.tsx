@@ -52,8 +52,6 @@ export const Expandable: FC<ExpandableProps> = ({
         setOpenState = setOpenInternalState
     }
 
-    const toggle = () => setOpenState && setOpenState(!openState)
-
     const contentRef: RefObject<HTMLDivElement> = useRef(null)
 
     useEffect(() => {
@@ -90,8 +88,10 @@ export const Expandable: FC<ExpandableProps> = ({
         [handleMouseMove, handleMouseUp],
     )
 
-    const headerBar = useMemo(
-        () => (
+    const headerBar = useMemo(() => {
+        const toggle = () => setOpenState && setOpenState(!openState)
+
+        return (
             <ListItem dense button onClick={toggle} className={cx(classes.header, { [classes.enabled]: contentVisible })} disabled={!contentVisible}>
                 <Fade in={loading} unmountOnExit>
                     <div>
@@ -135,24 +135,27 @@ export const Expandable: FC<ExpandableProps> = ({
                     )}
                 </Grid>
             </ListItem>
-        ),
-        [
-            title,
-            greyed,
-            highlight,
-            openState,
-            summary,
-            loadingETA,
-            open,
-            toggle,
-            loading,
-            classes.expand,
-            classes.expandOpen,
-            classes.header,
-            classes.loading,
-            classes.title,
-        ],
-    )
+        )
+    }, [
+        cx,
+        classes.header,
+        classes.enabled,
+        classes.title,
+        classes.loading,
+        classes.expand,
+        classes.expandOpen,
+        contentVisible,
+        loading,
+        loadingETA,
+        loadingHeight,
+        greyed,
+        highlight,
+        title,
+        summary,
+        open,
+        openState,
+        setOpenState,
+    ])
 
     return (
         <>

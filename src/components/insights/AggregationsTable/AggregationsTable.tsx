@@ -20,12 +20,12 @@ export const AggregationsTable: FC<{ field: SourceField }> = observer(({ field }
     const buckets = aggregations?.[field]?.values.buckets?.slice(0, 10)
 
     const handleNewSearch = (term: string) => () => {
-        window.open(createSearchUrl(term, field, query?.collections as string | string[]))
+        window.open(createSearchUrl(term, query?.collections as string | string[], field))
     }
 
     return (
         <List dense>
-            {!!loading ? (
+            {loading ? (
                 <Loading />
             ) : buckets?.length ? (
                 buckets.map(({ key, doc_count }) => (

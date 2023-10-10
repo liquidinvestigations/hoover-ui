@@ -6,7 +6,18 @@ import { AbortSignal } from 'node-fetch/externals'
 import { stringify } from 'qs'
 
 import { Tag } from '../stores/TagsStore'
-import { CollectionData, DocumentData, Limits, User } from '../Types'
+import {
+    BatchResponse,
+    BatchSearchQueryParams,
+    BatchSearchResponse,
+    CollectionData,
+    DirectoryUploadsState,
+    DocumentData,
+    Limits,
+    LocationsData,
+    UploadsState,
+    User,
+} from '../Types'
 
 import { SearchFields } from './buildSearchQuery'
 
@@ -100,7 +111,7 @@ export const doc = memoize(
 )
 
 export const locations = memoize(
-    (docUrl, pageIndex) => fetchJson(buildUrl(docUrl, 'locations', { page: pageIndex })),
+    (docUrl, pageIndex): Promise<LocationsData> => fetchJson(buildUrl(docUrl, 'locations', { page: pageIndex })),
     (docUrl, pageIndex) => `${docUrl}/page/${pageIndex}`,
 )
 
@@ -122,7 +133,7 @@ export const updateTag = (docUrl: string, tagId: string, data: Pick<Tag, 'public
 
 export const deleteTag = (docUrl: string, tagId: string) => fetchJson(buildUrl(docUrl, 'tags', tagId), { method: 'DELETE' })
 
-export const batch = (query: SearchQueryParams) =>
+export const batch = (query: BatchSearchQueryParams): Promise<BatchSearchResponse> =>
     fetchJson(buildUrl('batch'), {
         method: 'POST',
         body: JSON.stringify(query),
@@ -130,9 +141,10 @@ export const batch = (query: SearchQueryParams) =>
 
 export const collectionsInsights = (): Promise<CollectionData[]> => fetchJson(buildUrl('collections'))
 
-export const getUploads = () => fetchJson(buildUrl('get_uploads'))
+export const getUploads = (): Promise<UploadsState[]> => fetchJson(buildUrl('get_uploads'))
 
-export const getDirectoryUploads = (collection: string, directoryId: string) => fetchJson(buildUrl(collection, directoryId, 'get_directory_uploads'))
+export const getDirectoryUploads = (collection: string, directoryId: string): Promise<DirectoryUploadsState> =>
+    fetchJson(buildUrl(collection, directoryId, 'get_directory_uploads'))
 
 export interface LogError {
     error: string

@@ -67,10 +67,10 @@ export interface Term {
     interval?: number | string
 }
 
-export const createSearchParams = (field: SourceField, term: string | Term) => {
+export const createSearchParams = (term: string | Term, field?: SourceField) => {
     const params: Partial<SearchQueryParams> = {}
 
-    if (aggregationFields[field]) {
+    if (field && aggregationFields[field]) {
         params.q = '*'
         params.filters = {}
 
@@ -132,13 +132,8 @@ export const createSearchParams = (field: SourceField, term: string | Term) => {
     return params
 }
 
-export const createSearchUrl = (
-    term: Term | string,
-    field: SourceField,
-    collections: string | string[],
-    hash: Record<string, any> | undefined = undefined,
-) => {
-    const params = createSearchParams(field, term)
+export const createSearchUrl = (term: Term | string, collections: string | string[], field?: SourceField, hash?: Record<string, any>) => {
+    const params = createSearchParams(term, field)
     const hashParams = hash ? '#' + qs.stringify(rollupParams(hash)) : ''
 
     params.collections = Array.isArray(collections) ? collections : [collections]

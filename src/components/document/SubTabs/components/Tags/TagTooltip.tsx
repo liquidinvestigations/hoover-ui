@@ -1,4 +1,5 @@
 import { Box, Tooltip } from '@mui/material'
+import { useTolgee } from '@tolgee/react'
 import { DateTime } from 'luxon'
 import { FC, ReactElement } from 'react'
 
@@ -14,6 +15,7 @@ interface TagTooltipProps {
 
 export const TagTooltip: FC<TagTooltipProps> = ({ chip, count = 0, children }) => {
     const { user } = useSharedStore()
+    const tolgee = useTolgee(['language'])
 
     return (
         <Tooltip
@@ -21,7 +23,7 @@ export const TagTooltip: FC<TagTooltipProps> = ({ chip, count = 0, children }) =
             title={
                 <>
                     <Box>
-                        <strong>Created on:</strong> {formatDateTime(chip.date_created || '')}
+                        <strong>Created on:</strong> {formatDateTime(chip.date_created || '', tolgee.getLanguage())}
                     </Box>
                     <Box>
                         {chip.date_indexed ? (

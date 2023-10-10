@@ -1,7 +1,8 @@
-import { Badge, Box, Button, Chip, Grid, Tabs, Tooltip, Typography } from '@mui/material'
+import { Badge, Box, Button, Chip, Grid, Tabs, Typography } from '@mui/material'
+import { T, useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
-import { cloneElement, ReactElement, useEffect, useRef, useState } from 'react'
+import { cloneElement, ReactElement, useEffect, useRef } from 'react'
 
 import { createOcrUrl } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
@@ -11,10 +12,10 @@ import { getTagIcon } from '../../utils/utils'
 import { Loading } from '../common/Loading/Loading'
 import { PageSearch } from '../common/PageSearch/PageSearch'
 import { Finder } from '../finder/Finder'
-import Locations from '../Locations'
 import { useSharedStore } from '../SharedStoreProvider'
 
 import { useStyles } from './Document.styles'
+import { Locations } from './Locations/Locations'
 import { StyledTab } from './StyledTab'
 import { HTML } from './SubTabs/components/HTML'
 import { Meta } from './SubTabs/components/Meta/Meta'
@@ -28,6 +29,7 @@ import { TabPanel } from './TabPanel/TabPanel'
 import { Toolbar, ToolbarLink } from './Toolbar/Toolbar'
 
 export const Document = observer(() => {
+    const { t } = useTranslate()
     const { classes } = useStyles()
     const containerRef = useRef<HTMLDivElement>(null)
 
@@ -83,7 +85,7 @@ export const Document = observer(() => {
         if (!fullPage) {
             headerLinks.actions.push({
                 href: pathname,
-                tooltip: 'Open in new tab',
+                tooltip: t('open_in_new_tab', 'Open in new tab'),
                 icon: reactIcons.openNewTab,
                 target: '_blank',
             })
@@ -91,14 +93,14 @@ export const Document = observer(() => {
 
         headerLinks.actions.push({
             href: `${pathname}?print=true`,
-            tooltip: 'Print metadata and content',
+            tooltip: t('print_metadata_and_content', 'Print metadata and content'),
             icon: reactIcons.print,
             target: '_blank',
         })
 
         headerLinks.actions.push({
             href: docRawUrl,
-            tooltip: 'Download original file',
+            tooltip: t('download_original_file', 'Download original file'),
             icon: reactIcons.download,
             target: fullPage ? undefined : '_blank',
         })
@@ -115,7 +117,7 @@ export const Document = observer(() => {
         if (previewNextDoc) {
             headerLinks.navigation.push({
                 icon: reactIcons.chevronLeft,
-                tooltip: 'Previous result',
+                tooltip: t('previous_result', 'Previous result'),
                 onClick: previewNextDoc,
             })
         }
@@ -123,7 +125,7 @@ export const Document = observer(() => {
         if (previewPreviousDoc) {
             headerLinks.navigation.push({
                 icon: reactIcons.chevronRight,
-                tooltip: 'Next result',
+                tooltip: t('next_result', 'Next result'),
                 onClick: previewPreviousDoc,
             })
         }
@@ -170,7 +172,7 @@ export const Document = observer(() => {
             searchCount: pdfSearchStore.getTotalSearchResultsCount(),
         },
         {
-            name: 'Text',
+            name: t('text', 'Text'),
             icon: reactIcons.content,
             visible: true,
             padding: 0,
@@ -179,13 +181,13 @@ export const Document = observer(() => {
             searchCount: textSearchStore.getTotalSearchResultsCount(),
         },
         {
-            name: 'Tags',
+            name: t('tags', 'Tags'),
             icon: reactIcons.tagsTab,
             visible: !printMode && data.content.filetype !== 'folder',
             content: <Tags toolbarButtons={tagsLinks} />,
         },
         {
-            name: 'Location',
+            name: t('location', 'Location'),
             icon: reactIcons.location,
             visible: !fullPage,
             content: (
@@ -196,7 +198,7 @@ export const Document = observer(() => {
             ),
         },
         {
-            name: 'Meta',
+            name: t('metadata', 'Meta'),
             icon: reactIcons.metaTab,
             visible: !printMode,
             content: <Meta />,
@@ -204,13 +206,13 @@ export const Document = observer(() => {
             searchCount: metaSearchStore.getSearchResultsCount(),
         },
         {
-            name: 'HTML',
+            name: t('html', 'HTML'),
             icon: reactIcons.codeTab,
             visible: !!data.safe_html,
             content: <HTML html={data.safe_html || ''} />,
         },
         {
-            name: 'Headers & Parts',
+            name: t('headers_parts', 'Headers & Parts'),
             icon: reactIcons.headersTab,
             visible: !!data.content.tree,
             content: <Text content={data.content.tree} />,
@@ -233,7 +235,7 @@ export const Document = observer(() => {
                 href={'/upload/' + collection + '/' + data.id}
                 color="inherit"
             >
-                {'Upload File'}
+                <T keyName="upload_file">Upload File</T>
             </Button>
         )
     }
@@ -258,7 +260,7 @@ export const Document = observer(() => {
 
             {printMode && (
                 <Link href={pathname} className={classes.printBackLink}>
-                    ← Back to <b>normal view</b>
+                    <T keyName="print_back_to_normal">← Back to normal view</T>
                 </Link>
             )}
 
@@ -288,7 +290,7 @@ export const Document = observer(() => {
                                                 <Chip
                                                     size="small"
                                                     label={
-                                                        !!getTagIcon(chip.tag, chip.public) ? (
+                                                        getTagIcon(chip.tag, chip.public) ? (
                                                             <>
                                                                 {cloneElement(getTagIcon(chip.tag, chip.public) as ReactElement, {
                                                                     style: {

@@ -43,7 +43,7 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
         } else {
             setOpen(false)
         }
-    }, [hashState?.histogram])
+    }, [field, hashState?.histogram])
 
     const toggle = () => {
         setOpen(!open)
@@ -68,25 +68,28 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
 
     const handleBarMenuClose = () => setAnchorPosition(undefined)
 
-    const handleIntervalsChange = (include: string[]) => {
-        handleBarMenuClose()
+    const handleIntervalsChange = useCallback(
+        (include: string[]) => {
+            handleBarMenuClose()
 
-        const { [field]: prevFilter, ...restFilters } = query?.filters || {}
-        const { intervals, ...restParams } = prevFilter || {}
+            const { [field]: prevFilter, ...restFilters } = query?.filters || {}
+            const { intervals, ...restParams } = prevFilter || {}
 
-        if (include.length) {
-            search({ filters: { [field]: { intervals: { include }, ...restParams }, ...restFilters }, page: defaultSearchParams.page })
-        } else {
-            search({ filters: { [field]: restParams, ...restFilters }, page: defaultSearchParams.page })
-        }
-    }
+            if (include.length) {
+                search({ filters: { [field]: { intervals: { include }, ...restParams }, ...restFilters }, page: defaultSearchParams.page })
+            } else {
+                search({ filters: { [field]: restParams, ...restFilters }, page: defaultSearchParams.page })
+            }
+        },
+        [field, query?.filters, search],
+    )
 
     const handleIntervalsAdd = useCallback(() => {
         const { [field]: prevFilter } = query?.filters || {}
         const { intervals } = prevFilter || {}
 
         handleIntervalsChange(Array.from(new Set([...(intervals?.include || []), ...(selectedBars || [])])))
-    }, [query, search, selectedBars])
+    }, [field, handleIntervalsChange, query?.filters, selectedBars])
 
     const handleIntervalsRemove = useCallback(() => {
         const { [field]: prevFilter } = query?.filters || {}
@@ -97,34 +100,38 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
                 return !selectedBars?.includes(v)
             }),
         )
-    }, [query, search, selectedBars])
+    }, [field, handleIntervalsChange, query?.filters, selectedBars])
 
-    const getDatesRange = () => {
-        let first = selectedBars?.[selectedBars.length - 1] as string
-        let last = selectedBars?.[0] as string
-
-        switch (interval) {
-            case 'year':
-                last += '-12-31'
-                break
-
-            case 'month':
-                last += '-' + daysInMonth(last)
-                break
-
-            case 'week':
-                last = DateTime.fromISO(last).plus({ days: 7 }).toISODate()
-                break
-        }
-
-        return {
-            from: DateTime.fromISO(first).toFormat(DATE_FORMAT),
-            to: DateTime.fromISO(last).toFormat(DATE_FORMAT),
-            interval,
-        }
-    }
+    const interval = query?.filters?.[field]?.interval || DEFAULT_INTERVAL
+    const selected = query?.filters?.[field]?.intervals?.include
+    const axisHeight = interval === 'year' ? 20 : 40
 
     const handleFilterRange = useCallback(() => {
+        const getDatesRange = () => {
+            let first = selectedBars?.[selectedBars.length - 1] as string
+            let last = selectedBars?.[0] as string
+
+            switch (interval) {
+                case 'year':
+                    last += '-12-31'
+                    break
+
+                case 'month':
+                    last += '-' + daysInMonth(last)
+                    break
+
+                case 'week':
+                    last = DateTime.fromISO(last).plus({ days: 7 }).toISODate()
+                    break
+            }
+
+            return {
+                from: DateTime.fromISO(first).toFormat(DATE_FORMAT),
+                to: DateTime.fromISO(last).toFormat(DATE_FORMAT),
+                interval,
+            }
+        }
+
         handleBarMenuClose()
         const range = getDatesRange()
         const { [field]: prevFilter, ...restFilters } = query?.filters || {}
@@ -135,18 +142,13 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
             facets: { ...restFacets },
             page: defaultSearchParams.page,
         })
-    }, [query, search, selectedBars])
-
-    const interval = query?.filters?.[field]?.interval || DEFAULT_INTERVAL
-    const selected = query?.filters?.[field]?.intervals?.include
-    const axisHeight = interval === 'year' ? 20 : 40
-
-    const formatLabel = (value: string) => DateTime.fromISO(value, { setZone: true }).toFormat(formatsLabel[interval])
-
-    const formatValue = (value: string) => DateTime.fromISO(value, { setZone: true }).toFormat(formatsValue[interval])
+    }, [field, interval, query?.facets, query?.filters, search, selectedBars])
 
     const buckets = aggregations?.[field]?.values.buckets
     const data = useMemo(() => {
+        const formatLabel = (value: string) => DateTime.fromISO(value, { setZone: true }).toFormat(formatsLabel[interval])
+        const formatValue = (value: string) => DateTime.fromISO(value, { setZone: true }).toFormat(formatsValue[interval])
+
         if (buckets) {
             let missingBarsCount = 0
             const elements = buckets.map(({ key_as_string, doc_count }, index) => {
@@ -180,7 +182,7 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
                     }) as HistogramBar,
             )
         }
-    }, [buckets])
+    }, [axisHeight, buckets, interval])
 
     return (
         <>

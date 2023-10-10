@@ -1,4 +1,5 @@
 import { Menu, MenuItem } from '@mui/material'
+import { T, useTranslate } from '@tolgee/react'
 import { mergeWith } from 'lodash'
 import { observer } from 'mobx-react-lite'
 import { NestedMenuItem } from 'mui-nested-menu'
@@ -25,6 +26,7 @@ interface LinkMenuProps {
 }
 
 export const LinkMenu: FC<LinkMenuProps> = observer(({ link, anchorPosition, onClose }) => {
+    const { t } = useTranslate()
     const { query, search } = useSharedStore().searchStore
     const {
         hashStore: { hashState },
@@ -39,7 +41,7 @@ export const LinkMenu: FC<LinkMenuProps> = observer(({ link, anchorPosition, onC
         onClose()
 
         const newTerm = term || link.term
-        const newParams = createSearchParams(link?.field as SourceField, newTerm)
+        const newParams = createSearchParams(newTerm, link?.field as SourceField)
         const mergedParams: Partial<SearchQueryParams> = {}
 
         if (newParams.filters) {
@@ -64,7 +66,7 @@ export const LinkMenu: FC<LinkMenuProps> = observer(({ link, anchorPosition, onC
     const handleNewSearch = (term?: string | Term) => () => {
         onClose()
         const newTerm = term || link.term
-        window.open(createSearchUrl(newTerm, link?.field as SourceField, getCollections(), hash))
+        window.open(createSearchUrl(newTerm, getCollections(), link?.field as SourceField, hash))
     }
 
     return (
@@ -72,41 +74,56 @@ export const LinkMenu: FC<LinkMenuProps> = observer(({ link, anchorPosition, onC
             {
                 /*search &&*/
                 link && aggregationFields[link.field as SourceField]?.type === 'date' ? (
-                    <NestedMenuItem label="restrict current search to this" parentMenuOpen={Boolean(anchorPosition)}>
+                    <NestedMenuItem
+                        label={t('restrict_current_search_to_this', 'restrict current search to this')}
+                        parentMenuOpen={Boolean(anchorPosition)}
+                    >
                         {formats.map((format) => (
                             <MenuItem key={format} onClick={handleAddSearch(false, { term: link.term, format })}>
-                                {format}
+                                {/* @tolgee-ignore */}
+                                {t(format).toLowerCase()}
                             </MenuItem>
                         ))}
                     </NestedMenuItem>
                 ) : (
-                    <MenuItem onClick={handleAddSearch(false)}>add this field to current search</MenuItem>
+                    <MenuItem onClick={handleAddSearch(false)}>
+                        <T keyName="add_this_to_current_search">add this field to current search</T>
+                    </MenuItem>
                 )
             }
             {
                 /*search &&*/
                 link && aggregationFields[link.field as SourceField]?.type === 'date' ? (
-                    <NestedMenuItem label="restrict current search to this (open in a new tab)" parentMenuOpen={Boolean(anchorPosition)}>
+                    <NestedMenuItem
+                        label={t('restrict_current_search_to_this_new_tab', 'restrict current search to this (open in a new tab)')}
+                        parentMenuOpen={Boolean(anchorPosition)}
+                    >
                         {formats.map((format) => (
                             <MenuItem key={format} onClick={handleAddSearch(true, { term: link.term, format })}>
-                                {format}
+                                {/* @tolgee-ignore */}
+                                {t(format).toLowerCase()}
                             </MenuItem>
                         ))}
                     </NestedMenuItem>
                 ) : (
-                    <MenuItem onClick={handleAddSearch(true)}>add this field to current search (open in new tab)</MenuItem>
+                    <MenuItem onClick={handleAddSearch(true)}>
+                        <T keyName="add_this_to_current_search_new_tab">add this field to current search (open in new tab)</T>
+                    </MenuItem>
                 )
             }
             {link && aggregationFields[link.field as SourceField]?.type === 'date' ? (
-                <NestedMenuItem label="open a new search for this" parentMenuOpen={Boolean(anchorPosition)}>
+                <NestedMenuItem label={t('open_new_search_for_this', 'open a new search for this')} parentMenuOpen={Boolean(anchorPosition)}>
                     {formats.map((format) => (
                         <MenuItem key={format} onClick={handleNewSearch({ term: link.term, format })}>
-                            {format}
+                            {/* @tolgee-ignore */}
+                            {t(format).toLowerCase()}
                         </MenuItem>
                     ))}
                 </NestedMenuItem>
             ) : (
-                <MenuItem onClick={handleNewSearch()}>open a new search for this term</MenuItem>
+                <MenuItem onClick={handleNewSearch()}>
+                    <T keyName="open_new_search_for_this">open a new search for this term</T>
+                </MenuItem>
             )}
         </Menu>
     )

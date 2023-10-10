@@ -1,5 +1,6 @@
 import { IconButton, InputAdornment, TextField, Toolbar, Tooltip } from '@mui/material'
 import { duration } from '@mui/material/styles'
+import { useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import { ChangeEvent, cloneElement, FC } from 'react'
 
@@ -11,6 +12,7 @@ import { useStyles } from './CategoryDrawerToolbar.styles'
 import type { Category } from '../../../../Types'
 
 export const CategoryDrawerToolbar: FC<{ category: Category }> = observer(({ category }) => {
+    const { t } = useTranslate()
     const { classes, cx } = useStyles()
     const { drawerPinned, setDrawerPinned, openCategory, setOpenCategory, categoryQuickFilter, setCategoryQuickFilter } =
         useSharedStore().searchStore.searchViewStore
@@ -32,7 +34,7 @@ export const CategoryDrawerToolbar: FC<{ category: Category }> = observer(({ cat
                 fullWidth
                 size="small"
                 variant="outlined"
-                placeholder="Quick filter"
+                placeholder={t('quick_filter', 'Quick filter')}
                 className={classes.search}
                 onChange={handleSearch}
                 value={categoryQuickFilter[category]}
@@ -60,7 +62,7 @@ export const CategoryDrawerToolbar: FC<{ category: Category }> = observer(({ cat
                     },
                 }}
             />
-            <Tooltip title={drawerPinned ? 'Unpin' : 'Pin'}>
+            <Tooltip title={drawerPinned ? t('unpin', 'Unpin') : t('pin', 'Pin')}>
                 <IconButton size="small" className={classes.pinButton} onClick={handlePinButton}>
                     {drawerPinned
                         ? cloneElement(reactIcons.pinned, { className: classes.pinIcon })

@@ -12,7 +12,7 @@ interface InsightsTitleProps {
 }
 
 export const InsightsTitle: FC<InsightsTitleProps> = ({ name, open, onClick }) => {
-    const { classes, cx } = useStyles()
+    const { classes } = useStyles()
 
     return (
         <ListItem button dense onClick={onClick}>

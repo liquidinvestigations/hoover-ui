@@ -88,6 +88,8 @@
     "worker-loader": "3.0.8"
   },
   "devDependencies": {
+    "@tolgee/format-icu": "^5.12.0",
+    "@tolgee/react": "^5.12.0",
     "@types/langs": "2.0.1",
     "@types/lodash.memoize": "4.1.7",
     "@types/lucene": "^2.1.4",

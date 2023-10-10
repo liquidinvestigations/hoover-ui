@@ -46,7 +46,7 @@ export const TIFFViewer: FC<{ url: string }> = ({ url }) => {
 
                 const chunksAll = new Uint8Array(receivedLength)
                 let position = 0
-                for (let chunk of chunks) {
+                for (const chunk of chunks) {
                     chunksAll.set(chunk, position)
                     position += chunk.length
                 }

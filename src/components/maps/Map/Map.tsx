@@ -38,7 +38,7 @@ const Map: FC = observer(() => {
                 zoom: event.target.getZoom(),
             })
         })
-    }, [])
+    }, [coordinates, setCoordinates])
 
     return <div id="map" className={classes.map} />
 })

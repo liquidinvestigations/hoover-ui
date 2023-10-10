@@ -1,4 +1,5 @@
 import { Grid, IconButton, Typography } from '@mui/material'
+import { T } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 
@@ -72,12 +73,18 @@ export const Pagination: FC = observer(() => {
             <Grid item container alignItems="center" justifyContent="space-between" style={{ marginTop: '1rem' }}>
                 <Grid item>
                     <Typography variant="caption">
-                        {`Showing ${from} - ${to} of ${formatThousands(total)} hits. `}
-                        {`Page ${total === 0 ? 0 : page} of ${formatThousands(pageCount)} pages.`}
+                        <T keyName="pagination_showing_from_to" params={{ from, to, total: formatThousands(total) }}>
+                            {'Showing {from} - {to} of {total} hits.'}
+                        </T>{' '}
+                        <T keyName="pagination_page_of_pages" params={{ page: total === 0 ? 0 : page, pageCount: formatThousands(pageCount) }}>
+                            {'Page {page} of {pageCount} pages.'}
+                        </T>
                         {total > maxCount && (
                             <>
                                 <br />
-                                {`Only the first ${maxCount} hits can be paginated here.`}
+                                <T keyName="pagination_max_count" params={{ maxCount }}>
+                                    {'Only the first {maxCount} hits can be paginated here.'}
+                                </T>
                             </>
                         )}
                     </Typography>

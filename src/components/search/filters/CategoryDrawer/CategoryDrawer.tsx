@@ -1,7 +1,7 @@
-import { ClickAwayListener, Fade, Grid, ListItem, Portal, Slide, Typography } from '@mui/material'
+import { ClickAwayListener, Fade, ListItem, Portal, Slide, Typography } from '@mui/material'
 import { duration } from '@mui/material/styles'
 import { observer } from 'mobx-react-lite'
-import { cloneElement, CSSProperties, FC, ReactNode, useEffect, useMemo, useState } from 'react'
+import { cloneElement, CSSProperties, FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { Transition } from 'react-transition-group'
 
 import { reactIcons } from '../../../../constants/icons'
@@ -36,7 +36,7 @@ export const CategoryDrawer: FC<CategoryDrawerProps> = observer(
         const [position, setPosition] = useState<Partial<CSSProperties>>({ top: 0, left: 0, width: 100 })
         const { drawerPinned, drawerRef, drawerWidth, openCategory, setOpenCategory } = useSharedStore().searchStore.searchViewStore
 
-        const updatePosition = () => {
+        const updatePosition = useCallback(() => {
             const clientRect = drawerRef?.getBoundingClientRect()
             const scrollTop = drawerRef?.parentElement?.scrollTop
 
@@ -47,13 +47,13 @@ export const CategoryDrawer: FC<CategoryDrawerProps> = observer(
                     width: drawerWidth,
                 })
             }
-        }
+        }, [drawerRef, drawerWidth])
 
         useEffect(() => {
             if (drawerRef) {
                 updatePosition()
             }
-        }, [drawerRef, drawerWidth, drawerPinned])
+        }, [drawerRef, drawerWidth, drawerPinned, updatePosition])
 
         const titleBar = useMemo(
             () => (
@@ -82,7 +82,22 @@ export const CategoryDrawer: FC<CategoryDrawerProps> = observer(
                     </Typography>
                 </ListItem>
             ),
-            [category, title, greyed, highlight, openCategory, setOpenCategory, loading, loadingETA],
+            [
+                cx,
+                classes.listItem,
+                classes.openCollapsed,
+                classes.title,
+                classes.bold,
+                openCategory,
+                category,
+                loading,
+                loadingETA,
+                icon,
+                highlight,
+                greyed,
+                title,
+                setOpenCategory,
+            ],
         )
 
         return (

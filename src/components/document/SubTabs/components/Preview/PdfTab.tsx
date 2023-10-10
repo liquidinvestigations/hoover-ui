@@ -1,6 +1,6 @@
 import { Box, Tab, Tabs } from '@mui/material'
 import { observer } from 'mobx-react-lite'
-import { useEffect } from 'react'
+import { ReactElement, useEffect } from 'react'
 
 import { createOcrUrl } from '../../../../../backend/api'
 import { Loading } from '../../../../common/Loading/Loading'
@@ -37,7 +37,7 @@ export const PdfTab = observer(() => {
         return null
     }
 
-    const getTabLabel = (label: string, loading: boolean, searchCount?: number) => (
+    const getTabLabel = (label: ReactElement | string, loading: boolean, searchCount?: number) => (
         <>
             {label}
             {query && query.length > 2 && (

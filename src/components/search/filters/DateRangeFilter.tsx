@@ -1,5 +1,6 @@
 import { Button, Grid, List, ListItem, TextField } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers'
+import { T } from '@tolgee/react'
 import { DateTime } from 'luxon'
 import { FC, useEffect, useState } from 'react'
 
@@ -36,13 +37,6 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({ defaultFrom, default
     }
 
     const unedited = defaultFrom === from && defaultTo === to
-
-    const labelFunc = (field?: string) => (date: DateTime, invalidLabel: string) => {
-        if (!field) {
-            return ''
-        }
-        return date?.isValid ? date.toFormat(DATE_FORMAT) : invalidLabel
-    }
 
     useEffect(() => {
         setFrom(defaultFrom)
@@ -83,12 +77,12 @@ export const DateRangeFilter: FC<DateRangeFilterProps> = ({ defaultFrom, default
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
                         <Button size="small" onClick={handleReset} disabled={loading || (!from && !to)}>
-                            Reset
+                            <T keyName="reset">Reset</T>
                         </Button>
                     </Grid>
                     <Grid item>
                         <Button size="small" onClick={handleApply} disabled={loading || !from || !to || unedited}>
-                            Apply
+                            <T keyName="apply">Apply</T>
                         </Button>
                     </Grid>
                 </Grid>

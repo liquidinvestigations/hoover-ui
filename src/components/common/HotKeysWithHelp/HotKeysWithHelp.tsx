@@ -1,4 +1,5 @@
 import { List, ListItem, ListItemText, Modal, Snackbar, Typography } from '@mui/material'
+import { useTranslate } from '@tolgee/react'
 import { FC, ReactNode, useState } from 'react'
 import { HotKeys } from 'react-hotkeys'
 
@@ -18,6 +19,7 @@ interface HotKeysWithHelpProps {
 }
 
 export const HotKeysWithHelp: FC<HotKeysWithHelpProps> = ({ keys, children }) => {
+    const { t } = useTranslate()
     const { classes } = useStyles()
     const [keyHelpOpen, setKeyHelpOpen] = useState(false)
     const openHelp = () => setKeyHelpOpen(true)
@@ -30,7 +32,7 @@ export const HotKeysWithHelp: FC<HotKeysWithHelpProps> = ({ keys, children }) =>
         ...keys,
         openHelp: {
             key: ['?', 'h'],
-            help: 'Open this help',
+            help: t('help_open', 'Open this help'),
             handler: openHelp,
         },
     }
@@ -56,7 +58,7 @@ export const HotKeysWithHelp: FC<HotKeysWithHelpProps> = ({ keys, children }) =>
                     <Typography variant="h6">Keyboard shortcuts</Typography>
 
                     <List dense>
-                        {Object.entries(keysWithHelp).map(([name, { key, help }]) => (
+                        {Object.entries(keysWithHelp).map(([, { key, help }]) => (
                             <ListItem key={Array.isArray(key) ? key.join() : key}>
                                 <span className="mono">{Array.isArray(key) ? key.join(' or ') : key}</span>
                                 <ListItemText primary={help} className={classes.helpDescription} />

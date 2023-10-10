@@ -40,7 +40,7 @@ export const Files = observer(() => {
         setCurrentHasNextPage(data.children_has_next_page)
     }, [data])
 
-    const filesRows = files?.map(({ id, digest, file, filename, content_type, filetype, size }, index) => (
+    const filesRows = files?.map(({ id, digest, file, filename, content_type, size }, index) => (
         <TableRow key={index}>
             <TableCell className={classes.cell}>
                 {id ? <Link href={`${collectionBaseUrl}/${file || id}`}>{filename?.[0]}</Link> : <span>{filename?.[0]}</span>}
