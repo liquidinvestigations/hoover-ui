@@ -47,7 +47,7 @@ export const SearchFields: FC = observer(() => {
                             />
 
                             <ListItemText
-                                primary={field.replace(`\.${user?.uuid}`, '')}
+                                primary={field.replace(`.${user?.uuid}`, '')}
                                 primaryTypographyProps={{
                                     className: classes.label,
                                 }}

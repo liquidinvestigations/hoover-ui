@@ -1,5 +1,3 @@
-import { SearchQueryParams } from '../Types'
-
 const SORT_RELEVANCE = 'Relevance'
 const SORT_NEWEST = 'Newest'
 const SORT_OLDEST = 'Oldest'

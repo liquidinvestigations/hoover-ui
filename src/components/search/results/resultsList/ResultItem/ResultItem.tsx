@@ -41,14 +41,14 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
 
     const nodeRef = useRef()
     const handleMouseDown = (): void => {
-        ;(nodeRef.current as any).willFocus = !((nodeRef.current as any).tUp && timeMs() - (nodeRef.current as any).tUp < 300)
+        (nodeRef.current as any).willFocus = !((nodeRef.current as any).tUp && timeMs() - (nodeRef.current as any).tUp < 300)
     }
     const handleMouseMove = (): void => {
-        ;(nodeRef.current as any).willFocus = false
+        (nodeRef.current as any).willFocus = false
     }
     const handleMouseUp = (): void => {
         if ((nodeRef.current as any).willFocus) {
-            ;(nodeRef.current as any).tUp = timeMs()
+            (nodeRef.current as any).tUp = timeMs()
             openPreview(hit)
         }
     }
@@ -66,7 +66,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
 
     useEffect(() => {
         if (isPreview && 'scrollIntoView' in (nodeRef.current as any)) {
-            ;(nodeRef.current as any).scrollIntoView({ behavior: 'smooth', block: 'center' })
+            (nodeRef.current as any).scrollIntoView({ behavior: 'smooth', block: 'center' })
         }
     }, [isPreview])
 
@@ -155,7 +155,9 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                         <Grid item component="span">
                             {hit._source['has-thumbnails'] && (
                                 <Box className={classes.thumbnail}>
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
+                                        alt="thumbnail image"
                                         ref={thumbRef as unknown as RefObject<HTMLImageElement>}
                                         className={classes.thumbnailImg}
                                         srcSet={createThumbnailSrcSet(`doc/${hit._collection}/${hit._id}`)}

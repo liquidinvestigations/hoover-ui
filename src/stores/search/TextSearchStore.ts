@@ -141,13 +141,16 @@ export class TextSearchStore {
     generateHighlightedText = () => {
         const searchResult = this.searchResults[this.documentStore.subTab]
         if (searchResult) {
-            let { highlightedText, occurrenceCount, currentHighlightIndex } = searchResult
+            const { occurrenceCount, currentHighlightIndex } = searchResult
 
             if (occurrenceCount > 0) {
                 const activeHighlight = `id='highlight-${currentHighlightIndex}'`
-                highlightedText = highlightedText?.replace(new RegExp(' class="active"', 'g'), '')
-                highlightedText = highlightedText?.replace(new RegExp(activeHighlight, 'g'), `class="active" ${activeHighlight}`)
-                this.searchResults[this.documentStore.subTab].highlightedText = highlightedText
+                searchResult.highlightedText = searchResult.highlightedText?.replace(new RegExp(' class="active"', 'g'), '')
+                searchResult.highlightedText = searchResult.highlightedText?.replace(
+                    new RegExp(activeHighlight, 'g'),
+                    `class="active" ${activeHighlight}`,
+                )
+                this.searchResults[this.documentStore.subTab].highlightedText = searchResult.highlightedText
             }
         }
 

@@ -73,12 +73,12 @@ export class FiltersStore {
             }
 
             if (!acc[category]) {
-                filters.some(({ field }) => {
-                    /*if (!!aggregations?.[field]?.values.buckets.length) {
+                /*filters.some(({ field }) => {
+                   if (!!aggregations?.[field]?.values.buckets.length) {
                         acc[category] = field
                         return true
-                    }*/
-                })
+                    }
+                })*/
             }
 
             if (!acc[category]) {
@@ -100,7 +100,7 @@ export class FiltersStore {
             this.setExpandedFilters({ ...this.expandedFilters, ...{ [category]: field } })
             this.loadMissing(field)
         } else {
-            const { [category]: closed, ...expanded } = this.expandedFilters
+            const { [category]: _closed, ...expanded } = this.expandedFilters
             this.setExpandedFilters(expanded)
         }
     }
@@ -122,10 +122,10 @@ export class FiltersStore {
     }
 
     handleChange = (key: string, value: any, resetPage: boolean = false) => {
-        const { [key]: prevFilter, ...restFilters } = this.searchStore.query?.filters || {}
+        const { [key]: _prevFilter, ...restFilters } = this.searchStore.query?.filters ?? {}
 
         if (resetPage) {
-            const { [key]: prevFacet, ...restFacets } = this.searchStore.query?.facets || {}
+            const { [key]: _prevFacet, ...restFacets } = this.searchStore.query?.facets ?? {}
             this.triggerSearch({ filters: { [key]: value, ...restFilters }, facets: { ...restFacets } }, key as AggregationsKey)
         } else {
             this.triggerSearch({ filters: { [key]: value, ...restFilters } }, key as AggregationsKey)
@@ -190,7 +190,7 @@ export class FiltersStore {
 
     handleDateRangeChange = (field: SourceField) => (range?: { from?: string; to?: string }) => {
         const queryFilter = this.searchStore.query?.filters?.[field]
-        const { from, to, interval, intervals, ...rest } = queryFilter || {}
+        const { _from, _to, interval, intervals, ...rest } = queryFilter || {}
         if (range?.from && range?.to) {
             this.handleChange(field, { ...range, interval: getClosestInterval({ ...range, interval }), ...rest }, true)
         } else {
@@ -200,7 +200,7 @@ export class FiltersStore {
 
     handleDateSelectionChange = (field: SourceField, value: string, resetPage: boolean) => () => {
         const queryFilter = this.searchStore.query?.filters?.[field]
-        const { intervals, missing, ...rest } = queryFilter || {}
+        const { intervals, _missing, ...rest } = queryFilter || {}
         const newIntervals = this.processFilterParams(intervals, value)
         if (newIntervals.include?.length /*|| newIntervals.missing*/) {
             this.handleChange(field, { intervals: newIntervals, ...rest }, resetPage)
@@ -214,8 +214,8 @@ export class FiltersStore {
     }
 
     handleReset = (field: SourceField) => () => {
-        const { [field]: prevFilter, ...restFilters } = this.searchStore.query?.filters || {}
-        const { [field]: prevFacet, ...restFacets } = this.searchStore.query?.facets || {}
+        const { [field]: _prevFilter, ...restFilters } = this.searchStore.query?.filters ?? {}
+        const { [field]: _prevFacet, ...restFacets } = this.searchStore.query?.facets ?? {}
 
         this.triggerSearch({ filters: { [field]: [], ...restFilters }, facets: { ...restFacets } })
     }

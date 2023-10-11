@@ -18,7 +18,7 @@ interface ResultsProps {
 export const ResultsGroup: FC<ResultsProps> = observer(({ collection, hits }) => {
     const {
         searchViewStore: { resultsViewType },
-        searchResultsStore: { results, resultsLoadingETA },
+        searchResultsStore: { resultsLoadingETA },
     } = useSharedStore().searchStore
 
     return (

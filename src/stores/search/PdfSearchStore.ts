@@ -1,5 +1,4 @@
 import { makeAutoObservable } from 'mobx'
-import { Response } from 'node-fetch'
 import { AbortSignal } from 'node-fetch/externals'
 import { RefObject } from 'react'
 

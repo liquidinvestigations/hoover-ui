@@ -85,8 +85,8 @@ export class SearchAggregationsStore {
         }
 
         for (const collection of query.collections) {
-            const { collections, excludedFields, ...queryParams } = query
-            const singleCollectionQuery = { collections: [collection], ...queryParams }
+            const { excludedFields, ...queryParams } = query
+            const singleCollectionQuery = { ...queryParams, collections: [collection] }
 
             const task = AsyncQueryTaskRunner.createAsyncQueryTask(
                 singleCollectionQuery,
@@ -125,7 +125,7 @@ export class SearchAggregationsStore {
     }
 
     private combineAggregations(aggregations: Aggregations, keepFromClearing: AggregationsKey | undefined) {
-        ;(Object.entries(aggregations) as Entries<typeof aggregations>).forEach(([field, aggregation]) => {
+        (Object.entries(aggregations) as Entries<typeof aggregations>).forEach(([field, aggregation]) => {
             if (!this.aggregations[field]) {
                 this.aggregations[field] = aggregation
             } else {
@@ -147,7 +147,7 @@ export class SearchAggregationsStore {
     }
 
     private sortAggregations() {
-        ;(Object.entries(this.aggregations) as Entries<typeof this.aggregations>).forEach(([field, aggregation]) => {
+        (Object.entries(this.aggregations) as Entries<typeof this.aggregations>).forEach(([field]) => {
             if (aggregationFields[field as SourceField]?.sort) {
                 this.aggregations[field]?.values.buckets?.sort((a, b) => b.doc_count - a.doc_count)
             }

@@ -48,7 +48,7 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
     const toggle = () => {
         setOpen(!open)
 
-        const { [field]: prevState, ...restState } = hashState?.histogram || {}
+        const { [field]: _prevState, ...restState } = hashState?.histogram || {}
         if (!open) {
             setHashState({ histogram: { [field]: true, ...restState } }, false)
         } else {
@@ -134,8 +134,8 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
 
         handleBarMenuClose()
         const range = getDatesRange()
-        const { [field]: prevFilter, ...restFilters } = query?.filters || {}
-        const { [field]: prevFacet, ...restFacets } = query?.facets || {}
+        const { [field]: _prevFilter, ...restFilters } = query?.filters || {}
+        const { [field]: _prevFacet, ...restFacets } = query?.facets || {}
 
         search({
             filters: { [field]: { ...range, interval: getClosestInterval(range) }, ...restFilters },

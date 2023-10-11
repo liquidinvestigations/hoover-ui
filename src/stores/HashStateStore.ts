@@ -30,8 +30,11 @@ export class HashStateStore {
         makeAutoObservable(this)
 
         if (typeof window !== 'undefined') {
-            const { hash } = this.sharedStore.navigation?.location
+            const location = this.sharedStore.navigation?.location
 
+            if (!location) return
+
+            const { hash } = location
             if (hash) {
                 setTimeout(() => {
                     runInAction(() => {

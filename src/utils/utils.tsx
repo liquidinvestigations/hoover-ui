@@ -189,7 +189,7 @@ export const humanFileSize = (bytes: number): ReactElement => {
 }
 
 export const titleCase = (string: string) => {
-    let sentence = string.includes('_') ? string.toLowerCase().split('_') : string.includes('-') ? string.toLowerCase().split('-') : [string]
+    const sentence = string.includes('_') ? string.toLowerCase().split('_') : string.includes('-') ? string.toLowerCase().split('-') : [string]
 
     return sentence.map((word) => word[0].toUpperCase() + word.slice(1)).join(' ')
 }

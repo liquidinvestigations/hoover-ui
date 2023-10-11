@@ -51,8 +51,8 @@ export class SearchResultsStore {
         })
 
         for (const collection of query.collections) {
-            const { collections, excludedFields, ...queryParams } = query
-            const singleCollectionQuery = { collections: [collection], ...queryParams }
+            const { excludedFields, ...queryParams } = query
+            const singleCollectionQuery = { ...queryParams, collections: [collection] }
 
             runInAction(() => {
                 this.results.push({ collection })
@@ -80,7 +80,7 @@ export class SearchResultsStore {
 
                     this.resultsCounts[collection] = data.result?.count_by_index?.[collection as Category] as number
 
-                    this.hits = this.results.reduce((accHits, { collection, hits }) => {
+                    this.hits = this.results.reduce((accHits, { hits }) => {
                         accHits.push(...(hits?.hits || []))
 
                         return accHits

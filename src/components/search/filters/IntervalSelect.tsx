@@ -13,10 +13,10 @@ export const IntervalSelect: FC<{ field: SourceField }> = observer(({ field }) =
     const { query, search } = useSharedStore().searchStore
 
     const onIntervalChange = (event: SelectChangeEvent) => {
-        const { [field]: prevFilter, ...restFilters } = query?.filters || {}
-        const { [field]: prevFacet, ...restFacets } = query?.facets || {}
+        const { [field]: _prevFilter, ...restFilters } = query?.filters ?? {}
+        const { [field]: _prevFacet, ...restFacets } = query?.facets ?? {}
 
-        const { interval, intervals, ...rest } = query?.filters?.[field] || {}
+        const { _interval, _intervals, ...rest } = query?.filters?.[field] || {}
         const newFilter = { interval: event.target.value, ...rest }
 
         if (event.target.value !== DEFAULT_INTERVAL) {

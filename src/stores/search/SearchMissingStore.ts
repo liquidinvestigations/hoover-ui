@@ -29,8 +29,8 @@ export class SearchMissingStore {
         }
 
         for (const collection of query.collections) {
-            const { collections, excludedFields, ...queryParams } = query
-            const singleCollectionQuery = { collections: [collection], ...queryParams }
+            const { excludedFields, ...queryParams } = query
+            const singleCollectionQuery = { ...queryParams, collections: [collection] }
 
             runInAction(() => {
                 this.error = {}
@@ -78,7 +78,7 @@ export class SearchMissingStore {
     }
 
     private sumMissing(aggregations: Aggregations) {
-        ;(Object.entries(aggregations) as Entries<typeof aggregations>).forEach(([field, aggregation]) => {
+        (Object.entries(aggregations) as Entries<typeof aggregations>).forEach(([field, aggregation]) => {
             const docCount = aggregation?.values?.doc_count || 0
 
             if (this.missing[field] === undefined) {

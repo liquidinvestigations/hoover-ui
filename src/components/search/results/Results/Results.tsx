@@ -14,7 +14,7 @@ export const Results: FC = observer(() => {
     const { classes } = useStyles()
     const {
         searchViewStore: { searchCollections, resultsViewType, setResultsViewType },
-        searchResultsStore: { results, resultsLoadingETA, resultsSortCompareFn },
+        searchResultsStore: { results, resultsLoadingETA },
     } = useSharedStore().searchStore
 
     return (

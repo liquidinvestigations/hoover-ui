@@ -1,6 +1,6 @@
 import { ParsedUrlQuery } from 'querystring'
 
-import { makeAutoObservable, reaction, runInAction } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx'
 import qs from 'qs'
 
 import { AggregationsKey, SearchQueryParams, SourceField } from '../../Types'
