@@ -82,15 +82,13 @@ export const DateHistogramFilter: FC<DateHistogramFilterProps> = observer(
                                           moreThen: aggregations?.values?.buckets.length >= DEFAULT_FACET_SIZE ? 'yes' : 'no',
                                           hits: formatThousands(aggregations?.values?.buckets.reduce((acc, { doc_count }) => acc + doc_count, 0)),
                                           buckets: aggregations?.values?.buckets.length,
-                                      }}
-                                  >
+                                      }}>
                                       {'{moreThen, select, yes {> } other {}}{hits} hits, {buckets} buckets'}
                                   </T>
                               </Typography>
                           ) as unknown as string)
                         : undefined
-                }
-            >
+                }>
                 <DateRangeFilter
                     defaultFrom={queryFilter?.from}
                     defaultTo={queryFilter?.to}

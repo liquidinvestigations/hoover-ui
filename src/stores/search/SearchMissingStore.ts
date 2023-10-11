@@ -24,7 +24,7 @@ export class SearchMissingStore {
     }
 
     performQuery(query: SearchQueryParams, fieldList: SourceField[] | '*' = '*') {
-        if (this.missing[`${fieldList}-missing`]) {
+        if (this.missing[`${fieldList}-missing`] || !this.sharedStore.user) {
             return
         }
 
@@ -43,7 +43,7 @@ export class SearchMissingStore {
                 fieldList,
                 this.sharedStore.fields!,
                 excludedFields || [],
-                this.sharedStore.user?.uuid!,
+                this.sharedStore.user.uuid!,
             )
 
             task.addEventListener('done', (event) => {
@@ -78,7 +78,7 @@ export class SearchMissingStore {
     }
 
     private sumMissing(aggregations: Aggregations) {
-        (Object.entries(aggregations) as Entries<typeof aggregations>).forEach(([field, aggregation]) => {
+        ;(Object.entries(aggregations) as Entries<typeof aggregations>).forEach(([field, aggregation]) => {
             const docCount = aggregation?.values?.doc_count || 0
 
             if (this.missing[field] === undefined) {

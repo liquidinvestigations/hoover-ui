@@ -76,8 +76,7 @@ export const LinkMenu: FC<LinkMenuProps> = observer(({ link, anchorPosition, onC
                 link && aggregationFields[link.field as SourceField]?.type === 'date' ? (
                     <NestedMenuItem
                         label={t('restrict_current_search_to_this', 'restrict current search to this')}
-                        parentMenuOpen={Boolean(anchorPosition)}
-                    >
+                        parentMenuOpen={Boolean(anchorPosition)}>
                         {formats.map((format) => (
                             <MenuItem key={format} onClick={handleAddSearch(false, { term: link.term, format })}>
                                 {/* @tolgee-ignore */}
@@ -96,8 +95,7 @@ export const LinkMenu: FC<LinkMenuProps> = observer(({ link, anchorPosition, onC
                 link && aggregationFields[link.field as SourceField]?.type === 'date' ? (
                     <NestedMenuItem
                         label={t('restrict_current_search_to_this_new_tab', 'restrict current search to this (open in a new tab)')}
-                        parentMenuOpen={Boolean(anchorPosition)}
-                    >
+                        parentMenuOpen={Boolean(anchorPosition)}>
                         {formats.map((format) => (
                             <MenuItem key={format} onClick={handleAddSearch(true, { term: link.term, format })}>
                                 {/* @tolgee-ignore */}

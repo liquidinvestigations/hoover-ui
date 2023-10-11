@@ -105,8 +105,7 @@ export const Expandable: FC<ExpandableProps> = ({
                             variant="body2"
                             component="div"
                             className={classes.title}
-                            color={greyed ? 'textSecondary' : highlight ? 'secondary' : 'initial'}
-                        >
+                            color={greyed ? 'textSecondary' : highlight ? 'secondary' : 'initial'}>
                             {title}
                             {loading && <CircularProgress size={16} thickness={4} className={classes.loading} />}
                         </Typography>
@@ -127,8 +126,7 @@ export const Expandable: FC<ExpandableProps> = ({
                                 })}
                                 onClick={toggle}
                                 aria-expanded={openState}
-                                aria-label="Show more"
-                            >
+                                aria-label="Show more">
                                 {cloneElement(reactIcons.chevronDown, { color: highlight ? 'secondary' : 'action' })}
                             </IconButton>
                         </Grid>

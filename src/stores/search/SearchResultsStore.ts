@@ -46,6 +46,7 @@ export class SearchResultsStore {
     }
 
     performQuery = (query: SearchQueryParams) => {
+        if (!this.sharedStore.user) return
         runInAction(() => {
             this.error = {}
         })
@@ -64,7 +65,7 @@ export class SearchResultsStore {
                 '*',
                 this.sharedStore.fields!,
                 excludedFields || [],
-                this.sharedStore.user?.uuid!,
+                this.sharedStore.user.uuid!,
             )
 
             task.addEventListener('done', (event) => {

@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { PDFPageProxy } from 'pdfjs-dist'
 import { RenderTask } from 'pdfjs-dist/types/src/display/api'
 import { FC, useEffect, useRef, useState } from 'react'
@@ -64,7 +65,7 @@ export const ThumbnailLayer: FC<ThumbnailLayerProps> = ({ page, pageWidth, pageH
     }, [page, pageHeight, pageWidth, rotation, thumbnailWidth])
 
     return src ? (
-        <img src={src} className={classes.thumbnailImage} width={`${thumbnailWidth}px`} height={`${thumbnailHeight}px`} />
+        <Image alt="Thumbnail image" src={src} className={classes.thumbnailImage} width={thumbnailWidth} height={thumbnailHeight} />
     ) : (
         <div className={classes.thumbnailImage} style={{ width: thumbnailWidth, height: thumbnailHeight }}>
             <span className="loadingIcon" />

@@ -52,8 +52,7 @@ export const Files = observer(() => {
                         target={fullPage ? undefined : '_blank'}
                         rel="noreferrer"
                         title="Original file"
-                        className={classes.link}
-                    >
+                        className={classes.link}>
                         {reactIcons.download}
                     </a>
                 )}

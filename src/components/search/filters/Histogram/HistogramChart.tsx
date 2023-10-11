@@ -141,8 +141,7 @@ export const HistogramChart: FC<HistogramChartProps> = ({
                         x={labelPosition}
                         y={height - axisHeight / 2}
                         transform={`rotate(-45, ${labelPosition}, ${height - axisHeight / 2})`}
-                        onClick={handleBarClick(value)}
-                    >
+                        onClick={handleBarClick(value)}>
                         {label}
                     </text>
                     <Tooltip
@@ -151,8 +150,7 @@ export const HistogramChart: FC<HistogramChartProps> = ({
                             <>
                                 {label}: <strong>{formatThousands(count)}</strong>
                             </>
-                        }
-                    >
+                        }>
                         <rect
                             x={barPosition}
                             y={height - axisHeight - barHeight}

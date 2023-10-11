@@ -18,8 +18,7 @@ export const Collections: FC = observer(() => {
             icon="categoryCollections"
             highlight={false}
             category="collections"
-            toolbar={<CategoryDrawerToolbar category={'collections'} />}
-        >
+            toolbar={<CategoryDrawerToolbar category={'collections'} />}>
             <Expandable title={t('collections_header', 'Collections ({count})', { count: searchCollections.length })} open={true} highlight={false}>
                 <CollectionsFilter />
             </Expandable>

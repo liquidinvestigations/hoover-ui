@@ -73,7 +73,7 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
             handleBarMenuClose()
 
             const { [field]: prevFilter, ...restFilters } = query?.filters || {}
-            const { intervals, ...restParams } = prevFilter || {}
+            const { _intervals, ...restParams } = prevFilter || {}
 
             if (include.length) {
                 search({ filters: { [field]: { intervals: { include }, ...restParams }, ...restFilters }, page: defaultSearchParams.page })
@@ -108,7 +108,7 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
 
     const handleFilterRange = useCallback(() => {
         const getDatesRange = () => {
-            let first = selectedBars?.[selectedBars.length - 1] as string
+            const first = selectedBars?.[selectedBars.length - 1] as string
             let last = selectedBars?.[0] as string
 
             switch (interval) {
@@ -196,8 +196,7 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
                             size="small"
                             className={cx(classes.expand, { [classes.expandOpen]: open })}
                             aria-expanded={open}
-                            aria-label="Show histogram"
-                        >
+                            aria-label="Show histogram">
                             {cloneElement(reactIcons.chevronDown, { color: 'action' })}
                         </IconButton>
                     </Grid>

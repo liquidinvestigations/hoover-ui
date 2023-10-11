@@ -48,8 +48,7 @@ export const Insights: FC = observer(() => {
                         />
                     ))}
                 </div>
-            }
-        >
+            }>
             <div className={classes.root}>
                 {currentCollection && (
                     <Grid container spacing={2}>

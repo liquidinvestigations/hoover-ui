@@ -133,8 +133,7 @@ export const DocumentProvider: FC<DocumentProviderProps> = ({ url, cMapUrl, cMap
                 setBookmarks,
                 externalLinks,
                 setExternalLinks,
-            }}
-        >
+            }}>
             {children}
         </DocumentContext.Provider>
     )

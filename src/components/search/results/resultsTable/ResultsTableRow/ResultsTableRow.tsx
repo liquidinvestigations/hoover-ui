@@ -61,8 +61,8 @@ export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index 
     }
 
     const getValue = (path: string) => {
-        let pathParts = path.split('.'),
-            pathPart,
+        const pathParts = path.split('.')
+        let pathPart,
             value: any = hit
 
         while ((pathPart = pathParts.shift())) {
@@ -73,6 +73,7 @@ export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index 
 
     const formatField = (field: string, path: string, format: ResultColumnFormat) => {
         const value = getValue(path)
+        const icon = (tag: string) => getTagIcon(tag, field === 'tags')
 
         switch (format) {
             case 'string':
@@ -102,7 +103,6 @@ export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index 
                     </>
                 )
             case 'tags':
-                const icon = (tag: string) => getTagIcon(tag, field === 'tags')
                 return !value ? null : (
                     <>
                         {value.slice(0, 7).map((el: string) => (
@@ -135,8 +135,7 @@ export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index 
                                         boundary: 'clippingParents',
                                     },
                                 },
-                            ]}
-                        >
+                            ]}>
                             <Paper elevation={10} className={classes.preview}>
                                 {previewLoading && <Loading />}
                                 <Image

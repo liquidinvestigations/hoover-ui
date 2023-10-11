@@ -62,15 +62,13 @@ export const TermsAggregationFilter: FC<TermsAggregationFilterProps> = observer(
                                                   : aggregations?.values?.buckets.reduce((acc, { doc_count }) => acc + doc_count, 0),
                                           ),
                                           buckets: aggregations?.count.value,
-                                      }}
-                                  >
+                                      }}>
                                       {'{moreThen, select, yes {> } other {}}{hits} hits, {buckets} buckets'}
                                   </T>
                               </Typography>
                           ) as unknown as string)
                         : undefined
-                }
-            >
+                }>
                 <AggregationFilter
                     field={field}
                     queryFilter={queryFilter}

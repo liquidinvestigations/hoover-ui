@@ -51,8 +51,7 @@ export const DocPage: FC = observer(() => {
             container={false}
             left={loading ? null : <Locations data={data} url={digestUrl} />}
             defaultSizeLeft="25%"
-            defaultSizeMiddle="70%"
-        >
+            defaultSizeMiddle="70%">
             <Document />
         </SplitPaneLayout>
     )
@@ -89,8 +88,7 @@ export const DocPage: FC = observer(() => {
                         split="horizontal"
                         defaultSize="30%"
                         pane1ClassName={classes.horizontalSplitPane}
-                        pane2ClassName={classes.horizontalSplitPane}
-                    >
+                        pane2ClassName={classes.horizontalSplitPane}>
                         <Finder />
                         {infoPane}
                     </SplitPane>

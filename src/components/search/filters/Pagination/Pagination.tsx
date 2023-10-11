@@ -49,8 +49,7 @@ export const Pagination: FC<{ field: SourceField }> = observer(({ field }) => {
                 tabIndex={-1}
                 onClick={handlePrev}
                 disabled={!!aggregationsLoading[field] || !hasPrev}
-                data-test="prev-buckets-page"
-            >
+                data-test="prev-buckets-page">
                 {reactIcons.chevronLeft}
             </IconButton>
 

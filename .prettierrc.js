@@ -4,6 +4,6 @@ module.exports = {
     jsxBracketSameLine: true,
     printWidth: 152,
     tabWidth: 4,
-    semi: true,
+    semi: false,
     endOfLine: 'auto',
 }

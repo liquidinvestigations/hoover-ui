@@ -2,6 +2,7 @@ import { Box, Card, CardContent, CardHeader, Grid, IconButton, Paper, Popper, To
 import { T, useTolgee, useTranslate } from '@tolgee/react'
 import { DateTime } from 'luxon'
 import { observer } from 'mobx-react-lite'
+import Image from 'next/image'
 import { cloneElement, useEffect, useRef, useState } from 'react'
 
 import { createDownloadUrl, createThumbnailSrc, createThumbnailSrcSet } from '../../../../../backend/api'
@@ -41,14 +42,14 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
 
     const nodeRef = useRef()
     const handleMouseDown = (): void => {
-        (nodeRef.current as any).willFocus = !((nodeRef.current as any).tUp && timeMs() - (nodeRef.current as any).tUp < 300)
+        ;(nodeRef.current as any).willFocus = !((nodeRef.current as any).tUp && timeMs() - (nodeRef.current as any).tUp < 300)
     }
     const handleMouseMove = (): void => {
-        (nodeRef.current as any).willFocus = false
+        ;(nodeRef.current as any).willFocus = false
     }
     const handleMouseUp = (): void => {
         if ((nodeRef.current as any).willFocus) {
-            (nodeRef.current as any).tUp = timeMs()
+            ;(nodeRef.current as any).tUp = timeMs()
             openPreview(hit)
         }
     }
@@ -66,7 +67,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
 
     useEffect(() => {
         if (isPreview && 'scrollIntoView' in (nodeRef.current as any)) {
-            (nodeRef.current as any).scrollIntoView({ behavior: 'smooth', block: 'center' })
+            ;(nodeRef.current as any).scrollIntoView({ behavior: 'smooth', block: 'center' })
         }
     }, [isPreview])
 
@@ -91,8 +92,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
-            data-test="result"
-        >
+            data-test="result">
             <CardHeader
                 classes={cardHeaderClasses}
                 title={
@@ -175,11 +175,11 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                                                     boundary: 'clippingParents',
                                                 },
                                             },
-                                        ]}
-                                    >
+                                        ]}>
                                         <Paper elevation={10} className={classes.preview}>
                                             {previewLoading && <Loading />}
-                                            <img
+                                            <Image
+                                                alt="Preview image loading"
                                                 className={previewLoading ? classes.previewImgLoading : classes.previewImg}
                                                 onLoad={() => {
                                                     setPreviewLoading(false)

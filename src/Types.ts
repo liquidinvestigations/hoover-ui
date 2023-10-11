@@ -209,14 +209,6 @@ export type SourceField =
     | 'md5'
     | 'sha1'
 
-interface HighlightField {
-    fragment_size: number
-    number_of_fragments: number
-    post_tags: string[]
-    pre_tags: string[]
-    require_field_match: boolean
-}
-
 export interface Hit {
     highlight: Record<ResultField, string[]>
     _collection: string

@@ -1,6 +1,6 @@
 import { T } from '@tolgee/react'
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
-import { SyntheticEvent } from 'react'
+import { ReactElement, SyntheticEvent } from 'react'
 
 import { createDownloadUrl, createOcrUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI, fetchJson, X_HOOVER_PDF_INFO } from '../backend/api'
 import { LocalDocumentData } from '../components/finder/Types'

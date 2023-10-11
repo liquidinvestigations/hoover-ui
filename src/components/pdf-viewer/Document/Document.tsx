@@ -172,8 +172,7 @@ export const Document: FC<DocumentProps> = observer(({ initialPageIndex, onPageI
                     leftSize={sidePanelOpen ? '194px' : '0'}
                     leftMinSize={194}
                     leftStyle={{ visibility: sidePanelOpen ? 'visible' : 'hidden', overflowY: 'hidden' }}
-                    leftResizerStyle={{ visibility: sidePanelOpen ? 'visible' : 'hidden', width: sidePanelOpen ? 11 : 10 }}
-                >
+                    leftResizerStyle={{ visibility: sidePanelOpen ? 'visible' : 'hidden', width: sidePanelOpen ? 11 : 10 }}>
                     <div className={cx(classes.container, 'pdfViewer')} ref={containerRef}>
                         {status === STATUS_LOADING && <Loading variant={percent && percent > 0 ? 'determinate' : 'indeterminate'} value={percent} />}
                         {status === STATUS_ERROR && error?.message && (
@@ -218,8 +217,7 @@ export const Document: FC<DocumentProps> = observer(({ initialPageIndex, onPageI
                                 {cloneElement(reactIcons.link, { className: classes.icon })}
                                 <T keyName="external_links">External links</T>
                             </>
-                        }
-                    >
+                        }>
                         <div className={classes.externalLinks}>
                             <div className={classes.externalLinksTitle}>
                                 <Typography>

@@ -190,7 +190,7 @@ export class FiltersStore {
 
     handleDateRangeChange = (field: SourceField) => (range?: { from?: string; to?: string }) => {
         const queryFilter = this.searchStore.query?.filters?.[field]
-        const { _from, _to, interval, intervals, ...rest } = queryFilter || {}
+        const { _from, _to, interval, _intervals, ...rest } = queryFilter || {}
         if (range?.from && range?.to) {
             this.handleChange(field, { ...range, interval: getClosestInterval({ ...range, interval }), ...rest }, true)
         } else {
