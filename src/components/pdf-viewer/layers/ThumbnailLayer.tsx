@@ -64,7 +64,7 @@ export const ThumbnailLayer: FC<ThumbnailLayerProps> = ({ page, pageWidth, pageH
     }, [page, pageHeight, pageWidth, rotation, thumbnailWidth])
 
     return src ? (
-        <img src={src} className={classes.thumbnailImage} width={`${thumbnailWidth}px`} height={`${thumbnailHeight}px`} />
+        <img alt="Thumbnail image" src={src} className={classes.thumbnailImage} width={thumbnailWidth} height={thumbnailHeight} />
     ) : (
         <div className={classes.thumbnailImage} style={{ width: thumbnailWidth, height: thumbnailHeight }}>
             <span className="loadingIcon" />

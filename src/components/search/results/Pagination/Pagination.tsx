@@ -33,7 +33,7 @@ export const Pagination: FC = observer(() => {
     const maxResultWindow = Math.max(...collectionsData.map((collectionData) => collectionData.max_result_window))
     const maxCount = maxResultWindow && !isNaN(maxResultWindow) && maxResultWindow < DEFAULT_MAX_RESULTS ? maxResultWindow : DEFAULT_MAX_RESULTS
 
-    const total = Math.max(...results.map(({ collection, hits }) => hits?.total || 0), 0)
+    const total = Math.max(...results.map(({ hits }) => hits?.total || 0), 0)
     const { size, page } = query
 
     const handleNext = () => search({ page: page + 1 }, { searchType: SearchType.Results })
@@ -110,8 +110,7 @@ export const Pagination: FC = observer(() => {
                                         component="a"
                                         variant="caption"
                                         onClick={page !== p ? handleSet(p) : undefined}
-                                        className={cx(classes.pageLink, { [classes.pageLinkCurrent]: page === p })}
-                                    >
+                                        className={cx(classes.pageLink, { [classes.pageLinkCurrent]: page === p })}>
                                         {p}
                                     </Typography>
                                 ))}

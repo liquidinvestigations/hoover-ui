@@ -4,7 +4,7 @@ import { createContext, Dispatch, FC, ReactElement, SetStateAction, useContext, 
 
 import { fetchWithHeaders } from '../../backend/api'
 
-if (typeof window !== 'undefined' && 'Worker' in window) {
+if ('Worker' in window) {
     GlobalWorkerOptions.workerSrc = '/_next/static/pdf.worker.js'
 }
 
@@ -133,8 +133,7 @@ export const DocumentProvider: FC<DocumentProviderProps> = ({ url, cMapUrl, cMap
                 setBookmarks,
                 externalLinks,
                 setExternalLinks,
-            }}
-        >
+            }}>
             {children}
         </DocumentContext.Provider>
     )

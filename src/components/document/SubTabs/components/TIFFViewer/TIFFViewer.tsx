@@ -31,6 +31,8 @@ export const TIFFViewer: FC<{ url: string }> = ({ url }) => {
                 const chunks = []
                 let receivedLength = 0
 
+                // not sure why we need while true here, but I just disabled ts-lint for it to avoid breaking functionality
+                // eslint-disable-next-line no-constant-condition
                 while (true) {
                     const { done, value } = await reader.read()
 
@@ -108,7 +110,7 @@ export const TIFFViewer: FC<{ url: string }> = ({ url }) => {
                 />
             )}
             {error && <Typography color="error">{error}</Typography>}
-            {pages?.map((data) => <img key={data} src={data} />)}
+            {pages?.map((data) => <img alt="TIFF viewer image" key={data} src={data} />)}
         </div>
     )
 }

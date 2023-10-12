@@ -22,7 +22,7 @@ export const Pagination: FC<{ field: SourceField }> = observer(({ field }) => {
     } = useSharedStore()
 
     const handlePagination = (newPage: number) => {
-        const { [field]: prevFacet, ...restFacets } = query?.facets || {}
+        const { [field]: _prevFacet, ...restFacets } = query?.facets || {}
         if (newPage > 1) {
             search(
                 { facets: { [field]: newPage, ...restFacets, page: defaultSearchParams.page } },
@@ -49,8 +49,7 @@ export const Pagination: FC<{ field: SourceField }> = observer(({ field }) => {
                 tabIndex={-1}
                 onClick={handlePrev}
                 disabled={!!aggregationsLoading[field] || !hasPrev}
-                data-test="prev-buckets-page"
-            >
+                data-test="prev-buckets-page">
                 {reactIcons.chevronLeft}
             </IconButton>
 

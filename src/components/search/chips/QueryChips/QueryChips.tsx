@@ -122,8 +122,7 @@ export const QueryChips: FC = observer(() => {
                                     </Box>
                                 )}
                             </>
-                        }
-                    >
+                        }>
                         <Chip label={label} className={className + ' ' + classes.tooltipChip} />
                     </Tooltip>
                 )

@@ -29,6 +29,7 @@ export class SearchAggregationsStore {
     }
 
     performQuery(query: SearchQueryParams, keepFromClearing: AggregationsKey | undefined, fieldList: SourceField[] | '*' = '*') {
+        if (!this.sharedStore.user) return
         AsyncQueryTaskRunner.clearQueue()
 
         runInAction(() => {
@@ -53,15 +54,13 @@ export class SearchAggregationsStore {
             if (fieldList === '*') {
                 for (const field in this.aggregationsLoading) {
                     runInAction(() => {
-                        // @ts-ignore
-                        this.aggregationsLoading[field] += value
+                        this.aggregationsLoading[field as SourceField]! += value
                     })
                 }
             } else {
                 fieldList.forEach((field) => {
                     runInAction(() => {
-                        // @ts-ignore
-                        this.aggregationsLoading[field] += value
+                        this.aggregationsLoading[field as SourceField]! += value
                     })
                 })
             }
@@ -71,8 +70,7 @@ export class SearchAggregationsStore {
             if (fieldList === '*') {
                 for (const field in this.aggregationsLoadingETA) {
                     runInAction(() => {
-                        // @ts-ignore
-                        this.aggregationsLoadingETA[field] = value
+                        this.aggregationsLoadingETA[field as SourceField]! = value
                     })
                 }
             } else {
@@ -85,8 +83,8 @@ export class SearchAggregationsStore {
         }
 
         for (const collection of query.collections) {
-            const { collections, excludedFields, ...queryParams } = query
-            const singleCollectionQuery = { collections: [collection], ...queryParams }
+            const { excludedFields, ...queryParams } = query
+            const singleCollectionQuery = { ...queryParams, collections: [collection] }
 
             const task = AsyncQueryTaskRunner.createAsyncQueryTask(
                 singleCollectionQuery,
@@ -94,7 +92,7 @@ export class SearchAggregationsStore {
                 fieldList,
                 this.sharedStore.fields!,
                 excludedFields || [],
-                this.sharedStore.user?.uuid!,
+                this.sharedStore.user.uuid!,
             )
 
             task.addEventListener('done', (event) => {
@@ -141,13 +139,12 @@ export class SearchAggregationsStore {
                     this.aggregations[field]!.count.value += aggregation.count.value
                 }
             }
-            // @ts-ignore
-            this.aggregationsLoading[field]--
+            this.aggregationsLoading[field as SourceField]!--
         })
     }
 
     private sortAggregations() {
-        ;(Object.entries(this.aggregations) as Entries<typeof this.aggregations>).forEach(([field, aggregation]) => {
+        ;(Object.entries(this.aggregations) as Entries<typeof this.aggregations>).forEach(([field]) => {
             if (aggregationFields[field as SourceField]?.sort) {
                 this.aggregations[field]?.values.buckets?.sort((a, b) => b.doc_count - a.doc_count)
             }

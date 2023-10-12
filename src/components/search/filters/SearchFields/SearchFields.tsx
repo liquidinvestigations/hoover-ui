@@ -26,14 +26,12 @@ export const SearchFields: FC = observer(() => {
             timeout={{
                 enter: duration.enteringScreen,
                 exit: duration.leavingScreen,
-            }}
-        >
+            }}>
             {(state) => (
                 <div
                     className={cx(classes.root, {
                         [classes.open]: state === 'entering' || state === 'entered',
-                    })}
-                >
+                    })}>
                     {fields?.all.map((field) => (
                         <ListItem key={field} role={undefined} dense button onClick={onFieldInclusionChange(field)}>
                             <Checkbox
@@ -47,7 +45,7 @@ export const SearchFields: FC = observer(() => {
                             />
 
                             <ListItemText
-                                primary={field.replace(`\.${user?.uuid}`, '')}
+                                primary={field.replace(`.${user?.uuid}`, '')}
                                 primaryTypographyProps={{
                                     className: classes.label,
                                 }}

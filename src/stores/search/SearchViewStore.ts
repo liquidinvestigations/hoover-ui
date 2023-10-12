@@ -46,16 +46,14 @@ export class SearchViewStore {
         reaction(
             () => this.inputRef,
             () => {
-                if (typeof window !== 'undefined') {
-                    const storedDrawerWidth = localStorage.getItem('drawerWidth')
-                    if (storedDrawerWidth !== null) {
-                        this.drawerWidth = parseFloat(storedDrawerWidth)
-                    }
+                const storedDrawerWidth = localStorage.getItem('drawerWidth')
+                if (storedDrawerWidth !== null) {
+                    this.drawerWidth = parseFloat(storedDrawerWidth)
+                }
 
-                    const storedMiddleColumnWidth = localStorage.getItem('middleColumnWidth')
-                    if (storedMiddleColumnWidth !== null) {
-                        this.middleColumnWidth = parseFloat(storedMiddleColumnWidth)
-                    }
+                const storedMiddleColumnWidth = localStorage.getItem('middleColumnWidth')
+                if (storedMiddleColumnWidth !== null) {
+                    this.middleColumnWidth = parseFloat(storedMiddleColumnWidth)
                 }
             },
         )

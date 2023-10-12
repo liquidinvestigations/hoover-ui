@@ -138,8 +138,7 @@ export const BatchSearch = observer(() => {
                                 color="primary"
                                 startIcon={reactIcons.batchSearch}
                                 disabled={resultsLoading}
-                                onClick={handleSearch}
-                            >
+                                onClick={handleSearch}>
                                 <T keyName="batch_search_button">Batch search</T>
                             </Button>
                         </Grid>

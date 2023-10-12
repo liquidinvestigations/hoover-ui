@@ -21,10 +21,8 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ hits }) => {
         query,
         search,
         searchViewStore: { resultsColumns, setResultsColumns },
-        searchResultsStore: { resultsLoadingETA },
     } = useSharedStore().searchStore
 
-    const size = query?.size || defaultSearchParams.size
     const order = query?.order
     const changeOrder = (newOrder: string[][]) => {
         search({ order: newOrder, page: defaultSearchParams.page })
@@ -51,7 +49,7 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ hits }) => {
     const handleColumnsMenuClose = () => setAnchorEl(null)
     const handleColumnMenuClick = (field: string) => () => {
         let resultsColumnsCopy = resultsColumns.slice()
-        let index = resultsColumns.findIndex(([visibleField]) => visibleField === field)
+        const index = resultsColumns.findIndex(([visibleField]) => visibleField === field)
 
         if (index !== -1) {
             resultsColumnsCopy.splice(index, 1)
@@ -87,8 +85,7 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ hits }) => {
                                     key={field}
                                     align={align}
                                     className={sortable ? 'sortable' : undefined}
-                                    onClick={sortable ? handleClick(field) : undefined}
-                                >
+                                    onClick={sortable ? handleClick(field) : undefined}>
                                     {label}
                                     {orderIcon}
                                 </TableCell>
@@ -105,8 +102,7 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ hits }) => {
                                         key={field}
                                         value={field}
                                         selected={!!resultsColumns.find(([visibleField]) => visibleField === field)}
-                                        onClick={handleColumnMenuClick(field)}
-                                    >
+                                        onClick={handleColumnMenuClick(field)}>
                                         {label}
                                     </MenuItem>
                                 ))}

@@ -28,15 +28,10 @@ steps:
   commands:
   - npm install --unsafe-perm
 
-- name: typescript lint
+- name: eslint & prettier
   image: node:18
   commands:
-  - npm run lint-ts
-
-- name: next lint
-  image: node:18
-  commands:
-  - npm run lint-next
+  - npm run lint
 
 - name: next build
   image: node:18

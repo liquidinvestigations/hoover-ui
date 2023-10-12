@@ -113,8 +113,7 @@ export const Page = observer(
                     style={{
                         width: elementWidth,
                         height: elementHeight,
-                    }}
-                >
+                    }}>
                     {!page || (!visible && !((searchResults[currentHighlightIndex]?.pageNum as unknown as number) - 1 === pageIndex)) ? (
                         <span className="loadingIcon" />
                     ) : (

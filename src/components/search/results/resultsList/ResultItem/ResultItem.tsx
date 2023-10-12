@@ -91,8 +91,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
-            data-test="result"
-        >
+            data-test="result">
             <CardHeader
                 classes={cardHeaderClasses}
                 title={
@@ -155,7 +154,9 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                         <Grid item component="span">
                             {hit._source['has-thumbnails'] && (
                                 <Box className={classes.thumbnail}>
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
+                                        alt="thumbnail image"
                                         ref={thumbRef as unknown as RefObject<HTMLImageElement>}
                                         className={classes.thumbnailImg}
                                         srcSet={createThumbnailSrcSet(`doc/${hit._collection}/${hit._id}`)}
@@ -173,11 +174,11 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                                                     boundary: 'clippingParents',
                                                 },
                                             },
-                                        ]}
-                                    >
+                                        ]}>
                                         <Paper elevation={10} className={classes.preview}>
                                             {previewLoading && <Loading />}
                                             <img
+                                                alt="Preview image loading"
                                                 className={previewLoading ? classes.previewImgLoading : classes.previewImg}
                                                 onLoad={() => {
                                                     setPreviewLoading(false)

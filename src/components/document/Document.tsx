@@ -233,8 +233,7 @@ export const Document = observer(() => {
                 variant="text"
                 component="a"
                 href={'/upload/' + collection + '/' + data.id}
-                color="inherit"
-            >
+                color="inherit">
                 <T keyName="upload_file">Upload File</T>
             </Button>
         )
@@ -242,7 +241,7 @@ export const Document = observer(() => {
 
     const getSearchCount = (tabData: any, index: number) => {
         if (!query || query.length < 3) return undefined
-        if (!tabData.hasOwnProperty('searchLoading')) return undefined
+        if (!Object.prototype.hasOwnProperty.call(tabData, 'searchLoading')) return undefined
         return (
             <span className={classes.searchCount}>
                 {tabData.searchLoading ? (
@@ -324,6 +323,7 @@ export const Document = observer(() => {
                 {data.content['has-thumbnails'] && (
                     <Grid item>
                         <Box className={classes.thumbnail}>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img className={classes.thumbnailImg} srcSet={thumbnailSrcSet} alt="thumbnail" />
                         </Box>
                     </Grid>

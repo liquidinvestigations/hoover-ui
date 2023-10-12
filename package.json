@@ -13,9 +13,7 @@
     "test:watch": "cross-env NODE_ENV=test jest --watch",
     "postinstall": "node postinstall-fixes.js",
     "lint-next": "next lint",
-    "lint-ts": "next lint --config .eslintrc-typescript.json",
-    "lint-ts-without-next": "eslint {src,pages}/**/*.{ts,tsx} --config .eslintrc-typescript.json --no-eslintrc",
-    "lint": "npm run lint-ts && npm run lint-next"
+    "lint": "next lint && eslint \"src/**/*.{js,jsx,ts,tsx}\""
   },
   "engine": {
     "node": "18"
@@ -25,8 +23,7 @@
     "url": "https://github.com/hoover/ui"
   },
   "pre-commit": [
-    "lint-next",
-    "lint-ts",
+    "lint",
     "test"
   ],
   "dependencies": {

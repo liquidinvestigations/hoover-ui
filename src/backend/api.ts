@@ -7,7 +7,6 @@ import { stringify } from 'qs'
 
 import { Tag } from '../stores/TagsStore'
 import {
-    BatchResponse,
     BatchSearchQueryParams,
     BatchSearchResponse,
     CollectionData,
@@ -20,8 +19,6 @@ import {
 } from '../Types'
 
 import { SearchFields } from './buildSearchQuery'
-
-import type { SearchQueryParams } from '../Types'
 
 const { API_URL } = process.env
 

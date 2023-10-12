@@ -6,6 +6,8 @@ import { useSharedStore } from '../SharedStoreProvider'
 import { Document } from './Document/Document'
 import { DocumentProvider } from './DocumentProvider'
 
+// remove Function type as it is banned
+// eslint-disable-next-line @typescript-eslint/ban-types
 function debounce(fn: Function, wait: number) {
     let t: ReturnType<typeof setTimeout>
     return function (...args: any[]) {

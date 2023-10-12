@@ -1,5 +1,5 @@
 import { FormatIcu } from '@tolgee/format-icu'
-import { Tolgee, TolgeeProvider, DevTools, useTolgeeSSR, useTolgee } from '@tolgee/react'
+import { Tolgee, TolgeeProvider, DevTools, useTolgeeSSR } from '@tolgee/react'
 
 type Props = {
     language: string

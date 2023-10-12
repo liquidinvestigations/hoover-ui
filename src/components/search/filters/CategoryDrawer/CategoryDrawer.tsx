@@ -62,8 +62,7 @@ export const CategoryDrawer: FC<CategoryDrawerProps> = observer(
                     button
                     data-disable-click-away
                     onClick={() => setOpenCategory(category)}
-                    className={cx(classes.listItem, { [classes.openCollapsed]: openCategory === category })}
-                >
+                    className={cx(classes.listItem, { [classes.openCollapsed]: openCategory === category })}>
                     <Fade in={loading} unmountOnExit>
                         <div>
                             <ThinProgress eta={loadingETA || 0} />
@@ -76,8 +75,7 @@ export const CategoryDrawer: FC<CategoryDrawerProps> = observer(
                         variant="xs"
                         component="div"
                         className={cx(classes.title, { [classes.bold]: openCategory === category })}
-                        color={greyed ? 'textSecondary' : highlight ? 'secondary' : 'initial'}
-                    >
+                        color={greyed ? 'textSecondary' : highlight ? 'secondary' : 'initial'}>
                         {title}
                     </Typography>
                 </ListItem>
@@ -115,14 +113,12 @@ export const CategoryDrawer: FC<CategoryDrawerProps> = observer(
                             mountOnEnter
                             unmountOnExit
                             onEntering={updatePosition}
-                            onExiting={updatePosition}
-                        >
+                            onExiting={updatePosition}>
                             <ClickAwayListener
                                 onClickAway={(event) => {
                                     !drawerPinned && !hasDisabledClickAway(event.target as HTMLElement) && setOpenCategory(undefined)
                                 }}
-                                disableReactTree
-                            >
+                                disableReactTree>
                                 <div style={!drawerPinned ? position : undefined} className={classes.root}>
                                     <Slide direction="right" in={openCategory === category}>
                                         <div className={cx(classes.inner, { [classes.unpinned]: !drawerPinned })} data-test="filters">

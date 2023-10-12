@@ -24,13 +24,13 @@ export class SearchMissingStore {
     }
 
     performQuery(query: SearchQueryParams, fieldList: SourceField[] | '*' = '*') {
-        if (this.missing[`${fieldList}-missing`]) {
+        if (this.missing[`${fieldList}-missing`] || !this.sharedStore.user) {
             return
         }
 
         for (const collection of query.collections) {
-            const { collections, excludedFields, ...queryParams } = query
-            const singleCollectionQuery = { collections: [collection], ...queryParams }
+            const { excludedFields, ...queryParams } = query
+            const singleCollectionQuery = { ...queryParams, collections: [collection] }
 
             runInAction(() => {
                 this.error = {}
@@ -43,7 +43,7 @@ export class SearchMissingStore {
                 fieldList,
                 this.sharedStore.fields!,
                 excludedFields || [],
-                this.sharedStore.user?.uuid!,
+                this.sharedStore.user.uuid!,
             )
 
             task.addEventListener('done', (event) => {

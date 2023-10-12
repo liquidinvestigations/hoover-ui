@@ -93,8 +93,7 @@ export const Search: FC = observer(() => {
                         left={drawerPinned && <div ref={setDrawerRef} />}
                         onLeftChange={setDrawerWidth}
                         onMiddleChange={setMiddleColumnWidth}
-                        right={<Document />}
-                    >
+                        right={<Document />}>
                         <div className={classes.main} ref={drawerPinned ? undefined : setDrawerRef}>
                             <Grid container>
                                 <Grid item sm={12}>
@@ -185,8 +184,7 @@ export const Search: FC = observer(() => {
                         onClick={() => {
                             handleSnackbarClose()
                             search()
-                        }}
-                    >
+                        }}>
                         {snackbarMessage}
                     </Button>
                 }

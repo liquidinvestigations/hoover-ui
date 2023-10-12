@@ -2,7 +2,7 @@ import { DateTime } from 'luxon'
 import qs, { ParsedQs } from 'qs'
 
 import { aggregationFields } from '../constants/aggregationFields'
-import { Category, SearchQueryParams, SourceField } from '../Types'
+import { SearchQueryParams, SourceField } from '../Types'
 
 import { daysInMonth } from './utils'
 
@@ -75,9 +75,14 @@ export const createSearchParams = (term: string | Term, field?: SourceField) => 
         params.filters = {}
 
         if (aggregationFields[field]?.type === 'date' && typeof term === 'object') {
+            const year = term.term.substring(0, 4)
+            const month = term.term.substring(0, 7)
+            const week = term.term.substring(0, 10)
+            const dateTime = DateTime.fromISO(week)
+            const day = term.term.substring(0, 10)
+
             switch (term.format) {
                 case 'year':
-                    const year = term.term.substring(0, 4)
                     params.filters[field] = {
                         from: `${year}-01-01`,
                         to: `${year}-12-31`,
@@ -85,7 +90,6 @@ export const createSearchParams = (term: string | Term, field?: SourceField) => 
                     break
 
                 case 'month':
-                    const month = term.term.substring(0, 7)
                     params.filters[field] = {
                         from: `${month}-01`,
                         to: `${month}-${daysInMonth(month)}`,
@@ -93,8 +97,6 @@ export const createSearchParams = (term: string | Term, field?: SourceField) => 
                     break
 
                 case 'week':
-                    const week = term.term.substring(0, 10)
-                    const dateTime = DateTime.fromISO(week)
                     params.filters[field] = {
                         from: DateTime.fromObject({
                             weekYear: dateTime.weekYear,
@@ -110,7 +112,6 @@ export const createSearchParams = (term: string | Term, field?: SourceField) => 
                     break
 
                 case 'day':
-                    const day = term.term.substring(0, 10)
                     params.filters[field] = {
                         from: day,
                         to: day,

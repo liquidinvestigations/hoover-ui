@@ -33,8 +33,7 @@ export const BookmarksView: FC<BookmarksViewProps> = ({ expanded, onSetExpanded,
                 onNodeToggle={handleToggle}
                 disableSelection={true}
                 defaultCollapseIcon={reactIcons.chevronDown}
-                defaultExpandIcon={reactIcons.chevronRight}
-            >
+                defaultExpandIcon={reactIcons.chevronRight}>
                 <Bookmarks onSelect={onSelect} />
             </TreeView>
         </div>
