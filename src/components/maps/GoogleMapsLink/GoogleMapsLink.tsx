@@ -1,5 +1,3 @@
-import Image from 'next/image'
-
 import { useSharedStore } from '../../SharedStoreProvider'
 
 import { useStyles } from './GoogleMapsLink.styles'
@@ -12,7 +10,7 @@ export default function GoogleMapsLink() {
 
     return (
         <a href={url} target="_blank" rel="noreferrer" className={classes.link} title="Open current location in Google Maps">
-            <Image src="/Gnome-fs-map.svg" alt="Google Maps" />
+            <img src="/Gnome-fs-map.svg" alt="Google Maps" />
         </a>
     )
 }

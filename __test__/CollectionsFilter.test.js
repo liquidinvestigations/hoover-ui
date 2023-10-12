@@ -1,5 +1,6 @@
 import React from 'react'
 import renderer from 'react-test-renderer'
+
 import { CollectionsFilter } from '../src/components/search/filters/CollectionsFilter/CollectionsFilter'
 
 xit('renders the collections box with a collection', () => {

@@ -2,7 +2,6 @@ import { Box, Card, CardContent, CardHeader, Grid, IconButton, Paper, Popper, To
 import { T, useTolgee, useTranslate } from '@tolgee/react'
 import { DateTime } from 'luxon'
 import { observer } from 'mobx-react-lite'
-import Image from 'next/image'
 import { cloneElement, useEffect, useRef, useState } from 'react'
 
 import { createDownloadUrl, createThumbnailSrc, createThumbnailSrcSet } from '../../../../../backend/api'
@@ -178,7 +177,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                                         ]}>
                                         <Paper elevation={10} className={classes.preview}>
                                             {previewLoading && <Loading />}
-                                            <Image
+                                            <img
                                                 alt="Preview image loading"
                                                 className={previewLoading ? classes.previewImgLoading : classes.previewImg}
                                                 onLoad={() => {

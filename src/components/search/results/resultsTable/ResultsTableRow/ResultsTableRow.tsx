@@ -1,7 +1,6 @@
 import { IconButton, Paper, Popper, TableCell, TableRow, Tooltip } from '@mui/material'
 import { useTolgee } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
-import Image from 'next/image'
 import { cloneElement, FC, ReactElement, useEffect, useRef, useState } from 'react'
 
 import { createDownloadUrl, createThumbnailSrc } from '../../../../../backend/api'
@@ -138,7 +137,7 @@ export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index 
                             ]}>
                             <Paper elevation={10} className={classes.preview}>
                                 {previewLoading && <Loading />}
-                                <Image
+                                <img
                                     alt="preview image"
                                     className={previewLoading ? classes.previewImgLoading : classes.previewImg}
                                     onLoad={() => setPreviewLoading(false)}

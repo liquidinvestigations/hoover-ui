@@ -1,5 +1,4 @@
 import { Typography } from '@mui/material'
-import Image from 'next/image'
 import { FC, useEffect, useState } from 'react'
 import { decode } from 'tiff'
 
@@ -111,7 +110,7 @@ export const TIFFViewer: FC<{ url: string }> = ({ url }) => {
                 />
             )}
             {error && <Typography color="error">{error}</Typography>}
-            {pages?.map((data) => <Image alt="TIFF viewer image" key={data} src={data} />)}
+            {pages?.map((data) => <img alt="TIFF viewer image" key={data} src={data} />)}
         </div>
     )
 }

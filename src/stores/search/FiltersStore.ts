@@ -73,15 +73,6 @@ export class FiltersStore {
             }
 
             if (!acc[category]) {
-                /*filters.some(({ field }) => {
-                   if (!!aggregations?.[field]?.values.buckets.length) {
-                        acc[category] = field
-                        return true
-                    }
-                })*/
-            }
-
-            if (!acc[category]) {
                 acc[category] = filters[0].field
             }
 

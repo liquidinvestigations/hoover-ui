@@ -44,10 +44,8 @@ export class SharedStore {
     mapsStore
 
     constructor() {
-        if (typeof window !== 'undefined') {
-            this.navigation = createObservableHistory()
-            void this.loadData()
-        }
+        this.navigation = createObservableHistory()
+        void this.loadData()
 
         this.hashStore = new HashStateStore(this)
         this.documentStore = new DocumentStore(this.hashStore)

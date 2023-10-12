@@ -29,27 +29,25 @@ export class HashStateStore {
 
         makeAutoObservable(this)
 
-        if (typeof window !== 'undefined') {
-            const location = this.sharedStore.navigation?.location
+        const location = this.sharedStore.navigation?.location
 
-            if (!location) return
+        if (!location) return
 
-            const { hash } = location
-            if (hash) {
-                setTimeout(() => {
-                    runInAction(() => {
-                        this.hashState = unwindParams(qs.parse(hash.substring(1)))
-                    })
+        const { hash } = location
+        if (hash) {
+            setTimeout(() => {
+                runInAction(() => {
+                    this.hashState = unwindParams(qs.parse(hash.substring(1)))
                 })
-            }
-
-            reaction(
-                () => this.sharedStore.navigation?.location.hash,
-                (hashString) => {
-                    this.hashState = unwindParams(qs.parse(hashString.substring(1)))
-                },
-            )
+            })
         }
+
+        reaction(
+            () => this.sharedStore.navigation?.location.hash,
+            (hashString) => {
+                this.hashState = unwindParams(qs.parse(hashString.substring(1)))
+            },
+        )
     }
 
     setHashState = (params: Record<string, any>, pushHistory = true) => {

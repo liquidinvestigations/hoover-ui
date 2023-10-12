@@ -46,7 +46,8 @@
       }
     ],
     "no-extra-semi": "off",
-    "prefer-const": "error"
+    "prefer-const": "error",
+    "@next/next/no-img-element": "off"
   },
   "overrides": [
     {
