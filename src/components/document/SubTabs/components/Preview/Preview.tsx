@@ -80,14 +80,7 @@ export const Preview: FC = () => {
 
     return (
         <div className={classes.preview}>
-            <embed
-                style={{ objectFit: 'contain' }}
-                src={docRawUrl}
-                type={data?.content['content-type']}
-                height="100%"
-                width="100%"
-                title={data?.content.filename[0] ?? ''}
-            />
+            <img alt="preview" style={{ objectFit: 'contain' }} src={docRawUrl} height="100%" width="100%" title={data?.content.filename[0] ?? ''} />
         </div>
     )
 }
