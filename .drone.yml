@@ -93,60 +93,60 @@ steps:
       from_secret: docker_password
 ---
 
-# #########################################################
-#                       BUILD arm64
-# #########################################################
-
-kind: pipeline
-name: build arm64
-
-platform:
-  os: linux
-  arch: arm64
-
-trigger:
-  status:
-  - success
-  event:
-  - push
-  - tag
-  - cron
-
-depends_on:
-- lint
-
-steps:
-- name: docker push branch ${DRONE_COMMIT_BRANCH}
-  image: plugins/docker
-  settings:
-    repo: liquidinvestigations/hoover-ui
-    tags: ${DRONE_COMMIT_BRANCH}-arm64
-    build_args:
-    - BUILD_EXTRA_LIBS_ARM64=1
-    username:
-      from_secret: docker_username
-    password:
-      from_secret: docker_password
-  when:
-    event:
-    - push
-    branch:
-      exclude:
-      - dependabot/**
-
-- name: docker push autotag + latest
-  image: plugins/docker
-  settings:
-    repo: liquidinvestigations/hoover-ui
-    auto_tag: true
-    auto_tag_suffix: arm64
-    build_args:
-    - BUILD_EXTRA_LIBS_ARM64=1
-    username:
-      from_secret: docker_username
-    password:
-      from_secret: docker_password
----
+# # #########################################################
+# #                       BUILD arm64
+# # #########################################################
+# 
+# kind: pipeline
+# name: build arm64
+# 
+# platform:
+#   os: linux
+#   arch: arm64
+# 
+# trigger:
+#   status:
+#   - success
+#   event:
+#   - push
+#   - tag
+#   - cron
+# 
+# depends_on:
+# - lint
+# 
+# steps:
+# - name: docker push branch ${DRONE_COMMIT_BRANCH}
+#   image: plugins/docker
+#   settings:
+#     repo: liquidinvestigations/hoover-ui
+#     tags: ${DRONE_COMMIT_BRANCH}-arm64
+#     build_args:
+#     - BUILD_EXTRA_LIBS_ARM64=1
+#     username:
+#       from_secret: docker_username
+#     password:
+#       from_secret: docker_password
+#   when:
+#     event:
+#     - push
+#     branch:
+#       exclude:
+#       - dependabot/**
+# 
+# - name: docker push autotag + latest
+#   image: plugins/docker
+#   settings:
+#     repo: liquidinvestigations/hoover-ui
+#     auto_tag: true
+#     auto_tag_suffix: arm64
+#     build_args:
+#     - BUILD_EXTRA_LIBS_ARM64=1
+#     username:
+#       from_secret: docker_username
+#     password:
+#       from_secret: docker_password
+# ---
 
 # #########################################################
 #                       TEST x86
@@ -192,108 +192,108 @@ steps:
     - tag
 ---
 
-# #########################################################
-#                       TEST arm64
-# #########################################################
-kind: pipeline
-name: test arm64
+# # #########################################################
+# #                       TEST arm64
+# # #########################################################
+# kind: pipeline
+# name: test arm64
+# 
+# depends_on:
+# - build arm64
+# 
+# platform:
+#   os: linux
+#   arch: arm64
+# 
+# trigger:
+#   event:
+#   - push
+#   - tag
+#   - cron
+# 
+# steps:
+# - name: "lint, test on branch"
+#   image: "liquidinvestigations/hoover-ui:${DRONE_COMMIT_BRANCH}-arm64"
+#   pull: always
+#   when:
+#     event:
+#     - push
+#     - cron
+#   commands:
+#   - rm -rf node_modules || true
+#   - cp -a /opt/hoover/ui/node_modules .
+#   - npm run lint
+#   - npm run build
+#   - npm test
+# 
+# - name: "lint, test on tag"
+#   image: "liquidinvestigations/hoover-ui:${DRONE_TAG:1}-arm64"
+#   pull: always
+#   when:
+#     event:
+#     - tag
+#   commands:
+#   - rm -rf node_modules || true
+#   - cp -a /opt/hoover/ui/node_modules .
+#   - npm run lint
+#   - npm run build
+#   - npm test
+# ---
 
-depends_on:
-- build arm64
-
-platform:
-  os: linux
-  arch: arm64
-
-trigger:
-  event:
-  - push
-  - tag
-  - cron
-
-steps:
-- name: "lint, test on branch"
-  image: "liquidinvestigations/hoover-ui:${DRONE_COMMIT_BRANCH}-arm64"
-  pull: always
-  when:
-    event:
-    - push
-    - cron
-  commands:
-  - rm -rf node_modules || true
-  - cp -a /opt/hoover/ui/node_modules .
-  - npm run lint
-  - npm run build
-  - npm test
-
-- name: "lint, test on tag"
-  image: "liquidinvestigations/hoover-ui:${DRONE_TAG:1}-arm64"
-  pull: always
-  when:
-    event:
-    - tag
-  commands:
-  - rm -rf node_modules || true
-  - cp -a /opt/hoover/ui/node_modules .
-  - npm run lint
-  - npm run build
-  - npm test
----
-
-# #########################################################
-#                   build multiplatform
-# #########################################################
-
-kind: pipeline
-name: build multiplatform
-
-trigger:
-  event:
-  - push
-  - tag
-  - cron
-
-depends_on:
-- build x86
-- build arm64
-
-clone:
-  disable: true
-
-steps:
-- name: docker multiplatform branch
-  image: docker
-  pull: if-not-exists
-  environment:
-    IMG: "liquidinvestigations/hoover-ui:${DRONE_COMMIT_BRANCH}"
-    DOCKER_USERNAME:
-      from_secret: docker_username
-    DOCKER_PASSWORD:
-      from_secret: docker_password
-  commands:
-  - "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
-  - "docker buildx imagetools  create --append $IMG --append $IMG-arm64 --tag  $IMG"
-  when:
-    event:
-    - push
-    - cron
-
-- name: docker multiplatform tag
-  image: docker
-  pull: if-not-exists
-  environment:
-    IMG: "liquidinvestigations/hoover-ui:${DRONE_TAG:1}"
-    DOCKER_USERNAME:
-      from_secret: docker_username
-    DOCKER_PASSWORD:
-      from_secret: docker_password
-  commands:
-  - "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
-  - "docker buildx imagetools  create --append $IMG --append $IMG-arm64 --tag  $IMG"
-  when:
-    event:
-    - tag
----
+# # #########################################################
+# #                   build multiplatform
+# # #########################################################
+# 
+# kind: pipeline
+# name: build multiplatform
+# 
+# trigger:
+#   event:
+#   - push
+#   - tag
+#   - cron
+# 
+# depends_on:
+# - build x86
+# - build arm64
+# 
+# clone:
+#   disable: true
+# 
+# steps:
+# - name: docker multiplatform branch
+#   image: docker
+#   pull: if-not-exists
+#   environment:
+#     IMG: "liquidinvestigations/hoover-ui:${DRONE_COMMIT_BRANCH}"
+#     DOCKER_USERNAME:
+#       from_secret: docker_username
+#     DOCKER_PASSWORD:
+#       from_secret: docker_password
+#   commands:
+#   - "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+#   - "docker buildx imagetools  create --append $IMG --append $IMG-arm64 --tag  $IMG"
+#   when:
+#     event:
+#     - push
+#     - cron
+# 
+# - name: docker multiplatform tag
+#   image: docker
+#   pull: if-not-exists
+#   environment:
+#     IMG: "liquidinvestigations/hoover-ui:${DRONE_TAG:1}"
+#     DOCKER_USERNAME:
+#       from_secret: docker_username
+#     DOCKER_PASSWORD:
+#       from_secret: docker_password
+#   commands:
+#   - "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+#   - "docker buildx imagetools  create --append $IMG --append $IMG-arm64 --tag  $IMG"
+#   when:
+#     event:
+#     - tag
+# ---
 
 # #########################################################
 #                       SECRETS
