@@ -21,7 +21,7 @@ interface AggregationFilterProps {
     queryFacets?: number
     aggregations?: AggregationValues
     loading: boolean
-    onChange: (field: SourceField, value: string, triState?: boolean) => () => void
+    onChange: (field: SourceField, value: SourceField, triState?: boolean) => () => void
     triState?: boolean
     bucketLabel?: (bucket: Bucket) => ReactElement | string
     bucketSubLabel?: (bucket: Bucket) => ReactElement | string

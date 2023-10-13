@@ -3,15 +3,9 @@ import { useTranslate } from '@tolgee/react'
 import { FC, ReactElement, ReactNode, useState } from 'react'
 import { HotKeys } from 'react-hotkeys'
 
+import { KeyWithHelp, KeyWithHelpHandler } from '../../../stores/HotKeysStore'
+
 import { useStyles } from './HotKeysWithHelp.styles'
-
-type KeyWithHelpHandler = (keyEvent?: KeyboardEvent, showMessage?: (message: ReactElement | string) => void) => void
-
-interface KeyWithHelp {
-    key: string | string[]
-    help: string
-    handler: KeyWithHelpHandler
-}
 
 interface HotKeysWithHelpProps {
     keys: Record<string, KeyWithHelp>

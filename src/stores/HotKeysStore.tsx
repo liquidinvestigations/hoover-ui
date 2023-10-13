@@ -8,8 +8,16 @@ import { DocumentStore } from './DocumentStore'
 import { HashStateStore } from './HashStateStore'
 import { SearchStore } from './search/SearchStore'
 
+export type KeyWithHelpHandler = (keyEvent?: KeyboardEvent, showMessage?: (message: ReactElement | string) => void) => void
+
+export interface KeyWithHelp {
+    key: string | string[]
+    help: string | ReactElement
+    handler: KeyWithHelpHandler
+}
+
 export class HotKeysStore {
-    keys: Record<string, any>
+    keys: Record<string, KeyWithHelp>
 
     constructor(
         private readonly hashStore: HashStateStore,
@@ -24,8 +32,8 @@ export class HotKeysStore {
             nextItem: {
                 key: 'j',
                 help: <T keyName="help_preview_next">Preview next result</T>,
-                handler: (event: KeyboardEvent) => {
-                    event.preventDefault()
+                handler: (keyEvent?: KeyboardEvent) => {
+                    keyEvent?.preventDefault()
                     if (!isInputFocused()) {
                         searchStore.searchResultsStore.previewNextDoc()
                     }
@@ -34,8 +42,8 @@ export class HotKeysStore {
             previousItem: {
                 key: 'k',
                 help: <T keyName="help_preview_previous">Preview the previous result</T>,
-                handler: (event: KeyboardEvent) => {
-                    event.preventDefault()
+                handler: (keyEvent?: KeyboardEvent) => {
+                    keyEvent?.preventDefault()
                     if (!isInputFocused()) {
                         searchStore.searchResultsStore.previewPreviousDoc()
                     }
@@ -44,15 +52,15 @@ export class HotKeysStore {
             copyMetadata: {
                 key: 'c',
                 help: <T keyName="help_copy_md5">Copy metadata (MD5 and path) of the currently previewed item to the clipboard.</T>,
-                handler: (event: KeyboardEvent, showMessage: (message: ReactElement | string) => void) => {
+                handler: (keyEvent?: KeyboardEvent, showMessage?: (message: ReactElement | string) => void) => {
                     if (isInputFocused()) {
                         return
                     }
-                    event.preventDefault()
+                    keyEvent?.preventDefault()
                     if (documentStore.data?.content) {
-                        showMessage(copyMetadata(documentStore.data))
+                        showMessage?.(copyMetadata(documentStore.data))
                     } else {
-                        showMessage('Unable to copy metadata – no document selected?')
+                        showMessage?.('Unable to copy metadata – no document selected?')
                     }
                 },
             },
@@ -74,9 +82,9 @@ export class HotKeysStore {
             focusInputField: {
                 key: '/',
                 help: <T keyName="help_focus_search">Focus the search field</T>,
-                handler: (event: KeyboardEvent) => {
+                handler: (keyEvent?: KeyboardEvent) => {
                     if (!isInputFocused()) {
-                        event.preventDefault()
+                        keyEvent?.preventDefault()
                         searchStore.searchViewStore.inputRef?.current?.focus()
                     }
                 },
