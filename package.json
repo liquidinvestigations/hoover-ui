@@ -13,7 +13,7 @@
     "test:watch": "cross-env NODE_ENV=test jest --watch",
     "postinstall": "node postinstall-fixes.js",
     "lint-next": "next lint",
-    "lint": "next lint && eslint \"src/**/*.{js,jsx,ts,tsx}\""
+    "lint": "npx fta-cli . && next lint && eslint \"src/**/*.{js,jsx,ts,tsx}\""
   },
   "engine": {
     "node": "18"
@@ -54,6 +54,7 @@
     "copy-text-to-clipboard": "3.0.1",
     "copy-webpack-plugin": "11.0.0",
     "cross-env": "7.0.3",
+    "fta-cli": "^0.2.0",
     "history": "5.3.0",
     "langs": "2.0.0",
     "lodash": "4.17.21",
