@@ -5,7 +5,7 @@ import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 
 import { DEFAULT_INTERVAL } from '../../../constants/general'
-import { SourceField } from '../../../Types'
+import { Interval, SourceField } from '../../../Types'
 import { defaultSearchParams } from '../../../utils/queryUtils'
 import { useSharedStore } from '../../SharedStoreProvider'
 
@@ -16,8 +16,8 @@ export const IntervalSelect: FC<{ field: SourceField }> = observer(({ field }) =
         const { [field]: _prevFilter, ...restFilters } = query?.filters ?? {}
         const { [field]: _prevFacet, ...restFacets } = query?.facets ?? {}
 
-        const { _interval, _intervals, ...rest } = query?.filters?.[field] || {}
-        const newFilter = { interval: event.target.value, ...rest }
+        const { interval: _interval, intervals: _intervals, ...rest } = query?.filters?.[field] || {}
+        const newFilter = { interval: event.target.value as Interval, ...rest }
 
         if (event.target.value !== DEFAULT_INTERVAL) {
             search({ filters: { [field]: newFilter, ...restFilters }, facets: { ...restFacets }, page: defaultSearchParams.page })

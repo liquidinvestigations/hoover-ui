@@ -20,8 +20,7 @@ export const MoreButton: FC<{ field: SourceField }> = observer(({ field }) => {
         },
     } = useSharedStore()
 
-    const pageParam = parseInt(query?.facets?.[field])
-    const page = isNaN(pageParam) ? 1 : pageParam
+    const page = query?.facets?.[field] ? parseInt(query.facets[field] as unknown as string) : 1
 
     const handleLoadMore = () => {
         const facets = query?.facets || {}

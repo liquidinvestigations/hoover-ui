@@ -101,8 +101,8 @@ export const DocPage: FC = observer(() => {
         copyMetadata: {
             key: 'c',
             help: t('help_copy_md5_path', 'Copy MD5 and path to clipboard'),
-            handler: (_event: Event, showMessage: (s: ReactElement | string) => void) => {
-                if (data?.content) {
+            handler: (keyEvent?: KeyboardEvent, showMessage?: (message: ReactElement | string) => void) => {
+                if (data?.content && showMessage) {
                     showMessage(copyMetadata(data))
                 }
             },

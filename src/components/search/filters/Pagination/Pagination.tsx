@@ -33,8 +33,7 @@ export const Pagination: FC<{ field: SourceField }> = observer(({ field }) => {
         }
     }
 
-    const pageParam = parseInt(query?.facets?.[field])
-    const page = isNaN(pageParam) ? 1 : pageParam
+    const page = query?.facets?.[field] ? parseInt(query.facets[field] as unknown as string) : 1
 
     const handlePrev = () => handlePagination(page - 1)
     const handleNext = () => handlePagination(page + 1)

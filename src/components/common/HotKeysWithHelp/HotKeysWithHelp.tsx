@@ -1,11 +1,11 @@
 import { List, ListItem, ListItemText, Modal, Snackbar, Typography } from '@mui/material'
 import { useTranslate } from '@tolgee/react'
-import { FC, ReactNode, useState } from 'react'
+import { FC, ReactElement, ReactNode, useState } from 'react'
 import { HotKeys } from 'react-hotkeys'
 
 import { useStyles } from './HotKeysWithHelp.styles'
 
-type KeyWithHelpHandler = (keyEvent?: KeyboardEvent, showMessage?: (message: string) => void) => void
+type KeyWithHelpHandler = (keyEvent?: KeyboardEvent, showMessage?: (message: ReactElement | string) => void) => void
 
 interface KeyWithHelp {
     key: string | string[]
@@ -14,7 +14,7 @@ interface KeyWithHelp {
 }
 
 interface HotKeysWithHelpProps {
-    keys: Record<string, any>
+    keys: Record<string, KeyWithHelp>
     children: ReactNode | ReactNode[]
 }
 
@@ -25,7 +25,7 @@ export const HotKeysWithHelp: FC<HotKeysWithHelpProps> = ({ keys, children }) =>
     const openHelp = () => setKeyHelpOpen(true)
     const hideKeyHelp = () => setKeyHelpOpen(false)
 
-    const [snackbarMessage, setSnackbarMessage] = useState<string | undefined>(undefined)
+    const [snackbarMessage, setSnackbarMessage] = useState<ReactElement | string | undefined>(undefined)
     const handleSnackbarClose = () => setSnackbarMessage(undefined)
 
     const keysWithHelp: Record<string, KeyWithHelp> = {
@@ -37,7 +37,7 @@ export const HotKeysWithHelp: FC<HotKeysWithHelpProps> = ({ keys, children }) =>
         },
     }
 
-    const keyMap: Record<string, any> = {}
+    const keyMap: Record<string, string | string[]> = {}
     const handlers: {
         [key: string]: KeyWithHelpHandler
     } = {}

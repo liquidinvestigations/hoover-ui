@@ -69,8 +69,8 @@ export const Tags: FC<{ toolbarButtons: ToolbarLink[] }> = observer(({ toolbarBu
 
                     setTagsAggregations(results.aggregations)
                     setTagsAggregationsLoading(false)
-                } catch (error: any) {
-                    if (error.name !== 'AbortError') {
+                } catch (error: unknown) {
+                    if (error instanceof Error && error.name !== 'AbortError') {
                         setTagsAggregations(undefined)
                         setTagsAggregationsLoading(false)
                     }
@@ -151,7 +151,7 @@ export const Tags: FC<{ toolbarButtons: ToolbarLink[] }> = observer(({ toolbarBu
         }
     }
 
-    const handleChange = (event: SyntheticEvent, value: any[], reason: AutocompleteChangeReason) => {
+    const handleChange = (event: SyntheticEvent, value: (string | Tag)[], reason: AutocompleteChangeReason) => {
         switch (reason) {
             case 'createOption':
                 value.forEach((tag) => {
@@ -163,7 +163,7 @@ export const Tags: FC<{ toolbarButtons: ToolbarLink[] }> = observer(({ toolbarBu
 
             case 'selectOption':
                 value.forEach((tag) => {
-                    if (tag.key) {
+                    if (typeof tag === 'object' && tag.key) {
                         handleTagAdd(tag.key, newTagVisibility === 'public')
                     }
                 })

@@ -49,7 +49,7 @@ const getLocaleText = () => {
 
 export default function HooverApp({ Component, pageProps }: AppProps) {
     return (
-        <TolgeeNextProvider locales={pageProps.locales} language={getLanguage()}>
+        <TolgeeNextProvider language={getLanguage()}>
             <CacheProvider value={createCache({ key: 'css', prepend: true })}>
                 <LocalizationProvider dateAdapter={AdapterLuxon} localeText={getLocaleText()} adapterLocale={getLanguage()}>
                     <ThemeProvider theme={customTheme}>

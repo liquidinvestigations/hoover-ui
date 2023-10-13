@@ -3,7 +3,6 @@ import { Tolgee, TolgeeProvider, DevTools, useTolgeeSSR } from '@tolgee/react'
 
 type Props = {
     language: string
-    locales: any
 }
 
 const tolgee = Tolgee()
@@ -26,8 +25,8 @@ const tolgee = Tolgee()
         },
     })
 
-export const TolgeeNextProvider = ({ language, locales, children }: React.PropsWithChildren<Props>) => {
-    const tolgeeSSR = useTolgeeSSR(tolgee, language, locales)
+export const TolgeeNextProvider = ({ language, children }: React.PropsWithChildren<Props>) => {
+    const tolgeeSSR = useTolgeeSSR(tolgee, language)
 
     return (
         <TolgeeProvider tolgee={tolgeeSSR} fallback="Loading..." options={{ useSuspense: true }}>

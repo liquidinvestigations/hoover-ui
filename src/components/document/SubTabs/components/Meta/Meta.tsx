@@ -10,6 +10,12 @@ import { LinkMenu } from '../../../LinkMenu'
 
 import { useStyles } from './Meta.styles'
 
+interface Value {
+    object?: string
+    class?: string
+    score?: number
+}
+
 export const Meta = observer(() => {
     const { t } = useTranslate()
     const { classes } = useStyles()
@@ -32,7 +38,7 @@ export const Meta = observer(() => {
     const [menuPosition, setMenuPosition] = useState<{ left: number; top: number } | undefined>()
     const [currentLink, setCurrentLink] = useState<{ field: string; term: string | string[] } | undefined>()
 
-    const handleLinkClick = (field: string, term: any) => (event: MouseEvent) => {
+    const handleLinkClick = (field: string, term: string | string[]) => (event: MouseEvent) => {
         setCurrentLink({ field, term })
         setMenuPosition({ left: event.clientX, top: event.clientY })
     }
@@ -52,18 +58,18 @@ export const Meta = observer(() => {
         }
     }
 
-    const getFieldValue = (key: string, value: any) => {
+    const getFieldValue = (key: string, value: Value): string => {
         switch (key) {
             case 'detected-objects':
-                return value['object']
+                return value['object'] || ''
             case 'image-classes':
-                return value['class']
+                return value['class'] || ''
             default:
                 return value.toString()
         }
     }
 
-    const getFieldScore = (key: string, value: any) => {
+    const getFieldScore = (key: string, value: Value) => {
         switch (key) {
             case 'detected-objects':
             case 'image-classes':
@@ -73,7 +79,7 @@ export const Meta = observer(() => {
         }
     }
 
-    const renderElement = (key: string, value: any, componentKey: string) => {
+    const renderElement = (key: string, value: Value, componentKey: string) => {
         const fieldValue = getFieldValue(key, value)
 
         return (

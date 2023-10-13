@@ -2,19 +2,13 @@ import { DateTime } from 'luxon'
 
 import { aggregationFields } from '../constants/aggregationFields'
 import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL, DEFAULT_OPERATOR, HIGHLIGHT_SETTINGS, PRIVATE_FIELDS } from '../constants/general'
-import { SearchQueryParams, SearchQueryType, SourceField } from '../Types'
+import { Interval, SearchQueryParams, SearchQueryType, SourceField, Terms } from '../Types'
 import { daysInMonth } from '../utils/utils'
 
 export interface SearchFields {
     all: string[]
     highlight: string[]
     _source: string[]
-}
-
-export interface Terms {
-    include?: SourceField[]
-    exclude?: SourceField[]
-    missing?: 'false' | 'true'
 }
 
 export interface Field {
@@ -25,12 +19,12 @@ export interface Field {
             field: SourceField
             size: number
         }
-        range?: {}
-        missing?: {}
-        date_histogram?: {}
+        range?: object
+        missing?: object
+        date_histogram?: object
     }
-    filterClause?: any
-    filterExclude?: any
+    filterClause?: object | null
+    filterExclude?: object | null
     filterMissing?: boolean | null
 }
 
@@ -41,7 +35,7 @@ const expandPrivate = (field: SourceField, uuid: string) => {
     return field
 }
 
-const buildQuery = (q: string, filters: Record<SourceField, any>, searchFields: SearchFields, excludedFields: string[]) => {
+const buildQuery = (q: string, filters: Record<SourceField, Terms>, searchFields: SearchFields, excludedFields: string[]) => {
     const qs = {
         query_string: {
             query: q,
@@ -129,8 +123,6 @@ const buildTermsField = (field: SourceField, uuid: string, terms: Terms, page = 
     }
 }
 
-export type Interval = 'day' | 'hour' | 'month' | 'week' | 'year'
-
 const intervalFormat = (interval: Interval, param: string) => {
     switch (interval) {
         case 'year':
@@ -165,17 +157,10 @@ const intervalFormat = (interval: Interval, param: string) => {
     }
 }
 
-export interface HistogramParams {
-    interval?: Interval
-    intervals?: Terms
-    from?: string
-    to?: string
-}
-
 const buildHistogramField = (
     field: SourceField,
     uuid: string,
-    { interval = DEFAULT_INTERVAL, intervals }: HistogramParams = {},
+    { interval = DEFAULT_INTERVAL, intervals }: Terms = {},
     page = 1,
     size = DEFAULT_FACET_SIZE,
 ) => {
@@ -338,7 +323,7 @@ const prepareFilter = (field: Field) => {
 }
 
 const buildFilter = (fields: Field[]) => {
-    const filter: any = []
+    const filter: object[] = []
 
     fields.forEach((field) => {
         const fieldFilter = prepareFilter(field)
@@ -415,7 +400,7 @@ const buildSearchQuery = (
     const postFilter = buildFilter(fields)
     const aggs = buildAggs(fields)
 
-    const highlightFields: Record<string, any> = {}
+    const highlightFields: Record<string, typeof HIGHLIGHT_SETTINGS> = {}
     searchFields.highlight.forEach((field) => {
         highlightFields[field] = HIGHLIGHT_SETTINGS
     })
