@@ -4,7 +4,7 @@ import { DateTime } from 'luxon'
 import { observer } from 'mobx-react-lite'
 import { FC, ReactElement, useCallback } from 'react'
 
-import { HistogramParams } from '../../../backend/buildSearchQuery'
+import { HistogramParams, Terms } from '../../../backend/buildSearchQuery'
 import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL } from '../../../constants/general'
 import { formatThousands } from '../../../utils/utils'
 import { Expandable } from '../../common/Expandable/Expandable'
@@ -35,7 +35,7 @@ export const formatsValue: Record<string, string> = {
 interface DateHistogramFilterProps {
     title: ReactElement | string
     field: SourceField
-    queryFilter?: HistogramParams
+    queryFilter?: HistogramParams & Terms
     queryFacets?: number
     aggregations?: Aggregation
     loading: boolean
@@ -102,7 +102,7 @@ export const DateHistogramFilter: FC<DateHistogramFilterProps> = observer(
 
                 <AggregationFilter
                     field={field}
-                    queryFilter={queryFilter?.intervals}
+                    queryFilter={{ ...queryFilter?.intervals, missing: queryFilter?.missing }}
                     queryFacets={queryFacets}
                     aggregations={aggregations?.values}
                     loading={loading}

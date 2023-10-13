@@ -175,7 +175,7 @@ export class FiltersStore {
         const queryFilter = this.searchStore.query?.filters?.[field]
         this.handleChange(field, {
             ...queryFilter,
-            missing: this.processFilterMissing(queryFilter),
+            missing: queryFilter.missing ? undefined : this.processFilterMissing(queryFilter),
         })
     }
 

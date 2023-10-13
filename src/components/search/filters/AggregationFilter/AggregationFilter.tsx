@@ -48,11 +48,10 @@ export const AggregationFilter: FC<AggregationFilterProps> = observer(
                         size="small"
                         tabIndex={-1}
                         disableRipple
-                        checked={!!queryFilter?.missing}
+                        checked={Boolean(queryFilter?.missing)}
                         indeterminate={queryFilter?.missing === 'false'}
                         classes={{ root: classes.checkbox }}
                         disabled={loading}
-                        onChange={handleMissingChange(field)}
                     />
 
                     <ListItemText
