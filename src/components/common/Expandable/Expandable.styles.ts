@@ -26,6 +26,7 @@ export const useStyles = makeStyles()((theme: Theme) => ({
     },
 
     header: {
+        flexGrow: 0,
         backgroundColor: theme.palette.grey[100],
     },
 

@@ -1,4 +1,4 @@
-import { Grid, ListItem, Typography } from '@mui/material'
+import { Grid, ListItemButton, Typography } from '@mui/material'
 import { cloneElement, FC } from 'react'
 
 import { reactIcons } from '../../../constants/icons'
@@ -15,7 +15,7 @@ export const InsightsTitle: FC<InsightsTitleProps> = ({ name, open, onClick }) =
     const { classes } = useStyles()
 
     return (
-        <ListItem button dense onClick={onClick}>
+        <ListItemButton dense onClick={onClick}>
             <Grid container className={classes.collectionTitle} justifyContent="space-between" alignItems="center" wrap="nowrap">
                 <Grid item>
                     <Typography variant="h6">{name}</Typography>
@@ -23,6 +23,6 @@ export const InsightsTitle: FC<InsightsTitleProps> = ({ name, open, onClick }) =
 
                 {open && <Grid item>{cloneElement(reactIcons.chevronRight, { color: 'action' })}</Grid>}
             </Grid>
-        </ListItem>
+        </ListItemButton>
     )
 }

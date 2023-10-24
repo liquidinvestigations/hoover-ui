@@ -10,14 +10,13 @@ import { useSharedStore } from '../../SharedStoreProvider'
 
 import { AggregationFilter } from './AggregationFilter/AggregationFilter'
 
-import type { Terms } from '../../../backend/buildSearchQuery'
-import type { Aggregation, Bucket, SourceField } from '../../../Types'
+import type { Aggregation, Bucket, SourceField, Terms } from '../../../Types'
 
 interface TermsAggregationFilterProps {
     title: ReactElement | string
     field: SourceField
-    queryFilter: Terms
-    queryFacets: number
+    queryFilter?: Terms
+    queryFacets?: number
     aggregations?: Aggregation
     loading: boolean
     loadingETA: number

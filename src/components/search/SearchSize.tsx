@@ -1,4 +1,4 @@
-import { Grid, MenuItem, Select, Theme, Typography } from '@mui/material'
+import { Grid, MenuItem, MenuProps, Select, Theme, Typography } from '@mui/material'
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput'
 import { T } from '@tolgee/react'
 import { FC } from 'react'
@@ -49,7 +49,7 @@ export const SearchSize: FC<SearchSizeProps> = ({ page, size }) => {
                     MenuProps={
                         {
                             'data-test': 'size-menu',
-                        } as any
+                        } as Partial<MenuProps>
                     }>
                     {SIZE_OPTIONS.map((option) => (
                         <MenuItem key={option} value={option}>

@@ -1,4 +1,4 @@
-import { CircularProgress, Collapse, Fade, Grid, IconButton, ListItem, Typography } from '@mui/material'
+import { CircularProgress, Collapse, Fade, Grid, IconButton, ListItemButton, Typography } from '@mui/material'
 import { cloneElement, FC, MouseEvent as ReactMouseEvent, ReactNode, RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { reactIcons } from '../../../constants/icons'
@@ -92,7 +92,7 @@ export const Expandable: FC<ExpandableProps> = ({
         const toggle = () => setOpenState && setOpenState(!openState)
 
         return (
-            <ListItem dense button onClick={toggle} className={cx(classes.header, { [classes.enabled]: contentVisible })} disabled={!contentVisible}>
+            <ListItemButton dense onClick={toggle} className={cx(classes.header, { [classes.enabled]: contentVisible })} disabled={!contentVisible}>
                 <Fade in={loading} unmountOnExit>
                     <div>
                         <ThinProgress eta={loadingETA || 0} height={loadingHeight} />
@@ -132,7 +132,7 @@ export const Expandable: FC<ExpandableProps> = ({
                         </Grid>
                     )}
                 </Grid>
-            </ListItem>
+            </ListItemButton>
         )
     }, [
         cx,

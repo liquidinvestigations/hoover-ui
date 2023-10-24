@@ -1,4 +1,4 @@
-import { Collapse, Grid, IconButton, ListItem, Menu, MenuItem, Typography } from '@mui/material'
+import { Collapse, Grid, IconButton, ListItemButton, Menu, MenuItem, Typography } from '@mui/material'
 import { DateTime, DurationUnit } from 'luxon'
 import { observer } from 'mobx-react-lite'
 import { cloneElement, FC, useCallback, useEffect, useMemo, useState } from 'react'
@@ -57,9 +57,9 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
     }
 
     const [anchorPosition, setAnchorPosition] = useState<{ left: number; top: number } | undefined>()
-    const [selectedBars, setSelectedBars] = useState<string[]>()
+    const [selectedBars, setSelectedBars] = useState<SourceField[]>()
 
-    const handleSelect = (event: MouseEvent, bars: string[]) => {
+    const handleSelect = (event: MouseEvent, bars: SourceField[]) => {
         if (bars.length) {
             setSelectedBars(bars)
             setAnchorPosition({ left: event.clientX, top: event.clientY })
@@ -69,11 +69,11 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
     const handleBarMenuClose = () => setAnchorPosition(undefined)
 
     const handleIntervalsChange = useCallback(
-        (include: string[]) => {
+        (include: SourceField[]) => {
             handleBarMenuClose()
 
             const { [field]: prevFilter, ...restFilters } = query?.filters || {}
-            const { _intervals, ...restParams } = prevFilter || {}
+            const { intervals: _intervals, ...restParams } = prevFilter || {}
 
             if (include.length) {
                 search({ filters: { [field]: { intervals: { include }, ...restParams }, ...restFilters }, page: defaultSearchParams.page })
@@ -96,7 +96,7 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
         const { intervals } = prevFilter || {}
 
         handleIntervalsChange(
-            (intervals?.include || []).filter((v: string) => {
+            (intervals?.include || []).filter((v: SourceField) => {
                 return !selectedBars?.includes(v)
             }),
         )
@@ -186,7 +186,7 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
 
     return (
         <>
-            <ListItem onClick={toggle} button dense className={classes.histogramTitle}>
+            <ListItemButton onClick={toggle} dense className={classes.histogramTitle}>
                 <Grid container className={classes.histogramTitle} justifyContent="space-between" alignItems="center" wrap="nowrap">
                     <Grid item>
                         <Typography className={classes.title}>{title}</Typography>
@@ -201,7 +201,7 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
                         </IconButton>
                     </Grid>
                 </Grid>
-            </ListItem>
+            </ListItemButton>
 
             <Collapse in={open}>
                 <div className={classes.chartBox}>

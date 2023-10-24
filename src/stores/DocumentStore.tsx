@@ -191,10 +191,10 @@ export class DocumentStore {
                     }
                 })
             })
-            .finally(() => {
-                runInAction(async () => {
-                    await this.getDocumentInfo()
-                    this.documentSearchStore.search()
+            .finally(async () => {
+                await this.getDocumentInfo()
+                void this.documentSearchStore.search()
+                runInAction(() => {
                     this.loading = false
                 })
             })

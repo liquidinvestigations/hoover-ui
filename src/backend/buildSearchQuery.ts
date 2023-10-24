@@ -2,19 +2,25 @@ import { DateTime } from 'luxon'
 
 import { aggregationFields } from '../constants/aggregationFields'
 import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL, DEFAULT_OPERATOR, HIGHLIGHT_SETTINGS, PRIVATE_FIELDS } from '../constants/general'
-import { SearchQueryParams, SearchQueryType, SourceField } from '../Types'
+import { Interval, SearchQueryParams, SearchQueryType, SourceField, Terms } from '../Types'
 import { daysInMonth } from '../utils/utils'
+
+import type {
+    AggregationsAggregationContainer,
+    QueryDslQueryContainer,
+    MsearchMultisearchBody,
+    Sort,
+    SortOptions,
+} from '@elastic/elasticsearch/lib/api/typesWithBodyKey'
+
+interface MsearchMultisearchBodyWithCollections extends MsearchMultisearchBody {
+    collections: string[]
+}
 
 export interface SearchFields {
     all: string[]
     highlight: string[]
     _source: string[]
-}
-
-export interface Terms {
-    include?: SourceField[]
-    exclude?: SourceField[]
-    missing?: 'false' | 'true'
 }
 
 export interface Field {
@@ -25,12 +31,12 @@ export interface Field {
             field: SourceField
             size: number
         }
-        range?: {}
-        missing?: {}
-        date_histogram?: {}
+        range?: object
+        missing?: object
+        date_histogram?: object
     }
-    filterClause?: any
-    filterExclude?: any
+    filterClause?: QueryDslQueryContainer | QueryDslQueryContainer[] | null
+    filterExclude?: QueryDslQueryContainer | QueryDslQueryContainer[] | null
     filterMissing?: boolean | null
 }
 
@@ -41,8 +47,8 @@ const expandPrivate = (field: SourceField, uuid: string) => {
     return field
 }
 
-const buildQuery = (q: string, filters: Record<SourceField, any>, searchFields: SearchFields, excludedFields: string[]) => {
-    const qs = {
+const buildQuery = (q: string, filters: Record<SourceField, Terms>, searchFields: SearchFields, excludedFields: string[]): QueryDslQueryContainer => {
+    const qs: QueryDslQueryContainer = {
         query_string: {
             query: q,
             default_operator: DEFAULT_OPERATOR,
@@ -77,11 +83,13 @@ const buildQuery = (q: string, filters: Record<SourceField, any>, searchFields: 
     return qs
 }
 
-const buildSortQuery = (order: string[][] | undefined) =>
+const buildSortQuery = (order: string[][] | undefined): Sort =>
     order
         ?.reverse()
         .map(([field, direction = 'asc']) =>
-            field.startsWith('_') ? { [field]: { order: direction } } : { [field]: { order: direction, missing: '_last' } },
+            field.startsWith('_')
+                ? ({ [field]: { order: direction } } as SortOptions)
+                : ({ [field]: { order: direction, missing: '_last' } } as SortOptions),
         ) || []
 
 const buildTermsField = (field: SourceField, uuid: string, terms: Terms, page = 1, size = DEFAULT_FACET_SIZE): Field => {
@@ -129,8 +137,6 @@ const buildTermsField = (field: SourceField, uuid: string, terms: Terms, page = 
     }
 }
 
-export type Interval = 'day' | 'hour' | 'month' | 'week' | 'year'
-
 const intervalFormat = (interval: Interval, param: string) => {
     switch (interval) {
         case 'year':
@@ -165,17 +171,10 @@ const intervalFormat = (interval: Interval, param: string) => {
     }
 }
 
-export interface HistogramParams {
-    interval?: Interval
-    intervals?: Terms
-    from?: string
-    to?: string
-}
-
 const buildHistogramField = (
     field: SourceField,
     uuid: string,
-    { interval = DEFAULT_INTERVAL, intervals }: HistogramParams = {},
+    { interval = DEFAULT_INTERVAL, intervals }: Terms = {},
     page = 1,
     size = DEFAULT_FACET_SIZE,
 ) => {
@@ -312,11 +311,15 @@ const buildMissingField = (field: SourceField, uuid: string) => ({
     },
 })
 
-const prepareFilter = (field: Field) => {
-    const filter = []
+const prepareFilter = (field: Field): QueryDslQueryContainer[] | undefined => {
+    const filter: QueryDslQueryContainer[] = []
 
     if (field.filterClause) {
-        filter.push(field.filterClause)
+        if (Array.isArray(field.filterClause)) {
+            filter.push(...field.filterClause)
+        } else {
+            filter.push(field.filterClause)
+        }
     }
 
     if (field.filterExclude) {
@@ -337,8 +340,8 @@ const prepareFilter = (field: Field) => {
     }
 }
 
-const buildFilter = (fields: Field[]) => {
-    const filter: any = []
+const buildFilter = (fields: Field[]): QueryDslQueryContainer => {
+    const filter: QueryDslQueryContainer[] = []
 
     fields.forEach((field) => {
         const fieldFilter = prepareFilter(field)
@@ -359,7 +362,7 @@ const buildFilter = (fields: Field[]) => {
     }
 }
 
-const buildAggs = (fields: Field[]) =>
+const buildAggs = (fields: Field[]): Record<string, AggregationsAggregationContainer> =>
     fields.reduce(
         (result, field) => ({
             ...result,
@@ -391,7 +394,7 @@ const buildSearchQuery = (
     searchFields: SearchFields,
     excludedFields: string[],
     uuid: string,
-) => {
+): MsearchMultisearchBodyWithCollections => {
     const query = buildQuery(q, filters, searchFields, excludedFields)
     const sort = buildSortQuery(order)
     const significantFields = fieldList === '*' ? '*' : [...fieldList, ...Object.keys(filters)]
@@ -415,7 +418,7 @@ const buildSearchQuery = (
     const postFilter = buildFilter(fields)
     const aggs = buildAggs(fields)
 
-    const highlightFields: Record<string, any> = {}
+    const highlightFields: Record<string, typeof HIGHLIGHT_SETTINGS> = {}
     searchFields.highlight.forEach((field) => {
         highlightFields[field] = HIGHLIGHT_SETTINGS
     })

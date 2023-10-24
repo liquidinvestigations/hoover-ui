@@ -24,7 +24,7 @@ export const FiltersChips: FC = observer(() => {
 
     useEffect(() => {
         if (query?.filters) {
-            const filtersArray: any[] = []
+            const filtersArray: string[] = []
 
             Object.entries(query.filters).forEach(([key, values]) => {
                 let filter = ''

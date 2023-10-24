@@ -2,7 +2,7 @@ import { DateTime } from 'luxon'
 import qs, { ParsedQs } from 'qs'
 
 import { aggregationFields } from '../constants/aggregationFields'
-import { SearchQueryParams, SourceField } from '../Types'
+import { Interval, SearchQueryParams, SourceField } from '../Types'
 
 import { daysInMonth } from './utils'
 
@@ -64,7 +64,7 @@ export const clearQuotedParam = (param: string) => param.replace(/#/g, ' ').repl
 export interface Term {
     term: string
     format: string
-    interval?: number | string
+    interval?: Interval
 }
 
 export const createSearchParams = (term: string | Term, field?: SourceField) => {
@@ -122,7 +122,7 @@ export const createSearchParams = (term: string | Term, field?: SourceField) => 
                 params.filters[field].interval = term.interval
             }
         } else {
-            params.filters[field] = { include: [term] }
+            params.filters[field] = { include: [term as SourceField] }
         }
     } else if (field && typeof term === 'string') {
         params.q = `${field}:"${clearQuotedParam(term)}"`

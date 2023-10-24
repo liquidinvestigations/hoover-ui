@@ -3,11 +3,12 @@ import { blue, grey } from '@mui/material/colors'
 import cx from 'classnames'
 import React, { FC, Fragment, useCallback, useEffect, useRef, useState } from 'react'
 
+import { SourceField } from '../../../../Types'
 import { formatThousands } from '../../../../utils/utils'
 
 export interface HistogramBar {
     label: string
-    value: string
+    value: SourceField
     count: number
     barWidth: number
     barHeight: number
@@ -21,8 +22,8 @@ interface HistogramChartProps {
     axisHeight: number
     data?: HistogramBar[]
     selected?: string[]
-    onSelect?: (event: MouseEvent, bar: string[]) => void
-    onClick?: (event: MouseEvent, bar: string) => void
+    onSelect?: (event: MouseEvent, bar: SourceField[]) => void
+    onClick?: (event: MouseEvent, bar: SourceField) => void
     preserveDragArea?: boolean
 }
 
@@ -59,7 +60,7 @@ export const HistogramChart: FC<HistogramChartProps> = ({
         [width],
     )
 
-    const handleBarClick = (bar: string) => (event: React.MouseEvent) => {
+    const handleBarClick = (bar: SourceField) => (event: React.MouseEvent) => {
         if (onSelect) {
             onSelect(event.nativeEvent, [bar])
         } else if (onClick) {

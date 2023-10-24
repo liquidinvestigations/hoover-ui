@@ -5,9 +5,9 @@ type Tuple = [number, number]
 const BR_NODE_NAME = 'BR'
 
 // This function flattens the DOM nodes into an array, including nested nodes.
-export const flattenDOMNodes = (nodes: HTMLCollection): any[] => {
-    const traverseNodes = (node: Node): any[] =>
-        node.nodeType === Node.ELEMENT_NODE ? [node as any, ...Array.from(node.childNodes).flatMap((child) => traverseNodes(child))] : []
+export const flattenDOMNodes = (nodes: HTMLCollection): Element[] => {
+    const traverseNodes = (node: Node): Element[] =>
+        node.nodeType === Node.ELEMENT_NODE ? [node as Element, ...Array.from(node.childNodes).flatMap((child) => traverseNodes(child))] : []
 
     return Array.from(nodes).flatMap((node) => traverseNodes(node))
 }
@@ -26,7 +26,7 @@ export const getMatchedIndexes = (textContent: string, query: string): number[] 
 }
 
 // This function generates an array of tuples representing positions in the flattened DOM nodes.
-export const getTuples = (nodes: any[]): Tuple[] => {
+export const getTuples = (nodes: Element[]): Tuple[] => {
     const tuples: Tuple[] = []
 
     nodes.forEach((node, i) => {
@@ -40,7 +40,7 @@ export const getTuples = (nodes: any[]): Tuple[] => {
 }
 
 // This function gets the text content of flattened DOM nodes and converts it to lowercase.
-export const getTextContent = (nodes: any[]) =>
+export const getTextContent = (nodes: Element[]) =>
     nodes.reduce((prev, curr) => {
         if (curr.nodeName === BR_NODE_NAME) return prev + ' '
         return prev + curr?.innerHTML?.toLowerCase() || ''

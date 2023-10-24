@@ -2,6 +2,7 @@ import { DateTime } from 'luxon'
 import { observer } from 'mobx-react-lite'
 import { FC, useMemo } from 'react'
 
+import { SourceField } from '../../../Types'
 import { createSearchUrl } from '../../../utils/queryUtils'
 import { Loading } from '../../common/Loading/Loading'
 import { formatsLabel, formatsValue } from '../../search/filters/DateHistogramFilter'
@@ -53,7 +54,7 @@ export const Histogram: FC = observer(() => {
                 }
                 return {
                     label: formatLabel(key_as_string as string),
-                    value: formatValue(key_as_string as string),
+                    value: formatValue(key_as_string as string) as SourceField,
                     count: doc_count,
                     missingBarsCount,
                 }

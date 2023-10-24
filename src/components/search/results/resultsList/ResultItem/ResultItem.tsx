@@ -301,7 +301,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                             </Box>
                         )}
 
-                        {fields.tags?.filter((tag: string) => !specialTagsList.includes(tag)).length > 0 && (
+                        {fields.tags && fields.tags.filter((tag: string) => !specialTagsList.includes(tag)).length > 0 && (
                             <Box>
                                 <Typography variant="caption">
                                     <strong>

@@ -11,7 +11,7 @@ import { SearchQueryParams, SourceField } from '../../Types'
 import { buildSearchQuerystring, createSearchParams, createSearchUrl, rollupParams, Term } from '../../utils/queryUtils'
 import { useSharedStore } from '../SharedStoreProvider'
 
-function customizer(objValue: any, srcValue: []) {
+function customizer(objValue: [], srcValue: []) {
     if (Array.isArray(objValue)) {
         return objValue.concat(srcValue)
     }

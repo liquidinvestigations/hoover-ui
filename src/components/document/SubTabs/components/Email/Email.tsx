@@ -16,28 +16,33 @@ import { useStyles } from './Email.styles'
 const tableFields: Partial<
     Record<
         SourceField,
-        { label: ReactElement; searchKey?: SourceField; linkVisible: (term: any) => boolean; format?: (term: string, locale?: string) => string }
+        {
+            label: ReactElement
+            searchKey?: SourceField
+            linkVisible: (term: string | string[]) => boolean
+            format?: (term: string, locale?: string) => string
+        }
     >
 > = {
     from: {
         label: <T keyName="email_from">From</T>,
         searchKey: 'from.keyword',
-        linkVisible: (term: string[]) => !!term?.length,
+        linkVisible: (term: string | string[]) => !!term?.length,
     },
     to: {
         label: <T keyName="email_to">To</T>,
         searchKey: 'to.keyword',
-        linkVisible: (term: string[]) => !!term?.length,
+        linkVisible: (term: string | string[]) => !!term?.length,
     },
     date: {
         label: <T keyName="email_date">Date</T>,
         format: formatDateTime,
-        linkVisible: (term: string) => !!term,
+        linkVisible: (term: string | string[]) => !!term,
     },
     subject: {
         label: <T keyName="email_subject">Subject</T>,
         format: (term: string) => term || '---',
-        linkVisible: (term: string[]) => !!term?.length,
+        linkVisible: (term: string | string[]) => !!term?.length,
     },
 }
 
@@ -64,7 +69,9 @@ export const Email = observer(() => {
 
     const hash = { preview: { c: collection, i: digest }, tab: hashState.tab }
 
-    const ensureArray = (value: any) => (Array.isArray(value) ? value : [value])
+    const ensureArray = (
+        value: string | number | boolean | string[] | [] | Record<string, string>,
+    ): (string | number | boolean | Record<string, string>)[] => (Array.isArray(value) ? value : [value])
 
     return (
         <>
@@ -103,13 +110,13 @@ export const Email = observer(() => {
                         )
                     })}
 
-                    {data?.content['message-id' as keyof DocumentContent] &&
+                    {data?.content['message-id'] &&
                         !printMode &&
-                        ensureArray(data.content['message-id' as keyof DocumentContent]).map((messageId, index) => (
+                        ensureArray(data.content['message-id']).map((messageId, index) => (
                             <TableRow key={index}>
                                 <TableCell colSpan={2}>
                                     <Link
-                                        href={createSearchUrl(messageId, collection as Category, 'in-reply-to' as SourceField, hash)}
+                                        href={createSearchUrl(messageId as string, collection as Category, 'in-reply-to' as SourceField, hash)}
                                         shallow
                                         target="_blank">
                                         <T keyName="search_replying_emails">search e-mails replying to this one</T>
@@ -118,12 +125,15 @@ export const Email = observer(() => {
                             </TableRow>
                         ))}
 
-                    {data?.content['thread-index' as keyof DocumentContent] &&
+                    {data?.content['thread-index'] &&
                         !printMode &&
-                        ensureArray(data?.content['thread-index' as keyof DocumentContent]).map((threadIndex, index) => (
+                        ensureArray(data.content['thread-index']).map((threadIndex, index) => (
                             <TableRow key={index}>
                                 <TableCell colSpan={2}>
-                                    <Link href={createSearchUrl(threadIndex, collection as Category, 'thread-index', hash)} shallow target="_blank">
+                                    <Link
+                                        href={createSearchUrl(threadIndex as string, collection as Category, 'thread-index', hash)}
+                                        shallow
+                                        target="_blank">
                                         <T keyName="search_thread_emails">search e-mails in this thread</T>
                                     </Link>
                                 </TableCell>

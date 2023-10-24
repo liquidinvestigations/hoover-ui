@@ -56,8 +56,10 @@ export const TIFFViewer: FC<{ url: string }> = ({ url }) => {
                 let ifd
                 try {
                     ifd = decode(chunksAll)
-                } catch (e: any) {
-                    setError(e.message)
+                } catch (e: unknown) {
+                    if (e instanceof Error) {
+                        setError(e.message)
+                    }
                     setLoading(false)
                     return
                 }

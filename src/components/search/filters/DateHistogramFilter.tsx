@@ -4,7 +4,6 @@ import { DateTime } from 'luxon'
 import { observer } from 'mobx-react-lite'
 import { FC, ReactElement, useCallback } from 'react'
 
-import { HistogramParams, Terms } from '../../../backend/buildSearchQuery'
 import { DEFAULT_FACET_SIZE, DEFAULT_INTERVAL } from '../../../constants/general'
 import { formatThousands } from '../../../utils/utils'
 import { Expandable } from '../../common/Expandable/Expandable'
@@ -14,9 +13,9 @@ import { AggregationFilter } from './AggregationFilter/AggregationFilter'
 import { DateRangeFilter } from './DateRangeFilter'
 import { IntervalSelect } from './IntervalSelect'
 
-import type { Aggregation, Bucket, SourceField } from '../../../Types'
+import type { Aggregation, Bucket, Interval, SourceField, Terms } from '../../../Types'
 
-export const formatsLabel: Record<string, string> = {
+export const formatsLabel: Record<Interval, string> = {
     year: 'y',
     month: 'MMMM y',
     week: "y, 'Week' W",
@@ -24,7 +23,7 @@ export const formatsLabel: Record<string, string> = {
     hour: 'd MMM y, h a',
 }
 
-export const formatsValue: Record<string, string> = {
+export const formatsValue: Record<Interval, string> = {
     year: 'yyyy',
     month: 'yyyy-MM',
     week: 'yyyy-MM-dd',
@@ -35,7 +34,7 @@ export const formatsValue: Record<string, string> = {
 interface DateHistogramFilterProps {
     title: ReactElement | string
     field: SourceField
-    queryFilter?: HistogramParams & Terms
+    queryFilter?: Terms
     queryFacets?: number
     aggregations?: Aggregation
     loading: boolean

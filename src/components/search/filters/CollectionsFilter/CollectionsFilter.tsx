@@ -1,4 +1,4 @@
-import { Checkbox, List, ListItem, ListItemText, Typography } from '@mui/material'
+import { Checkbox, List, ListItemButton, ListItemText, Typography } from '@mui/material'
 import { T, useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
@@ -34,7 +34,7 @@ export const CollectionsFilter: FC = observer(() => {
                     {collectionsData
                         .filter((collection) => collection.name.includes(categoryQuickFilter.collections || ''))
                         .map((collection) => (
-                            <ListItem key={collection.name} role={undefined} dense button onClick={handleSearchCollectionsChange(collection.name)}>
+                            <ListItemButton key={collection.name} role={undefined} dense onClick={handleSearchCollectionsChange(collection.name)}>
                                 <Checkbox
                                     size="small"
                                     tabIndex={-1}
@@ -71,10 +71,10 @@ export const CollectionsFilter: FC = observer(() => {
                                     className={classes.docCount}
                                     disableTypography
                                 />
-                            </ListItem>
+                            </ListItemButton>
                         ))}
                     {collectionsData.length > 1 && (
-                        <ListItem dense button onClick={handleAllSearchCollectionsToggle}>
+                        <ListItemButton dense onClick={handleAllSearchCollectionsToggle}>
                             <Checkbox
                                 size="small"
                                 tabIndex={-1}
@@ -85,7 +85,7 @@ export const CollectionsFilter: FC = observer(() => {
                             />
 
                             <ListItemText primary={t('select_all', 'Select all')} />
-                        </ListItem>
+                        </ListItemButton>
                     )}
                 </>
             )}

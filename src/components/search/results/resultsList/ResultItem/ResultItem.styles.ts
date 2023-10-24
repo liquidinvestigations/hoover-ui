@@ -7,8 +7,8 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         position: 'relative',
         marginTop: theme.spacing(1),
         borderLeft: '3px solid transparent',
-        transition: (theme.transitions as any).create('border', {
-            duration: (theme.transitions as any).duration.short,
+        transition: theme.transitions.create('border', {
+            duration: theme.transitions.duration.short,
         }),
     },
 

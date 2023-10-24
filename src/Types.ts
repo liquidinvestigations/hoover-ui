@@ -72,6 +72,18 @@ export interface LocationsData {
 
 export type SearchQueryType = 'aggregations' | 'missing' | 'results'
 
+export type Interval = 'day' | 'hour' | 'month' | 'week' | 'year'
+
+export interface Terms {
+    include?: SourceField[]
+    exclude?: SourceField[]
+    missing?: 'false' | 'true'
+    interval?: Interval
+    intervals?: Terms
+    from?: string
+    to?: string
+}
+
 export interface SearchQueryParams {
     q: string
     page: number
@@ -79,8 +91,8 @@ export interface SearchQueryParams {
     collections: string[]
     excludedFields?: string[]
     order?: string[][]
-    facets?: Record<string, any>
-    filters?: Record<string, any>
+    facets?: Record<string, number>
+    filters?: Record<string, Terms>
 }
 
 export interface BatchSearchQueryParams {
@@ -215,7 +227,7 @@ export interface Hit {
     _id: string
     _index: string
     _score: number
-    _source: Record<SourceField | ResultField, any>
+    _source: DocumentContent
     _type: string
     _url_rel: string
 }
@@ -236,7 +248,7 @@ export interface AggregationValues {
 export interface Aggregation {
     count: { value: number }
     doc_count: number
-    meta: any
+    meta: never
     values: AggregationValues
 }
 
@@ -305,7 +317,7 @@ export interface Eta {
 export type AsyncTaskStatus = 'done' | 'pending'
 
 export interface AsyncTaskData {
-    args: any
+    args: never
     collections: string[]
     date_created: string
     date_finished: string
@@ -375,6 +387,12 @@ export interface DocumentContent {
     'word-count': number
     tree: string
     pgp: boolean
+    from?: string
+    subject?: string
+    tags?: string[]
+    'priv-tags.*': string[]
+    'message-id'?: string
+    'thread-index'?: string
 }
 
 export interface DocumentData {

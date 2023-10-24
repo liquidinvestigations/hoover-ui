@@ -6,7 +6,7 @@ import { Entries } from 'type-fest'
 import { deleteFilterOperands } from '../../components/search/filters/FiltersChips/utils'
 import { aggregationCategories, AggregationField, aggregationFields } from '../../constants/aggregationFields'
 import { reactIcons } from '../../constants/icons'
-import { AggregationsKey, Category, SearchQueryParams, SourceField } from '../../Types'
+import { AggregationsKey, Category, SearchQueryParams, SourceField, Terms } from '../../Types'
 import { defaultSearchParams } from '../../utils/queryUtils'
 import { getClosestInterval } from '../../utils/utils'
 
@@ -112,7 +112,7 @@ export class FiltersStore {
         this.searchStore.search({ ...params, page: defaultSearchParams.page }, { keepFromClearing })
     }
 
-    handleChange = (key: string, value: any, resetPage: boolean = false) => {
+    handleChange = (key: SourceField, value: Terms, resetPage: boolean = false) => {
         const { [key]: _prevFilter, ...restFilters } = this.searchStore.query?.filters ?? {}
 
         if (resetPage) {
@@ -123,7 +123,7 @@ export class FiltersStore {
         }
     }
 
-    private processFilterParams = (queryFilter: any, value: any, triState: boolean = false) => {
+    private processFilterParams = (queryFilter: Terms | undefined, value: SourceField, triState: boolean = false) => {
         const include = new Set(queryFilter?.include || [])
         const exclude = new Set(queryFilter?.exclude || [])
 
@@ -144,7 +144,7 @@ export class FiltersStore {
         }
     }
 
-    private processFilterMissing = (queryFilter: any) => {
+    private processFilterMissing = (queryFilter: Terms) => {
         let missing
 
         if (queryFilter?.missing === 'true') {
@@ -159,9 +159,9 @@ export class FiltersStore {
     }
 
     handleAggregationChange =
-        (field: SourceField, value: any, triState: boolean = false) =>
+        (field: SourceField, value: SourceField, triState: boolean = false) =>
         () => {
-            const queryFilter = this.searchStore.query?.filters?.[field]
+            const queryFilter = this.searchStore.query?.filters?.[field] ?? {}
             const { include, exclude } = this.processFilterParams(queryFilter, value, triState)
 
             this.handleChange(field, {
@@ -172,16 +172,16 @@ export class FiltersStore {
         }
 
     handleMissingChange = (field: SourceField) => () => {
-        const queryFilter = this.searchStore.query?.filters?.[field]
+        const queryFilter = this.searchStore.query?.filters?.[field] ?? {}
         this.handleChange(field, {
             ...queryFilter,
-            missing: queryFilter.missing ? undefined : this.processFilterMissing(queryFilter),
+            missing: queryFilter?.missing ? undefined : this.processFilterMissing(queryFilter).missing ? 'true' : 'false',
         })
     }
 
     handleDateRangeChange = (field: SourceField) => (range?: { from?: string; to?: string }) => {
         const queryFilter = this.searchStore.query?.filters?.[field]
-        const { _from, _to, interval, _intervals, ...rest } = queryFilter || {}
+        const { from: _from, to: _to, interval, intervals: _intervals, ...rest } = queryFilter || {}
         if (range?.from && range?.to) {
             this.handleChange(field, { ...range, interval: getClosestInterval({ ...range, interval }), ...rest }, true)
         } else {
@@ -189,9 +189,9 @@ export class FiltersStore {
         }
     }
 
-    handleDateSelectionChange = (field: SourceField, value: string, resetPage: boolean) => () => {
+    handleDateSelectionChange = (field: SourceField, value: SourceField, resetPage?: boolean) => () => {
         const queryFilter = this.searchStore.query?.filters?.[field]
-        const { intervals, _missing, ...rest } = queryFilter || {}
+        const { intervals, missing: _missing, ...rest } = queryFilter || {}
         const newIntervals = this.processFilterParams(intervals, value)
         if (newIntervals.include?.length /*|| newIntervals.missing*/) {
             this.handleChange(field, { intervals: newIntervals, ...rest }, resetPage)
@@ -208,7 +208,7 @@ export class FiltersStore {
         const { [field]: _prevFilter, ...restFilters } = this.searchStore.query?.filters ?? {}
         const { [field]: _prevFacet, ...restFacets } = this.searchStore.query?.facets ?? {}
 
-        this.triggerSearch({ filters: { [field]: [], ...restFilters }, facets: { ...restFacets } })
+        this.triggerSearch({ filters: { [field]: [] as Terms, ...restFilters }, facets: { ...restFacets } })
     }
 
     loadMissing = (field: SourceField) => {

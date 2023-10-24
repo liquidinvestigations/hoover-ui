@@ -13,8 +13,7 @@ import { Pagination } from '../Pagination/Pagination'
 
 import { useStyles } from './AggregationFilter.styles'
 
-import type { Terms } from '../../../../backend/buildSearchQuery'
-import type { AggregationValues, Bucket, SourceField } from '../../../../Types'
+import type { AggregationValues, Bucket, SourceField, Terms } from '../../../../Types'
 
 interface AggregationFilterProps {
     field: SourceField
@@ -22,7 +21,7 @@ interface AggregationFilterProps {
     queryFacets?: number
     aggregations?: AggregationValues
     loading: boolean
-    onChange: (field: SourceField, ...rest: any) => () => void
+    onChange: (field: SourceField, value: SourceField, triState?: boolean) => () => void
     triState?: boolean
     bucketLabel?: (bucket: Bucket) => ReactElement | string
     bucketSubLabel?: (bucket: Bucket) => ReactElement | string

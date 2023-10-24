@@ -28,6 +28,16 @@ import { SubTabs } from './SubTabs/SubTabs'
 import { TabPanel } from './TabPanel/TabPanel'
 import { Toolbar, ToolbarLink } from './Toolbar/Toolbar'
 
+interface TabData {
+    name: string | ReactElement
+    icon: ReactElement
+    visible: boolean
+    content: ReactElement
+    padding?: number
+    searchLoading?: boolean
+    searchCount?: number
+}
+
 export const Document = observer(() => {
     const { t } = useTranslate()
     const { classes } = useStyles()
@@ -157,11 +167,12 @@ export const Document = observer(() => {
         indicator: classes.tabsIndicator,
     }
 
-    const hasPreview =
+    const hasPreview = !!(
         data.content['has-pdf-preview'] ||
         (docRawUrl && data.content['content-type'] && PREVIEWABLE_MIME_TYPE_SUFFEXES.some((x) => data.content['content-type'].endsWith(x)))
+    )
 
-    const tabsData = [
+    const tabsData: TabData[] = [
         {
             name: data.content.filetype,
             icon: reactIcons.contentTab,
@@ -239,7 +250,7 @@ export const Document = observer(() => {
         )
     }
 
-    const getSearchCount = (tabData: any, index: number) => {
+    const getSearchCount = (tabData: TabData, index: number) => {
         if (!query || query.length < 3) return undefined
         if (!Object.prototype.hasOwnProperty.call(tabData, 'searchLoading')) return undefined
         return (

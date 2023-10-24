@@ -2,8 +2,7 @@ import { Checkbox, ListItem, ListItemText, Typography } from '@mui/material'
 import { cloneElement, FC, ReactElement } from 'react'
 import Highlighter from 'react-highlight-words'
 
-import { Terms } from '../../../../backend/buildSearchQuery'
-import { Bucket, SourceField } from '../../../../Types'
+import { Bucket, SourceField, Terms } from '../../../../Types'
 import { formatThousands, getTagIcon, getTypeIcon } from '../../../../utils/utils'
 
 import { useStyles } from './AggregationFilterBucket.styles'
@@ -13,7 +12,7 @@ interface AggregationFilterBucketProps {
     queryFilter?: Terms
     bucket: Bucket
     loading: boolean
-    onChange: (field: SourceField, ...rest: any) => () => void
+    onChange: (field: SourceField, value: SourceField, triState?: boolean) => () => void
     triState?: boolean
     bucketLabel?: (bucket: Bucket) => ReactElement | string
     bucketSubLabel?: (bucket: Bucket) => ReactElement | string

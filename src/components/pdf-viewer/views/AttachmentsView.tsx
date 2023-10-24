@@ -1,4 +1,4 @@
-import { List, ListItem, ListItemIcon, ListItemText } from '@mui/material'
+import { List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 import { useTranslate } from '@tolgee/react'
 import { FC, useEffect, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
@@ -14,7 +14,7 @@ const useStyles = makeStyles()((theme) => ({
 }))
 
 interface AttachmentFiles {
-    data: any
+    data: string | BlobPart
     fileName: string
 }
 
@@ -42,17 +42,17 @@ export const AttachmentsView: FC = () => {
         })()
     }, [doc])
 
-    const handleFileDownload = (fileName: string, data: any) => () => downloadFile(fileName, data)
+    const handleFileDownload = (fileName: string, data: string | BlobPart) => () => downloadFile(fileName, data)
 
     return (
         <div className={classes.container}>
             <List dense>
                 {attachments.length ? (
                     attachments.map(({ fileName, data }, index) => (
-                        <ListItem key={index} button onClick={handleFileDownload(fileName, data)}>
+                        <ListItemButton key={index} onClick={handleFileDownload(fileName, data)}>
                             <ListItemText primary={fileName} />
                             <ListItemIcon>{reactIcons.download}</ListItemIcon>
-                        </ListItem>
+                        </ListItemButton>
                     ))
                 ) : (
                     <ListItem>
