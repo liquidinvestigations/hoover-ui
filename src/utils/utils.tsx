@@ -11,7 +11,7 @@ import { ELLIPSIS_TERM_LENGTH } from '../constants/general'
 import { reactIcons } from '../constants/icons'
 import { specialTags } from '../constants/specialTags'
 
-import type { DocumentData, Hit } from '../Types'
+import type { DocumentData, Hit, Interval, Range } from '../Types'
 
 const typeIconsMap: Record<string, string> = {
     archive: 'typeArchive',
@@ -58,7 +58,8 @@ export const daysInMonth = (date: string) => {
 }
 
 const intervalsList = ['year', 'month', 'week', 'day', 'hour']
-export const getClosestInterval = (range: any) => {
+
+export const getClosestInterval = (range: Range): Interval => {
     const from = range.from + 'T00:00:00'
     const to = range.to + 'T23:59:59'
 
@@ -76,7 +77,7 @@ export const getClosestInterval = (range: any) => {
         }
     })
 
-    return selectedInterval
+    return selectedInterval as Interval
 }
 
 export const getBasePath = (docUrl: string) => url.parse(url.resolve(docUrl, './')).pathname
@@ -203,9 +204,13 @@ export const formatTitleCase = (name: string) => {
     )
 }
 
+interface NestedObject {
+    [key: string]: string | number | boolean | NestedObject
+}
+
 // $roots keeps previous parent properties as they will be added as a prefix for each prop.
 // $sep is just a preference if you want to seperate nested paths other than dot.
-export const flatten = (obj: Record<string, any>, roots: Record<string, any> = [], sep = '.'): Record<string, any> =>
+export const flatten = (obj: NestedObject, roots: string[] = [], sep = '.'): Record<string, string | number | boolean> =>
     Object
         // find props of given object
         .keys(obj)
@@ -219,7 +224,7 @@ export const flatten = (obj: Record<string, any>, roots: Record<string, any> = [
                     memo,
                     Object.prototype.toString.call(obj[prop]) === '[object Object]'
                         ? // keep working if value is an object
-                          flatten(obj[prop], roots.concat([prop]))
+                          flatten(obj[prop] as NestedObject, roots.concat([prop]))
                         : // include current prop and value and prefix prop with the roots
                           { [roots.concat([prop]).join(sep)]: obj[prop] },
                 ),

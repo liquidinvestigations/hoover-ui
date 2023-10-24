@@ -67,7 +67,7 @@ export const Email = observer(() => {
         setMenuPosition(undefined)
     }
 
-    const hash = { preview: { c: collection, i: digest }, tab: hashState.tab }
+    const hash = { preview: { c: collection!, i: digest! }, tab: hashState.tab }
 
     const ensureArray = (
         value: string | number | boolean | string[] | [] | Record<string, string>,

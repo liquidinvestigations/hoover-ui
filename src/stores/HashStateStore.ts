@@ -17,6 +17,8 @@ export interface HashState {
     histogram?: Record<string, boolean>
     findQuery?: string
     findIndex?: string
+    date?: boolean
+    collections?: string
 }
 
 export class HashStateStore {
@@ -50,7 +52,7 @@ export class HashStateStore {
         )
     }
 
-    setHashState = (params: Record<string, any>, pushHistory = true) => {
+    setHashState = (params: Record<string, unknown>, pushHistory = true) => {
         runInAction(() => {
             this.hashState = { ...this.hashState, ...params }
         })

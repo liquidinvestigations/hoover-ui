@@ -2,6 +2,7 @@ import { DateTime } from 'luxon'
 import qs, { ParsedQs } from 'qs'
 
 import { aggregationFields } from '../constants/aggregationFields'
+import { HashState } from '../stores/HashStateStore'
 import { Interval, SearchQueryParams, SourceField } from '../Types'
 
 import { daysInMonth } from './utils'
@@ -39,7 +40,7 @@ const LEGACY_PARAMS: Record<string, string> = {
     e: 'email-domains',
 }
 
-export const rollupParams = (query: Record<string, any>) =>
+export const rollupParams = (query: HashState) =>
     Object.fromEntries(
         Object.entries(query).map(([field, value]) => {
             const key = Object.keys(PARAMS_MAP).find((keyE) => PARAMS_MAP[keyE] === field)
@@ -133,7 +134,7 @@ export const createSearchParams = (term: string | Term, field?: SourceField) => 
     return params
 }
 
-export const createSearchUrl = (term: Term | string, collections: string | string[], field?: SourceField, hash?: Record<string, any>) => {
+export const createSearchUrl = (term: Term | string, collections: string | string[], field?: SourceField, hash?: HashState) => {
     const params = createSearchParams(term, field)
     const hashParams = hash ? '#' + qs.stringify(rollupParams(hash)) : ''
 

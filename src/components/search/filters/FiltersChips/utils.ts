@@ -1,16 +1,16 @@
 import { AST, BinaryAST, Node, NodeRangedTerm, NodeTerm } from 'lucene'
 
 import { aggregationFields } from '../../../../constants/aggregationFields'
-import { SourceField } from '../../../../Types'
+import { SourceField, Terms } from '../../../../Types'
 
-export const deleteFilterNode = (filters: { [key: string]: any }, node: Node) => {
+export const deleteFilterNode = (filters: Record<string, Terms>, node: Node) => {
     const nodeTerm = node as NodeTerm & NodeRangedTerm
 
     if (aggregationFields[node.field as SourceField]?.type === 'date') {
         let index
         const list = filters[nodeTerm.field].intervals?.include
 
-        if ((index = list?.indexOf(nodeTerm.term)) > -1) {
+        if (list && (index = list?.indexOf(nodeTerm.term as SourceField)) > -1) {
             list.splice(index, 1)
         }
 
@@ -19,16 +19,16 @@ export const deleteFilterNode = (filters: { [key: string]: any }, node: Node) =>
         }
 
         if (nodeTerm.boost === 1 && filters[nodeTerm.field].intervals?.missing) {
-            filters[nodeTerm.field].intervals.missing = undefined
+            filters[nodeTerm.field].intervals!.missing = undefined
         }
     } else if (nodeTerm.term) {
         let index
-        const filter = filters[nodeTerm.field]
+        const filter = filters[nodeTerm.field] as Terms
 
-        if ((index = filter.include?.indexOf(nodeTerm.term)) > -1) {
-            filter.include.splice(index, 1)
-        } else if ((index = filter.exclude?.indexOf(nodeTerm.term)) > -1) {
-            filter.exclude.splice(index, 1)
+        if ((index = filter.include?.indexOf(nodeTerm.term as SourceField))) {
+            filter.include?.splice(index || 0, 1)
+        } else if ((index = filter.exclude?.indexOf(nodeTerm.term as SourceField))) {
+            filter.exclude?.splice(index || 0, 1)
         } else if (nodeTerm.boost === 1 && filter.missing) {
             filter.missing = undefined
         }
@@ -37,7 +37,7 @@ export const deleteFilterNode = (filters: { [key: string]: any }, node: Node) =>
     return filters
 }
 
-export const deleteFilterOperands = (filters: { [key: string]: any }, node: AST | Node) => {
+export const deleteFilterOperands = (filters: Record<string, Terms>, node: AST | Node) => {
     if (node.field) {
         deleteFilterNode(filters, node as NodeTerm)
     }

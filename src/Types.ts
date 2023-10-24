@@ -353,6 +353,8 @@ export interface ChildDocument {
     size?: number
 }
 
+export type ValueOf<T> = T[keyof T]
+
 export interface DocumentContent {
     id: string
     filename: string[]
@@ -431,3 +433,10 @@ export interface DocumentInfo {
     page_count: number
     size_mb: number
 }
+export interface Range {
+    from?: string
+    to?: string
+    interval: string
+}
+
+export type MissingQueryFilter = { missing: string }

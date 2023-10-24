@@ -6,7 +6,7 @@ import { cloneElement, FC, ReactElement, useEffect, useRef, useState } from 'rea
 import { createDownloadUrl, createThumbnailSrc } from '../../../../../backend/api'
 import { ResultColumnFormat } from '../../../../../constants/availableColumns'
 import { reactIcons } from '../../../../../constants/icons'
-import { Hit } from '../../../../../Types'
+import { Hit, ValueOf } from '../../../../../Types'
 import { defaultSearchParams } from '../../../../../utils/queryUtils'
 import { documentViewUrl, formatDateTime, getPreviewParams, getTagIcon, getTypeIcon, humanFileSize, shortenName } from '../../../../../utils/utils'
 import { Loading } from '../../../../common/Loading/Loading'
@@ -62,10 +62,10 @@ export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index 
     const getValue = (path: string) => {
         const pathParts = path.split('.')
         let pathPart,
-            value: any = hit
+            value: ValueOf<Hit> = hit[pathParts[0] as keyof Hit]
 
         while ((pathPart = pathParts.shift())) {
-            value = value[pathPart as keyof Hit]
+            value = hit[pathPart as keyof Hit]
         }
         return value
     }
@@ -76,23 +76,23 @@ export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index 
 
         switch (format) {
             case 'string':
-                return value ? shortenName(value, 60) : null
+                return value && typeof value === 'string' ? shortenName(value, 60) : null
             case 'boolean':
                 return value ? 'yes' : 'no'
             case 'date':
-                return value ? formatDateTime(value, tolgee.getLanguage()) : null
+                return value && typeof value === 'string' ? formatDateTime(value, tolgee.getLanguage()) : null
             case 'size':
-                return value ? humanFileSize(value) : null
+                return value && typeof value === 'number' ? humanFileSize(value) : null
             case 'icon':
                 return (
-                    <Tooltip placement="top" title={value ? value : 'unknown'}>
-                        <span>{cloneElement(getTypeIcon(value), { className: classes.infoIcon })}</span>
+                    <Tooltip placement="top" title={value ? String(value) : 'unknown'}>
+                        <span>{cloneElement(getTypeIcon(String(value)), { className: classes.infoIcon })}</span>
                     </Tooltip>
                 )
             case 'array':
-                return !value ? null : (
+                return value && typeof value === 'string' ? (
                     <>
-                        {value.slice(0, 7).map((el: string) => (
+                        {[value.slice(0, 7)].map((el: string) => (
                             <>
                                 {shortenName(el)}
                                 <br />
@@ -100,11 +100,11 @@ export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index 
                         ))}
                         {value.length > 7 && '...'}
                     </>
-                )
+                ) : null
             case 'tags':
-                return !value ? null : (
+                return value && typeof value === 'string' ? (
                     <>
-                        {value.slice(0, 7).map((el: string) => (
+                        {[value.slice(0, 7)].map((el: string) => (
                             <>
                                 {icon(el) && cloneElement(icon(el) as ReactElement, { className: classes.tagIcon })}
                                 {shortenName(el)}
@@ -113,7 +113,7 @@ export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index 
                         ))}
                         {value.length > 7 && '...'}
                     </>
-                )
+                ) : null
             case 'thumbnail':
                 return !value ? null : (
                     <>

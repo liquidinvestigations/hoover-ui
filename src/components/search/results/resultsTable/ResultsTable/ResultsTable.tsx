@@ -2,7 +2,7 @@ import { IconButton, Menu, MenuItem, Paper, Table, TableBody, TableCell, TableCo
 import { observer } from 'mobx-react-lite'
 import { cloneElement, FC, useState, MouseEvent } from 'react'
 
-import { availableColumns } from '../../../../../constants/availableColumns'
+import { availableColumns, ResultColumn } from '../../../../../constants/availableColumns'
 import { reactIcons } from '../../../../../constants/icons'
 import { Hits } from '../../../../../Types'
 import { defaultSearchParams } from '../../../../../utils/queryUtils'
@@ -69,7 +69,7 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ hits }) => {
                 <TableHead>
                     <TableRow>
                         <TableCell>#</TableCell>
-                        {resultsColumns.map(([field, { label, align, sortable }]: any[]) => {
+                        {resultsColumns.map(([field, { label, align, sortable }]: [string, Partial<ResultColumn>]) => {
                             const index = order?.findIndex(([v]: string[]) => v === field)
                             let orderIcon = null
                             if (index !== undefined && index !== -1) {

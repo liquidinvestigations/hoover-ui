@@ -1,3 +1,7 @@
+import { ParsedQs } from 'qs'
+
+import { SearchQueryParams } from '../Types'
+
 const SORT_RELEVANCE = 'Relevance'
 const SORT_NEWEST = 'Newest'
 const SORT_OLDEST = 'Oldest'
@@ -8,26 +12,29 @@ const SORT_SIZE_ASCENDING = 'Size ascending'
 const SORT_WORD_COUNT_DESCENDING = 'Word count descending'
 const SORT_WORD_COUNT_ASCENDING = 'Word count ascending'
 
-interface LegacySearchQueryParams {
-    [field: string]: any
+interface Filter {
+    include?: string[]
+    exclude?: string[]
 }
 
-const moveToFilters = (query: LegacySearchQueryParams, param: string, value?: string) => {
+type QueryParamsType = (SearchQueryParams & Record<string, string | string[] | undefined>) | ParsedQs
+
+const moveToFilters = (query: QueryParamsType, param: string, value?: string) => {
     if (!query.filters) {
         query.filters = {}
     }
-    const data = value || query[param]
-    if (Array.isArray(data)) {
-        query.filters[param] = {
+    const data: unknown = value || query[param] || []
+    if (Array.isArray(data) && data.length) {
+        ;(query.filters as Record<string, Filter>)[param] = {
             include: data.filter((v) => !v.startsWith('~')),
             exclude: data.filter((v) => v.startsWith('~')),
         }
     } else {
-        query.filters[param] = data
+        ;(query.filters as Record<string, Filter>)[param] = data as Filter
     }
 }
 
-export default function fixLegacyQuery(query: LegacySearchQueryParams): LegacySearchQueryParams {
+export default function fixLegacyQuery(query: QueryParamsType): QueryParamsType {
     if (query.collections && typeof query.collections === 'string') {
         query.collections = query.collections.split('+')
     }
@@ -61,7 +68,7 @@ export default function fixLegacyQuery(query: LegacySearchQueryParams): LegacySe
     })
     const privateTags = Object.keys(query).filter((tag) => /^priv-tags\./.test(tag))
     privateTags.forEach((tag) => {
-        moveToFilters(query, 'priv-tags', query[tag])
+        moveToFilters(query, 'priv-tags', query[tag] as string)
     })
 
     return query

@@ -7,6 +7,7 @@ import qs from 'qs'
 import { FC } from 'react'
 
 import { aggregationFields } from '../../constants/aggregationFields'
+import { HashState } from '../../stores/HashStateStore'
 import { SearchQueryParams, SourceField } from '../../Types'
 import { buildSearchQuerystring, createSearchParams, createSearchUrl, rollupParams, Term } from '../../utils/queryUtils'
 import { useSharedStore } from '../SharedStoreProvider'
@@ -33,7 +34,7 @@ export const LinkMenu: FC<LinkMenuProps> = observer(({ link, anchorPosition, onC
         documentStore: { collection, digest },
     } = useSharedStore()
 
-    const hash = { preview: { c: collection, i: digest }, tab: hashState.tab }
+    const hash: HashState = { preview: { c: collection!, i: digest! }, tab: hashState.tab }
 
     const getCollections = () => Array.from(new Set([...(query?.collections || []), collection])) as string[]
 

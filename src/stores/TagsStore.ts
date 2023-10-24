@@ -23,6 +23,12 @@ interface TagsRefreshQueue {
     promise: Promise<void>
 }
 
+interface TagsError {
+    status: string
+    statusText: string
+    url: string
+}
+
 export class TagsStore {
     tags: Tag[] = []
 
@@ -30,7 +36,7 @@ export class TagsStore {
 
     tagsLoading = true
 
-    tagsError: any
+    tagsError?: TagsError
 
     tagsRefreshQueue: TagsRefreshQueue | undefined
 
@@ -43,7 +49,6 @@ export class TagsStore {
                 if (digestUrl) {
                     this.setTagsLoading(true)
                     this.setTagsLocked(true)
-                    this.setTagsError(null)
                     tagsAPI(digestUrl)
                         .then((data) => {
                             this.setTags(data)
@@ -88,7 +93,7 @@ export class TagsStore {
         })
     }
 
-    setTagsError = (tagsError: any) => {
+    setTagsError = (tagsError: TagsError) => {
         runInAction(() => {
             this.tagsError = tagsError
         })
