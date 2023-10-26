@@ -57,9 +57,9 @@ export const daysInMonth = (date: string) => {
     return new Date(parseInt(year), parseInt(month), 0).getDate()
 }
 
-const intervalsList = ['year', 'month', 'week', 'day', 'hour']
+const intervalsList: Interval[] = ['year', 'month', 'week', 'day', 'hour']
 
-export const getClosestInterval = (range: Partial<Terms>) => {
+export const getClosestInterval = (range: Partial<Terms>): Interval => {
     const from = range.from + 'T00:00:00'
     const to = range.to + 'T23:59:59'
 
@@ -71,7 +71,7 @@ export const getClosestInterval = (range: Partial<Terms>) => {
 
         if (duration[intervalPlural] || 0 > 1) {
             if (intervalsList.indexOf(interval) > intervalsList.indexOf(selectedInterval)) {
-                selectedInterval = interval as Interval
+                selectedInterval = interval
             }
             return true
         }
