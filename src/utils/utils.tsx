@@ -11,7 +11,7 @@ import { ELLIPSIS_TERM_LENGTH } from '../constants/general'
 import { reactIcons } from '../constants/icons'
 import { specialTags } from '../constants/specialTags'
 
-import type { DocumentData, Hit, Interval, Range } from '../Types'
+import type { DocumentData, Hit, Interval, Terms } from '../Types'
 
 const typeIconsMap: Record<string, string> = {
     archive: 'typeArchive',
@@ -59,11 +59,11 @@ export const daysInMonth = (date: string) => {
 
 const intervalsList = ['year', 'month', 'week', 'day', 'hour']
 
-export const getClosestInterval = (range: Range): Interval => {
+export const getClosestInterval = (range: Partial<Terms>) => {
     const from = range.from + 'T00:00:00'
     const to = range.to + 'T23:59:59'
 
-    let selectedInterval = range.interval
+    let selectedInterval = range.interval || 'day'
 
     intervalsList.some((interval) => {
         const intervalPlural = `${interval}s` as keyof DurationObjectUnits
@@ -71,13 +71,13 @@ export const getClosestInterval = (range: Range): Interval => {
 
         if (duration[intervalPlural] || 0 > 1) {
             if (intervalsList.indexOf(interval) > intervalsList.indexOf(selectedInterval)) {
-                selectedInterval = interval
+                selectedInterval = interval as Interval
             }
             return true
         }
     })
 
-    return selectedInterval as Interval
+    return selectedInterval
 }
 
 export const getBasePath = (docUrl: string) => url.parse(url.resolve(docUrl, './')).pathname

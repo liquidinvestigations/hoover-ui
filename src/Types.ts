@@ -433,10 +433,5 @@ export interface DocumentInfo {
     page_count: number
     size_mb: number
 }
-export interface Range {
-    from?: string
-    to?: string
-    interval: string
-}
 
 export type MissingQueryFilter = { missing: string }

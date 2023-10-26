@@ -1,6 +1,6 @@
-import { ParsedQs } from 'qs'
+import { SearchQueryParams, Terms } from '../Types'
 
-import { SearchQueryParams } from '../Types'
+import type { ParsedQs } from 'qs'
 
 const SORT_RELEVANCE = 'Relevance'
 const SORT_NEWEST = 'Newest'
@@ -12,11 +12,6 @@ const SORT_SIZE_ASCENDING = 'Size ascending'
 const SORT_WORD_COUNT_DESCENDING = 'Word count descending'
 const SORT_WORD_COUNT_ASCENDING = 'Word count ascending'
 
-interface Filter {
-    include?: string[]
-    exclude?: string[]
-}
-
 type QueryParamsType = (SearchQueryParams & Record<string, string | string[] | undefined>) | ParsedQs
 
 const moveToFilters = (query: QueryParamsType, param: string, value?: string) => {
@@ -25,12 +20,12 @@ const moveToFilters = (query: QueryParamsType, param: string, value?: string) =>
     }
     const data: unknown = value || query[param] || []
     if (Array.isArray(data) && data.length) {
-        ;(query.filters as Record<string, Filter>)[param] = {
+        ;(query.filters as Record<string, Terms>)[param] = {
             include: data.filter((v) => !v.startsWith('~')),
             exclude: data.filter((v) => v.startsWith('~')),
         }
     } else {
-        ;(query.filters as Record<string, Filter>)[param] = data as Filter
+        ;(query.filters as Record<string, Terms>)[param] = data as Terms
     }
 }
 
