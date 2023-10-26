@@ -146,7 +146,7 @@ export class MetaSearchStore {
                 }
 
                 if (String(value).toLowerCase().includes(query.toLowerCase())) {
-                    const highlightedValue = highlightElement(value)
+                    const highlightedValue = highlightElement(String(value))
                     return { key, value: highlightedValue, componentKey }
                 }
 

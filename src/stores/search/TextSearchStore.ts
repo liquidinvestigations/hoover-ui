@@ -13,7 +13,6 @@ export class TextSearchStore {
     content: string[] = []
     searchResults: SearchResult[] = []
     loading: boolean = false
-    containerRef: React.Ref<any> = null
     totalOccurrenceCount: number = 0
 
     constructor(
@@ -53,10 +52,6 @@ export class TextSearchStore {
         const searchResult = this.searchResults[this.documentStore.subTab]
         if (!searchResult) return
         searchResult.currentHighlightIndex = (searchResult.currentHighlightIndex - 1 + searchResult.occurrenceCount) % searchResult.occurrenceCount
-    }
-
-    setContainerRef = (containerRef: any) => {
-        this.containerRef = containerRef
     }
 
     scrollToHighlight = () => {

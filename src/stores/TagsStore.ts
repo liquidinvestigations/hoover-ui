@@ -4,6 +4,7 @@ import { MouseEvent } from 'react'
 import { createTag, deleteTag, tags as tagsAPI, updateTag } from '../backend/api'
 import { TAGS_REFRESH_DELAYS } from '../constants/general'
 import { publicTagsList } from '../constants/specialTags'
+import { RequestError } from '../Types'
 
 import { DocumentStore } from './DocumentStore'
 
@@ -30,7 +31,7 @@ export class TagsStore {
 
     tagsLoading = true
 
-    tagsError: any
+    tagsError?: RequestError
 
     tagsRefreshQueue: TagsRefreshQueue | undefined
 
@@ -43,7 +44,6 @@ export class TagsStore {
                 if (digestUrl) {
                     this.setTagsLoading(true)
                     this.setTagsLocked(true)
-                    this.setTagsError(null)
                     tagsAPI(digestUrl)
                         .then((data) => {
                             this.setTags(data)
@@ -88,7 +88,7 @@ export class TagsStore {
         })
     }
 
-    setTagsError = (tagsError: any) => {
+    setTagsError = (tagsError: RequestError) => {
         runInAction(() => {
             this.tagsError = tagsError
         })

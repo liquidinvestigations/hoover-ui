@@ -123,7 +123,7 @@ export class FiltersStore {
         }
     }
 
-    private processFilterParams = (queryFilter: Terms | undefined, value: SourceField, triState: boolean = false) => {
+    private processFilterParams = (queryFilter: Terms, value: SourceField, triState: boolean = false) => {
         const include = new Set(queryFilter?.include || [])
         const exclude = new Set(queryFilter?.exclude || [])
 
@@ -182,7 +182,7 @@ export class FiltersStore {
     handleDateRangeChange = (field: SourceField) => (range?: { from?: string; to?: string }) => {
         const queryFilter = this.searchStore.query?.filters?.[field]
         const { from: _from, to: _to, interval, intervals: _intervals, ...rest } = queryFilter || {}
-        if (range?.from && range?.to) {
+        if (range?.from && range?.to && interval) {
             this.handleChange(field, { ...range, interval: getClosestInterval({ ...range, interval }), ...rest }, true)
         } else {
             this.handleChange(field, rest, true)
@@ -192,8 +192,8 @@ export class FiltersStore {
     handleDateSelectionChange = (field: SourceField, value: SourceField, resetPage?: boolean) => () => {
         const queryFilter = this.searchStore.query?.filters?.[field]
         const { intervals, missing: _missing, ...rest } = queryFilter || {}
-        const newIntervals = this.processFilterParams(intervals, value)
-        if (newIntervals.include?.length /*|| newIntervals.missing*/) {
+        const newIntervals = this.processFilterParams(intervals!, value)
+        if (newIntervals.include?.length) {
             this.handleChange(field, { intervals: newIntervals, ...rest }, resetPage)
         } else {
             this.handleChange(field, rest, resetPage)

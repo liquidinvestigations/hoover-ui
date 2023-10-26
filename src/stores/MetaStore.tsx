@@ -2,7 +2,7 @@ import { T } from '@tolgee/react'
 import { makeAutoObservable } from 'mobx'
 import { ReactElement } from 'react'
 
-import { DocumentContent, DocumentData, SourceField } from '../Types'
+import { DocumentContent, DocumentData, SourceField, ValueOf } from '../Types'
 import { flatten, formatDateTime, getLanguageName, humanFileSize } from '../utils/utils'
 
 export interface TableData {
@@ -15,7 +15,7 @@ export interface TableData {
 
 export interface MetaData {
     key: string
-    value: any
+    value: string | number | boolean | Array<string>
     componentKey: string
 }
 
@@ -27,8 +27,8 @@ export class MetaStore {
                 label: ReactElement | string
                 searchKey?: SourceField
                 visible?: (content?: Partial<DocumentContent>) => boolean
-                format?: (term?: any, locale?: any) => ReactElement | string
-                searchTerm?: (term: any) => string
+                format?: (term: string, locale?: string) => ReactElement | string
+                searchTerm?: (term: string) => string
             }
         >
     > = {
@@ -79,7 +79,7 @@ export class MetaStore {
         },
         size: {
             label: <T keyName="size">Size</T>,
-            format: humanFileSize,
+            format: (bytes: string) => humanFileSize(parseInt(bytes)),
             searchTerm: (term) => term.toString(),
             visible: (content) => !!content?.size,
         },
@@ -98,7 +98,23 @@ export class MetaStore {
         this.metaData = this.updateMetaFieldsData(data)
     }
 
-    updateTableFieldsData = (data: DocumentData) => {
+    normalizeDocumentContent = (value: ValueOf<DocumentContent>): string => {
+        if (value === null || value === undefined) {
+            return ''
+        } else if (typeof value === 'number' || typeof value === 'boolean') {
+            return value.toString()
+        } else if (Array.isArray(value)) {
+            return value.join(', ')
+        } else if (typeof value === 'string') {
+            return value
+        } else if (typeof value === 'object') {
+            return JSON.stringify(value)
+        }
+
+        return ''
+    }
+
+    updateTableFieldsData = (data: DocumentData): TableData[] => {
         if (!data.content) return []
 
         return Object.entries(this.tableFields)
@@ -107,10 +123,15 @@ export class MetaStore {
                 const fieldContent = data?.content[field as keyof DocumentContent] as string
                 const fieldValue = Array.isArray(fieldContent) ? fieldContent[0] : fieldContent
                 const display = config.format
-                    ? config.format(data?.content?.[field as keyof DocumentContent], localStorage.getItem('language') || 'en')
+                    ? config.format(
+                          this.normalizeDocumentContent(data?.content?.[field as keyof DocumentContent]),
+                          localStorage.getItem('language') || 'en',
+                      )
                     : fieldValue
                 const searchKey = config.searchKey || (field as SourceField)
-                const searchTerm = config.searchTerm ? config.searchTerm(data?.content?.[field as keyof DocumentContent]) : fieldValue
+                const searchTerm = config.searchTerm
+                    ? config.searchTerm(this.normalizeDocumentContent(data?.content?.[field as keyof DocumentContent]))
+                    : fieldValue
 
                 return {
                     field,
@@ -122,7 +143,7 @@ export class MetaStore {
             })
     }
 
-    updateMetaFieldsData = (data: DocumentData) => {
+    updateMetaFieldsData = (data: DocumentData): MetaData[] => {
         if (!data.content) return []
 
         const uniqueEntries = new Set<string>()
@@ -135,7 +156,7 @@ export class MetaStore {
         )
 
         const mappedEntries = filteredEntries.flatMap(([key, value]) => {
-            let elements: Record<string, any>
+            let elements: Record<string, string | number | boolean | Array<string>>
             if (Array.isArray(value)) {
                 elements = { [key]: value }
             } else if (typeof value === 'object') {

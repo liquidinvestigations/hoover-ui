@@ -24,6 +24,11 @@ interface ResultItemProps {
     index: number
 }
 
+interface CustomDiv extends HTMLDivElement {
+    willFocus?: boolean
+    tUp?: number
+}
+
 export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) => {
     const { t } = useTranslate()
     const { classes, cx } = useStyles()
@@ -39,16 +44,18 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
     const isPreview = hit._collection === hashState.preview?.c && hit._id === hashState.preview.i
     const unsearchable = !!hashState.preview
 
-    const nodeRef = useRef()
+    const nodeRef = useRef<CustomDiv>(null)
     const handleMouseDown = (): void => {
-        ;(nodeRef.current as any).willFocus = !((nodeRef.current as any).tUp && timeMs() - (nodeRef.current as any).tUp < 300)
+        if (!nodeRef.current) return
+        nodeRef.current.willFocus = !(nodeRef.current.tUp && timeMs() - nodeRef.current.tUp < 300)
     }
     const handleMouseMove = (): void => {
-        ;(nodeRef.current as any).willFocus = false
+        if (!nodeRef.current) return
+        nodeRef.current.willFocus = false
     }
     const handleMouseUp = (): void => {
-        if ((nodeRef.current as any).willFocus) {
-            ;(nodeRef.current as any).tUp = timeMs()
+        if (nodeRef.current?.willFocus) {
+            nodeRef.current.tUp = timeMs()
             openPreview(hit)
         }
     }
@@ -65,8 +72,8 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
     }
 
     useEffect(() => {
-        if (isPreview && 'scrollIntoView' in (nodeRef.current as any)) {
-            ;(nodeRef.current as any).scrollIntoView({ behavior: 'smooth', block: 'center' })
+        if (nodeRef.current && isPreview && 'scrollIntoView' in nodeRef.current) {
+            nodeRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
         }
     }, [isPreview])
 
@@ -86,7 +93,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
 
     return (
         <Card
-            ref={nodeRef as unknown as RefObject<HTMLDivElement>}
+            ref={nodeRef}
             className={cx(classes.card, { [classes.selected]: isPreview })}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}

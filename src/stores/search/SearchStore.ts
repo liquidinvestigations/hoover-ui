@@ -60,12 +60,12 @@ export class SearchStore {
     parseSearchParams = (search: string): Partial<SearchQueryParams> => {
         const parsedQuery = fixLegacyQuery(unwindParams(qs.parse(search, { arrayLimit: 100 })))
 
-        parsedQuery.page = parseInt(parsedQuery.page)
-        parsedQuery.size = parseInt(parsedQuery.size)
+        parsedQuery.page = parseInt(parsedQuery.page as string)
+        parsedQuery.size = parseInt(parsedQuery.size as string)
 
-        this.searchViewStore.searchText = parsedQuery.q || ''
-        this.searchViewStore.searchCollections = parsedQuery.collections || []
-        this.sharedStore.excludedFields = parsedQuery.excludedFields || []
+        this.searchViewStore.searchText = (parsedQuery.q as string) || ''
+        this.searchViewStore.searchCollections = (parsedQuery.collections as string[]) || []
+        this.sharedStore.excludedFields = (parsedQuery.excludedFields as string[]) || []
 
         return parsedQuery
     }

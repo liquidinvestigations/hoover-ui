@@ -114,16 +114,20 @@ export const Meta = observer(() => {
                     </ListItem>
                 )}
 
-                {(query ? metaSearchStore.highlightedTableData : tableData).map((tableData) => (
+                {(query.length > 2 ? metaSearchStore.highlightedTableData : tableData).map((tableData) => (
                     <ListItem key={tableData.field} disableGutters>
                         <ListItemText
                             primary={tableData.label}
                             secondary={
-                                <span
-                                    className={classes.searchField}
-                                    onClick={handleLinkClick(tableData.searchKey, tableData.searchTerm)}
-                                    dangerouslySetInnerHTML={{ __html: tableData.display }}
-                                />
+                                typeof tableData.display === 'string' ? (
+                                    <span
+                                        className={classes.searchField}
+                                        onClick={handleLinkClick(tableData.searchKey, tableData.searchTerm)}
+                                        dangerouslySetInnerHTML={{ __html: tableData.display }}
+                                    />
+                                ) : (
+                                    tableData.display
+                                )
                             }
                         />
                     </ListItem>
@@ -133,8 +137,10 @@ export const Meta = observer(() => {
             <Divider />
 
             <Box>
-                {(query ? metaSearchStore.highlightedMetaData : metaData).map(({ key, value, componentKey }) =>
-                    Array.isArray(value) ? value.map((v) => renderElement(key, v, componentKey)) : renderElement(key, value, componentKey),
+                {(query.length > 2 ? metaSearchStore.highlightedMetaData : metaData).map(({ key, value, componentKey }) =>
+                    Array.isArray(value)
+                        ? value.map((v) => renderElement(key, v as Value, componentKey))
+                        : renderElement(key, value as Value, componentKey),
                 )}
             </Box>
 
