@@ -17,8 +17,6 @@ import { Histogram } from './filters/Histogram/Histogram'
 import { HotKeys } from './HotKeys'
 import { Results } from './results/Results/Results'
 import { useStyles } from './Search.styles'
-import { SortingChips } from './sorting/SortingChips/SortingChips'
-import { SortingMenu } from './sorting/SortingMenu/SortingMenu'
 
 export const Search: FC = observer(() => {
     const { t } = useTranslate()
@@ -41,6 +39,7 @@ export const Search: FC = observer(() => {
                 handleInputChange,
                 snackbarMessage,
                 handleSnackbarClose,
+                showDateInsights,
             },
             searchResultsStore: { error, clearResults },
         },
@@ -138,19 +137,14 @@ export const Search: FC = observer(() => {
                                             </Grid>
                                         </Grid>
                                     </form>
-
                                     <FiltersChips />
-
                                     <QueryChips />
-
-                                    <Histogram title={t('date-modified', 'Date modified')} field="date" />
-
-                                    <Histogram title={t('date-created', 'Date created')} field="date-created" />
-
-                                    <div className={classes.sorting}>
-                                        <SortingChips />
-                                        <SortingMenu />
-                                    </div>
+                                    {showDateInsights && (
+                                        <>
+                                            <Histogram title={t('date-modified', 'Date modified')} field="date" />
+                                            <Histogram title={t('date-created', 'Date created')} field="date-created" />
+                                        </>
+                                    )}
                                 </Grid>
                             </Grid>
 

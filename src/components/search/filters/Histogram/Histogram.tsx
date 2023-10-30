@@ -1,10 +1,9 @@
-import { Collapse, Grid, IconButton, ListItemButton, Menu, MenuItem, Typography } from '@mui/material'
+import { Grid, Menu, MenuItem, Typography } from '@mui/material'
 import { DateTime, DurationUnit } from 'luxon'
 import { observer } from 'mobx-react-lite'
-import { cloneElement, FC, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC, useCallback, useMemo, useState } from 'react'
 
 import { DATE_FORMAT, DEFAULT_INTERVAL } from '../../../../constants/general'
-import { reactIcons } from '../../../../constants/icons'
 import { SourceField } from '../../../../Types'
 import { defaultSearchParams } from '../../../../utils/queryUtils'
 import { daysInMonth, getClosestInterval } from '../../../../utils/utils'
@@ -28,33 +27,12 @@ interface HistogramProps {
 }
 
 export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
-    const { classes, cx } = useStyles()
+    const { classes } = useStyles()
     const {
         query,
         search,
         searchAggregationsStore: { aggregations, aggregationsLoading },
     } = useSharedStore().searchStore
-
-    const { hashState, setHashState } = useSharedStore().hashStore
-    const [open, setOpen] = useState(false)
-    useEffect(() => {
-        if (hashState?.histogram?.[field]) {
-            setOpen(true)
-        } else {
-            setOpen(false)
-        }
-    }, [field, hashState?.histogram])
-
-    const toggle = () => {
-        setOpen(!open)
-
-        const { [field]: _prevState, ...restState } = hashState?.histogram || {}
-        if (!open) {
-            setHashState({ histogram: { [field]: true, ...restState } }, false)
-        } else {
-            setHashState({ histogram: { ...restState } }, false)
-        }
-    }
 
     const [anchorPosition, setAnchorPosition] = useState<{ left: number; top: number } | undefined>()
     const [selectedBars, setSelectedBars] = useState<SourceField[]>()
@@ -186,54 +164,43 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
 
     return (
         <>
-            <ListItemButton onClick={toggle} dense className={classes.histogramTitle}>
-                <Grid container className={classes.histogramTitle} justifyContent="space-between" alignItems="center" wrap="nowrap">
-                    <Grid item>
-                        <Typography className={classes.title}>{title}</Typography>
-                    </Grid>
-                    <Grid item>
-                        <IconButton
-                            size="small"
-                            className={cx(classes.expand, { [classes.expandOpen]: open })}
-                            aria-expanded={open}
-                            aria-label="Show histogram">
-                            {cloneElement(reactIcons.chevronDown, { color: 'action' })}
-                        </IconButton>
-                    </Grid>
+            <Grid container className={classes.histogramTitle} justifyContent="space-between" alignItems="center" wrap="nowrap">
+                <Grid item>
+                    <Typography className={classes.title}>{title}</Typography>
                 </Grid>
-            </ListItemButton>
+                <Grid item>
+                    <Grid container justifyContent="space-between">
+                        <Grid item>
+                            <Pagination field={field} />
+                        </Grid>
+                        <Grid item>
+                            <IntervalSelect field={field} />
+                        </Grid>
+                    </Grid>
 
-            <Collapse in={open}>
-                <div className={classes.chartBox}>
-                    {aggregationsLoading[field] ? (
-                        <Loading />
-                    ) : (
-                        <HistogramChart
-                            width={chartWidth}
-                            height={chartHeight}
-                            axisHeight={axisHeight}
-                            data={data}
-                            selected={selected}
-                            onSelect={handleSelect}
-                            preserveDragArea={!!anchorPosition}
-                        />
-                    )}
-                </div>
-                <Grid container justifyContent="space-between">
-                    <Grid item>
-                        <Pagination field={field} />
-                    </Grid>
-                    <Grid item>
-                        <IntervalSelect field={field} />
-                    </Grid>
+                    <Menu open={!!anchorPosition} onClose={handleBarMenuClose} anchorReference="anchorPosition" anchorPosition={anchorPosition}>
+                        {selectedBars?.some((v) => !selected?.includes(v)) && <MenuItem onClick={handleIntervalsAdd}>select this interval</MenuItem>}
+                        {selectedBars?.some((v) => selected?.includes(v)) && <MenuItem onClick={handleIntervalsRemove}>remove this interval</MenuItem>}
+                        <MenuItem onClick={handleFilterRange}>set filter for this interval (zoom in)</MenuItem>
+                    </Menu>
                 </Grid>
-            </Collapse>
+            </Grid>
 
-            <Menu open={!!anchorPosition} onClose={handleBarMenuClose} anchorReference="anchorPosition" anchorPosition={anchorPosition}>
-                {selectedBars?.some((v) => !selected?.includes(v)) && <MenuItem onClick={handleIntervalsAdd}>select this interval</MenuItem>}
-                {selectedBars?.some((v) => selected?.includes(v)) && <MenuItem onClick={handleIntervalsRemove}>remove this interval</MenuItem>}
-                <MenuItem onClick={handleFilterRange}>set filter for this interval (zoom in)</MenuItem>
-            </Menu>
+            <div className={classes.chartBox}>
+                {aggregationsLoading[field] ? (
+                    <Loading />
+                ) : (
+                    <HistogramChart
+                        width={chartWidth}
+                        height={chartHeight}
+                        axisHeight={axisHeight}
+                        data={data}
+                        selected={selected}
+                        onSelect={handleSelect}
+                        preserveDragArea={!!anchorPosition}
+                    />
+                )}
+            </div>
         </>
     )
 })

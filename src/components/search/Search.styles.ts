@@ -27,12 +27,6 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         color: theme.palette.grey.A700,
     },
 
-    sorting: {
-        display: 'flex',
-        marginTop: theme.spacing(2),
-        justifyContent: 'flex-end',
-    },
-
     close: {
         padding: theme.spacing(0.5),
     },
