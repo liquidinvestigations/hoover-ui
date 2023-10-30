@@ -17,6 +17,13 @@ export const Results: FC = observer(() => {
         searchResultsStore: { results, resultsLoadingETA },
     } = useSharedStore().searchStore
 
+    const sortedResults = [...results].sort((a, b) => {
+        const etaA = resultsLoadingETA[a.collection] ?? Infinity
+        const etaB = resultsLoadingETA[b.collection] ?? Infinity
+
+        return etaA - etaB
+    })
+
     return (
         <>
             <Grid container>
@@ -50,7 +57,7 @@ export const Results: FC = observer(() => {
                 </i>
             ) : (
                 <>
-                    {results.map(({ collection, hits }) => (
+                    {sortedResults.map(({ collection, hits }) => (
                         <ResultsGroup key={collection} collection={collection} hits={hits} />
                     ))}
                     {!Object.keys(resultsLoadingETA).length && <Pagination />}
