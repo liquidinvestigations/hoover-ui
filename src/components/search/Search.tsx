@@ -137,8 +137,8 @@ export const Search: FC = observer(() => {
                                             </Grid>
                                         </Grid>
                                     </form>
-                                    <FiltersChips />
                                     <QueryChips />
+                                    <FiltersChips />
                                     {showDateInsights && (
                                         <>
                                             <Histogram title={t('date-modified', 'Date modified')} field="date" />

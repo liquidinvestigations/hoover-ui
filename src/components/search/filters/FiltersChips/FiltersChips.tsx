@@ -149,7 +149,7 @@ export const FiltersChips: FC = observer(() => {
 
     return query && parsedFilters ? (
         <Box>
-            <Typography variant="h6" className={classes.treeTitle}>
+            <Typography className={classes.treeTitle}>
                 <T keyName="filters">Filters</T>
             </Typography>
             <FormControl variant="standard" margin="normal">

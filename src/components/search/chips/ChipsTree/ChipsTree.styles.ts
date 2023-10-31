@@ -7,7 +7,7 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'stretch',
-        marginBottom: theme.spacing(1),
+        padding: theme.spacing(1),
 
         '&:last-child': {
             marginBottom: 0,
@@ -24,7 +24,6 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         fontSize: '10px',
         width: theme.spacing(1),
         textIndent: theme.spacing(1.5),
-        marginLeft: theme.spacing(0.5),
         marginRight: theme.spacing(3.5),
         border: '1px solid black',
         borderLeft: 'none',
@@ -32,10 +31,22 @@ export const useStyles = makeStyles()((theme: Theme) => ({
     AND: {
         color: theme.palette.secondary.main,
         borderColor: theme.palette.secondary.main,
+
+        '&.MuiBox-root': {
+            border: '1px solid',
+            borderRight: 'none',
+            padding: theme.spacing(1),
+        },
     },
     OR: {
         color: theme.palette.primary.main,
         borderColor: theme.palette.primary.main,
+
+        '&.MuiBox-root': {
+            border: '1px solid',
+            borderRight: 'none',
+            padding: theme.spacing(1),
+        },
     },
     NOT: {
         color: red.A700,
