@@ -1,20 +1,16 @@
 import { makeStyles } from 'tss-react/mui'
 
 export const useStyles = makeStyles()((theme) => ({
-    chip: {
-        marginLeft: theme.spacing(0.5),
-        display: 'inline-block',
+    chipContainer: {
+        maxWidth: '50%',
+        display: 'flex',
+        alignItems: 'center',
+        overflow: 'auto',
         padding: `0 ${theme.spacing(1)}`,
+    },
+    chip: {
         color: theme.palette.common.white,
-        border: `1px solid ${theme.palette.common.white}`,
-        borderRadius: '25px',
-        cursor: 'pointer',
-        transition: 'color 0.3s, border-color 0.3s',
-        '&:hover': {
-            color: theme.palette.primary.dark,
-            borderColor: theme.palette.primary.dark,
-            backgroundColor: theme.palette.common.white,
-        },
+        borderColor: theme.palette.common.white,
     },
     input: {
         padding: theme.spacing(1),
