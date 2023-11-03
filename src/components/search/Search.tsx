@@ -10,6 +10,7 @@ import { SplitPaneLayout } from '../common/SplitPaneLayout/SplitPaneLayout'
 import { Document } from '../document/Document'
 import { useSharedStore } from '../SharedStoreProvider'
 
+import { ExcludedChips } from './chips/ExcludedChips/ExcludedChips'
 import { QueryChips } from './chips/QueryChips/QueryChips'
 import { Categories } from './filters/Categories/Categories'
 import { FiltersChips } from './filters/FiltersChips/FiltersChips'
@@ -23,6 +24,7 @@ export const Search: FC = observer(() => {
     const { classes } = useStyles()
     const inputRef = useRef<HTMLInputElement>(null)
     const {
+        excludedFields,
         searchStore: {
             search,
             searchViewStore: {
@@ -139,6 +141,7 @@ export const Search: FC = observer(() => {
                                     </form>
                                     <QueryChips />
                                     <FiltersChips />
+                                    {!!excludedFields?.length && <ExcludedChips />}
                                     {showDateInsights && (
                                         <>
                                             <Histogram title={t('date-modified', 'Date modified')} field="date" />

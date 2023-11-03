@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite'
 
 import { reactIcons } from '../../../constants/icons'
 import { useSharedStore } from '../../SharedStoreProvider'
+import { SearchFields } from '../filters/SearchFields/SearchFields'
 import { SortingChips } from '../sorting/SortingChips/SortingChips'
 import { SortingMenu } from '../sorting/SortingMenu/SortingMenu'
 
@@ -44,6 +45,9 @@ export const SearchViewOptions = observer(() => {
                         <Fab size="small" color={showDateInsights ? 'primary' : 'default'} className={classes.viewTypeIcon} onClick={toggleDateDetails}>
                             {reactIcons.categoryDates}
                         </Fab>
+                    </Grid>
+                    <Grid item>
+                        <SearchFields />
                     </Grid>
                     <Grid item>
                         <SortingChips />
