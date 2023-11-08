@@ -30,7 +30,7 @@ export class SearchAggregationsStore {
 
     performQuery(query: SearchQueryParams, keepFromClearing: AggregationsKey | undefined, fieldList: SourceField[] | '*' = '*') {
         if (!this.sharedStore.user) return
-        AsyncQueryTaskRunner.clearQueue()
+        AsyncQueryTaskRunner.abortTasks()
 
         runInAction(() => {
             this.error = {}
@@ -112,10 +112,13 @@ export class SearchAggregationsStore {
             })
 
             task.addEventListener('error', (event) => {
-                const { message } = event as ErrorEvent
+                const { error } = event as ErrorEvent
 
-                this.error[collection] = message
                 setAggregationsLoading(-1)
+
+                if (error.name !== 'AbortError') {
+                    this.error[collection] = error
+                }
             })
 
             setAggregationsLoading(1)

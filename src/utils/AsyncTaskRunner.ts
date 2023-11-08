@@ -54,7 +54,7 @@ export class AsyncQueryTask extends EventTarget {
                 this.isRunning = false
                 AsyncQueryTaskRunner.runTaskQueue()
             } else {
-                void this.handleQueryResult()
+                return this.handleQueryResult()
             }
         }
     }
@@ -129,7 +129,7 @@ export class AsyncQueryTaskRunner {
             if (this.taskQueue.filter((task) => task.isRunning).length < (process.env.ASYNC_SEARCH_POLL_SIZE as unknown as number)) {
                 task.run().catch((error) => {
                     this.clearTask(task)
-                    task.dispatchEvent(new events.ErrorEvent('error', { message: error }))
+                    task.dispatchEvent(new events.ErrorEvent('error', { error }))
                 })
             }
         }
@@ -139,10 +139,9 @@ export class AsyncQueryTaskRunner {
         this.taskQueue.splice(this.taskQueue.indexOf(task), 1)
     }
 
-    static clearQueue() {
+    static abortTasks() {
         for (const task of this.taskQueue) {
             task.abort()
         }
-        this.taskQueue = []
     }
 }
