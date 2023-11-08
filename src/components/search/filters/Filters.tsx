@@ -29,7 +29,7 @@ export const Filters: FC = observer(() => {
         <>
             {(Object.entries(categories) as Entries<typeof categories>).map(([category, { label, icon, filters }]) => {
                 const greyed = filters.every(({ field }) => aggregations?.[field]?.values?.buckets?.length === 0)
-                const loading = filters.some(({ field }) => aggregationsLoading[field])
+                const loading = filters.some(({ field }) => aggregationsLoading[field]! > 0)
                 const loadingETA = Math.min(...filters.map(({ field }) => aggregationsLoadingETA[field] || Number.MAX_SAFE_INTEGER))
 
                 return (

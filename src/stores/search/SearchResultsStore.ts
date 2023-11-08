@@ -100,11 +100,14 @@ export class SearchResultsStore {
             })
 
             task.addEventListener('error', (event) => {
-                const { message } = event as ErrorEvent
+                const { error } = event as ErrorEvent
 
                 runInAction(() => {
-                    this.error[collection] = message
                     delete this.resultsLoadingETA[collection]
+
+                    if (error.name !== 'AbortError') {
+                        this.error[collection] = error
+                    }
                 })
             })
         }

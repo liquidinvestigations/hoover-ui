@@ -395,7 +395,8 @@ const buildSearchQuery = (
     excludedFields: string[],
     uuid: string,
 ): MsearchMultisearchBodyWithCollections => {
-    const query = buildQuery(q, filters, searchFields, excludedFields)
+    const searchFieldsQuery = type === 'aggregations' ? { ...searchFields, all: [] } : searchFields
+    const query = buildQuery(q, filters, searchFieldsQuery, excludedFields)
     const sort = buildSortQuery(order)
     const significantFields = fieldList === '*' ? '*' : [...fieldList, ...Object.keys(filters)]
 

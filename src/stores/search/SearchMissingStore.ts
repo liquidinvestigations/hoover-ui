@@ -67,11 +67,14 @@ export class SearchMissingStore {
             })
 
             task.addEventListener('error', (event) => {
-                const { message } = event as ErrorEvent
+                const { error } = event as ErrorEvent
 
                 runInAction(() => {
-                    this.error[collection] = message
                     this.missingLoading--
+
+                    if (error.name !== 'AbortError') {
+                        this.error[collection] = error
+                    }
                 })
             })
         }
