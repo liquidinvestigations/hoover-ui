@@ -111,7 +111,7 @@ export const ChipsTree: FC<ChipsTreeProps> = ({ tree, renderChip, renderMenu, on
         } else {
             return 'left' in q && 'right' in q && q.left && q.right ? (
                 <Box className={classes.box}>
-                    <Box className={classes.chips + ' ' + classes[operator]}>
+                    <Box className={cx(classes.chips, classes[operator])}>
                         {getNotBox(leftNegation, q.left, build(q.left, operator))}
                         {getNotBox(rightNegation, q.right, build(q.right, operator))}
                     </Box>
