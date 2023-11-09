@@ -6,7 +6,6 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         fontWeight: '500',
     },
     expand: {
-        marginLeft: theme.spacing(2),
         transform: 'rotate(90deg)',
         transition: theme.transitions.create('transform', {
             duration: theme.transitions.duration.shortest,
@@ -19,8 +18,6 @@ export const useStyles = makeStyles()((theme: Theme) => ({
 
     histogramTitle: {
         padding: 0,
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
     },
 
     chartBox: {

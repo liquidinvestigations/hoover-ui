@@ -10,6 +10,7 @@ import { SplitPaneLayout } from '../common/SplitPaneLayout/SplitPaneLayout'
 import { Document } from '../document/Document'
 import { useSharedStore } from '../SharedStoreProvider'
 
+import { ExcludedChips } from './chips/ExcludedChips/ExcludedChips'
 import { QueryChips } from './chips/QueryChips/QueryChips'
 import { Categories } from './filters/Categories/Categories'
 import { FiltersChips } from './filters/FiltersChips/FiltersChips'
@@ -17,14 +18,13 @@ import { Histogram } from './filters/Histogram/Histogram'
 import { HotKeys } from './HotKeys'
 import { Results } from './results/Results/Results'
 import { useStyles } from './Search.styles'
-import { SortingChips } from './sorting/SortingChips/SortingChips'
-import { SortingMenu } from './sorting/SortingMenu/SortingMenu'
 
 export const Search: FC = observer(() => {
     const { t } = useTranslate()
     const { classes } = useStyles()
     const inputRef = useRef<HTMLInputElement>(null)
     const {
+        excludedFields,
         searchStore: {
             search,
             searchViewStore: {
@@ -41,6 +41,7 @@ export const Search: FC = observer(() => {
                 handleInputChange,
                 snackbarMessage,
                 handleSnackbarClose,
+                showDateInsights,
             },
             searchResultsStore: { error, clearResults },
         },
@@ -138,19 +139,15 @@ export const Search: FC = observer(() => {
                                             </Grid>
                                         </Grid>
                                     </form>
-
-                                    <FiltersChips />
-
                                     <QueryChips />
-
-                                    <Histogram title={t('date-modified', 'Date modified')} field="date" />
-
-                                    <Histogram title={t('date-created', 'Date created')} field="date-created" />
-
-                                    <div className={classes.sorting}>
-                                        <SortingChips />
-                                        <SortingMenu />
-                                    </div>
+                                    <FiltersChips />
+                                    {!!excludedFields?.length && <ExcludedChips />}
+                                    {showDateInsights && (
+                                        <>
+                                            <Histogram title={t('date-modified', 'Date modified')} field="date" />
+                                            <Histogram title={t('date-created', 'Date created')} field="date-created" />
+                                        </>
+                                    )}
                                 </Grid>
                             </Grid>
 

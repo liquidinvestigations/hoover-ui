@@ -37,6 +37,8 @@ export class SearchViewStore {
 
     snackbarMessage: ReactNode | undefined
 
+    showDateInsights: boolean = false
+
     constructor(
         private readonly sharedStore: SharedStore,
         private readonly searchStore: SearchStore,
@@ -191,5 +193,11 @@ export class SearchViewStore {
 
     handleSnackbarClose = (): void => {
         this.setSnackbarMessage(undefined)
+    }
+
+    toggleDateDetails = (): void => {
+        runInAction(() => {
+            this.showDateInsights = !this.showDateInsights
+        })
     }
 }
