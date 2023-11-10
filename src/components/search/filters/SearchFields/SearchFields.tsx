@@ -1,12 +1,13 @@
-import { Checkbox, Fab, Grid, ListItem, ListItemText, Popover } from '@mui/material'
+import { Box, Checkbox, Fab, Grid, ListItem, ListItemText, Popover, Typography } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import { FC, useRef } from 'react'
 
 import { reactIcons } from '../../../../constants/icons'
+import { SourceField } from '../../../../Types'
 import { useSharedStore } from '../../../SharedStoreProvider'
 
 import { useStyles } from './SearchFields.styles'
-import { chunkArray } from './utils'
+import { getSearchFields } from './utils'
 
 export const SearchFields: FC = observer(() => {
     const { classes } = useStyles()
@@ -20,9 +21,8 @@ export const SearchFields: FC = observer(() => {
             searchViewStore: { searchFieldsOpen, setSearchFieldsOpen },
         },
     } = useSharedStore()
-    const chunkSize = fields?.all ? Math.ceil(fields?.all.length / 4) : 10
-    const chunkedFields = chunkArray(fields?.all || [], chunkSize)
     const toggleSearchFields = () => setSearchFieldsOpen(!searchFieldsOpen)
+    const searchFields = getSearchFields(fields!.all as SourceField[])
 
     return (
         <>
@@ -34,10 +34,16 @@ export const SearchFields: FC = observer(() => {
                 open={searchFieldsOpen}
                 onBlur={toggleSearchFields}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-                <Grid container padding={1}>
-                    {chunkedFields.map((chunk, index) => (
-                        <Grid item key={index}>
-                            {chunk.map((field) => (
+                <Grid container padding={2} flexDirection="column" maxHeight={450}>
+                    {searchFields.map(({ label, icon, filters }) =>
+                        filters.map((field, index) => (
+                            <Grid item key={field}>
+                                {!index && (
+                                    <Box alignItems="center" display="flex" gap={0.5} mt={1}>
+                                        {reactIcons[icon]}
+                                        <Typography>{label}</Typography>
+                                    </Box>
+                                )}
                                 <ListItem key={field} role={undefined} dense button onClick={onFieldInclusionChange(field)}>
                                     <Checkbox
                                         size="small"
@@ -55,9 +61,9 @@ export const SearchFields: FC = observer(() => {
                                         }}
                                     />
                                 </ListItem>
-                            ))}
-                        </Grid>
-                    ))}
+                            </Grid>
+                        )),
+                    )}
                 </Grid>
             </Popover>
         </>

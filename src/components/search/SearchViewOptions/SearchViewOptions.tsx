@@ -12,8 +12,11 @@ import { useStyles } from './SearchViewOptions.style'
 export const SearchViewOptions = observer(() => {
     const { classes } = useStyles()
     const {
-        searchViewStore: { resultsViewType, setResultsViewType, toggleDateDetails, showDateInsights },
-    } = useSharedStore().searchStore
+        fields,
+        searchStore: {
+            searchViewStore: { resultsViewType, setResultsViewType, toggleDateDetails, showDateInsights },
+        },
+    } = useSharedStore()
 
     return (
         <Grid container justifyContent="space-between" mt={1}>
@@ -46,9 +49,11 @@ export const SearchViewOptions = observer(() => {
                             {reactIcons.categoryDates}
                         </Fab>
                     </Grid>
-                    <Grid item>
-                        <SearchFields />
-                    </Grid>
+                    {fields?.all && (
+                        <Grid item>
+                            <SearchFields />
+                        </Grid>
+                    )}
                     <Grid item>
                         <SortingChips />
                         <SortingMenu />
