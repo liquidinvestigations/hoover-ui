@@ -9,6 +9,7 @@
   "batch" : "Batch",
   "batch_search_button" : "Batch search",
   "batch_search_queries" : "Batch search queries (one per line)",
+  "batch_search_collection_missing_alert": "At least 1 collection is required",
   "blobs" : "blobs",
   "bookmarks" : "Bookmarks",
   "boost" : "Boost",

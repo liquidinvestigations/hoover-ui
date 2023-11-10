@@ -9,6 +9,7 @@
   "batch" : "Wyszukiwanie serii",
   "batch_search_button" : "Szukaj",
   "batch_search_queries" : "Wpisz serię zapytań (jedno na linię)",
+  "batch_search_collection_missing_alert": "Wymagana jest co najmniej 1 kolekcja",
   "blobs" : "droplety",
   "bookmarks" : "Zakładki",
   "boost" : "Wzmocnienie",
