@@ -377,7 +377,7 @@ export const Document = observer(() => {
                                 {tabData.name}
                             </Typography>
                         )}
-                        <TabPanel value={tab} index={index} padding={tabData.padding} alwaysVisible={printMode}>
+                        <TabPanel value={tab} index={index} padding={tabData.padding}>
                             {tabData.content}
                         </TabPanel>
                     </Box>
