@@ -9,6 +9,7 @@
   "batch" : "Stapel",
   "batch_search_button" : "Massensuche",
   "batch_search_queries" : "Massensuche (ein Begriff pro Zeile)",
+  "batch_search_collection_missing_alert": "Mindestens 1 Sammlung wird benötigt",
   "blobs" : "Binärobjekte",
   "bookmarks" : "Lesezeichen",
   "boost" : "Beschleunigung",

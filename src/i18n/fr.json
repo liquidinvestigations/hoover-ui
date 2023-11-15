@@ -9,6 +9,7 @@
   "batch" : "Lot",
   "batch_search_button" : "Recherche par lots",
   "batch_search_queries" : "Recherches groupées (une par ligne)",
+  "batch_search_collection_missing_alert": "Au moins 1 collection est nécessaire",
   "blobs" : "blobs",
   "bookmarks" : "Signets",
   "boost" : "Booster",

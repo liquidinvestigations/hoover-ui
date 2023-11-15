@@ -1,4 +1,4 @@
-import { Button, Grid, List, TextField, Typography } from '@mui/material'
+import { Alert, Button, Grid, List, TextField, Typography } from '@mui/material'
 import { T, useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import { ChangeEvent, useState } from 'react'
@@ -48,6 +48,7 @@ export const BatchSearch = observer(() => {
 
         const searchResults: BatchResult[] = []
         setResultsLoading(true)
+        setError(undefined)
         const termsPage = allTerms.slice(offset, offset + limits.batch)
 
         batch({
@@ -95,16 +96,16 @@ export const BatchSearch = observer(() => {
     }
 
     const handleSearch = () => {
+        if (!searchCollections?.length) {
+            setError(t('batch_search_collection_missing_alert', 'At least 1 collection is required'))
+            return
+        }
         setResults(undefined)
         search()
     }
 
     if (!limits) {
         return <Loading />
-    }
-
-    if (error) {
-        return <div>{error}</div>
     }
 
     return (
@@ -114,6 +115,11 @@ export const BatchSearch = observer(() => {
                     <Expandable title={t('collections', 'Collections')} defaultOpen highlight={false}>
                         <CollectionsFilter />
                     </Expandable>
+                    {error && (
+                        <Alert severity="error" sx={{ margin: '0 16px' }}>
+                            {error}
+                        </Alert>
+                    )}
                 </List>
             </Grid>
             <Grid item sm={5}>
