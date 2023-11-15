@@ -1,9 +1,10 @@
-import { Box, Divider, List, ListItem, ListItemText, Typography } from '@mui/material'
+import { Box, Divider, List, ListItem, ListItemText, Tooltip, Typography } from '@mui/material'
 import { useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
 import { MouseEvent, useEffect, useState } from 'react'
 
+import { ELLIPSIS_TERM_LENGTH } from '../../../../../constants/general'
 import { SourceField } from '../../../../../Types'
 import { useSharedStore } from '../../../../SharedStoreProvider'
 import { LinkMenu } from '../../../LinkMenu'
@@ -86,8 +87,13 @@ export const Meta = observer(() => {
             <Typography key={componentKey} component="pre" variant="caption" className={classes.raw}>
                 <strong>{key}:</strong>{' '}
                 <span className={classes.searchField} onClick={handleLinkClick(getFieldSearchKey(key), fieldValue)}>
-                    {/* I have removed the Tooltip temporarily */}
-                    <span dangerouslySetInnerHTML={{ __html: fieldValue }}></span>
+                    {fieldValue.length > ELLIPSIS_TERM_LENGTH ? (
+                        <Tooltip title={fieldValue}>
+                            <span dangerouslySetInnerHTML={{ __html: fieldValue }}></span>
+                        </Tooltip>
+                    ) : (
+                        <span dangerouslySetInnerHTML={{ __html: fieldValue }}></span>
+                    )}
                     {getFieldScore(key, value)}
                 </span>
             </Typography>

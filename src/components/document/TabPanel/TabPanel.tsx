@@ -11,16 +11,12 @@ interface TabPanelProps {
     alwaysVisible?: boolean
 }
 
-export const TabPanel: FC<TabPanelProps> = ({ children, value, index, padding = 2, alwaysVisible = false, ...other }) => {
+export const TabPanel: FC<TabPanelProps> = ({ children, value, index, padding = 2, ...other }) => {
     const { classes } = useStyles()
 
     return (
-        <div role="tabpanel" hidden={!alwaysVisible && value !== index} className={classes.root} {...other}>
-            {(alwaysVisible || value === index) && (
-                <Box p={padding} className={classes.tab}>
-                    {children}
-                </Box>
-            )}
-        </div>
+        <Box padding={padding} hidden={index !== value} className={classes.root} {...other}>
+            {children}
+        </Box>
     )
 }
