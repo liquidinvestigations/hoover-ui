@@ -29,6 +29,52 @@ export class PdfSearchStore {
         makeAutoObservable(this)
     }
 
+    private resetSearch = () => {
+        this.searchResults = {}
+        this.loadingTime = 0
+    }
+
+    private searchInDocument = async (query: string, documentUrl: string, documentIndex: number, signal: AbortSignal) => {
+        for (const chunk of this.documentStore.pdfDocumentInfo?.chunks || []) {
+            if (signal.aborted) return
+
+            const chunkResults = await this.fetchAndSearchChunk(query, documentUrl, chunk, signal)
+            this.setChunkResults(documentIndex, { [chunk]: chunkResults })
+        }
+    }
+
+    private fetchAndSearchChunk = async (query: string, documentUrl: string, chunk: string, signal: AbortSignal): Promise<PdfSearchResult[]> => {
+        const queryParams = this.buildQueryParams(chunk)
+        const startTime = Date.now()
+        const response = await fetchWithHeaders(`${documentUrl}?${queryParams}`, {
+            signal,
+            maxRetryCount: 1,
+        })
+
+        if (response.status === 200) {
+            const endTime = Date.now()
+            this.updateLoadingTime(endTime - startTime)
+            const pdfTextContent: PdfTextEntry[] = await response.json()
+            return this.searchPdfTextContent(pdfTextContent, query)
+        } else {
+            // Handle non-200 responses if necessary
+            return []
+        }
+    }
+
+    private buildQueryParams = (chunk: string): string => {
+        const queryParams = new URLSearchParams({
+            [X_HOOVER_PDF_SPLIT_PAGE_RANGE]: chunk,
+            [X_HOOVER_PDF_EXTRACT_TEXT]: '1',
+        })
+        return queryParams.toString()
+    }
+
+    private updateLoadingTime = (requestTime: number) => {
+        this.loadingTime += requestTime
+        this.setEstimatedTimeLeft(requestTime)
+    }
+
     private getAbortSignal = (): AbortSignal => {
         if (this.abortController) {
             this.abortController.abort()
@@ -160,56 +206,17 @@ export class PdfSearchStore {
     }
 
     search = async (query: string) => {
-        this.searchResults = {}
-        const { pdfDocumentInfo } = this.documentStore
+        this.resetSearch()
         this.currentHighlightIndex = parseInt(this.hashStore.hashState.findIndex || '0')
         this.loading = true
 
         const signal = this.getAbortSignal()
+        const documentUrls = this.documentStore.getDocumentUrls()
 
-        try {
-            const documentUrls = this.documentStore.getDocumentUrls()
-
-            for (let i = 0; i < documentUrls.length; i++) {
-                for (const chunk of pdfDocumentInfo?.chunks || []) {
-                    if (signal?.aborted) return
-
-                    const queryParams = new URLSearchParams({
-                        [X_HOOVER_PDF_SPLIT_PAGE_RANGE]: chunk,
-                        [X_HOOVER_PDF_EXTRACT_TEXT]: '1',
-                    })
-
-                    const startTime = Date.now()
-                    const response = await fetchWithHeaders(`${documentUrls[i]}?${queryParams}`, {
-                        signal,
-                        maxRetryCount: 1,
-                    })
-
-                    if (response.status === 200) {
-                        const endTime = Date.now()
-                        const requestCompletionTime = endTime - startTime
-                        this.loadingTime += requestCompletionTime
-                        this.setEstimatedTimeLeft(requestCompletionTime)
-                        const delay = Math.min(Math.max(0.5, (requestCompletionTime * 0.25) / 1000), 30)
-                        const pdfTextContent: PdfTextEntry[] = await response.json()
-                        const chunkResults = this.searchPdfTextContent(pdfTextContent, query)
-                        this.setChunkResults(i, { [chunk]: chunkResults })
-
-                        await new Promise((resolve) => setTimeout(resolve, delay * 1000))
-                    } else {
-                        this.setChunkResults(i, { [chunk]: [] })
-                    }
-                }
-            }
-        } catch (error) {
-            if (error instanceof DOMException && error.name === 'AbortError') {
-                console.log('Request aborted')
-            } else {
-                console.error('An error occurred during PDF search: ', error)
-                this.loading = false
-            }
-        } finally {
-            if (this.getLoadedChunks() === this.getTotalChunks()) this.loading = false
+        for (let i = 0; i < documentUrls.length; i++) {
+            await this.searchInDocument(query, documentUrls[i], i, signal)
         }
+
+        this.loading = this.getLoadedChunks() === this.getTotalChunks()
     }
 }

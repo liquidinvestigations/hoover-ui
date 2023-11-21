@@ -5,56 +5,28 @@ import SearchIcon from '@mui/icons-material/Search'
 import { Box, Chip, Grid, IconButton, InputAdornment, TextField } from '@mui/material'
 import { useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
-import React, { ChangeEvent, useEffect } from 'react'
+import React from 'react'
 
-import { formatETATime } from '../../../utils/utils'
 import { useSharedStore } from '../../SharedStoreProvider'
 import { Loading } from '../Loading/Loading'
 
 import { useStyles } from './PageSearch.styles'
+import { usePageSearch } from './usePageSearch'
 
 export const PageSearch = observer(() => {
+    const { handleInputChange, handleClearInput, handleChipClick, loadingPercentage, estimatedLoadingTimeLeft, hasSearchResults } = usePageSearch()
     const { t } = useTranslate()
     const { classes } = useStyles()
     const {
         searchStore: { query },
         documentStore: {
             documentSearchStore: {
-                query: documentSearchQuery,
-                inputValue,
-                setInputValue,
                 activeSearch,
-                clearQuery,
-                pdfSearchStore: { estimatedTimeLeft, getLoadingPercentage, loading },
+                inputValue,
+                pdfSearchStore: { loading },
             },
         },
     } = useSharedStore()
-
-    const handleInputChange = (event: ChangeEvent<HTMLInputElement>): void => {
-        setInputValue(event.target.value)
-    }
-
-    const handleClearInput = () => {
-        setInputValue('')
-        clearQuery()
-    }
-
-    useEffect(() => {
-        setInputValue(documentSearchQuery)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [documentSearchQuery])
-
-    const handleChipClick = (chip: string) => {
-        if (inputValue && !inputValue.endsWith(' ')) {
-            setInputValue(`${inputValue} ${chip}`)
-        } else {
-            setInputValue(chip)
-        }
-    }
-
-    const loadingPercentage = getLoadingPercentage()
-    const estimatedLoadingTimeLeft = formatETATime(estimatedTimeLeft)
-    const hasSearchResults = !!inputValue && activeSearch && inputValue.length >= 3 && activeSearch.getSearchResultsCount() > 0
 
     return (
         <Grid container>

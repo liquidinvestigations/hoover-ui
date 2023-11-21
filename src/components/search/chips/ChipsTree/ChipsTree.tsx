@@ -59,6 +59,9 @@ export const ChipsTree: FC<ChipsTreeProps> = ({ tree, renderChip, renderMenu, on
         return chip
     }
 
+    // Error: Arrow function has a complexity of 28. Maximum allowed is 10
+    // Reduce complexity of build function
+    // eslint-disable-next-line complexity
     const build = (q: AST | Node, parentOperator?: Operator): JSX.Element | null => {
         let operator: 'AND' | 'OR',
             rightNegation = false

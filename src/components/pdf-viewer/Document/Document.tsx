@@ -26,6 +26,9 @@ interface DocumentProps {
     renderer?: string
 }
 
+// Error: Arrow function has a complexity of 23. Maximum allowed is 10
+// Reduce complexity of Document component
+// eslint-disable-next-line complexity
 export const Document: FC<DocumentProps> = observer(({ initialPageIndex, onPageIndexChange, renderer = 'canvas' }) => {
     const { classes, cx } = useStyles()
     const doc = useDocument()?.doc

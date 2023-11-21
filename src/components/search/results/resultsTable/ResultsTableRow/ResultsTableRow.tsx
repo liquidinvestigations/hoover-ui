@@ -70,83 +70,104 @@ export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index 
         return value
     }
 
+    const formatString = (value: ValueOf<Hit>): JSX.Element | undefined | null | string =>
+        value && typeof value === 'string' ? shortenName(value, 60) : null
+
+    const formatBoolean = (value: ValueOf<Hit>): string => (value ? 'yes' : 'no')
+
+    const formatDate = (value: ValueOf<Hit>): JSX.Element | string | null =>
+        value && typeof value === 'string' ? formatDateTime(value, tolgee.getLanguage()) : null
+
+    const formatSize = (value: ValueOf<Hit>): JSX.Element | null => (value && typeof value === 'number' ? humanFileSize(value) : null)
+
+    const formatIcon = (value: ValueOf<Hit>): JSX.Element => (
+        <Tooltip placement="top" title={value ? String(value) : 'unknown'}>
+            <span>{cloneElement(getTypeIcon(String(value)), { className: classes.infoIcon })}</span>
+        </Tooltip>
+    )
+
+    const formatArray = (value: ValueOf<Hit>): JSX.Element | null =>
+        value && typeof value === 'string' ? (
+            <>
+                {[value.slice(0, 7)].map((el: string) => (
+                    <>
+                        {shortenName(el)}
+                        <br />
+                    </>
+                ))}
+                {value.length > 7 && '...'}
+            </>
+        ) : null
+
+    const formatTags = (icon: (tag: string) => ReactElement | null, value: ValueOf<Hit>): JSX.Element | null =>
+        value && typeof value === 'string' ? (
+            <>
+                {[value.slice(0, 7)].map((el: string) => (
+                    <>
+                        {icon(el) && cloneElement(icon(el) as ReactElement, { className: classes.tagIcon })}
+                        {shortenName(el)}
+                        <br />
+                    </>
+                ))}
+                {value.length > 7 && '...'}
+            </>
+        ) : null
+
+    const formatThumbnail = (value: ValueOf<Hit>): JSX.Element | null =>
+        !value ? null : (
+            <>
+                {cloneElement(reactIcons.visibility, {
+                    ref: thumbRef,
+                    className: classes.infoIcon,
+                    onMouseEnter: handleThumbEnter,
+                    onMouseLeave: handleThumbLeave,
+                })}
+                <Popper
+                    anchorEl={thumbRef.current}
+                    open={showPreview}
+                    placement="right-start"
+                    modifiers={[
+                        {
+                            name: 'preventOverflow',
+                            options: {
+                                boundary: 'clippingParents',
+                            },
+                        },
+                    ]}>
+                    <Paper elevation={10} className={classes.preview}>
+                        {previewLoading && <Loading />}
+                        <img
+                            alt="preview image"
+                            className={previewLoading ? classes.previewImgLoading : classes.previewImg}
+                            onLoad={() => setPreviewLoading(false)}
+                            src={createThumbnailSrc(`doc/${hit._collection}/${hit._id}`, 400)}
+                        />
+                    </Paper>
+                </Popper>
+            </>
+        )
+
     const formatField = (field: string, path: string, format: ResultColumnFormat) => {
         const value = getValue(path)
         const icon = (tag: string) => getTagIcon(tag, field === 'tags')
 
         switch (format) {
             case 'string':
-                return value && typeof value === 'string' ? shortenName(value, 60) : null
+                return formatString(value)
             case 'boolean':
-                return value ? 'yes' : 'no'
+                return formatBoolean(value)
             case 'date':
-                return value && typeof value === 'string' ? formatDateTime(value, tolgee.getLanguage()) : null
+                return formatDate(value)
             case 'size':
-                return value && typeof value === 'number' ? humanFileSize(value) : null
+                return formatSize(value)
             case 'icon':
-                return (
-                    <Tooltip placement="top" title={value ? String(value) : 'unknown'}>
-                        <span>{cloneElement(getTypeIcon(String(value)), { className: classes.infoIcon })}</span>
-                    </Tooltip>
-                )
+                return formatIcon(value)
             case 'array':
-                return value && typeof value === 'string' ? (
-                    <>
-                        {[value.slice(0, 7)].map((el: string) => (
-                            <>
-                                {shortenName(el)}
-                                <br />
-                            </>
-                        ))}
-                        {value.length > 7 && '...'}
-                    </>
-                ) : null
+                return formatArray(value)
             case 'tags':
-                return value && typeof value === 'string' ? (
-                    <>
-                        {[value.slice(0, 7)].map((el: string) => (
-                            <>
-                                {icon(el) && cloneElement(icon(el) as ReactElement, { className: classes.tagIcon })}
-                                {shortenName(el)}
-                                <br />
-                            </>
-                        ))}
-                        {value.length > 7 && '...'}
-                    </>
-                ) : null
+                return formatTags(icon, value)
             case 'thumbnail':
-                return !value ? null : (
-                    <>
-                        {cloneElement(reactIcons.visibility, {
-                            ref: thumbRef,
-                            className: classes.infoIcon,
-                            onMouseEnter: handleThumbEnter,
-                            onMouseLeave: handleThumbLeave,
-                        })}
-                        <Popper
-                            anchorEl={thumbRef.current}
-                            open={showPreview}
-                            placement="right-start"
-                            modifiers={[
-                                {
-                                    name: 'preventOverflow',
-                                    options: {
-                                        boundary: 'clippingParents',
-                                    },
-                                },
-                            ]}>
-                            <Paper elevation={10} className={classes.preview}>
-                                {previewLoading && <Loading />}
-                                <img
-                                    alt="preview image"
-                                    className={previewLoading ? classes.previewImgLoading : classes.previewImg}
-                                    onLoad={() => setPreviewLoading(false)}
-                                    src={createThumbnailSrc(`doc/${hit._collection}/${hit._id}`, 400)}
-                                />
-                            </Paper>
-                        </Popper>
-                    </>
-                )
+                return formatThumbnail(value)
         }
     }
 

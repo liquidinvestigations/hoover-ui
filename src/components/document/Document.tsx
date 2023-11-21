@@ -38,6 +38,9 @@ interface TabData {
     searchCount?: number
 }
 
+// Error: Arrow function has a complexity of 27. Maximum allowed is 10
+// Reduce complexity of Document component
+// eslint-disable-next-line complexity
 export const Document = observer(() => {
     const { t } = useTranslate()
     const { classes } = useStyles()

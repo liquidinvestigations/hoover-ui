@@ -3,7 +3,7 @@ import qs, { ParsedQs } from 'qs'
 
 import { aggregationFields } from '../constants/aggregationFields'
 import { HashState } from '../stores/HashStateStore'
-import { Interval, SearchQueryParams, SourceField } from '../Types'
+import { Interval, SearchQueryParams, SourceField, Terms } from '../Types'
 
 import { daysInMonth } from './utils'
 
@@ -76,49 +76,7 @@ export const createSearchParams = (term: string | Term, field?: SourceField) => 
         params.filters = {}
 
         if (aggregationFields[field]?.type === 'date' && typeof term === 'object') {
-            const year = term.term.substring(0, 4)
-            const month = term.term.substring(0, 7)
-            const week = term.term.substring(0, 10)
-            const dateTime = DateTime.fromISO(week)
-            const day = term.term.substring(0, 10)
-
-            switch (term.format) {
-                case 'year':
-                    params.filters[field] = {
-                        from: `${year}-01-01`,
-                        to: `${year}-12-31`,
-                    }
-                    break
-
-                case 'month':
-                    params.filters[field] = {
-                        from: `${month}-01`,
-                        to: `${month}-${daysInMonth(month)}`,
-                    }
-                    break
-
-                case 'week':
-                    params.filters[field] = {
-                        from: DateTime.fromObject({
-                            weekYear: dateTime.weekYear,
-                            weekNumber: dateTime.weekNumber,
-                            weekday: 1,
-                        }).toISODate(),
-                        to: DateTime.fromObject({
-                            weekYear: dateTime.weekYear,
-                            weekNumber: dateTime.weekNumber,
-                            weekday: 7,
-                        }).toISODate(),
-                    }
-                    break
-
-                case 'day':
-                    params.filters[field] = {
-                        from: day,
-                        to: day,
-                    }
-            }
-
+            params.filters[field] = getSearchFilter(term)
             if (term.interval) {
                 params.filters[field].interval = term.interval
             }
@@ -132,6 +90,51 @@ export const createSearchParams = (term: string | Term, field?: SourceField) => 
     }
 
     return params
+}
+
+const getSearchFilter = (term: Term): Partial<Terms> => {
+    const year = term.term.substring(0, 4)
+    const month = term.term.substring(0, 7)
+    const week = term.term.substring(0, 10)
+    const dateTime = DateTime.fromISO(week)
+    const day = term.term.substring(0, 10)
+
+    switch (term.format) {
+        case 'year':
+            return {
+                from: `${year}-01-01`,
+                to: `${year}-12-31`,
+            }
+            break
+
+        case 'month':
+            return {
+                from: `${month}-01`,
+                to: `${month}-${daysInMonth(month)}`,
+            }
+            break
+
+        case 'week':
+            return {
+                from: DateTime.fromObject({
+                    weekYear: dateTime.weekYear,
+                    weekNumber: dateTime.weekNumber,
+                    weekday: 1,
+                }).toISODate(),
+                to: DateTime.fromObject({
+                    weekYear: dateTime.weekYear,
+                    weekNumber: dateTime.weekNumber,
+                    weekday: 7,
+                }).toISODate(),
+            }
+            break
+
+        default:
+            return {
+                from: day,
+                to: day,
+            }
+    }
 }
 
 export const createSearchUrl = (term: Term | string, collections: string | string[], field?: SourceField, hash?: HashState) => {
