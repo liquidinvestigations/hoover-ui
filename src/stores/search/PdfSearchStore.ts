@@ -56,10 +56,9 @@ export class PdfSearchStore {
             this.updateLoadingTime(endTime - startTime)
             const pdfTextContent: PdfTextEntry[] = await response.json()
             return this.searchPdfTextContent(pdfTextContent, query)
-        } else {
-            // Handle non-200 responses if necessary
-            return []
         }
+
+        return []
     }
 
     private buildQueryParams = (chunk: string): string => {
@@ -116,6 +115,8 @@ export class PdfSearchStore {
     }
 
     getCurrentHighlightIndex = (): number => {
+        const searchResultsCount = this.getSearchResultsCount()
+        if (searchResultsCount && this.currentHighlightIndex > searchResultsCount) this.currentHighlightIndex = searchResultsCount - 1
         return this.currentHighlightIndex
     }
 
@@ -183,7 +184,7 @@ export class PdfSearchStore {
             let startIndex = 0
 
             while (startIndex !== -1) {
-                startIndex = text.indexOf(query.toLowerCase(), startIndex)
+                startIndex = text.toLowerCase().indexOf(query.toLowerCase(), startIndex)
                 if (startIndex !== -1) {
                     const endIndex = startIndex + query.length
                     chunkResults.push({ pageNum: parseInt(pageNum), index: chunkResults.length })

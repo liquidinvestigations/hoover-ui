@@ -55,7 +55,7 @@ export class TextSearchStore {
     }
 
     scrollToHighlight = () => {
-        const container = document.querySelector(`#subTab-${this.documentStore.subTab}`)
+        const container = document.querySelector(`#text-sub-tab`)?.children[this.documentStore.subTab]
         if (!container) return
 
         const searchResult = this.searchResults[this.documentStore.subTab]

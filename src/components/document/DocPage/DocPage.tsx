@@ -12,7 +12,7 @@ import { useSharedStore } from '../../SharedStoreProvider'
 import { Document } from '../Document'
 
 import { useStyles } from './DocPage.styles'
-import { DocPageError } from './DocPageError'
+import { DocPageError } from './error'
 import { InfoPane } from './InfoPane'
 
 export const DocPage: FC = observer(() => {

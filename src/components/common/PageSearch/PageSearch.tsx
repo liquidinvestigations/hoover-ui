@@ -7,26 +7,31 @@ import { useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 
+import { formatETATime } from '../../../utils/utils'
 import { useSharedStore } from '../../SharedStoreProvider'
 import { Loading } from '../Loading/Loading'
 
 import { useStyles } from './PageSearch.styles'
-import { usePageSearch } from './usePageSearch'
 
 export const PageSearch = observer(() => {
-    const { handleInputChange, handleClearInput, handleChipClick, loadingPercentage, estimatedLoadingTimeLeft, hasSearchResults } = usePageSearch()
     const { t } = useTranslate()
     const { classes } = useStyles()
     const {
         searchStore: { query },
         documentStore: {
             documentSearchStore: {
+                handleChipClick,
+                handleInputChange,
+                handleClearInput,
+                hasSearchResults,
                 activeSearch,
                 inputValue,
-                pdfSearchStore: { loading },
+                pdfSearchStore: { loading, estimatedTimeLeft, getLoadingPercentage },
             },
         },
     } = useSharedStore()
+    const loadingPercentage = getLoadingPercentage()
+    const estimatedLoadingTimeLeft = formatETATime(estimatedTimeLeft)
 
     return (
         <Grid container>
@@ -65,7 +70,7 @@ export const PageSearch = observer(() => {
                         ),
                         endAdornment: (
                             <InputAdornment position="end">
-                                {inputValue && inputValue.length >= 3 && loading && !!loadingPercentage && loadingPercentage <= 100 && (
+                                {inputValue && inputValue.length >= 3 && loading && !!loadingPercentage && loadingPercentage < 100 && (
                                     <Box className={classes.adornment}>
                                         <Loading
                                             size={18}
@@ -75,7 +80,7 @@ export const PageSearch = observer(() => {
                                         {estimatedLoadingTimeLeft} | {loadingPercentage}%
                                     </Box>
                                 )}
-                                {hasSearchResults && (
+                                {hasSearchResults() && (
                                     <Box className={classes.adornment}>
                                         {activeSearch.getCurrentHighlightIndex() + 1} of {activeSearch.getSearchResultsCount()}
                                     </Box>
@@ -85,7 +90,7 @@ export const PageSearch = observer(() => {
                                         <CloseIcon fontSize="small" />
                                     </IconButton>
                                 )}
-                                {hasSearchResults && (
+                                {hasSearchResults() && (
                                     <>
                                         <IconButton onClick={activeSearch.nextSearchResult}>
                                             <ArrowDownwardIcon fontSize="small" />

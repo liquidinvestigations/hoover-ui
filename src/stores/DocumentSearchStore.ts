@@ -1,5 +1,6 @@
 import debounce from 'lodash/debounce'
 import { makeAutoObservable, reaction } from 'mobx'
+import { ChangeEvent } from 'react'
 
 import { DocumentStore } from './DocumentStore'
 import { HashStateStore } from './HashStateStore'
@@ -49,6 +50,18 @@ export class DocumentSearchStore {
 
         reaction(
             () => this.query,
+            (query) => {
+                if (!query || query.length < 3) {
+                    this.clearSearch()
+                } else {
+                    this.setInputValue(query)
+                    this.search()
+                }
+            },
+        )
+
+        reaction(
+            () => this.query,
             () => {
                 if (!this.query || this.query.length < 3) {
                     this.clearSearch()
@@ -72,6 +85,25 @@ export class DocumentSearchStore {
     setInputValue = (value: string) => {
         this.inputValue = value
     }
+
+    handleClearInput = () => {
+        this.setInputValue('')
+        this.clearQuery()
+    }
+
+    handleChipClick = (chip: string) => {
+        if (this.inputValue && !this.inputValue.endsWith(' ')) {
+            this.setInputValue(`${this.inputValue} ${chip}`)
+        } else {
+            this.setInputValue(chip)
+        }
+    }
+
+    handleInputChange = (event: ChangeEvent<HTMLInputElement>): void => {
+        this.setInputValue(event.target.value)
+    }
+
+    hasSearchResults = () => this.inputValue?.length >= 3 && this.activeSearch?.getSearchResultsCount() > 0
 
     setActiveSearch = (activeSearch: PdfSearchStore | TextSearchStore | MetaSearchStore) => {
         this.activeSearch = activeSearch

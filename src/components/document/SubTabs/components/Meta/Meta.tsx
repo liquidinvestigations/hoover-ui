@@ -25,12 +25,8 @@ export const Meta = observer(() => {
         collection,
         collectionBaseUrl,
         metaStore: { tableData, metaData },
-        documentSearchStore: { query, setActiveSearch, metaSearchStore },
+        documentSearchStore: { query, metaSearchStore },
     } = useSharedStore().documentStore
-
-    useEffect(() => {
-        setActiveSearch(metaSearchStore)
-    }, [setActiveSearch, metaSearchStore])
 
     useEffect(() => {
         metaSearchStore.scrollToHighlight()

@@ -5,7 +5,8 @@ import { Bucket, SourceField, Terms } from '../../../../Types'
 import { formatThousands } from '../../../../utils/utils'
 
 import { useStyles } from './AggregationFilterBucket.styles'
-import { getDisplayLabel, getLabel, getValue } from './utils'
+import { DisplayLabel } from './Labels/DisplayLabel'
+import { getLabel, getValue } from './utils'
 
 interface AggregationFilterBucketProps {
     field: SourceField
@@ -40,7 +41,6 @@ export const AggregationFilterBucket: FC<AggregationFilterBucketProps> = ({
     const included = queryFilter?.include?.includes(value)
     const excluded = queryFilter?.exclude?.includes(value)
     const checked = included || excluded || false
-    const displayLabel = getDisplayLabel(label, field, bucket, excluded, quickFilter)
 
     return (
         <ListItem key={bucket.key} role={undefined} dense button onClick={onChange(field, value, triState)}>
@@ -56,7 +56,7 @@ export const AggregationFilterBucket: FC<AggregationFilterBucketProps> = ({
             />
 
             <ListItemText
-                primary={displayLabel}
+                primary={<DisplayLabel label={label} field={field} bucket={bucket} excluded={excluded} quickFilter={quickFilter} />}
                 secondary={subLabel}
                 className={cx({ [classes.labelWithSub]: !!subLabel })}
                 primaryTypographyProps={{

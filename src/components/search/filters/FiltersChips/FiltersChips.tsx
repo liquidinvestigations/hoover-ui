@@ -11,13 +11,12 @@ import { useSharedStore } from '../../../SharedStoreProvider'
 import { ChipsTree } from '../../chips/ChipsTree/ChipsTree'
 
 import { useStyles } from './FiltersChips.styles'
-import { processFilter } from './utils'
 
 export const FiltersChips: FC = observer(() => {
     const { classes } = useStyles()
     const {
         query,
-        filtersStore: { handleFilterChipDelete },
+        filtersStore: { handleFilterChipDelete, processFilter },
     } = useSharedStore().searchStore
 
     const [parsedFilters, setParsedFilters] = useState<AST>()
@@ -33,7 +32,7 @@ export const FiltersChips: FC = observer(() => {
             .filter((filter) => filter !== '')
 
         setParsedFilters(filtersArray.length ? lucene.parse(filtersArray.join(' AND ')) : undefined)
-    }, [query])
+    }, [processFilter, query])
 
     const getDefaultLabel = (n: lucene.NodeTerm & lucene.NodeRangedTerm, term: JSX.Element | string, name?: string | ReactElement) => (
         <span>
