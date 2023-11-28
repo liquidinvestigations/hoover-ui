@@ -5,7 +5,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import { Box, Chip, Grid, IconButton, InputAdornment, TextField } from '@mui/material'
 import { useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
-import React, { ChangeEvent, useEffect } from 'react'
+import React from 'react'
 
 import { formatETATime } from '../../../utils/utils'
 import { useSharedStore } from '../../SharedStoreProvider'
@@ -20,41 +20,18 @@ export const PageSearch = observer(() => {
         searchStore: { query },
         documentStore: {
             documentSearchStore: {
-                query: documentSearchQuery,
-                inputValue,
-                setInputValue,
+                handleChipClick,
+                handleInputChange,
+                handleClearInput,
+                hasSearchResults,
                 activeSearch,
-                clearQuery,
-                pdfSearchStore: { estimatedTimeLeft, getLoadingPercentage, loading },
+                inputValue,
+                pdfSearchStore: { loading, estimatedTimeLeft, getLoadingPercentage },
             },
         },
     } = useSharedStore()
-
-    const handleInputChange = (event: ChangeEvent<HTMLInputElement>): void => {
-        setInputValue(event.target.value)
-    }
-
-    const handleClearInput = () => {
-        setInputValue('')
-        clearQuery()
-    }
-
-    useEffect(() => {
-        setInputValue(documentSearchQuery)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [documentSearchQuery])
-
-    const handleChipClick = (chip: string) => {
-        if (inputValue && !inputValue.endsWith(' ')) {
-            setInputValue(`${inputValue} ${chip}`)
-        } else {
-            setInputValue(chip)
-        }
-    }
-
     const loadingPercentage = getLoadingPercentage()
     const estimatedLoadingTimeLeft = formatETATime(estimatedTimeLeft)
-    const hasSearchResults = !!inputValue && activeSearch && inputValue.length >= 3 && activeSearch.getSearchResultsCount() > 0
 
     return (
         <Grid container>
@@ -93,7 +70,7 @@ export const PageSearch = observer(() => {
                         ),
                         endAdornment: (
                             <InputAdornment position="end">
-                                {inputValue && inputValue.length >= 3 && loading && !!loadingPercentage && loadingPercentage <= 100 && (
+                                {inputValue && inputValue.length >= 3 && loading && !!loadingPercentage && loadingPercentage < 100 && (
                                     <Box className={classes.adornment}>
                                         <Loading
                                             size={18}
@@ -103,7 +80,7 @@ export const PageSearch = observer(() => {
                                         {estimatedLoadingTimeLeft} | {loadingPercentage}%
                                     </Box>
                                 )}
-                                {hasSearchResults && (
+                                {hasSearchResults() && (
                                     <Box className={classes.adornment}>
                                         {activeSearch.getCurrentHighlightIndex() + 1} of {activeSearch.getSearchResultsCount()}
                                     </Box>
@@ -113,7 +90,7 @@ export const PageSearch = observer(() => {
                                         <CloseIcon fontSize="small" />
                                     </IconButton>
                                 )}
-                                {hasSearchResults && (
+                                {hasSearchResults() && (
                                     <>
                                         <IconButton onClick={activeSearch.nextSearchResult}>
                                             <ArrowDownwardIcon fontSize="small" />

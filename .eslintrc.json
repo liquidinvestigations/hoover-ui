@@ -47,7 +47,13 @@
     ],
     "no-extra-semi": "off",
     "prefer-const": "error",
-    "@next/next/no-img-element": "off"
+    "@next/next/no-img-element": "off",
+    "complexity": [
+      "error",
+      {
+        "max": 10
+      }
+    ]
   },
   "overrides": [
     {
@@ -62,8 +68,6 @@
         ]
       },
       "rules": {
-        "@typescript-eslint/ban-types": "warn", //to be removed
-        "@typescript-eslint/no-explicit-any": "warn", //to be removed
         "@typescript-eslint/no-unused-vars": [
           "error",
           {

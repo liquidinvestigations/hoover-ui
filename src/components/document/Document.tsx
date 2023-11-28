@@ -7,6 +7,9 @@ import { cloneElement, ReactElement, useEffect, useRef } from 'react'
 import { createOcrUrl } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
 import { specialTags } from '../../constants/specialTags'
+import { MetaSearchStore } from '../../stores/search/MetaSearchStore'
+import { PdfSearchStore } from '../../stores/search/PdfSearchStore'
+import { TextSearchStore } from '../../stores/search/TextSearchStore'
 import { Tag } from '../../stores/TagsStore'
 import { getTagIcon } from '../../utils/utils'
 import { Loading } from '../common/Loading/Loading'
@@ -28,7 +31,7 @@ import { SubTabs } from './SubTabs/SubTabs'
 import { TabPanel } from './TabPanel/TabPanel'
 import { Toolbar, ToolbarLink } from './Toolbar/Toolbar'
 
-interface TabData {
+export interface TabData {
     name: string | ReactElement
     icon: ReactElement
     visible: boolean
@@ -36,8 +39,12 @@ interface TabData {
     padding?: number
     searchLoading?: boolean
     searchCount?: number
+    searchStore?: PdfSearchStore | TextSearchStore | MetaSearchStore
 }
 
+// Error: Arrow function has a complexity of 27. Maximum allowed is 10
+// Reduce complexity of Document component
+// eslint-disable-next-line complexity
 export const Document = observer(() => {
     const { t } = useTranslate()
     const { classes } = useStyles()
@@ -58,6 +65,7 @@ export const Document = observer(() => {
             thumbnailSrcSet,
             tab,
             handleTabChange,
+            setTabsData,
             documentSearchStore: { query, metaSearchStore, textSearchStore, pdfSearchStore },
         },
         searchStore: {
@@ -181,6 +189,7 @@ export const Document = observer(() => {
             content: <PdfTab />,
             searchLoading: pdfSearchStore.loading && !pdfSearchStore.getTotalSearchResultsCount(),
             searchCount: pdfSearchStore.getTotalSearchResultsCount(),
+            searchStore: pdfSearchStore,
         },
         {
             name: t('text', 'Text'),
@@ -190,6 +199,7 @@ export const Document = observer(() => {
             content: <SubTabs />,
             searchLoading: textSearchStore.loading,
             searchCount: textSearchStore.getTotalSearchResultsCount(),
+            searchStore: textSearchStore,
         },
         {
             name: t('tags', 'Tags'),
@@ -215,6 +225,7 @@ export const Document = observer(() => {
             content: <Meta />,
             searchLoading: metaSearchStore.loading,
             searchCount: metaSearchStore.getSearchResultsCount(),
+            searchStore: metaSearchStore,
         },
         {
             name: t('html', 'HTML'),
@@ -229,6 +240,7 @@ export const Document = observer(() => {
             content: <Text content={data.content.tree} />,
         },
     ]
+    setTabsData(tabsData)
 
     // TODO replace with styling
     const emptyTabs = []

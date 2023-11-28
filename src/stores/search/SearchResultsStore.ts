@@ -9,7 +9,7 @@ import { SearchStore } from './SearchStore'
 
 type PreviewOnLoad = 'first' | 'last' | undefined
 
-interface Result {
+export interface Result {
     collection: string
     hits?: Hits
 }

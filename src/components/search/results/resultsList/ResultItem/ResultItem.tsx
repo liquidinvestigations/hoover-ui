@@ -29,6 +29,9 @@ interface CustomDiv extends HTMLDivElement {
     tUp?: number
 }
 
+// Error: Arrow function has a complexity of 25. Maximum allowed is 10
+// Reduce complexity of ResultItem component
+// eslint-disable-next-line complexity
 export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) => {
     const { t } = useTranslate()
     const { classes, cx } = useStyles()

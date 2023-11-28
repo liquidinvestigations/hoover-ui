@@ -31,6 +31,14 @@ export const AnnotationLayer: FC<AnnotationLayerProps> = ({ page, pageIndex, con
         }
     }
 
+    const scrollToTop = useCallback(
+        (linkPageIndex: number) => {
+            if (!containerRef.current) return
+            containerRef.current.scrollTop = pagesRefs[linkPageIndex].current?.offsetTop || 0
+        },
+        [containerRef, pagesRefs],
+    )
+
     const goToDestinationHelper = useCallback(
         (rawDest: string, namedDest: string | null = null, explicitDest: string[]) => {
             // Dest array looks like that: <page-ref> </XYZ|/FitXXX> <args..>
@@ -67,12 +75,9 @@ export const AnnotationLayer: FC<AnnotationLayerProps> = ({ page, pageIndex, con
                 console.error(`goToDestinationHelper: "${linkPageIndex}" is not ` + `a valid page index, for dest="${rawDest}".`)
                 return
             }
-
-            if (containerRef.current) {
-                containerRef.current.scrollTop = pagesRefs[linkPageIndex].current?.offsetTop || 0
-            }
+            scrollToTop(linkPageIndex)
         },
-        [cachedPageIndices, containerRef, doc, pagesRefs],
+        [cachedPageIndices, doc, scrollToTop],
     )
 
     useEffect(() => {

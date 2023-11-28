@@ -64,31 +64,33 @@ export const QueryChips: FC = observer(() => {
         [parsedQuery, search],
     )
 
+    const getChipLabel = (q: Partial<ExtendedNodeTerm>, prefix?: string | null) => {
+        if (q.field === '<implicit>') {
+            return (
+                <span>
+                    {prefix && <strong>{prefix} </strong>}
+                    {shortenName(q.term)}
+                </span>
+            )
+        } else if (q.term) {
+            return (
+                <span>
+                    {prefix && <strong>{prefix} </strong>}
+                    <strong>{q.field}:</strong> {shortenName(q.term)}
+                </span>
+            )
+        } else {
+            return lucene.toString(q as AST)
+        }
+    }
     const getChip = useCallback(
         (q: Partial<ExtendedNodeTerm>) => {
-            let label,
-                prefix = q.prefix,
+            let prefix = q.prefix,
                 className = classes.chip
+            const label = getChipLabel(q, prefix)
             if (prefix === '-' || prefix === '!') {
                 prefix = null
                 className += ' ' + classes.negationChip
-            }
-            if (q.field === '<implicit>') {
-                label = (
-                    <span>
-                        {prefix && <strong>{prefix} </strong>}
-                        {shortenName(q.term)}
-                    </span>
-                )
-            } else if (q.term) {
-                label = (
-                    <span>
-                        {prefix && <strong>{prefix} </strong>}
-                        <strong>{q.field}:</strong> {shortenName(q.term)}
-                    </span>
-                )
-            } else {
-                label = lucene.toString(q as AST)
             }
 
             if (q.similarity || q.proximity || q.boost) {

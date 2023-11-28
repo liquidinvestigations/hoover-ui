@@ -3,6 +3,7 @@ import { makeAutoObservable, reaction, runInAction } from 'mobx'
 import { ReactElement, SyntheticEvent } from 'react'
 
 import { createDownloadUrl, createOcrUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI, fetchJson, X_HOOVER_PDF_INFO } from '../backend/api'
+import { TabData } from '../components/document/Document'
 import { LocalDocumentData } from '../components/finder/Types'
 import { parentLevels } from '../components/finder/utils'
 import { reactIcons } from '../constants/icons'
@@ -41,6 +42,8 @@ export class DocumentStore {
     ocrData: OcrData[] | undefined
 
     tab = 0
+
+    tabsData: TabData[] = []
 
     subTab = 0
 
@@ -96,6 +99,18 @@ export class DocumentStore {
             () => this.hashStore.hashState.subTab,
             (subTab) => subTab && (this.subTab = parseInt(subTab)),
         )
+
+        reaction(
+            () => this.tab,
+            (tab) => {
+                if (!this.tabsData?.length) return
+                this.documentSearchStore.setActiveSearch(this.tabsData?.[tab]?.searchStore ?? this.documentSearchStore.pdfSearchStore)
+            },
+        )
+    }
+
+    setTabsData = (tabsData: TabData[]) => {
+        this.tabsData = tabsData
     }
 
     getDocumentUrls = () => {

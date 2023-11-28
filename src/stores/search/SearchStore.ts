@@ -51,6 +51,43 @@ export class SearchStore {
         makeAutoObservable(this)
     }
 
+    private getMergedParams(params: Partial<SearchQueryParams>) {
+        const { searchText, searchCollections } = this.searchViewStore
+        return {
+            ...this.query,
+            ...{ q: searchText, collections: searchCollections, excludedFields: this.sharedStore.excludedFields },
+            ...defaultSearchParams,
+            ...params,
+        }
+    }
+
+    private updateStoresBasedOnSearchType(query: Partial<SearchQueryParams>, options: SearchOptions) {
+        const { searchType, keepFromClearing, fieldList } = {
+            ...{ searchType: SearchType.Aggregations | SearchType.Results },
+            ...options,
+        }
+
+        if (searchType & SearchType.Results) {
+            this.searchResultsStore.clearResults()
+        }
+
+        if (query.q && query.page && query.size && query.collections?.length) {
+            this.performQueriesBasedOnType(query as SearchQueryParams, searchType, keepFromClearing, fieldList as SourceField[])
+        }
+    }
+
+    private performQueriesBasedOnType(query: SearchQueryParams, searchType: SearchType, keepFromClearing?: AggregationsKey, fieldList?: SourceField[]) {
+        if (searchType & SearchType.Aggregations) {
+            this.searchAggregationsStore.performQuery(query, keepFromClearing, fieldList)
+        }
+        if (searchType & SearchType.Missing) {
+            this.searchMissingStore.performQuery(query, fieldList)
+        }
+        if (searchType & SearchType.Results) {
+            this.searchResultsStore.performQuery(query)
+        }
+    }
+
     queueSearch = (query: ParsedUrlQuery): void => {
         if (query.q) {
             this.queuedQuery = query
@@ -71,40 +108,11 @@ export class SearchStore {
     }
 
     search = (params: Partial<SearchQueryParams> = {}, options: SearchOptions = {}) => {
-        const { searchText, searchCollections } = this.searchViewStore
-
-        const { searchType, keepFromClearing, fieldList } = {
-            ...{ searchType: SearchType.Aggregations | SearchType.Results },
-            ...options,
-        }
-
-        if (searchType & SearchType.Results) {
-            this.searchResultsStore.clearResults()
-        }
-
-        const mergedParams = {
-            ...this.query,
-            ...{ q: searchText, collections: searchCollections, excludedFields: this.sharedStore.excludedFields },
-            ...defaultSearchParams,
-            ...params,
-        }
-
+        const mergedParams = this.getMergedParams(params)
         const queryString = buildSearchQuerystring(mergedParams)
         const query = this.parseSearchParams(queryString)
 
-        if (query.q && query.page && query.size && query.collections?.length) {
-            if (searchType & SearchType.Aggregations) {
-                this.searchAggregationsStore.performQuery(query as SearchQueryParams, keepFromClearing, fieldList)
-            }
-
-            if (searchType & SearchType.Missing) {
-                this.searchMissingStore.performQuery(query as SearchQueryParams, fieldList)
-            }
-
-            if (searchType & SearchType.Results) {
-                this.searchResultsStore.performQuery(query as SearchQueryParams)
-            }
-        }
+        this.updateStoresBasedOnSearchType(query, options)
 
         if (query?.collections?.length) {
             this.searchViewStore.searchCollections = query.collections

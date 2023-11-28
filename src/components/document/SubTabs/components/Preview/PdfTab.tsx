@@ -1,6 +1,6 @@
 import { Box, Tab, Tabs } from '@mui/material'
 import { observer } from 'mobx-react-lite'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement } from 'react'
 
 import { createOcrUrl } from '../../../../../backend/api'
 import { Loading } from '../../../../common/Loading/Loading'
@@ -25,13 +25,9 @@ export const PdfTab = observer(() => {
             handleSubTabChange,
             handleChunkSubTabChange,
             pdfDocumentInfo,
-            documentSearchStore: { query, setActiveSearch, pdfSearchStore },
+            documentSearchStore: { query, pdfSearchStore },
         },
     } = useSharedStore()
-
-    useEffect(() => {
-        setActiveSearch(pdfSearchStore)
-    }, [setActiveSearch, pdfSearchStore])
 
     if (!data || !collection || !ocrData) {
         return null

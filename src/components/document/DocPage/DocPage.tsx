@@ -1,20 +1,19 @@
 import { CircularProgress, Typography } from '@mui/material'
-import { T, useTranslate } from '@tolgee/react'
+import { useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import Head from 'next/head'
 import { FC, ReactElement } from 'react'
 import SplitPane from 'react-split-pane'
 
-import Error from '../../../../pages/_error'
 import { copyMetadata, shortenName } from '../../../utils/utils'
 import { HotKeysWithHelp } from '../../common/HotKeysWithHelp/HotKeysWithHelp'
-import { SplitPaneLayout } from '../../common/SplitPaneLayout/SplitPaneLayout'
 import { Finder } from '../../finder/Finder'
 import { useSharedStore } from '../../SharedStoreProvider'
 import { Document } from '../Document'
-import { Locations } from '../Locations/Locations'
 
 import { useStyles } from './DocPage.styles'
+import { DocPageError } from './error'
+import { InfoPane } from './InfoPane'
 
 export const DocPage: FC = observer(() => {
     const { t } = useTranslate()
@@ -26,35 +25,7 @@ export const DocPage: FC = observer(() => {
 
     const [fileName] = data?.content.filename ?? ['']
 
-    if (error) {
-        return (
-            <Error
-                statusCode={error.status}
-                title={error.statusText}
-                message={
-                    (
-                        <>
-                            <T keyName="request_to_url_error" params={{ url: error.url, status: error.status, statusText: error.statusText }}>
-                                {'Request to {url} returned HTTP {status} {statusText}'}
-                            </T>
-                        </>
-                    ) as unknown as string
-                }
-            />
-        )
-    }
-
-    const infoPane = !digest ? (
-        <Document />
-    ) : (
-        <SplitPaneLayout
-            container={false}
-            left={loading ? null : <Locations data={data} url={digestUrl} />}
-            defaultSizeLeft="25%"
-            defaultSizeMiddle="70%">
-            <Document />
-        </SplitPaneLayout>
-    )
+    if (error) return <DocPageError error={error} />
 
     let content
 
@@ -69,7 +40,9 @@ export const DocPage: FC = observer(() => {
                         {t('pick_location_for_finder', 'please pick a location to see the Finder')}
                     </Typography>
                 )}
-                <div className={classes.splitPane}>{infoPane}</div>
+                <div className={classes.splitPane}>
+                    <InfoPane digest={digest} data={data} digestUrl={digestUrl} loading={loading} />
+                </div>
             </>
         ) : (
             <>
@@ -90,7 +63,7 @@ export const DocPage: FC = observer(() => {
                         pane1ClassName={classes.horizontalSplitPane}
                         pane2ClassName={classes.horizontalSplitPane}>
                         <Finder />
-                        {infoPane}
+                        <InfoPane digest={digest} data={data} digestUrl={digestUrl} loading={loading} />
                     </SplitPane>
                 </div>
             </>

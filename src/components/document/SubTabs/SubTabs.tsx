@@ -1,6 +1,5 @@
 import { Box, Tab, Tabs, Typography } from '@mui/material'
 import { observer } from 'mobx-react-lite'
-import { useEffect } from 'react'
 
 import { Loading } from '../../common/Loading/Loading'
 import { useSharedStore } from '../../SharedStoreProvider'
@@ -21,15 +20,9 @@ export const SubTabs = observer(() => {
             collection,
             subTab,
             handleSubTabChange,
-            documentSearchStore: { query, setActiveSearch, textSearchStore },
+            documentSearchStore: { query, textSearchStore },
         },
     } = useSharedStore()
-
-    useEffect(() => {
-        setActiveSearch(textSearchStore)
-        textSearchStore.scrollToHighlight()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [textSearchStore])
 
     if (!data || !collection || !ocrData) {
         return null
@@ -70,11 +63,11 @@ export const SubTabs = observer(() => {
                 </Box>
             )}
 
-            <Box className={classes.subTab} id={`subTab-${subTab}`}>
+            <Box className={classes.subTab} id="text-sub-tab">
                 {data.content.filetype === 'email' && <Email />}
 
                 {tabs.map(({ name, content }, index) => (
-                    <Box key={index}>
+                    <Box key={index} overflow="auto">
                         {printMode && tabs.length > 1 && (
                             <Typography variant="h5" className={classes.printTitle}>
                                 {name}

@@ -2,11 +2,10 @@ import { Box, Chip, FormControl, Typography } from '@mui/material'
 import { T } from '@tolgee/react'
 import lucene, { AST, Node, NodeRangedTerm, NodeTerm } from 'lucene'
 import { observer } from 'mobx-react-lite'
-import { cloneElement, FC, useCallback, useEffect, useState } from 'react'
+import { cloneElement, FC, ReactElement, useCallback, useEffect, useState } from 'react'
 
 import { aggregationFields } from '../../../../constants/aggregationFields'
 import { SourceField } from '../../../../Types'
-import { clearQuotedParam } from '../../../../utils/queryUtils'
 import { getTagIcon, shortenName } from '../../../../utils/utils'
 import { useSharedStore } from '../../../SharedStoreProvider'
 import { ChipsTree } from '../../chips/ChipsTree/ChipsTree'
@@ -17,79 +16,31 @@ export const FiltersChips: FC = observer(() => {
     const { classes } = useStyles()
     const {
         query,
-        filtersStore: { handleFilterChipDelete },
+        filtersStore: { handleFilterChipDelete, processFilter },
     } = useSharedStore().searchStore
 
     const [parsedFilters, setParsedFilters] = useState<AST>()
 
     useEffect(() => {
-        if (query?.filters) {
-            const filtersArray: string[] = []
-
-            Object.entries(query.filters).forEach(([key, values]) => {
-                let filter = ''
-                if (values.from && values.to) {
-                    filter = `${key}:[${values.from} TO ${values.to}]`
-                }
-
-                const intervalsArray = []
-                if (values.intervals?.missing === 'true') {
-                    intervalsArray.push(`(${key}:"N/A"^1)`)
-                }
-                values.intervals?.include?.forEach((value: string) => {
-                    intervalsArray.push(`${key}:${value}`)
-                })
-                if (filter) {
-                    if (intervalsArray.length) {
-                        filtersArray.push(`(${[filter, `(${intervalsArray.join(' OR ')})`].join(' AND ')})`)
-                    } else {
-                        filtersArray.push(`(${filter})`)
-                    }
-                } else if (intervalsArray.length) {
-                    filtersArray.push(`(${intervalsArray.join(' OR ')})`)
-                }
-
-                const includeArray = []
-                const includeOperator = aggregationFields[key as SourceField]?.type === 'term-and' ? ' AND ' : ' OR '
-                if (values.missing === 'true') {
-                    includeArray.push(`(${key}:"N/A"^1)`)
-                }
-                values.include?.forEach((value: string) => {
-                    includeArray.push(`${key}:"${clearQuotedParam(value)}"`)
-                })
-                if (includeArray.length) {
-                    if (includeArray.length > 1) {
-                        filtersArray.push(`(${includeArray.join(includeOperator)})`)
-                    } else {
-                        filtersArray.push(`${includeArray[0]}`)
-                    }
-                }
-
-                const excludeArray = []
-                if (values.missing === 'false') {
-                    excludeArray.push(`(${key}:-"N/A"^1)`)
-                }
-                values.exclude?.forEach((value: string) => {
-                    excludeArray.push(`(${key}:-"${clearQuotedParam(value)}")`)
-                })
-                if (excludeArray.length) {
-                    if (excludeArray.length > 1) {
-                        filtersArray.push(`(${excludeArray.join(' AND ')})`)
-                    } else {
-                        filtersArray.push(`${excludeArray[0]}`)
-                    }
-                }
-            })
-
-            if (filtersArray.length) {
-                setParsedFilters(lucene.parse(filtersArray.join(' AND ')))
-            } else {
-                setParsedFilters(undefined)
-            }
-        } else {
+        if (!query?.filters) {
             setParsedFilters(undefined)
+            return
         }
-    }, [query])
+
+        const filtersArray = Object.entries(query.filters)
+            .map(([key, values]) => processFilter(key as SourceField, values))
+            .filter((filter) => filter !== '')
+
+        setParsedFilters(filtersArray.length ? lucene.parse(filtersArray.join(' AND ')) : undefined)
+    }, [processFilter, query])
+
+    const getDefaultLabel = (n: lucene.NodeTerm & lucene.NodeRangedTerm, term: JSX.Element | string, name?: string | ReactElement) => (
+        <span>
+            <strong>{name}:</strong> {n.boost === 1 ? <i>{term}</i> : shortenName(term as string)}
+        </span>
+    )
+
+    const getBucketTerm = (term: JSX.Element | string, bucket?: { key: string; label: ReactElement }) => (bucket ? bucket.label || bucket.key : term)
 
     const getChip = useCallback(
         (q: Node) => {
@@ -114,7 +65,7 @@ export const FiltersChips: FC = observer(() => {
                 let buckets
                 if ((buckets = aggregationFields[n.field as SourceField]?.buckets)) {
                     const bucket = buckets.find((bucket) => bucket.key === term)
-                    term = bucket ? bucket.label || bucket.key : term
+                    term = getBucketTerm(term, bucket)
                 }
 
                 const icon = getTagIcon(term as string, n.field === 'tags', n.prefix === '-' || n.prefix === '!')
@@ -133,11 +84,7 @@ export const FiltersChips: FC = observer(() => {
                     )
                 }
 
-                label = (
-                    <span>
-                        <strong>{name}:</strong> {n.boost === 1 ? <i>{term}</i> : shortenName(term as string)}
-                    </span>
-                )
+                label = getDefaultLabel(n, term, name)
             }
 
             return <Chip label={label} className={className} />
