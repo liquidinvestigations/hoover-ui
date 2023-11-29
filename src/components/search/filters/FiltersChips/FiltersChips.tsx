@@ -1,8 +1,8 @@
 import { Box, Chip, FormControl, Typography } from '@mui/material'
 import { T } from '@tolgee/react'
-import lucene, { AST, Node, NodeRangedTerm, NodeTerm } from 'lucene'
+import lucene, { Node, NodeRangedTerm, NodeTerm } from 'lucene'
 import { observer } from 'mobx-react-lite'
-import { cloneElement, FC, ReactElement, useCallback, useEffect, useState } from 'react'
+import { cloneElement, FC, ReactElement, useCallback } from 'react'
 
 import { aggregationFields } from '../../../../constants/aggregationFields'
 import { SourceField } from '../../../../Types'
@@ -16,23 +16,8 @@ export const FiltersChips: FC = observer(() => {
     const { classes } = useStyles()
     const {
         query,
-        filtersStore: { handleFilterChipDelete, processFilter },
+        filtersStore: { handleFilterChipDelete, parsedFilters },
     } = useSharedStore().searchStore
-
-    const [parsedFilters, setParsedFilters] = useState<AST>()
-
-    useEffect(() => {
-        if (!query?.filters) {
-            setParsedFilters(undefined)
-            return
-        }
-
-        const filtersArray = Object.entries(query.filters)
-            .map(([key, values]) => processFilter(key as SourceField, values))
-            .filter((filter) => filter !== '')
-
-        setParsedFilters(filtersArray.length ? lucene.parse(filtersArray.join(' AND ')) : undefined)
-    }, [processFilter, query])
 
     const getDefaultLabel = (n: lucene.NodeTerm & lucene.NodeRangedTerm, term: JSX.Element | string, name?: string | ReactElement) => (
         <span>

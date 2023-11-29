@@ -1,6 +1,5 @@
-import { ParsedUrlQuery } from 'querystring'
-
 import { makeAutoObservable, runInAction } from 'mobx'
+import Router from 'next/router'
 import qs from 'qs'
 
 import { AggregationsKey, SearchQueryParams, SourceField } from '../../Types'
@@ -21,6 +20,7 @@ export enum SearchType {
 }
 
 interface SearchOptions {
+    queued?: boolean
     searchType?: number
     fieldList?: SourceField[] | '*'
     keepFromClearing?: AggregationsKey
@@ -39,7 +39,7 @@ export class SearchStore {
 
     searchResultsStore: SearchResultsStore
 
-    queuedQuery: ParsedUrlQuery | undefined = undefined
+    queuedQuery: Partial<SearchQueryParams> | undefined
 
     constructor(private readonly sharedStore: SharedStore) {
         this.searchViewStore = new SearchViewStore(sharedStore, this)
@@ -88,10 +88,14 @@ export class SearchStore {
         }
     }
 
-    queueSearch = (query: ParsedUrlQuery): void => {
-        if (query.q) {
-            this.queuedQuery = query
-        }
+    queueSearch = (query: string): void => {
+        this.queuedQuery = this.parseSearchParams(query)
+    }
+
+    clearQueued = (): void => {
+        runInAction(() => {
+            this.queuedQuery = undefined
+        })
     }
 
     parseSearchParams = (search: string): Partial<SearchQueryParams> => {
@@ -118,8 +122,9 @@ export class SearchStore {
             this.searchViewStore.searchCollections = query.collections
         }
 
-        if (this.sharedStore.navigation) {
-            this.sharedStore.navigation.searchParams.replace(queryString)
+        if (!options.queued) {
+            const path = '?' + queryString + window.location.hash
+            void Router.router?.changeState('pushState', path, path, { shallow: true })
         }
 
         this.query = query as SearchQueryParams

@@ -1,4 +1,4 @@
-import { makeAutoObservable, reaction, runInAction } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx'
 import { createObservableHistory, ObservableHistory } from 'mobx-observable-history'
 
 import { collections as collectionsAPI, limits as limitsAPI, searchFields, whoami } from '../backend/api'
@@ -55,16 +55,6 @@ export class SharedStore {
         this.mapsStore = new MapsStore()
 
         makeAutoObservable(this)
-
-        reaction(
-            () => ({ fields: this.fields, user: this.user, queuedQuery: this.searchStore.queuedQuery }),
-            ({ fields, user, queuedQuery }) => {
-                if (fields !== undefined && user !== undefined && queuedQuery !== undefined) {
-                    this.searchStore.search(queuedQuery)
-                    this.searchStore.queuedQuery = undefined
-                }
-            },
-        )
     }
 
     loadData = async () => {

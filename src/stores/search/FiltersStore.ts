@@ -1,5 +1,5 @@
-import { AST, BinaryAST, Node, NodeRangedTerm, NodeTerm } from 'lucene'
-import { makeAutoObservable, runInAction } from 'mobx'
+import lucene, { AST, BinaryAST, Node, NodeRangedTerm, NodeTerm } from 'lucene'
+import { makeAutoObservable, reaction, runInAction } from 'mobx'
 import { ReactElement } from 'react'
 import { Entries } from 'type-fest'
 
@@ -48,8 +48,25 @@ export class FiltersStore {
 
     expandedFilters: ExpandedFilters
 
+    parsedFilters: AST | undefined
+
     constructor(private readonly searchStore: SearchStore) {
         makeAutoObservable(this)
+
+        reaction(
+            () => searchStore.query?.filters,
+            (filters) => {
+                if (filters) {
+                    const filtersArray = Object.entries(filters)
+                        .map(([key, values]) => this.processFilter(key as SourceField, values))
+                        .filter((filter) => filter !== '')
+
+                    this.parsedFilters = filtersArray.length ? lucene.parse(filtersArray.join(' AND ')) : undefined
+                } else {
+                    this.parsedFilters = undefined
+                }
+            },
+        )
 
         this.expandedFilters = this.initExpandedFilters()
     }
