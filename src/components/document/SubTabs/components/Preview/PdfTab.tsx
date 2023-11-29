@@ -75,9 +75,14 @@ export const PdfTab = observer(() => {
                                     </Box>
                                     <Box className={classes.subTab}>
                                         {chunks.map((chunk: string, chunkIndex: number) => {
-                                            if (chunkIndex !== chunkTab) return undefined
-                                            if (index && digestUrl && data.content['content-type'] === 'application/pdf')
+                                            if (chunkIndex !== chunkTab) {
+                                                return undefined
+                                            }
+
+                                            if (index && digestUrl && data.content['content-type'] === 'application/pdf') {
                                                 return <PDFViewer key={chunk} url={createOcrUrl(digestUrl, tag)} />
+                                            }
+
                                             return <Preview key={chunk} />
                                         })}
                                     </Box>

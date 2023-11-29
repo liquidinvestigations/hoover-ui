@@ -24,8 +24,13 @@ export const Search: FC = observer(() => {
     const { classes } = useStyles()
     const inputRef = useRef<HTMLInputElement>(null)
     const {
+        fields,
+        user,
         excludedFields,
         searchStore: {
+            query,
+            queuedQuery,
+            clearQueued,
             search,
             searchViewStore: {
                 setInputRef,
@@ -70,6 +75,13 @@ export const Search: FC = observer(() => {
     useEffect(() => {
         setInputRef(inputRef)
     }, [inputRef, setInputRef])
+
+    useEffect(() => {
+        if (fields !== undefined && user !== undefined && queuedQuery !== undefined && JSON.stringify(queuedQuery) !== JSON.stringify(query)) {
+            search(queuedQuery, { queued: true })
+            clearQueued()
+        }
+    }, [fields, user, query, queuedQuery, search, clearQueued])
 
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault()

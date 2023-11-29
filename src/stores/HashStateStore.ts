@@ -1,4 +1,5 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
+import Router from 'next/router'
 import qs from 'qs'
 
 import { rollupParams, unwindParams } from '../utils/queryUtils'
@@ -59,5 +60,8 @@ export class HashStateStore {
 
         const hash = qs.stringify(rollupParams(this.hashState))
         this.sharedStore.navigation?.merge({ pathname: window.location.pathname, hash }, !pushHistory)
+
+        const path = window.location.search + window.location.hash
+        void Router.router?.changeState('replaceState', path, path, { shallow: true })
     }
 }

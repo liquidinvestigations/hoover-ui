@@ -24,7 +24,7 @@ const SORT_MAPPING: Record<string, string[] | null> = {
     [SORT_WORD_COUNT_ASCENDING]: ['word-count'],
 }
 
-type QueryParamsType = (SearchQueryParams & Record<string, string | string[] | undefined>) | ParsedQs
+export type QueryParamsType = (SearchQueryParams & Record<string, string | string[] | undefined>) | ParsedQs
 
 const moveToFilters = (query: QueryParamsType, param: string, value?: string) => {
     if (!query.filters) {

@@ -116,8 +116,8 @@ export const DocumentProvider: FC<DocumentProviderProps> = ({ url, cMapUrl, cMap
         })
 
         return () => {
-            loadingTask.destroy?.()
-            worker.destroy?.()
+            loadingTask?.destroy?.()
+            worker?.destroy?.()
         }
     }, [cMapPacked, cMapUrl, url, withCredentials])
 
