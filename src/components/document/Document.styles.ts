@@ -61,7 +61,7 @@ export const useStyles = makeStyles()((theme: Theme) => ({
     collection: {
         minHeight: 34,
         marginRight: theme.spacing(3),
-        color: 'rgba(255,255,255,0.7)',
+        color: theme.palette.grey.A700,
     },
 
     tag: {

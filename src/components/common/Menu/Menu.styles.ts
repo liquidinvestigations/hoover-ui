@@ -9,7 +9,7 @@ export const useStyles = makeStyles()((theme) => ({
         textDecoration: 'none',
     },
     link: {
-        color: 'white',
+        color: 'inherit',
         textDecoration: 'none',
     },
     languageMenu: {

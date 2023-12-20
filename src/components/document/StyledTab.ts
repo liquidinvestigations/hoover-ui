@@ -11,7 +11,7 @@ export const StyledTab = withStyles(Tab, (theme) => ({
     },
 
     selected: {
-        color: theme.palette.text.primary,
+        color: `${theme.palette.primary.contrastText} !important`,
         backgroundColor: theme.palette.background.default,
     },
 }))

@@ -1,5 +1,5 @@
 import { Theme } from '@mui/material'
-import { red } from '@mui/material/colors'
+import { red, grey } from '@mui/material/colors'
 import { makeStyles } from 'tss-react/mui'
 
 export const useStyles = makeStyles()((theme: Theme) => ({
@@ -39,8 +39,8 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         },
     },
     OR: {
-        color: theme.palette.primary.main,
-        borderColor: theme.palette.primary.main,
+        color: grey['500'],
+        borderColor: grey['500'],
 
         '&.MuiBox-root': {
             border: '1px solid',

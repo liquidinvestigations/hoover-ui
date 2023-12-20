@@ -12,11 +12,11 @@ export const useStyles = makeStyles()((theme: Theme) => ({
     },
 
     clear: {
-        color: theme.palette.grey.A100,
+        color: theme.palette.grey.A400,
     },
 
     help: {
-        color: theme.palette.grey.A100,
+        color: theme.palette.grey.A400,
     },
 
     noMaxWidth: {

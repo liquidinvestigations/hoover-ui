@@ -9,8 +9,8 @@ export const useStyles = makeStyles()((theme) => ({
         padding: `0 ${theme.spacing(1)}`,
     },
     chip: {
-        color: theme.palette.common.white,
-        borderColor: theme.palette.common.white,
+        color: theme.palette.grey['800'],
+        borderColor: theme.palette.grey['800'],
     },
     input: {
         padding: theme.spacing(1),
@@ -24,25 +24,25 @@ export const useStyles = makeStyles()((theme) => ({
         },
 
         '& svg': {
-            color: theme.palette.common.white,
+            color: theme.palette.grey['800'],
         },
 
         '& input': {
-            color: theme.palette.common.white,
+            color: theme.palette.grey['800'],
         },
 
         '& .MuiInputBase-root': {
             width: '100%',
             '::before': {
-                borderBottom: `1px solid ${theme.palette.common.white}`,
+                borderBottom: `1px solid ${theme.palette.grey['800']}`,
             },
 
             '::after': {
-                borderBottom: `1px solid ${theme.palette.common.white}`,
+                borderBottom: `1px solid ${theme.palette.grey['800']}`,
             },
 
             ':hover:not(.Mui-disabled):before': {
-                borderBottom: `1px solid ${theme.palette.common.white}`,
+                borderBottom: `1px solid ${theme.palette.grey['800']}`,
             },
         },
     },
@@ -55,7 +55,7 @@ export const useStyles = makeStyles()((theme) => ({
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        color: theme.palette.common.white,
+        color: theme.palette.grey['800'],
         padding: `0 ${theme.spacing(1)}`,
         borderRadius: '25px',
         marginRight: theme.spacing(1),

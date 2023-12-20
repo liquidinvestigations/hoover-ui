@@ -1,5 +1,5 @@
 import { Theme } from '@mui/material'
-import { blue, red } from '@mui/material/colors'
+import { grey, red } from '@mui/material/colors'
 import { makeStyles } from 'tss-react/mui'
 
 export const useStyles = makeStyles()((theme: Theme) => ({
@@ -9,7 +9,7 @@ export const useStyles = makeStyles()((theme: Theme) => ({
     },
 
     chip: {
-        backgroundColor: blue.A100,
+        backgroundColor: grey.A200,
         marginBottom: theme.spacing(1),
 
         '&:last-child': {
@@ -18,7 +18,7 @@ export const useStyles = makeStyles()((theme: Theme) => ({
     },
 
     tooltipChip: {
-        backgroundColor: blue.A200,
+        backgroundColor: grey.A200,
     },
 
     negationChip: {
