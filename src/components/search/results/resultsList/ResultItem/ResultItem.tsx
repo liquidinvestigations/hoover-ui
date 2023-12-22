@@ -7,7 +7,7 @@ import { cloneElement, useEffect, useRef, useState } from 'react'
 import { createDownloadUrl, createThumbnailSrc, createThumbnailSrcSet } from '../../../../../backend/api'
 import { reactIcons } from '../../../../../constants/icons'
 import { specialTags, specialTagsList } from '../../../../../constants/specialTags'
-import { getTypeIcon, humanFileSize, makeUnsearchable, truncatePath } from '../../../../../utils/utils'
+import { getTypeIcon, humanFileSize, makeUnsearchable, truncatePath, extractStringFromField } from '../../../../../utils/utils'
 import { Loading } from '../../../../common/Loading/Loading'
 import { useSharedStore } from '../../../../SharedStoreProvider'
 
@@ -27,14 +27,6 @@ interface ResultItemProps {
 interface CustomDiv extends HTMLDivElement {
     willFocus?: boolean
     tUp?: number
-}
-
-// Some old formats of the index have strings on these fields instead of lists of strings.
-const extractStringFromField = (value: Array<string> | string | null | undefined) => {
-    if (Array.isArray(value)) {
-        return value[0] ?? ''
-    }
-    return value?.toString() ?? ''
 }
 
 // Error: Arrow function has a complexity of 25. Maximum allowed is 10
@@ -91,8 +83,8 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
     const fields = hit._source || {}
     const highlights = hit.highlight || {}
     const collection = hit._collection || ''
-    const fileName = extractStringFromField(fields.filename)
-    const filePath = truncatePath(extractStringFromField(fields.path))
+    const fileName = extractStringFromField(fields?.filename)
+    const filePath = truncatePath(extractStringFromField(fields?.path))
     const downloadUrl = createDownloadUrl(url, fileName)
 
     const cardHeaderClasses = {

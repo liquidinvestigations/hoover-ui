@@ -8,7 +8,7 @@ import { LocalDocumentData } from '../components/finder/Types'
 import { parentLevels } from '../components/finder/utils'
 import { reactIcons } from '../constants/icons'
 import { DocumentData, DocumentInfo, DocumentRecord, OcrData, PdfTextEntry, RequestError, Tab } from '../Types'
-import { collectionUrl, documentViewUrl, getBasePath } from '../utils/utils'
+import { collectionUrl, documentViewUrl, extractStringFromField, getBasePath } from '../utils/utils'
 
 import { DocumentSearchStore } from './DocumentSearchStore'
 import { HashStateStore } from './HashStateStore'
@@ -269,7 +269,7 @@ export class DocumentStore {
     setFileDocumentAttributes = (data: DocumentData) => {
         this.digest = data.digest
         this.digestUrl = `${this.collectionBaseUrl}/${data.digest}`
-        this.docRawUrl = createDownloadUrl(`${this.collectionBaseUrl}/${data.digest}`, data.content?.filename?.[0] ?? '')
+        this.docRawUrl = createDownloadUrl(`${this.collectionBaseUrl}/${data.digest}`, extractStringFromField(data.content?.filename))
         this.docPreviewUrl = createPreviewUrl(`${this.collectionBaseUrl}/${data.digest}`)
         this.thumbnailSrcSet = createThumbnailSrcSet(`${this.collectionBaseUrl}/${data.digest}`)
         this.urlIsSha = false
@@ -285,7 +285,7 @@ export class DocumentStore {
 
     setShaDocumentAttributes = (data: DocumentData) => {
         this.digest = data.id
-        this.docRawUrl = createDownloadUrl(`${this.collectionBaseUrl}/${data.id}`, data.content?.filename?.[0] ?? '')
+        this.docRawUrl = createDownloadUrl(`${this.collectionBaseUrl}/${data.id}`, extractStringFromField(data.content?.filename))
         this.docPreviewUrl = createPreviewUrl(`${this.collectionBaseUrl}/${data.id}`)
         this.thumbnailSrcSet = createThumbnailSrcSet(`${this.collectionBaseUrl}/${data.id}`)
     }

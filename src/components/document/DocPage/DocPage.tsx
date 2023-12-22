@@ -5,7 +5,7 @@ import Head from 'next/head'
 import { FC, ReactElement } from 'react'
 import SplitPane from 'react-split-pane'
 
-import { copyMetadata, shortenName } from '../../../utils/utils'
+import { copyMetadata, shortenName, extractStringFromField } from '../../../utils/utils'
 import { HotKeysWithHelp } from '../../common/HotKeysWithHelp/HotKeysWithHelp'
 import { Finder } from '../../finder/Finder'
 import { useSharedStore } from '../../SharedStoreProvider'
@@ -23,7 +23,7 @@ export const DocPage: FC = observer(() => {
         documentStore: { data, loading, error, digest, digestUrl, urlIsSha },
     } = useSharedStore()
 
-    const [fileName] = data?.content.filename ?? ['']
+    const fileName = extractStringFromField(data?.content?.filename)
 
     if (error) return <DocPageError error={error} />
 
@@ -49,7 +49,7 @@ export const DocPage: FC = observer(() => {
                 <Typography variant="subtitle2" className={classes.title}>
                     {data ? (
                         <>
-                            {digest ? t('file', 'File') : t('directory', 'Directory')} <b>{data.content?.path?.[0] ?? ''}</b>
+                            {digest ? t('file', 'File') : t('directory', 'Directory')} <b>{extractStringFromField(data.content?.path)}</b>
                         </>
                     ) : (
                         <CircularProgress size={16} thickness={4} />

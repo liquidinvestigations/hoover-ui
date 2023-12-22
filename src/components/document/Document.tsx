@@ -11,7 +11,7 @@ import { MetaSearchStore } from '../../stores/search/MetaSearchStore'
 import { PdfSearchStore } from '../../stores/search/PdfSearchStore'
 import { TextSearchStore } from '../../stores/search/TextSearchStore'
 import { Tag } from '../../stores/TagsStore'
-import { getTagIcon } from '../../utils/utils'
+import { getTagIcon, extractStringFromField } from '../../utils/utils'
 import { Loading } from '../common/Loading/Loading'
 import { PageSearch } from '../common/PageSearch/PageSearch'
 import { Finder } from '../finder/Finder'
@@ -290,7 +290,7 @@ export const Document = observer(() => {
                 <Grid item className={classes.titleWrapper}>
                     <Box>
                         <Typography variant="h6" className={classes.filename}>
-                            {data.content?.filename?.[0] ?? ''}
+                            {extractStringFromField(data.content?.filename)}
                         </Typography>
                     </Box>
 

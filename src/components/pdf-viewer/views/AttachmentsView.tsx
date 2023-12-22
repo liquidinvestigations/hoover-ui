@@ -4,7 +4,7 @@ import { FC, useEffect, useState } from 'react'
 import { makeStyles } from 'tss-react/mui'
 
 import { reactIcons } from '../../../constants/icons'
-import { downloadFile } from '../../../utils/utils'
+import { downloadFile, extractStringFromField } from '../../../utils/utils'
 import { useDocument } from '../DocumentProvider'
 
 const useStyles = makeStyles()((theme) => ({
@@ -33,7 +33,7 @@ export const AttachmentsView: FC = () => {
                             ? []
                             : Object.keys(response).map((file) => ({
                                   data: response[file].content,
-                                  fileName: response[file].filename?.[0] ?? '',
+                                  fileName: extractStringFromField(response[file].filename),
                               })),
                     )
                 })

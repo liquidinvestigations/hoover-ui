@@ -8,7 +8,16 @@ import { ResultColumnFormat } from '../../../../../constants/availableColumns'
 import { reactIcons } from '../../../../../constants/icons'
 import { Hit, ValueOf } from '../../../../../Types'
 import { defaultSearchParams } from '../../../../../utils/queryUtils'
-import { documentViewUrl, formatDateTime, getPreviewParams, getTagIcon, getTypeIcon, humanFileSize, shortenName } from '../../../../../utils/utils'
+import {
+    documentViewUrl,
+    extractStringFromField,
+    formatDateTime,
+    getPreviewParams,
+    getTagIcon,
+    getTypeIcon,
+    humanFileSize,
+    shortenName,
+} from '../../../../../utils/utils'
 import { Loading } from '../../../../common/Loading/Loading'
 import { useSharedStore } from '../../../../SharedStoreProvider'
 
@@ -35,7 +44,7 @@ export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index 
     const url = documentViewUrl(hit)
     const fields = hit._source || {}
     const collection = hit._collection || ''
-    const downloadUrl = createDownloadUrl(url, fields.filename[0] ?? '')
+    const downloadUrl = createDownloadUrl(url, extractStringFromField(fields?.filename))
     const isPreview = collection === hashState.preview?.c && hit._id === hashState.preview?.i
 
     const handleResultClick = () => {

@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import { extractStringFromField } from '../../../../../utils/utils'
 import PDFViewer from '../../../../pdf-viewer/Dynamic'
 import { useSharedStore } from '../../../../SharedStoreProvider'
 import { TIFFViewer } from '../TIFFViewer/TIFFViewer'
@@ -80,7 +81,14 @@ export const Preview: FC = () => {
 
     return (
         <div className={classes.preview}>
-            <img alt="preview" style={{ objectFit: 'contain' }} src={docRawUrl} height="100%" width="100%" title={data?.content.filename[0] ?? ''} />
+            <img
+                alt="preview"
+                style={{ objectFit: 'contain' }}
+                src={docRawUrl}
+                height="100%"
+                width="100%"
+                title={extractStringFromField(data?.content?.filename)}
+            />
         </div>
     )
 }

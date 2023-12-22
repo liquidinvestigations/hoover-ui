@@ -29,6 +29,15 @@ const typeIconsMap: Record<string, string> = {
     xls: 'typeXls',
 }
 
+export const extractStringFromField = (value: Array<string> | string | null | undefined) => {
+    // Some old formats of the index have strings on these fields instead of lists of strings.
+    // https://github.com/CRJI/EIC/issues/1181
+    if (Array.isArray(value)) {
+        return value[0] ?? ''
+    }
+    return value?.toString() ?? ''
+}
+
 export const getTypeIcon = (fileType: string) => reactIcons[typeIconsMap[fileType] || typeIconsMap.default]
 
 export const getTagIcon = (tag: string, isPublic = false, absent = false) => {
