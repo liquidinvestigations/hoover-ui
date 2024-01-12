@@ -81,7 +81,6 @@ export const CollectionsFilter: FC = observer(() => {
                                 disableRipple
                                 classes={{ root: classes.checkbox }}
                                 checked={collectionsData.length === searchCollections.length}
-                                onChange={handleAllSearchCollectionsToggle}
                             />
 
                             <ListItemText primary={t('select_all', 'Select all')} />
