@@ -58,10 +58,12 @@ export class HashStateStore {
             this.hashState = { ...this.hashState, ...params }
         })
 
+        const search = window.location.search
         const hash = qs.stringify(rollupParams(this.hashState))
+
         this.sharedStore.navigation?.merge({ pathname: window.location.pathname, hash }, !pushHistory)
 
-        const path = window.location.search + window.location.hash
+        const path = search + '#' + hash
         void Router.router?.changeState('replaceState', path, path, { shallow: true })
     }
 }
