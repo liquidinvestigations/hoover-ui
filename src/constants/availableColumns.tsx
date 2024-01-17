@@ -1,7 +1,7 @@
 import { T } from '@tolgee/react'
 import { ReactElement } from 'react'
 
-export type ResultColumnFormat = 'array' | 'boolean' | 'date' | 'icon' | 'size' | 'string' | 'tags' | 'thumbnail'
+export type ResultColumnFormat = 'array' | 'boolean' | 'date' | 'icon' | 'number' | 'size' | 'string' | 'tags' | 'thumbnail'
 
 export interface ResultColumn {
     label: ReactElement
@@ -34,7 +34,7 @@ export const availableColumns: Record<string, ResultColumn> = {
         align: 'left',
         sortable: false,
         hidden: false,
-        format: 'string',
+        format: 'array',
         path: '_source.filename',
     },
     collection: {
@@ -74,7 +74,7 @@ export const availableColumns: Record<string, ResultColumn> = {
         align: 'right',
         sortable: true,
         hidden: false,
-        format: 'string',
+        format: 'number',
         path: '_source.word-count',
     },
     size: {
