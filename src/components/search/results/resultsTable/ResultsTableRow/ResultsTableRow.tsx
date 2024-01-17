@@ -12,6 +12,7 @@ import {
     documentViewUrl,
     extractStringFromField,
     formatDateTime,
+    formatThousands,
     getPreviewParams,
     getTagIcon,
     getTypeIcon,
@@ -71,58 +72,59 @@ export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index 
     const getValue = (path: string) => {
         const pathParts = path.split('.')
         let pathPart,
-            value: ValueOf<Hit> = hit[pathParts[0] as keyof Hit]
+            value = hit
 
         while ((pathPart = pathParts.shift())) {
-            value = hit[pathPart as keyof Hit]
+            value = value?.[pathPart as keyof ValueOf<Hit>]
         }
+
         return value
     }
 
-    const formatString = (value: ValueOf<Hit>): JSX.Element | undefined | null | string =>
-        value && typeof value === 'string' ? shortenName(value, 60) : null
+    const formatString = (value: Hit): JSX.Element | undefined | null | string => shortenName(value as unknown as string, 60)
 
-    const formatBoolean = (value: ValueOf<Hit>): string => (value ? 'yes' : 'no')
+    const formatNumber = (value: Hit): JSX.Element | undefined | null | string => formatThousands(value as unknown as number)
 
-    const formatDate = (value: ValueOf<Hit>): JSX.Element | string | null =>
-        value && typeof value === 'string' ? formatDateTime(value, tolgee.getLanguage()) : null
+    const formatBoolean = (value: Hit): string => (value ? 'yes' : 'no')
 
-    const formatSize = (value: ValueOf<Hit>): JSX.Element | null => (value && typeof value === 'number' ? humanFileSize(value) : null)
+    const formatDate = (value: Hit): JSX.Element | string | null => formatDateTime(value as unknown as string, tolgee.getLanguage())
 
-    const formatIcon = (value: ValueOf<Hit>): JSX.Element => (
+    const formatSize = (value: Hit): JSX.Element | null => humanFileSize(value as unknown as number)
+
+    const formatIcon = (value: Hit): JSX.Element => (
         <Tooltip placement="top" title={value ? String(value) : 'unknown'}>
             <span>{cloneElement(getTypeIcon(String(value)), { className: classes.infoIcon })}</span>
         </Tooltip>
     )
 
-    const formatArray = (value: ValueOf<Hit>): JSX.Element | null =>
-        value && typeof value === 'string' ? (
+    const formatArray = (value: Hit): JSX.Element | null =>
+        value ? (
             <>
-                {[value.slice(0, 7)].map((el: string) => (
+                {(value as unknown as string[]).slice(0, 7).map((el: string) => (
                     <>
                         {shortenName(el)}
                         <br />
                     </>
                 ))}
-                {value.length > 7 && '...'}
+                {(value as unknown as string[]).length > 7 && '...'}
             </>
         ) : null
 
-    const formatTags = (icon: (tag: string) => ReactElement | null, value: ValueOf<Hit>): JSX.Element | null =>
-        value && typeof value === 'string' ? (
+    const formatTags = (icon: (tag: string) => ReactElement | null, value: Hit): JSX.Element | null =>
+        value ? (
             <>
-                {[value.slice(0, 7)].map((el: string) => (
+                {(value as unknown as string[]).map((el: string) => (
                     <>
                         {icon(el) && cloneElement(icon(el) as ReactElement, { className: classes.tagIcon })}
                         {shortenName(el)}
                         <br />
                     </>
                 ))}
-                {value.length > 7 && '...'}
+                {(value as unknown as string[]).length > 7 && '...'}
             </>
         ) : null
 
-    const formatThumbnail = (value: ValueOf<Hit>): JSX.Element | null =>
+    const formatThumbnail = (value: Hit): JSX.Element | null =>
         !value ? null : (
             <>
                 {cloneElement(reactIcons.visibility, {
@@ -163,6 +165,8 @@ export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index 
         switch (format) {
             case 'string':
                 return formatString(value)
+            case 'number':
+                return formatNumber(value)
             case 'boolean':
                 return formatBoolean(value)
             case 'date':
