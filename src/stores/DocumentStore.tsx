@@ -2,7 +2,16 @@ import { T } from '@tolgee/react'
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
 import { ReactElement, SyntheticEvent } from 'react'
 
-import { createDownloadUrl, createOcrUrl, createPreviewUrl, createThumbnailSrcSet, doc as docAPI, fetchJson, X_HOOVER_PDF_INFO } from '../backend/api'
+import {
+    createDownloadUrl,
+    createOcrUrl,
+    createPreviewUrl,
+    createThumbnailSrcSet,
+    doc as docAPI,
+    fetchJson,
+    X_HOOVER_PDF_INFO,
+    X_HOOVER_PDF_SPLIT_PAGE_RANGE,
+} from '../backend/api'
 import { TabData } from '../components/document/Document'
 import { LocalDocumentData } from '../components/finder/Types'
 import { parentLevels } from '../components/finder/utils'
@@ -127,16 +136,31 @@ export class DocumentStore {
         return urls
     }
 
-    getDocumentInfo = async () => {
+    getDocumentUrl = (pdfDocumentInfo: DocumentInfo | undefined, url: string) => {
+        const { chunks } = pdfDocumentInfo ?? {}
+        if (!chunks || chunks.length < 2) return url
+        return `${url}?${X_HOOVER_PDF_SPLIT_PAGE_RANGE}=${chunks[this.chunkTab]}`
+    }
+
+    getDocumentInfo = async (): Promise<DocumentInfo | undefined> => {
         if (!this.docRawUrl || this.data?.content['content-type'] !== 'application/pdf') return
 
-        const responses: DocumentInfo[] = await Promise.all(
-            this.getDocumentUrls().map(async (url) => await fetchJson(url + new URLSearchParams({ [`?${X_HOOVER_PDF_INFO}`]: '1' }))),
-        )
+        try {
+            const responses: DocumentInfo[] = await Promise.all(
+                this.getDocumentUrls().map(async (url) => await fetchJson(url + new URLSearchParams({ [`?${X_HOOVER_PDF_INFO}`]: '1' }))),
+            )
 
-        this.pdfDocumentInfo = responses.reduce((prev, current) => {
-            return current.chunks.length > prev.chunks.length ? current : prev
-        })
+            const pdfDocumentInfo = responses.reduce((prev, current) => {
+                return current.chunks.length > prev.chunks.length ? current : prev
+            })
+
+            this.pdfDocumentInfo = pdfDocumentInfo
+
+            return pdfDocumentInfo
+        } catch (error) {
+            console.error('Failed to fetch pdf document info: ', error)
+            return
+        }
     }
 
     setTabs = () => {
@@ -207,7 +231,6 @@ export class DocumentStore {
                 })
             })
             .finally(async () => {
-                await this.getDocumentInfo()
                 void this.documentSearchStore.search()
                 runInAction(() => {
                     this.loading = false
