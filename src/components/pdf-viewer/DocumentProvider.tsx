@@ -3,6 +3,7 @@ import { OnProgressParameters, PDFDocumentLoadingTask, PDFDocumentProxy } from '
 import { createContext, Dispatch, FC, ReactElement, SetStateAction, useContext, useEffect, useState } from 'react'
 
 import { fetchWithHeaders } from '../../backend/api'
+import { useSharedStore } from '../SharedStoreProvider'
 
 if ('Worker' in window) {
     GlobalWorkerOptions.workerSrc = '/_next/static/pdf.worker.js'
@@ -67,59 +68,65 @@ export const DocumentProvider: FC<DocumentProviderProps> = ({ url, cMapUrl, cMap
     const [bookmarks, setBookmarks] = useState<BookmarkItem[]>([])
     const [externalLinks, setExternalLinks] = useState({})
 
+    const {
+        documentStore: { getDocumentInfo, getDocumentUrl },
+    } = useSharedStore()
+
     useEffect(() => {
         setStatus(STATUS_LOADING)
         const worker = new PDFWorker({ name: `PDFWorker_${Date.now()}` })
         let loadingTask: PDFDocumentLoadingTask
+        ;(async () => {
+            const pdfDocumentInfo = await getDocumentInfo()
+            fetchWithHeaders(getDocumentUrl(pdfDocumentInfo, url)).then(() => {
+                loadingTask = getDocument({
+                    url,
+                    cMapUrl,
+                    cMapPacked,
+                    withCredentials,
+                    worker,
+                })
+                loadingTask.onPassword = (verifyPassword: () => void, reason: typeof PasswordResponses) => {
+                    switch (reason) {
+                        case PasswordResponses.NEED_PASSWORD:
+                            setStatus(STATUS_NEED_PASSWORD)
+                            break
 
-        fetchWithHeaders(url).then(() => {
-            loadingTask = getDocument({
-                url,
-                cMapUrl,
-                cMapPacked,
-                withCredentials,
-                worker,
-            })
-            loadingTask.onPassword = (verifyPassword: () => void, reason: typeof PasswordResponses) => {
-                switch (reason) {
-                    case PasswordResponses.NEED_PASSWORD:
-                        setStatus(STATUS_NEED_PASSWORD)
-                        break
-
-                    case PasswordResponses.INCORRECT_PASSWORD:
-                        setStatus(STATUS_INCORRECT_PASSWORD)
-                        break
+                        case PasswordResponses.INCORRECT_PASSWORD:
+                            setStatus(STATUS_INCORRECT_PASSWORD)
+                            break
+                    }
                 }
-            }
-            loadingTask.onProgress = (progress: OnProgressParameters) => {
-                progress.total > 0 ? setPercent(Math.min(100, (100 * progress.loaded) / progress.total)) : setPercent(100)
-            }
-            loadingTask.promise.then(
-                (doc) => {
-                    setDoc(doc)
-                    doc.getPage(1).then((page) => {
-                        const { width, height, scale } = page.getViewport({ scale: 1 })
+                loadingTask.onProgress = (progress: OnProgressParameters) => {
+                    progress.total > 0 ? setPercent(Math.min(100, (100 * progress.loaded) / progress.total)) : setPercent(100)
+                }
+                loadingTask.promise.then(
+                    (doc) => {
+                        setDoc(doc)
+                        doc.getPage(1).then((page) => {
+                            const { width, height, scale } = page.getViewport({ scale: 1 })
 
-                        setFirstPageData({
-                            width,
-                            height,
-                            scale,
+                            setFirstPageData({
+                                width,
+                                height,
+                                scale,
+                            })
+                            setStatus(STATUS_COMPLETE)
                         })
-                        setStatus(STATUS_COMPLETE)
-                    })
-                },
-                (err) => {
-                    setError(err)
-                    setStatus(STATUS_ERROR)
-                },
-            )
-        })
+                    },
+                    (err) => {
+                        setError(err)
+                        setStatus(STATUS_ERROR)
+                    },
+                )
+            })
+        })()
 
         return () => {
             loadingTask?.destroy?.()
             worker?.destroy?.()
         }
-    }, [cMapPacked, cMapUrl, url, withCredentials])
+    }, [cMapPacked, cMapUrl, url, withCredentials, getDocumentInfo, getDocumentUrl])
 
     return (
         <DocumentContext.Provider
