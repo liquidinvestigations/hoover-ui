@@ -9,3 +9,4 @@
 /.env.local
 /next-env.d.ts
 /out
+/coverage

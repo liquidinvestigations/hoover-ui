@@ -34,7 +34,7 @@ export const CollectionsFilter: FC = observer(() => {
                     {collectionsData
                         .filter((collection) => collection.name.includes(categoryQuickFilter.collections || ''))
                         .map((collection) => (
-                            <ListItemButton key={collection.name} role={undefined} dense onClick={handleSearchCollectionsChange(collection.name)}>
+                            <ListItemButton key={collection.name} dense onClick={handleSearchCollectionsChange(collection.name)}>
                                 <Checkbox
                                     size="small"
                                     tabIndex={-1}
@@ -49,6 +49,7 @@ export const CollectionsFilter: FC = observer(() => {
                                             collection.title
                                         ) : (
                                             <Highlighter
+                                                data-testid="collection-highlighter"
                                                 searchWords={[categoryQuickFilter.collections || '']}
                                                 autoEscape={true}
                                                 textToHighlight={collection.title}
