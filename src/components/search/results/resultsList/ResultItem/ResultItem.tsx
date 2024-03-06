@@ -175,6 +175,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                                         onMouseLeave={handleThumbLeave}
                                     />
                                     <Popper
+                                        placeholder="Thumbnail preview"
                                         anchorEl={thumbRef.current}
                                         open={showPreview}
                                         placement="left-start"
@@ -185,7 +186,9 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                                                     boundary: 'clippingParents',
                                                 },
                                             },
-                                        ]}>
+                                        ]}
+                                        onResize={undefined}
+                                        onResizeCapture={undefined}>
                                         <Paper elevation={10} className={classes.preview}>
                                             {previewLoading && <Loading />}
                                             <img

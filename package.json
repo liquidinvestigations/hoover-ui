@@ -87,6 +87,7 @@
   },
   "devDependencies": {
     "@elastic/elasticsearch": "^8.10.0",
+    "@testing-library/jest-dom": "^6.4.2",
     "@tolgee/format-icu": "^5.12.0",
     "@tolgee/react": "^5.12.0",
     "@types/jest": "^29.5.11",

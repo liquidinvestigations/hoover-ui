@@ -134,6 +134,7 @@ export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index 
                     onMouseLeave: handleThumbLeave,
                 })}
                 <Popper
+                    placeholder="Thumbnail preview"
                     anchorEl={thumbRef.current}
                     open={showPreview}
                     placement="right-start"
@@ -144,7 +145,9 @@ export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index 
                                 boundary: 'clippingParents',
                             },
                         },
-                    ]}>
+                    ]}
+                    onResize={undefined}
+                    onResizeCapture={undefined}>
                     <Paper elevation={10} className={classes.preview}>
                         {previewLoading && <Loading />}
                         <img

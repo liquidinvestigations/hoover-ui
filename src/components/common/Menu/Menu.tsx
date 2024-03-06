@@ -161,7 +161,11 @@ export const Menu = observer(() => {
                     </Box>
                 )}
                 <MenuList>
-                    <NestedMenuItem label={t('language', 'Language')} parentMenuOpen={Boolean(anchorEl)} className={classes.languageMenu}>
+                    <NestedMenuItem
+                        label={t('language', 'Language')}
+                        parentMenuOpen={Boolean(anchorEl)}
+                        className={classes.languageMenu}
+                        placeholder="Language">
                         <MenuItem onClick={handleLanguageChange('ar')} selected={lang === 'ar'}>
                             🇪🇬 <T keyName="arabic">Arabic</T>
                         </MenuItem>

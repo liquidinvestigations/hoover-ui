@@ -1,7 +1,5 @@
-import { OutgoingHttpHeaders } from 'http'
-
 import memoize from 'lodash/memoize'
-import fetch, { Response } from 'node-fetch'
+import fetch, { Response, HeadersInit } from 'node-fetch'
 import { AbortSignal } from 'node-fetch/externals'
 import { stringify } from 'qs'
 
@@ -29,7 +27,7 @@ export const X_HOOVER_PDF_SPLIT_PAGE_RANGE = 'X-Hoover-PDF-Split-Page-Range'
 export const X_HOOVER_PDF_EXTRACT_TEXT = 'X-Hoover-PDF-Extract-Text'
 
 interface FetchOptions {
-    headers?: OutgoingHttpHeaders
+    headers?: HeadersInit
     method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
     body?: string
     signal?: AbortSignal
