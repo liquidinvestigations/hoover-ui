@@ -20,6 +20,7 @@
     "jsx": "preserve"
   },
   "include": [
+    "./__test__/jest.setup.ts",
     "next-env.d.ts",
     "modules.d.ts",
     "**/*.ts",

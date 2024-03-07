@@ -53,6 +53,8 @@ export interface CollectionData {
         stats_collection_time: number
         task_matrix_header: string[]
         task_matrix: string[][]
+        options: string
+        processing_enabled: boolean
     }
     max_result_window: number
 }
