@@ -391,12 +391,15 @@ export interface DocumentContent {
     'word-count': number
     tree: string
     pgp: boolean
+    to: string
     from?: string
     subject?: string
     tags?: string[]
     'priv-tags.*': string[]
     'message-id'?: string
     'thread-index'?: string
+    'private-tags': string[]
+    'email-domains': string[]
 }
 
 export interface DocumentData {

@@ -3,7 +3,6 @@ import { screen } from '@testing-library/react'
 import { renderWithProviders } from '../../../../../../__test__/jest.utils'
 
 import { Text } from './Text'
-import '@testing-library/jest-dom'
 
 describe('Text Component', () => {
     it('renders "No text" when content is empty', async () => {
