@@ -31,16 +31,4 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         verticalAlign: 'middle',
         marginRight: theme.spacing(0.5),
     },
-
-    preview: {
-        padding: theme.spacing(1),
-    },
-
-    previewImg: {
-        width: 400,
-    },
-
-    previewImgLoading: {
-        width: 1,
-    },
 }))

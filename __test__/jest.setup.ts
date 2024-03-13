@@ -1,4 +1,5 @@
 import { TranslationKey } from "@tolgee/react"
+import '@testing-library/jest-dom'
 
 jest.mock('node-fetch', () => ({
     __esModule: true,
