@@ -12,7 +12,6 @@ import { useStyles } from './SubTabs.styles'
 export const SubTabs = observer(() => {
     const { classes } = useStyles()
     const {
-        printMode,
         documentStore: {
             tabs,
             data,
@@ -30,44 +29,42 @@ export const SubTabs = observer(() => {
 
     return (
         <>
-            {!printMode && tabs.length > 1 && (
-                <Box>
-                    <Tabs value={subTab} onChange={handleSubTabChange} variant="scrollable" scrollButtons="auto">
-                        {tabs.map(({ icon, name }, index) => {
-                            const textSubTabSearchCount = textSearchStore.searchResults[index]?.occurrenceCount || 0
-                            return (
-                                <Tab
-                                    key={index}
-                                    icon={icon}
-                                    iconPosition="start"
-                                    label={
-                                        <>
-                                            {name}
-                                            {query && query.length > 2 && (
-                                                <span className={classes.searchCount}>
-                                                    {textSearchStore.loading ? (
-                                                        <Loading size={16} />
-                                                    ) : (
-                                                        <span className={`total-count${!textSubTabSearchCount ? ' no-results' : ''}`}>
-                                                            {textSubTabSearchCount}
-                                                        </span>
-                                                    )}
-                                                </span>
-                                            )}
-                                        </>
-                                    }
-                                />
-                            )
-                        })}
-                    </Tabs>
-                </Box>
-            )}
+            <Box>
+                <Tabs value={subTab} onChange={handleSubTabChange} variant="scrollable" scrollButtons="auto">
+                    {tabs.map(({ icon, name }, index) => {
+                        const textSubTabSearchCount = textSearchStore.searchResults[index]?.occurrenceCount || 0
+                        return (
+                            <Tab
+                                key={index}
+                                icon={icon}
+                                iconPosition="start"
+                                label={
+                                    <>
+                                        {name}
+                                        {query && query.length > 2 && (
+                                            <span className={classes.searchCount}>
+                                                {textSearchStore.loading ? (
+                                                    <Loading size={16} />
+                                                ) : (
+                                                    <span className={`total-count${!textSubTabSearchCount ? ' no-results' : ''}`}>
+                                                        {textSubTabSearchCount}
+                                                    </span>
+                                                )}
+                                            </span>
+                                        )}
+                                    </>
+                                }
+                            />
+                        )
+                    })}
+                </Tabs>
+            </Box>
 
             <Box className={classes.subTab} id="text-sub-tab">
                 {data.content.filetype === 'email' && <Email />}
 
                 {tabs.map(({ name, content }, index) => (
-                    <TabPanel key={name.toString()} value={subTab} index={index} alwaysVisible={printMode} name={name}>
+                    <TabPanel key={name.toString()} value={subTab} index={index}>
                         <Text content={(query && textSearchStore.searchResults[index]?.highlightedText) || content} />
                     </TabPanel>
                 ))}
