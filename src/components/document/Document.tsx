@@ -1,8 +1,7 @@
 import { Badge, Box, Button, Chip, Grid, Tabs, Typography } from '@mui/material'
 import { T, useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
-import Link from 'next/link'
-import { cloneElement, ReactElement, useEffect, useRef } from 'react'
+import { cloneElement, ReactElement, useRef } from 'react'
 
 import { createOcrUrl } from '../../backend/api'
 import { reactIcons } from '../../constants/icons'
@@ -53,8 +52,7 @@ export const Document = observer(() => {
     const {
         user,
         fullPage,
-        printMode,
-        tagsStore: { tags, tagsLoading, tagsLocked, handleSpecialTagClick },
+        tagsStore: { tags, tagsLocked, handleSpecialTagClick },
         documentStore: {
             data,
             pathname,
@@ -72,12 +70,6 @@ export const Document = observer(() => {
             searchResultsStore: { previewNextDoc, previewPreviousDoc },
         },
     } = useSharedStore()
-
-    useEffect(() => {
-        if (printMode && !loading && !tagsLoading) {
-            window.setTimeout(window.print)
-        }
-    }, [printMode, loading, tagsLoading])
 
     const headerLinks = {
         actions: [] as ToolbarLink[],
@@ -204,7 +196,7 @@ export const Document = observer(() => {
         {
             name: t('tags', 'Tags'),
             icon: reactIcons.tagsTab,
-            visible: !printMode && data.content.filetype !== 'folder',
+            visible: data.content.filetype !== 'folder',
             content: <Tags toolbarButtons={tagsLinks} />,
         },
         {
@@ -221,7 +213,7 @@ export const Document = observer(() => {
         {
             name: t('metadata', 'Meta'),
             icon: reactIcons.metaTab,
-            visible: !printMode,
+            visible: true,
             content: <Meta />,
             searchLoading: metaSearchStore.loading,
             searchCount: metaSearchStore.getSearchResultsCount(),
@@ -278,13 +270,7 @@ export const Document = observer(() => {
 
     return (
         <div ref={containerRef} className={classes.root} data-test="doc-view" tabIndex={0}>
-            {!printMode && data.content.filetype !== 'folder' && <Toolbar links={headerLinks} />}
-
-            {printMode && (
-                <Link href={pathname} className={classes.printBackLink}>
-                    <T keyName="print_back_to_normal">← Back to normal view</T>
-                </Link>
-            )}
+            {data.content.filetype !== 'folder' && <Toolbar links={headerLinks} />}
 
             <Grid container justifyContent="space-between" wrap="nowrap" className={classes.header}>
                 <Grid item className={classes.titleWrapper}>
@@ -357,33 +343,31 @@ export const Document = observer(() => {
                 <PageSearch />
             </Box>
 
-            {!printMode && (
-                <Tabs value={tab} onChange={handleTabChange} classes={tabsClasses} variant="scrollable" scrollButtons="auto" indicatorColor="secondary">
-                    {tabsData
-                        .filter((tabData) => tabData.visible)
-                        .map((tabData, index) => (
-                            <StyledTab
-                                key={index}
-                                iconPosition="start"
-                                icon={tabData.icon}
-                                label={
-                                    <>
-                                        {tabData.name}
-                                        {getSearchCount(tabData, index)}
-                                    </>
-                                }
-                            />
-                        ))}
-                    {data.content.filetype === 'folder' &&
-                        !data.content.path.includes('//') &&
-                        process.env.HOOVER_UPLOADS_ENABLED && [...emptyTabs, uploadButton()]}
-                </Tabs>
-            )}
+            <Tabs value={tab} onChange={handleTabChange} classes={tabsClasses} variant="scrollable" scrollButtons="auto" indicatorColor="secondary">
+                {tabsData
+                    .filter((tabData) => tabData.visible)
+                    .map((tabData, index) => (
+                        <StyledTab
+                            key={index}
+                            iconPosition="start"
+                            icon={tabData.icon}
+                            label={
+                                <>
+                                    {tabData.name}
+                                    {getSearchCount(tabData, index)}
+                                </>
+                            }
+                        />
+                    ))}
+                {data.content.filetype === 'folder' &&
+                    !data.content.path.includes('//') &&
+                    process.env.HOOVER_UPLOADS_ENABLED && [...emptyTabs, uploadButton()]}
+            </Tabs>
 
             {tabsData
                 .filter((tabData) => tabData.visible)
                 .map(({ name, content, padding }, index) => (
-                    <TabPanel key={name.toString()} value={tab} index={index} padding={padding} name={name}>
+                    <TabPanel key={name.toString()} value={tab} index={index} padding={padding}>
                         {content}
                     </TabPanel>
                 ))}

@@ -27,8 +27,6 @@ export class SharedStore {
 
     fullPage = false
 
-    printMode = false
-
     navigation: ObservableHistory | undefined
 
     hashStore

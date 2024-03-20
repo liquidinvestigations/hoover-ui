@@ -8,9 +8,7 @@ const Doc: NextPage = () => {
     const router = useRouter()
     const store = useSharedStore()
     const { query } = router
-    const printMode = query.print && query.print !== 'false'
 
-    store.printMode = Boolean(printMode)
     store.fullPage = true
 
     if (typeof query.collection === 'string' && typeof query.id === 'string') {
