@@ -37,13 +37,7 @@ export const SplitPaneLayout: FC<SplitPaneLayoutProps> = ({
     const { classes, cx } = useStyles()
 
     const rightPanel = right ? (
-        <SplitPane
-            split="vertical"
-            defaultSize={defaultSizeMiddle}
-            allowResize
-            onChange={onMiddleChange}
-            pane1ClassName={classes.middle}
-            pane2ClassName={classes.right}>
+        <SplitPane split="vertical" defaultSize={defaultSizeMiddle} allowResize onChange={onMiddleChange} pane1ClassName={classes.middle}>
             {children}
             {right}
         </SplitPane>

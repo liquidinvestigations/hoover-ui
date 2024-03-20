@@ -7,12 +7,6 @@ export const useStyles = makeStyles()((theme) => ({
         height: 'auto',
     },
 
-    right: {
-        overflowX: 'hidden',
-        overflowY: 'auto',
-        height: 'auto',
-    },
-
     middle: {
         backgroundColor: theme.palette.background.default,
         minWidth: 0, // So the Typography noWrap works

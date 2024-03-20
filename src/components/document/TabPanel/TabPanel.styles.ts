@@ -1,13 +1,17 @@
 import { makeStyles } from 'tss-react/mui'
 
-export const useStyles = makeStyles()(() => ({
+type StylesProps = { isHidden: boolean; padding: number }
+export const useStyles = makeStyles<StylesProps>()((theme, { isHidden, padding }) => ({
     root: {
-        height: '100%',
-    },
-
-    tab: {
         display: 'flex',
         flexDirection: 'column',
-        height: '100%',
+        overflow: 'auto',
+        visibility: isHidden ? 'hidden' : 'visible',
+        height: isHidden ? 0 : '100%',
+        padding: isHidden ? 0 : theme.spacing(padding),
+    },
+
+    printTitle: {
+        margin: theme.spacing(2),
     },
 }))

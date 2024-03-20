@@ -382,17 +382,10 @@ export const Document = observer(() => {
 
             {tabsData
                 .filter((tabData) => tabData.visible)
-                .map((tabData, index) => (
-                    <Box key={index} className={index === tab ? `${classes.activeTab} activeTab` : undefined}>
-                        {printMode && (
-                            <Typography variant="h3" className={classes.printTitle}>
-                                {tabData.name}
-                            </Typography>
-                        )}
-                        <TabPanel value={tab} index={index} padding={tabData.padding}>
-                            {tabData.content}
-                        </TabPanel>
-                    </Box>
+                .map(({ name, content, padding }, index) => (
+                    <TabPanel key={name.toString()} value={tab} index={index} padding={padding} name={name}>
+                        {content}
+                    </TabPanel>
                 ))}
         </div>
     )

@@ -1,5 +1,5 @@
-import { Box } from '@mui/material'
-import { FC, ReactNode } from 'react'
+import { Box, Typography } from '@mui/material'
+import { FC, ReactElement, ReactNode } from 'react'
 
 import { useStyles } from './TabPanel.styles'
 
@@ -9,13 +9,19 @@ interface TabPanelProps {
     index: number
     padding?: number
     alwaysVisible?: boolean
+    name?: string | ReactElement
 }
 
-export const TabPanel: FC<TabPanelProps> = ({ children, value, index, padding = 2, alwaysVisible }) => {
-    const { classes } = useStyles()
+export const TabPanel: FC<TabPanelProps> = ({ children, value, index, padding = 2, alwaysVisible, name }) => {
+    const { classes } = useStyles({ isHidden: index !== value, padding })
 
     return (
-        <Box padding={padding} hidden={index !== value && !alwaysVisible} className={classes.root}>
+        <Box className={classes.root}>
+            {alwaysVisible && (
+                <Typography variant="h5" className={classes.printTitle}>
+                    {name}
+                </Typography>
+            )}
             {children}
         </Box>
     )

@@ -1,4 +1,4 @@
-import { Box, Tab, Tabs, Typography } from '@mui/material'
+import { Box, Tab, Tabs } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 
 import { Loading } from '../../common/Loading/Loading'
@@ -67,16 +67,9 @@ export const SubTabs = observer(() => {
                 {data.content.filetype === 'email' && <Email />}
 
                 {tabs.map(({ name, content }, index) => (
-                    <Box key={index} overflow="auto">
-                        {printMode && tabs.length > 1 && (
-                            <Typography variant="h5" className={classes.printTitle}>
-                                {name}
-                            </Typography>
-                        )}
-                        <TabPanel value={subTab} index={index} alwaysVisible={printMode}>
-                            <Text content={(query && textSearchStore.searchResults[index]?.highlightedText) || content} />
-                        </TabPanel>
-                    </Box>
+                    <TabPanel key={name.toString()} value={subTab} index={index} alwaysVisible={printMode} name={name}>
+                        <Text content={(query && textSearchStore.searchResults[index]?.highlightedText) || content} />
+                    </TabPanel>
                 ))}
             </Box>
         </>
