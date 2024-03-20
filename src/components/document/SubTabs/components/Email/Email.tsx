@@ -49,7 +49,6 @@ const tableFields: Partial<
 export const Email = observer(() => {
     const { classes } = useStyles()
     const {
-        printMode,
         hashStore: { hashState },
         documentStore: { data, collection, digest },
     } = useSharedStore()
@@ -87,7 +86,7 @@ export const Email = observer(() => {
                                 <TableCell>{config?.label}</TableCell>
                                 <TableCell>
                                     <pre className={classes.preWrap}>
-                                        {printMode || !config?.linkVisible(term) ? (
+                                        {!config?.linkVisible(term) ? (
                                             formatted
                                         ) : (
                                             <>
@@ -111,7 +110,6 @@ export const Email = observer(() => {
                     })}
 
                     {data?.content['message-id'] &&
-                        !printMode &&
                         ensureArray(data.content['message-id']).map((messageId, index) => (
                             <TableRow key={index}>
                                 <TableCell colSpan={2}>
@@ -126,7 +124,6 @@ export const Email = observer(() => {
                         ))}
 
                     {data?.content['thread-index'] &&
-                        !printMode &&
                         ensureArray(data.content['thread-index']).map((threadIndex, index) => (
                             <TableRow key={index}>
                                 <TableCell colSpan={2}>

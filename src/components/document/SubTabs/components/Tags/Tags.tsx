@@ -44,7 +44,6 @@ export const Tags: FC<{ toolbarButtons: ToolbarLink[] }> = observer(({ toolbarBu
     const { classes, cx } = useStyles()
     const {
         user,
-        printMode,
         collectionsData,
         documentStore: { digestUrl },
         tagsStore: { tags, tagsLocked, tagsLoading, tagsError, handleTagAdd, handleTagDelete, handleTagLockClick },
@@ -113,36 +112,6 @@ export const Tags: FC<{ toolbarButtons: ToolbarLink[] }> = observer(({ toolbarBu
 
     if (!digestUrl) {
         return null
-    }
-
-    const simpleTags = (tags: Tag[]) => (
-        <Grid container>
-            {tags.map(({ tag }, index) => (
-                <Grid item className={classes.tag} key={index}>
-                    <Chip label={tag} />
-                </Grid>
-            ))}
-        </Grid>
-    )
-
-    if (printMode) {
-        return (
-            <>
-                <Box my={3} pb={0.7}>
-                    {simpleTags(tags)}
-                </Box>
-
-                {otherUsersTags.map(([user, tags], index) => (
-                    <Box key={index} my={3} pb={0.7}>
-                        <Typography variant="subtitle2" className={classes.otherTagsInfo}>
-                            Public tags from <i>{user}</i>:
-                        </Typography>
-
-                        {simpleTags(tags)}
-                    </Box>
-                ))}
-            </>
-        )
     }
 
     const handleInputChange = (event: SyntheticEvent, value: string, reason: AutocompleteInputChangeReason) => {
