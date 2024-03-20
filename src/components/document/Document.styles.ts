@@ -98,10 +98,6 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         overflow: 'auto',
     },
 
-    printTitle: {
-        margin: theme.spacing(2),
-    },
-
     printBackLink: {
         position: 'absolute',
         top: theme.spacing(2),

@@ -6,6 +6,9 @@ export const useStyles = makeStyles()((theme) => ({
     },
     viewer: {
         height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+
         '&:fullscreen': {
             '& $container': {
                 height: 'calc(100vh - 48px)',
