@@ -27,13 +27,6 @@ export const Menu = observer(() => {
     const { user } = useSharedStore()
     const tolgee = useTolgee(['language'])
 
-    const { query } = router
-    const printMode = query.print && query.print !== 'false'
-
-    if (printMode) {
-        return null
-    }
-
     const getNavLinks = (): Link[] => {
         const links: Link[] = [
             {
