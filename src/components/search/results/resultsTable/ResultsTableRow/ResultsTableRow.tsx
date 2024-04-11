@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { cloneElement, FC } from 'react'
 
 import { reactIcons } from '../../../../../constants/icons'
+import { DEDUPLICATE_OPTIONS } from '../../../../../consts'
 import { useSharedStore } from '../../../../SharedStoreProvider'
 
 import { useResultsTableRow } from './hooks/useResultsTableRow'
@@ -12,12 +13,20 @@ import { ResultsTableRowProps } from './ResultsTableRow.types'
 export const ResultsTableRow: FC<ResultsTableRowProps> = observer(({ hit, index }) => {
     const { classes, cx } = useStyles()
     const {
+        query,
         searchViewStore: { resultsColumns },
     } = useSharedStore().searchStore
     const { formatField, start, nodeRef, isPreview, url, downloadUrl, handleResultClick } = useResultsTableRow(hit)
 
     return (
-        <TableRow data-testid="results-table-row" ref={nodeRef} onClick={handleResultClick} className={cx({ [classes.selected]: isPreview })}>
+        <TableRow
+            data-testid="results-table-row"
+            ref={nodeRef}
+            onClick={handleResultClick}
+            className={cx({
+                [classes.selected]: isPreview,
+                [classes.duplicate]: query?.dedup_results === DEDUPLICATE_OPTIONS.mark && hit._dedup_hide_result,
+            })}>
             <TableCell>{start + index}</TableCell>
             {resultsColumns.map(([field, { align, path, format }]) => (
                 <TableCell key={field} align={align}>

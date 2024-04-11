@@ -29,6 +29,7 @@ const PARAMS_MAP: Record<string, string> = {
     ct: 'chunkTab',
     fq: 'findQuery',
     fi: 'findIndex',
+    ddr: 'dedup_results',
 }
 
 const LEGACY_PARAMS: Record<string, string> = {

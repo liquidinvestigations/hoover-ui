@@ -7,6 +7,7 @@ import { cloneElement, useEffect, useRef, useState } from 'react'
 import { createDownloadUrl, createThumbnailSrc, createThumbnailSrcSet } from '../../../../../backend/api'
 import { reactIcons } from '../../../../../constants/icons'
 import { specialTags, specialTagsList } from '../../../../../constants/specialTags'
+import { DEDUPLICATE_OPTIONS } from '../../../../../consts'
 import { getTypeIcon, humanFileSize, makeUnsearchable, truncatePath, extractStringFromField } from '../../../../../utils/utils'
 import { Loading } from '../../../../common/Loading/Loading'
 import { useSharedStore } from '../../../../SharedStoreProvider'
@@ -39,6 +40,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
         user,
         hashStore: { hashState },
         searchStore: {
+            query,
             searchResultsStore: { openPreview },
         },
     } = useSharedStore()
@@ -98,7 +100,10 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
     return (
         <Card
             ref={nodeRef}
-            className={cx(classes.card, { [classes.selected]: isPreview })}
+            className={cx(classes.card, {
+                [classes.selected]: isPreview,
+                [classes.duplicate]: query?.dedup_results === DEDUPLICATE_OPTIONS.mark && hit._dedup_hide_result,
+            })}
             onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
@@ -153,6 +158,12 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                                 <Grid item component="span" className={classes.collection}>
                                     {collection}
                                 </Grid>
+                                {hit._dedup_hide_result && (
+                                    <Grid item component="span" className={classes.collection} ml={2}>
+                                        {reactIcons.fileCopy} {t('duplicate', 'Duplicate')}: [
+                                        {hit._dedup_hits.filter((x) => x !== collection).toString()}]
+                                    </Grid>
+                                )}
                             </Grid>
 
                             <Grid item component="span" className={classes.title}>

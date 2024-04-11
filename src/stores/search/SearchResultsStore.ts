@@ -1,5 +1,6 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
 
+import { DEDUPLICATE_OPTIONS } from '../../consts'
 import { AsyncTaskData, Category, Hit, Hits, SearchQueryParams } from '../../Types'
 import { AsyncQueryTaskRunner } from '../../utils/AsyncTaskRunner'
 import { getPreviewParams } from '../../utils/utils'
@@ -52,8 +53,12 @@ export class SearchResultsStore {
         })
 
         for (const collection of query.collections) {
-            const { excludedFields, ...queryParams } = query
-            const singleCollectionQuery = { ...queryParams, collections: [collection] }
+            const { excludedFields, dedup_results = 0, ...queryParams } = query
+            const singleCollectionQuery = {
+                ...queryParams,
+                collections: [collection],
+                dedup_collections: dedup_results ? query.collections : undefined,
+            }
 
             runInAction(() => {
                 this.results.push({ collection })
@@ -73,8 +78,12 @@ export class SearchResultsStore {
 
                 runInAction(() => {
                     const initResult = this.results.find(({ collection: initCollection }) => collection === initCollection)
-                    if (initResult) {
-                        initResult.hits = data.result?.hits as Hits
+                    if (initResult && data.result?.hits) {
+                        const { hits, ...rest } = data.result.hits
+                        initResult.hits = {
+                            ...rest,
+                            hits: dedup_results === DEDUPLICATE_OPTIONS.hide ? hits.filter(({ _dedup_hide_result }) => !_dedup_hide_result) : hits,
+                        }
                     }
 
                     this.results.sort(this.resultsSortCompareFn)

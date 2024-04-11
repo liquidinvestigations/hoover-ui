@@ -46,7 +46,14 @@ export default function fixLegacyQuery(query: QueryParamsType): QueryParamsType 
     processOrder(query)
     processFields(query)
     processPrivateTags(query)
+    processDeduplicateResults(query)
     return query
+}
+
+const processDeduplicateResults = (query: QueryParamsType) => {
+    if (!query.dedup_results) return
+
+    query.dedup_results = parseInt(query.dedup_results as string)
 }
 
 function processCollections(query: QueryParamsType) {

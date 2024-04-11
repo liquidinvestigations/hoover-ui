@@ -835,6 +835,7 @@ exports[`builds a default query 1`] = `
     },
   },
   "collections": [],
+  "dedup_collections": undefined,
   "from": 0,
   "highlight": {
     "fields": {},
