@@ -3,6 +3,7 @@ import { ChangeEvent, ReactNode, RefObject } from 'react'
 import { Entry } from 'type-fest'
 
 import { availableColumns } from '../../constants/availableColumns'
+import { DEDUPLICATE_OPTIONS } from '../../consts'
 import { Category } from '../../Types'
 import { SharedStore } from '../SharedStore'
 
@@ -156,6 +157,19 @@ export class SearchViewStore {
         }
 
         this.searchStore.search()
+    }
+
+    handleDeduplicateResults = () => {
+        const { query, search } = this.searchStore
+
+        search({
+            dedup_results:
+                typeof query?.dedup_results === 'undefined'
+                    ? DEDUPLICATE_OPTIONS.hide
+                    : query?.dedup_results === DEDUPLICATE_OPTIONS.mark
+                      ? DEDUPLICATE_OPTIONS.show
+                      : query?.dedup_results + 1,
+        })
     }
 
     handleAllSearchCollectionsToggle = () => {

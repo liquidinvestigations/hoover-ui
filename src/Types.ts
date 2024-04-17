@@ -95,6 +95,8 @@ export interface SearchQueryParams {
     order?: string[][]
     facets?: Record<string, number>
     filters?: Record<string, Terms>
+    dedup_results?: number
+    dedup_collections?: string[]
 }
 
 export interface BatchSearchQueryParams {
@@ -232,6 +234,8 @@ export interface Hit {
     _source: DocumentContent
     _type: string
     _url_rel: string
+    _dedup_hide_result: boolean
+    _dedup_hits: string[]
 }
 
 export interface Bucket {

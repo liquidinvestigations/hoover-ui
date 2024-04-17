@@ -15,6 +15,7 @@ import type {
 
 interface MsearchMultisearchBodyWithCollections extends MsearchMultisearchBody {
     collections: string[]
+    dedup_collections?: string[]
 }
 
 export interface SearchFields {
@@ -387,7 +388,7 @@ const getAggregationFields = (type: FieldType, fieldList: FieldList) =>
         .filter((field) => fieldList === '*' || (Array.isArray(fieldList) && fieldList.includes(field))) as SourceField[]
 
 const buildSearchQuery = (
-    { q = '*', page = 1, size = 0, order, collections = [], facets = {}, filters = {} }: Partial<SearchQueryParams> = {},
+    { q = '*', page = 1, size = 0, order, collections = [], dedup_collections, facets = {}, filters = {} }: Partial<SearchQueryParams> = {},
     type: SearchQueryType,
     fieldList: FieldList,
     missing: boolean,
@@ -432,6 +433,7 @@ const buildSearchQuery = (
         post_filter: postFilter,
         aggs: type === 'results' ? {} : aggs,
         collections,
+        dedup_collections: type === 'results' && dedup_collections?.length ? dedup_collections : undefined,
         _source: searchFields._source,
         highlight: {
             fields: highlightFields,

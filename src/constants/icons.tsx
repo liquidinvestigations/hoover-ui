@@ -76,6 +76,7 @@ import {
     ZoomIn,
     ZoomOut,
     AccountCircle,
+    FileCopy,
 } from '@mui/icons-material'
 import { createElement, CSSProperties, ReactElement } from 'react'
 
@@ -145,6 +146,7 @@ export const reactIcons: Record<string, ReactElement> = {
     zoomOut: <ZoomOut />,
     fullscreen: <Fullscreen />,
     fullscreenExit: <FullscreenExit />,
+    fileCopy: <FileCopy />,
     print: <Print />,
     contentTab: <Toc />,
     tagsTab: <LocalOfferOutlined />,

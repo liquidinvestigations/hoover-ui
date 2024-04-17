@@ -126,4 +126,8 @@ export const useStyles = makeStyles()((theme: Theme) => ({
     previewImgLoading: {
         width: 1,
     },
+
+    duplicate: {
+        opacity: 0.5,
+    },
 }))

@@ -31,4 +31,8 @@ export const useStyles = makeStyles()((theme: Theme) => ({
         verticalAlign: 'middle',
         marginRight: theme.spacing(0.5),
     },
+
+    duplicate: {
+        opacity: 0.5,
+    },
 }))

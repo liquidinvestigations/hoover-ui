@@ -264,5 +264,7 @@
   "year" : "Rok",
   "years" : "Lata",
   "zoom_in" : "Powiększ",
-  "zoom_out" : "Pomniejsz"
+  "zoom_out" : "Pomniejsz",
+  "dedup_results" : "Deduplikuj wyniki",
+  "duplicate" : "Duplikaty"
 }

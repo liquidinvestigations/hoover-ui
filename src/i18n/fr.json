@@ -264,5 +264,7 @@
   "year" : "Année",
   "years" : "Années",
   "zoom_in" : "Zoomer",
-  "zoom_out" : "Dézoomer"
+  "zoom_out" : "Dézoomer",
+  "dedup_results" : "Résultats de déduplication",
+  "duplicates" : "Doublons"
 }
