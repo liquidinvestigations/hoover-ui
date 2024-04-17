@@ -6,7 +6,7 @@ import { fetchWithHeaders } from '../../backend/api'
 import { useSharedStore } from '../SharedStoreProvider'
 
 if ('Worker' in window) {
-    GlobalWorkerOptions.workerSrc = '/_next/static/pdf.worker.js'
+    GlobalWorkerOptions.workerSrc = '/static/pdf.worker.js'
 }
 
 export const STATUS_LOADING = 'loading'

@@ -3,8 +3,8 @@ import url from 'url'
 import { Box, List, ListItem, ListItemIcon, Typography } from '@mui/material'
 import { T } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
-import Link from 'next/link'
 import { memo } from 'react'
+import Link from 'react-router-dom'
 
 import { reactIcons } from '../../../constants/icons'
 import { Loading } from '../../common/Loading/Loading'
@@ -53,7 +53,7 @@ export const Locations = observer(() => {
                 {locations.length && (
                     <>
                         {locations.map((location) => (
-                            <Link key={location.id} href={`${basePath}${location.id}`} shallow {...(!fullPage && { target: '_blank' })}>
+                            <Link key={location.id} to={`${basePath}${location.id}`} {...(!fullPage && { target: '_blank' })}>
                                 <ListItem button>
                                     <ListItemIcon>{reactIcons.location}</ListItemIcon>
 

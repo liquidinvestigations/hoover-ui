@@ -260,7 +260,9 @@ export class DocumentStore {
                 level++
             }
 
-            this.hierarchy = localData
+            runInAction(() => {
+                this.hierarchy = localData
+            })
         }
     }
 

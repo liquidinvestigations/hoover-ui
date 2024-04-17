@@ -5,12 +5,8 @@
     "jest": true
   },
   "root": true,
-  "extends": [
-    "next/core-web-vitals",
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended"
-  ],
+  "plugins": ["@typescript-eslint", "react", "react-hooks", "import", "prettier"],
+  "ignorePatterns": ["*.js"],
   "rules": {
     "semi": "off",
     "prettier/prettier": [

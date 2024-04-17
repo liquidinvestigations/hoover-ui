@@ -55,9 +55,9 @@ export default function HooverApp({ Component, pageProps }: AppProps) {
                     <ThemeProvider theme={customTheme}>
                         <CssBaseline />
                         <SharedStoreProvider>
-                            <Layout>
-                                <Component {...pageProps} />
-                            </Layout>
+                            <Layout />
+                            {/*<Component {...pageProps} />
+                            </Layout>*/}
                         </SharedStoreProvider>
                     </ThemeProvider>
                 </LocalizationProvider>

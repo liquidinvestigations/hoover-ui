@@ -332,7 +332,6 @@ export const Document = observer(() => {
                 {data.content['has-thumbnails'] && (
                     <Grid item>
                         <Box className={classes.thumbnail}>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img className={classes.thumbnailImg} srcSet={thumbnailSrcSet} alt="thumbnail" />
                         </Box>
                     </Grid>

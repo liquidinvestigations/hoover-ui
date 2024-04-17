@@ -1,8 +1,8 @@
 import { Box, Divider, List, ListItem, ListItemText, Tooltip, Typography } from '@mui/material'
 import { useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
-import Link from 'next/link'
 import { MouseEvent, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import { ELLIPSIS_TERM_LENGTH } from '../../../../../constants/general'
 import { SourceField } from '../../../../../Types'
@@ -108,7 +108,7 @@ export const Meta = observer(() => {
                         <ListItemText
                             primary="ID"
                             secondary={
-                                <Link href={`${collectionBaseUrl}/${data.digest}`} title={t('open_digest_url', 'open digest URL')} shallow>
+                                <Link to={`${collectionBaseUrl}/${data.digest}`} title={t('open_digest_url', 'open digest URL')}>
                                     {data.digest}
                                 </Link>
                             }

@@ -8,5 +8,5 @@
 /.coverage
 /.env.local
 /next-env.d.ts
-/out
+/dist
 /coverage

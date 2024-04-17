@@ -1,5 +1,4 @@
 import { makeAutoObservable, runInAction } from 'mobx'
-import Router from 'next/router'
 import qs from 'qs'
 
 import { AggregationsKey, SearchQueryParams, SourceField } from '../../Types'
@@ -122,12 +121,14 @@ export class SearchStore {
             this.searchViewStore.searchCollections = query.collections
         }
 
-        if (!options.queued) {
+        /*if (!options.queued) {
             const path = '?' + queryString + window.location.hash
             void Router.router?.changeState('pushState', path, path, { shallow: true })
-        }
+        }*/
 
         this.query = query as SearchQueryParams
+
+        return '?' + queryString + window.location.hash
     }
 
     onFieldInclusionChange = (field: string) => () => {
