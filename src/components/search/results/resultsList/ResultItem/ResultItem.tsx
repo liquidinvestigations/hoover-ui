@@ -160,7 +160,7 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                                 </Grid>
                                 {hit._dedup_hide_result && (
                                     <Grid item component="span" className={classes.collection} ml={2}>
-                                        {reactIcons.fileCopy} {t('duplicate', 'Duplicate')}: [
+                                        {reactIcons.fileCopy} {t('duplicates', 'Duplicates')}: [
                                         {hit._dedup_hits.filter((x) => x !== collection).toString()}]
                                     </Grid>
                                 )}
