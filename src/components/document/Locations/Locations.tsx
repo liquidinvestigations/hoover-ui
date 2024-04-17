@@ -1,61 +1,27 @@
 import url from 'url'
 
-import { List, ListItem, ListItemIcon, Typography, Box } from '@mui/material'
+import { Box, List, ListItem, ListItemIcon, Typography } from '@mui/material'
 import { T } from '@tolgee/react'
+import { observer } from 'mobx-react-lite'
 import Link from 'next/link'
-import { FC, memo, SyntheticEvent, useEffect, useState } from 'react'
+import { memo } from 'react'
 
-import { locations as locationsAPI } from '../../../backend/api'
 import { reactIcons } from '../../../constants/icons'
-import { DocumentData, LocationData } from '../../../Types'
 import { Loading } from '../../common/Loading/Loading'
 import { useSharedStore } from '../../SharedStoreProvider'
 
 import { useStyles } from './Locations.styles'
 
-interface Error {
-    status: string
-    statusText: string
-    url: string
-}
-
-interface LocationsProps {
-    url?: string
-    data?: DocumentData
-}
-
-export const Locations: FC<LocationsProps> = ({ url: docUrl, data }) => {
+export const Locations = observer(() => {
     const { classes } = useStyles()
-    const { fullPage } = useSharedStore()
-    const [locations, setLocations] = useState<LocationData[]>([])
-    const [error, setError] = useState<Error | null>(null)
-    const [page, setPage] = useState(1)
-    const [hasNextPage, setHasNextPage] = useState(false)
-    const [loadingNextPage, setLoadingNextPage] = useState(false)
-
-    useEffect(() => {
-        if (docUrl) {
-            setError(null)
-            locationsAPI(docUrl, page)
-                .then((response) => {
-                    setLocations(response.locations)
-                    setHasNextPage(response.has_next_page)
-                })
-                .catch((res) => {
-                    setError({ status: res.status, statusText: res.statusText, url: res.url })
-                })
-        }
-    }, [docUrl, page])
-
-    const loadMore = async (event: SyntheticEvent) => {
-        event.preventDefault()
-        setLoadingNextPage(true)
-        const response = await locationsAPI(docUrl, page + 1)
-        setPage(page + 1)
-        setLocations([...locations, ...response.locations])
-        setHasNextPage(response.has_next_page)
-        setLoadingNextPage(false)
-    }
+    const {
+        fullPage,
+        documentStore: {
+            digestUrl: docUrl,
+            data,
+            locationsStore: { error, locations, hasNextPage, loadingNextPage, loadMore },
+        },
+    } = useSharedStore()
 
     if (error) {
         return (
@@ -113,6 +79,6 @@ export const Locations: FC<LocationsProps> = ({ url: docUrl, data }) => {
             </List>
         </Box>
     )
-}
+})
 
 export default memo(Locations)

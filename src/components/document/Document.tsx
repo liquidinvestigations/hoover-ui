@@ -206,7 +206,7 @@ export const Document = observer(() => {
             content: (
                 <>
                     <Finder />
-                    <Locations data={data} url={digestUrl} />
+                    <Locations />
                 </>
             ),
         },

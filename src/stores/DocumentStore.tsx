@@ -21,6 +21,7 @@ import { collectionUrl, documentViewUrl, extractStringFromField, getBasePath } f
 
 import { DocumentSearchStore } from './DocumentSearchStore'
 import { HashStateStore } from './HashStateStore'
+import { LocationsStore } from './LocationsStore'
 import { MetaStore } from './MetaStore'
 
 export class DocumentStore {
@@ -70,8 +71,11 @@ export class DocumentStore {
 
     pdfTextContent: DocumentRecord<PdfTextEntry> = {}
 
+    locationsStore: LocationsStore
+
     constructor(private readonly hashStore: HashStateStore) {
         this.metaStore = new MetaStore()
+        this.locationsStore = new LocationsStore(this)
         this.documentSearchStore = new DocumentSearchStore(this, hashStore)
         makeAutoObservable(this)
 
@@ -84,6 +88,11 @@ export class DocumentStore {
         })
 
         reaction(() => this.pathname, this.loadDocument)
+
+        reaction(
+            () => this.digestUrl,
+            (url) => url && this.locationsStore.fetchLocations(),
+        )
 
         reaction(
             () => this.hashStore.hashState.preview?.c && this.hashStore.hashState.preview?.i,
