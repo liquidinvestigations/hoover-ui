@@ -6,7 +6,8 @@
 /.node-version
 /.npmrc
 /.coverage
-/.env.local
+/.env
 /next-env.d.ts
 /dist
+/out
 /coverage

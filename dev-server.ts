@@ -32,11 +32,7 @@ const setupProxyMiddleware =
                 onError: (error) => {
                     console.error(error)
                 },
-                onProxyReq: (proxyRequest) =>
-                    proxyRequest.setHeader(
-                        'Cookie',
-                        '_oauth2_proxy_hoover=X29hdXRoMl9wcm94eV9ob292ZXItNjU2MjRmNTA2NDEzYjBjMzEzOGJmYmU3NjU3YWQ1ZGMublQ4Sndhd3FzMXM4YkVWajhiYURmUQ==|1713349053|BoqfGIWZT24fvzKd6hYa5JxGtTe4Zq0QMC6ULG02Ums=',
-                    ),
+                cookieDomainRewrite: 'localhost',
             }) as RequestHandler,
         )
     }
