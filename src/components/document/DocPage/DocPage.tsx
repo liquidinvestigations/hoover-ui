@@ -18,7 +18,7 @@ export const DocPage: FC = observer(() => {
     const { t } = useTranslate()
     const { classes } = useStyles()
     const {
-        documentStore: { data, loading, error, digest, digestUrl, urlIsSha },
+        documentStore: { data, loading, error, digest, urlIsSha },
     } = useSharedStore()
 
     const fileName = extractStringFromField(data?.content?.filename)
@@ -34,7 +34,7 @@ export const DocPage: FC = observer(() => {
                 </Typography>
             )}
             <div className={classes.splitPane}>
-                <InfoPane digest={digest} data={data} digestUrl={digestUrl} loading={loading} />
+                <InfoPane digest={digest} loading={loading} />
             </div>
         </>
     ) : (
@@ -56,7 +56,7 @@ export const DocPage: FC = observer(() => {
                     pane1ClassName={classes.horizontalSplitPane}
                     pane2ClassName={classes.horizontalSplitPane}>
                     <Finder />
-                    <InfoPane digest={digest} data={data} digestUrl={digestUrl} loading={loading} />
+                    <InfoPane digest={digest} loading={loading} />
                 </SplitPane>
             </div>
         </>
