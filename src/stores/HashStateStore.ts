@@ -1,6 +1,7 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
 import qs from 'qs'
 
+import { router } from '../index'
 import { rollupParams, unwindParams } from '../utils/queryUtils'
 
 import { SharedStore } from './SharedStore'
@@ -58,12 +59,12 @@ export class HashStateStore {
             this.hashState = { ...this.hashState, ...params }
         })
 
-        //const search = window.location.search
+        const search = window.location.search
         const hash = qs.stringify(rollupParams(this.hashState))
 
         this.sharedStore.navigation?.merge({ pathname: window.location.pathname, hash }, !pushHistory)
 
-        //const path = search + '#' + hash
-        //void Router.router?.changeState('replaceState', path, path, { shallow: true })
+        const path = search + '#' + hash
+        void router.navigate(path)
     }
 }

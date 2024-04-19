@@ -60,7 +60,7 @@ module.exports = {
                 },
                 {
                     from: './node_modules/pdfjs-dist/build/pdf.worker.js',
-                    to: './static/pdf.worker.js',
+                    to: './pdf.worker.js',
                 },
                 {
                     from: './nginx-routes.conf',
