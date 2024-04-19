@@ -20,10 +20,14 @@ import { SearchFields } from './buildSearchQuery'
 
 const prefix = '/api/v1/'
 
+if (window && typeof process === 'undefined') {
+    // @ts-ignore
+    window.process = {}
+}
 const { API_RETRY_DELAY_MIN, API_RETRY_DELAY_MAX, API_RETRY_COUNT } = {
-    API_RETRY_DELAY_MIN: (typeof process !== 'undefined' && process.env.API_RETRY_DELAY_MIN) || '500',
-    API_RETRY_DELAY_MAX: (typeof process !== 'undefined' && process.env.API_RETRY_DELAY_MAX) || '10000',
-    API_RETRY_COUNT: (typeof process !== 'undefined' && process.env.API_RETRY_COUNT) || '4',
+    API_RETRY_DELAY_MIN: process.env?.API_RETRY_DELAY_MIN || '500',
+    API_RETRY_DELAY_MAX: process.env?.API_RETRY_DELAY_MAX || '10000',
+    API_RETRY_COUNT: process.env?.API_RETRY_COUNT || '4',
 }
 
 export const X_HOOVER_PDF_INFO = 'X-Hoover-PDF-Info'

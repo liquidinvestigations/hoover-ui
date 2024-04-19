@@ -41,8 +41,12 @@ export interface TabData {
     searchStore?: PdfSearchStore | TextSearchStore | MetaSearchStore
 }
 
+if (window && typeof process === 'undefined') {
+    // @ts-ignore
+    window.process = {}
+}
 const { HOOVER_UPLOADS_ENABLED } = {
-    HOOVER_UPLOADS_ENABLED: (typeof process !== 'undefined' && process.env.HOOVER_UPLOADS_ENABLED === 'false') || true,
+    HOOVER_UPLOADS_ENABLED: process.env?.HOOVER_UPLOADS_ENABLED === 'false' || true,
 }
 
 // Error: Arrow function has a complexity of 27. Maximum allowed is 10

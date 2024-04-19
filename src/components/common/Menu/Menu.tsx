@@ -19,10 +19,14 @@ interface Link {
     active?: boolean
 }
 
+if (window && typeof process === 'undefined') {
+    // @ts-ignore
+    window.process = {}
+}
 const { HOOVER_MAPS_ENABLED, HOOVER_UPLOADS_ENABLED, HOOVER_TRANSLATION_ENABLED } = {
-    HOOVER_MAPS_ENABLED: (typeof process !== 'undefined' && process.env.HOOVER_MAPS_ENABLED === 'false') || true,
-    HOOVER_UPLOADS_ENABLED: (typeof process !== 'undefined' && process.env.HOOVER_UPLOADS_ENABLED === 'false') || true,
-    HOOVER_TRANSLATION_ENABLED: (typeof process !== 'undefined' && process.env.HOOVER_TRANSLATION_ENABLED === 'false') || true,
+    HOOVER_MAPS_ENABLED: process.env?.HOOVER_MAPS_ENABLED === 'false' || true,
+    HOOVER_UPLOADS_ENABLED: process.env?.HOOVER_UPLOADS_ENABLED === 'false' || true,
+    HOOVER_TRANSLATION_ENABLED: process.env?.HOOVER_TRANSLATION_ENABLED === 'false' || true,
 }
 
 export const Menu = observer(() => {

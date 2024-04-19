@@ -5,11 +5,15 @@ import { buildUrl, fetchJson } from '../backend/api'
 import buildSearchQuery, { SearchFields } from '../backend/buildSearchQuery'
 import { AsyncTaskData, SearchQueryParams, SearchQueryType, SourceField } from '../Types'
 
+if (window && typeof process === 'undefined') {
+    // @ts-ignore
+    window.process = {}
+}
 const { ASYNC_SEARCH_POLL_SIZE, ASYNC_SEARCH_POLL_INTERVAL, ASYNC_SEARCH_ERROR_MULTIPLIER, ASYNC_SEARCH_ERROR_SUMMATION } = {
-    ASYNC_SEARCH_POLL_SIZE: (typeof process !== 'undefined' && process.env.ASYNC_SEARCH_POLL_SIZE) || '6',
-    ASYNC_SEARCH_POLL_INTERVAL: (typeof process !== 'undefined' && process.env.ASYNC_SEARCH_POLL_INTERVAL) || '45',
-    ASYNC_SEARCH_ERROR_MULTIPLIER: (typeof process !== 'undefined' && process.env.ASYNC_SEARCH_ERROR_MULTIPLIER) || '2',
-    ASYNC_SEARCH_ERROR_SUMMATION: (typeof process !== 'undefined' && process.env.ASYNC_SEARCH_ERROR_SUMMATION) || '60',
+    ASYNC_SEARCH_POLL_SIZE: process.env?.ASYNC_SEARCH_POLL_SIZE || '6',
+    ASYNC_SEARCH_POLL_INTERVAL: process.env?.ASYNC_SEARCH_POLL_INTERVAL || '45',
+    ASYNC_SEARCH_ERROR_MULTIPLIER: process.env?.ASYNC_SEARCH_ERROR_MULTIPLIER || '2',
+    ASYNC_SEARCH_ERROR_SUMMATION: process.env?.ASYNC_SEARCH_ERROR_SUMMATION || '60',
 }
 
 export class AsyncQueryTask extends EventTarget {
