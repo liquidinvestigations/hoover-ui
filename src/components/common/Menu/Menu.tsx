@@ -24,9 +24,9 @@ if (window && typeof process === 'undefined') {
     window.process = {}
 }
 const { enableMaps, enableUploads, enableTranslations } = {
-    enableMaps: process.env?.HOOVER_MAPS_ENABLED === 'false' || true,
-    enableUploads: process.env?.HOOVER_UPLOADS_ENABLED === 'false' || true,
-    enableTranslations: process.env?.HOOVER_TRANSLATION_ENABLED === 'false' || true,
+    enableMaps: process.env?.HOOVER_MAPS_ENABLED,
+    enableUploads: process.env?.HOOVER_UPLOADS_ENABLED,
+    enableTranslations: process.env?.HOOVER_TRANSLATION_ENABLED,
 }
 
 export const Menu = observer(() => {
@@ -59,7 +59,7 @@ export const Menu = observer(() => {
             },
         ]
 
-        if (enableUploads) {
+        if (enableUploads !== 'false') {
             links.push({
                 name: t('uploads', 'Uploads'),
                 url: '/uploads',
@@ -68,7 +68,7 @@ export const Menu = observer(() => {
             })
         }
 
-        if (enableMaps) {
+        if (enableMaps !== 'false') {
             links.push({
                 name: t('maps', 'Maps'),
                 url: '/maps',
@@ -77,7 +77,7 @@ export const Menu = observer(() => {
             })
         }
 
-        if (enableTranslations) {
+        if (enableTranslations !== 'false') {
             links.push({
                 name: t('translate', 'Translate'),
                 url: '/libre_translate',
