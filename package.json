@@ -113,7 +113,6 @@
     "css-loader": "^6.10.0",
     "css-minimizer-webpack-plugin": "^6.0.0",
     "dotenv": "^16.4.5",
-    "dotenv-webpack": "^8.1.0",
     "esbuild-loader": "^4.0.3",
     "eslint": "^8.33.0",
     "eslint-config-prettier": "^9.0.0",

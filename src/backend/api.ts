@@ -18,9 +18,13 @@ import {
 
 import { SearchFields } from './buildSearchQuery'
 
-const { API_URL } = process.env
-
 const prefix = '/api/v1/'
+
+const { API_RETRY_DELAY_MIN, API_RETRY_DELAY_MAX, API_RETRY_COUNT } = {
+    API_RETRY_DELAY_MIN: (typeof process !== 'undefined' && process.env.API_RETRY_DELAY_MIN) || '500',
+    API_RETRY_DELAY_MAX: (typeof process !== 'undefined' && process.env.API_RETRY_DELAY_MAX) || '10000',
+    API_RETRY_COUNT: (typeof process !== 'undefined' && process.env.API_RETRY_COUNT) || '4',
+}
 
 export const X_HOOVER_PDF_INFO = 'X-Hoover-PDF-Info'
 export const X_HOOVER_PDF_SPLIT_PAGE_RANGE = 'X-Hoover-PDF-Split-Page-Range'
@@ -47,7 +51,6 @@ export const buildUrl = (...paths: PathPart[]) => {
 }
 
 export const fetchWithHeaders = (url: string, opts: FetchOptions = {}): Promise<Response> => {
-    const fetchUrl = (typeof window === 'undefined' ? API_URL : '') + url
     const fetchInit = {
         ...opts,
         timeout: 100000,
@@ -58,16 +61,16 @@ export const fetchWithHeaders = (url: string, opts: FetchOptions = {}): Promise<
         },
     }
 
-    const min = process.env.API_RETRY_DELAY_MIN as unknown as number
-    const max = process.env.API_RETRY_DELAY_MAX as unknown as number
-    const maxRetryCount = opts.maxRetryCount ?? (process.env.API_RETRY_COUNT as unknown as number)
+    const min = parseInt(API_RETRY_DELAY_MIN)
+    const max = parseInt(API_RETRY_DELAY_MAX)
+    const maxRetryCount = opts.maxRetryCount ?? parseInt(API_RETRY_COUNT)
 
     let retryCounter = 0
     const retryDelay = () => min + (retryCounter / (maxRetryCount - 1)) * (max - min)
 
     return new Promise((resolve, reject) => {
         const fetchFn = () =>
-            fetch(fetchUrl, fetchInit)
+            fetch(url, fetchInit)
                 .then((res) => {
                     if (res.ok) {
                         resolve(res)

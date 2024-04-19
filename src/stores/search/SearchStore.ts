@@ -1,6 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx'
 import qs from 'qs'
 
+import { router } from '../../index'
 import { AggregationsKey, SearchQueryParams, SourceField } from '../../Types'
 import fixLegacyQuery from '../../utils/fixLegacyQuery'
 import { buildSearchQuerystring, defaultSearchParams, unwindParams } from '../../utils/queryUtils'
@@ -19,6 +20,7 @@ export enum SearchType {
 }
 
 interface SearchOptions {
+    navigate?: boolean
     searchType?: number
     fieldList?: SourceField[] | '*'
     keepFromClearing?: AggregationsKey
@@ -110,7 +112,9 @@ export class SearchStore {
 
         this.query = query as SearchQueryParams
 
-        return '?' + queryString + window.location.hash
+        if (options.navigate !== false) {
+            void router.navigate('?' + queryString + window.location.hash)
+        }
     }
 
     onFieldInclusionChange = (field: string) => () => {

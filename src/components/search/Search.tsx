@@ -2,7 +2,7 @@ import { Button, FormControl, Grid, IconButton, InputAdornment, Snackbar, TextFi
 import { T, useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import { cloneElement, FC, FormEvent, KeyboardEvent, useEffect, useRef } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 import { tooltips } from '../../constants/help'
 import { reactIcons } from '../../constants/icons'
@@ -52,7 +52,6 @@ export const Search: FC = observer(() => {
     } = useSharedStore()
 
     const location = useLocation()
-    const navigate = useNavigate()
 
     const clearInput = () => {
         clearSearchText()
@@ -73,15 +72,18 @@ export const Search: FC = observer(() => {
     }, [inputRef, setInputRef])
 
     useEffect(() => {
-        const pathQuery = parseSearchParams(location.search.slice(1))
-        if (fields !== undefined && user !== undefined && JSON.stringify(pathQuery) !== JSON.stringify(query)) {
-            search(pathQuery)
+        const pathQuery = location.search.slice(1)
+        if (pathQuery !== '') {
+            const parsedQuery = parseSearchParams(pathQuery)
+            if (fields !== undefined && user !== undefined && query === undefined) {
+                search(parsedQuery, { navigate: false })
+            }
         }
     }, [fields, user, query, search])
 
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault()
-        navigate(search())
+        search()
     }
 
     const handleInputKey = (event: KeyboardEvent) => {

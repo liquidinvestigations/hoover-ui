@@ -1,8 +1,13 @@
+const dotenv = require('dotenv')
 const path = require('path')
 const { merge } = require('webpack-merge')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const common = require('./webpack.common.js')
+
+dotenv.config({
+    override: true,
+})
 
 module.exports = () =>
     merge(common, {

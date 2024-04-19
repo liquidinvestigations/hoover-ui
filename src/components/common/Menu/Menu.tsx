@@ -19,6 +19,12 @@ interface Link {
     active?: boolean
 }
 
+const { HOOVER_MAPS_ENABLED, HOOVER_UPLOADS_ENABLED, HOOVER_TRANSLATION_ENABLED } = {
+    HOOVER_MAPS_ENABLED: (typeof process !== 'undefined' && process.env.HOOVER_MAPS_ENABLED === 'false') || true,
+    HOOVER_UPLOADS_ENABLED: (typeof process !== 'undefined' && process.env.HOOVER_UPLOADS_ENABLED === 'false') || true,
+    HOOVER_TRANSLATION_ENABLED: (typeof process !== 'undefined' && process.env.HOOVER_TRANSLATION_ENABLED === 'false') || true,
+}
+
 export const Menu = observer(() => {
     const { t } = useTranslate()
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
@@ -49,7 +55,7 @@ export const Menu = observer(() => {
             },
         ]
 
-        if (process.env.HOOVER_UPLOADS_ENABLED) {
+        if (HOOVER_UPLOADS_ENABLED) {
             links.push({
                 name: t('uploads', 'Uploads'),
                 url: '/uploads',
@@ -58,7 +64,7 @@ export const Menu = observer(() => {
             })
         }
 
-        if (process.env.HOOVER_MAPS_ENABLED) {
+        if (HOOVER_MAPS_ENABLED) {
             links.push({
                 name: t('maps', 'Maps'),
                 url: '/maps',
@@ -67,7 +73,7 @@ export const Menu = observer(() => {
             })
         }
 
-        if (process.env.HOOVER_TRANSLATION_ENABLED) {
+        if (HOOVER_TRANSLATION_ENABLED) {
             links.push({
                 name: t('translate', 'Translate'),
                 url: '/libre_translate',

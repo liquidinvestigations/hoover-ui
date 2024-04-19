@@ -41,6 +41,10 @@ export interface TabData {
     searchStore?: PdfSearchStore | TextSearchStore | MetaSearchStore
 }
 
+const { HOOVER_UPLOADS_ENABLED } = {
+    HOOVER_UPLOADS_ENABLED: (typeof process !== 'undefined' && process.env.HOOVER_UPLOADS_ENABLED === 'false') || true,
+}
+
 // Error: Arrow function has a complexity of 27. Maximum allowed is 10
 // Reduce complexity of Document component
 // eslint-disable-next-line complexity
@@ -359,9 +363,7 @@ export const Document = observer(() => {
                             }
                         />
                     ))}
-                {data.content.filetype === 'folder' &&
-                    !data.content.path.includes('//') &&
-                    process.env.HOOVER_UPLOADS_ENABLED && [...emptyTabs, uploadButton()]}
+                {data.content.filetype === 'folder' && !data.content.path.includes('//') && HOOVER_UPLOADS_ENABLED && [...emptyTabs, uploadButton()]}
             </Tabs>
 
             {tabsData

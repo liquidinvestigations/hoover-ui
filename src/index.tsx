@@ -62,7 +62,7 @@ mount.className = 'main'
 document.body.append(mount)
 const root = createRoot(mount)
 
-const router = createBrowserRouter([
+export const router = createBrowserRouter([
     {
         path: '/',
         element: <Layout />,
