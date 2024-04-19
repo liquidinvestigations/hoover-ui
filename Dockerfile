@@ -35,15 +35,15 @@ ARG HOOVER_MAPS_ENABLED
 ARG HOOVER_TRANSLATION_ENABLED
 ARG HOOVER_UPLOADS_ENABLED
 
-RUN sed -i "s/{{API_RETRY_DELAY_MIN}}/${API_RETRY_DELAY_MIN}/g" /opt/hoover/ui/out/*.js
-RUN sed -i "s/{{API_RETRY_DELAY_MAX}}/${API_RETRY_DELAY_MAX}/g" /opt/hoover/ui/out/*.js
-RUN sed -i "s/{{API_RETRY_COUNT}}/${API_RETRY_COUNT}/g" /opt/hoover/ui/out/*.js
+RUN sed -i "s/{{API_RETRY_DELAY_MIN}}/${API_RETRY_DELAY_MIN}/g" ./out/*.js
+RUN sed -i "s/{{API_RETRY_DELAY_MAX}}/${API_RETRY_DELAY_MAX}/g" ./out/*.js
+RUN sed -i "s/{{API_RETRY_COUNT}}/${API_RETRY_COUNT}/g" ./out/*.js
 
-RUN sed -i "s/{{ASYNC_SEARCH_POLL_SIZE}}/${ASYNC_SEARCH_POLL_SIZE}/g" /opt/hoover/ui/out/*.js
-RUN sed -i "s/{{ASYNC_SEARCH_POLL_INTERVAL}}/${ASYNC_SEARCH_POLL_INTERVAL}/g" /opt/hoover/ui/out/*.js
-RUN sed -i "s/{{ASYNC_SEARCH_ERROR_MULTIPLIER}}/${ASYNC_SEARCH_ERROR_MULTIPLIER}/g" /opt/hoover/ui/out/*.js
-RUN sed -i "s/{{ASYNC_SEARCH_ERROR_SUMMATION}}/${ASYNC_SEARCH_ERROR_SUMMATION}/g" /opt/hoover/ui/out/*.js
+RUN sed -i "s/{{ASYNC_SEARCH_POLL_SIZE}}/${ASYNC_SEARCH_POLL_SIZE}/g" ./out/*.js
+RUN sed -i "s/{{ASYNC_SEARCH_POLL_INTERVAL}}/${ASYNC_SEARCH_POLL_INTERVAL}/g" ./out/*.js
+RUN sed -i "s/{{ASYNC_SEARCH_ERROR_MULTIPLIER}}/${ASYNC_SEARCH_ERROR_MULTIPLIER}/g" ./out/*.js
+RUN sed -i "s/{{ASYNC_SEARCH_ERROR_SUMMATION}}/${ASYNC_SEARCH_ERROR_SUMMATION}/g" ./out/*.js
 
-RUN sed -i "s/{{HOOVER_MAPS_ENABLED}}/${HOOVER_MAPS_ENABLED}/g" /opt/hoover/ui/out/*.js
-RUN sed -i "s/{{HOOVER_TRANSLATION_ENABLED}}/${HOOVER_TRANSLATION_ENABLED}/g" /opt/hoover/ui/out/*.js
-RUN sed -i "s/{{HOOVER_UPLOADS_ENABLED}}/${HOOVER_UPLOADS_ENABLED}/g" /opt/hoover/ui/out/*.js
+RUN sed -i "s/{{HOOVER_MAPS_ENABLED}}/${HOOVER_MAPS_ENABLED}/g" ./out/*.js
+RUN sed -i "s/{{HOOVER_TRANSLATION_ENABLED}}/${HOOVER_TRANSLATION_ENABLED}/g" ./out/*.js
+RUN sed -i "s/{{HOOVER_UPLOADS_ENABLED}}/${HOOVER_UPLOADS_ENABLED}/g" ./out/*.js
