@@ -1,7 +1,6 @@
 /.git
 /build
 /.idea
-/.next
 /node_modules
 /.node-version
 /.npmrc

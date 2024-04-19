@@ -2,15 +2,13 @@ import { Table, TableBody } from '@mui/material'
 import { fireEvent, screen } from '@testing-library/react'
 
 import { renderWithProviders } from '../../../../../../__test__/jest.utils'
-import { ResultColumn } from '../../../../../constants/availableColumns'
 import { SharedStore } from '../../../../../stores/SharedStore'
 import { Hit } from '../../../../../Types'
 
 import { ResultsTableRow } from './ResultsTableRow'
 import { MAX_FILE_NAMES } from './ResultsTableRow.const'
-import { mockHits, resultsColumnMocks } from './ResultsTableRow.mock'
+import { mockHits, mockResultsColumns } from './ResultsTableRow.mock'
 
-let mockResultsColumns: [string, ResultColumn][]
 const mockSetHashState: jest.Mock = jest.fn()
 jest.mock('../../../../SharedStoreProvider', () => {
     const actual = jest.requireActual('../../../../SharedStoreProvider')
@@ -31,18 +29,16 @@ jest.mock('../../../../SharedStoreProvider', () => {
     }
 })
 
-const renderWithTable = (children: React.ReactNode) => {
+const renderWithTable = (children: React.ReactNode) =>
     renderWithProviders(
         <Table>
             <TableBody>{children}</TableBody>
         </Table>,
     )
-}
 
 xdescribe('ResultsTableRow', () => {
     it('should display table rows correctly', async () => {
-        mockHits.forEach(async (hit, index) => {
-            mockResultsColumns = resultsColumnMocks[index] as [string, ResultColumn][]
+        mockHits.every(async (hit, index) => {
             renderWithTable(<ResultsTableRow hit={hit as unknown as Hit} index={index} />)
 
             expect(await screen.findByTestId('results-table-row')).toBeInTheDocument()

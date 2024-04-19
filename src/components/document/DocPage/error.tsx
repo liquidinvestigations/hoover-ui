@@ -1,10 +1,10 @@
 import { T } from '@tolgee/react'
 
-import Error from '../../../../pages/_error'
 import { RequestError } from '../../../Types'
+import ErrorPage from '../../ErrorPage'
 
 export const DocPageError = ({ error }: { error: RequestError }) => (
-    <Error
+    <ErrorPage
         statusCode={error.status}
         title={error.statusText}
         message={

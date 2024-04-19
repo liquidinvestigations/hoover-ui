@@ -1,8 +1,8 @@
 import { CircularProgress, Typography } from '@mui/material'
 import { useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
-import Head from 'next/head'
 import { FC, ReactElement, useEffect } from 'react'
+import { Helmet } from 'react-helmet'
 import { useParams } from 'react-router-dom'
 import SplitPane from 'react-split-pane'
 
@@ -86,9 +86,9 @@ export const DocPage: FC = observer(() => {
 
     return (
         <>
-            <Head>
+            <Helmet>
                 <title>{`Hoover ${data && `- ${fileName}`}`}</title>
-            </Head>
+            </Helmet>
             <HotKeysWithHelp keys={keys}>
                 <div tabIndex={-1}>{content}</div>
             </HotKeysWithHelp>

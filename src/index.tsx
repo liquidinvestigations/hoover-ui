@@ -8,6 +8,7 @@ import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
 import { DocPage } from './components/document/DocPage/DocPage'
+import ErrorPage from './components/ErrorPage'
 import { Insights } from './components/insights/Insights'
 import { Layout } from './components/Layout'
 import { Maps } from './components/maps/Maps'
@@ -65,7 +66,7 @@ const router = createBrowserRouter([
     {
         path: '/',
         element: <Layout />,
-        //errorElement: <ErrorBoundary />,
+        errorElement: <ErrorPage />,
         children: [
             {
                 index: true,

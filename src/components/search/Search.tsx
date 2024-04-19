@@ -29,9 +29,8 @@ export const Search: FC = observer(() => {
         excludedFields,
         searchStore: {
             query,
-            queuedQuery,
-            clearQueued,
             search,
+            parseSearchParams,
             searchViewStore: {
                 setInputRef,
                 setDrawerRef,
@@ -74,11 +73,11 @@ export const Search: FC = observer(() => {
     }, [inputRef, setInputRef])
 
     useEffect(() => {
-        if (fields !== undefined && user !== undefined && queuedQuery !== undefined && JSON.stringify(queuedQuery) !== JSON.stringify(query)) {
-            search(queuedQuery, { queued: true })
-            clearQueued()
+        const pathQuery = parseSearchParams(location.search.slice(1))
+        if (fields !== undefined && user !== undefined && JSON.stringify(pathQuery) !== JSON.stringify(query)) {
+            search(pathQuery)
         }
-    }, [fields, user, query, queuedQuery, search, clearQueued])
+    }, [fields, user, query, search])
 
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault()

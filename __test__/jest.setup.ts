@@ -17,4 +17,3 @@ jest.mock('@tolgee/react', () => ({
     ...jest.requireActual('@tolgee/react'),
     useTranslate: () => ({ t: (_key: TranslationKey, defaultValue?: string | undefined) => defaultValue }),
 }))
-

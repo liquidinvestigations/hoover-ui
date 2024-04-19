@@ -19,7 +19,6 @@ export enum SearchType {
 }
 
 interface SearchOptions {
-    queued?: boolean
     searchType?: number
     fieldList?: SourceField[] | '*'
     keepFromClearing?: AggregationsKey
@@ -37,8 +36,6 @@ export class SearchStore {
     searchMissingStore: SearchMissingStore
 
     searchResultsStore: SearchResultsStore
-
-    queuedQuery: Partial<SearchQueryParams> | undefined
 
     constructor(private readonly sharedStore: SharedStore) {
         this.searchViewStore = new SearchViewStore(sharedStore, this)
@@ -87,16 +84,6 @@ export class SearchStore {
         }
     }
 
-    queueSearch = (query: string): void => {
-        this.queuedQuery = this.parseSearchParams(query)
-    }
-
-    clearQueued = (): void => {
-        runInAction(() => {
-            this.queuedQuery = undefined
-        })
-    }
-
     parseSearchParams = (search: string): Partial<SearchQueryParams> => {
         const parsedQuery = fixLegacyQuery(unwindParams(qs.parse(search, { arrayLimit: 100 })))
 
@@ -120,11 +107,6 @@ export class SearchStore {
         if (query?.collections?.length) {
             this.searchViewStore.searchCollections = query.collections
         }
-
-        /*if (!options.queued) {
-            const path = '?' + queryString + window.location.hash
-            void Router.router?.changeState('pushState', path, path, { shallow: true })
-        }*/
 
         this.query = query as SearchQueryParams
 
