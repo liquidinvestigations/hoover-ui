@@ -203,6 +203,7 @@ export const Document = observer(() => {
             name: t('location', 'Location'),
             icon: reactIcons.location,
             visible: !fullPage,
+            padding: 0,
             content: (
                 <>
                     <Finder />

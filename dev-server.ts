@@ -70,12 +70,6 @@ export const startDevServer = (): void => {
         app.use(morgan('combined'))
     }
 
-    app.get(`/`, (_req, res) => {
-        const htmlFile = fs.readFileSync(path.join(__dirname, `./dist/index.html`))
-        res.set('Content-Type', 'text/html')
-        res.send(htmlFile.toString())
-    })
-
     httpProxyEndpoints.forEach(setupProxyMiddleware({ app, devModeOrigin, verbose }))
 
     // Squash built-in memory leak warning. Proxy middleware does bind to the same events, it's not a bug or a memory leak.
@@ -89,6 +83,12 @@ export const startDevServer = (): void => {
     app.use(webpackMiddleware)
 
     app.use(webpackHmrMiddleware(compiler))
+
+    app.get(`/*`, (_req, res) => {
+        const htmlFile = fs.readFileSync(path.join(__dirname, `./dist/index.html`))
+        res.set('Content-Type', 'text/html')
+        res.send(htmlFile.toString())
+    })
 
     http.createServer({}, app).listen(port, () => {
         const greenOutputColor = '\x1b[32m%s\x1b[0m'

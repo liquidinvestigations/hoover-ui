@@ -68,4 +68,10 @@ export class SharedStore {
             this.fields = fields.fields
         })
     }
+
+    setFullPage = (fullPage: boolean) => {
+        runInAction(() => {
+            this.fullPage = fullPage
+        })
+    }
 }

@@ -7,12 +7,14 @@ import { deDE, esES, enUS, frFR, plPL, ptBR, zhCN } from '@mui/x-date-pickers/lo
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 
+import { DocPage } from './components/document/DocPage/DocPage'
 import { Insights } from './components/insights/Insights'
 import { Layout } from './components/Layout'
 import { Maps } from './components/maps/Maps'
 import { BatchSearch } from './components/search/batchSearch/BatchSearch/BatchSearch'
 import { Search } from './components/search/Search'
 import { SharedStoreProvider } from './components/SharedStoreProvider'
+import { DirectoryUploads } from './components/uploads/DirectoryUploads/DirectoryUploads'
 import { Uploads } from './components/uploads/Uploads'
 import customTheme from './theme'
 import { TolgeeNextProvider } from './tolgeeNext'
@@ -63,10 +65,15 @@ const router = createBrowserRouter([
     {
         path: '/',
         element: <Layout />,
+        //errorElement: <ErrorBoundary />,
         children: [
             {
                 index: true,
                 element: <Search />,
+            },
+            {
+                path: '/doc/:collection/:id',
+                element: <DocPage />,
             },
             {
                 path: '/batch-search',
@@ -83,6 +90,10 @@ const router = createBrowserRouter([
             {
                 path: '/uploads',
                 element: <Uploads />,
+            },
+            {
+                path: '/upload/:collection/:id',
+                element: <DirectoryUploads />,
             },
         ],
     },

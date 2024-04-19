@@ -1,10 +1,16 @@
-require('dotenv').config()
+const dotenv = require('dotenv')
 const path = require('path')
-
 const webpack = require('webpack')
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const Dotenv = require('dotenv-webpack')
+
+dotenv.config({
+    path: '.env.defaults',
+})
+dotenv.config({
+    override: true,
+})
 
 module.exports = {
     mode: 'development',
@@ -36,7 +42,9 @@ module.exports = {
         ],
     },
     plugins: [
-        new Dotenv(),
+        new Dotenv({
+            defaults: true,
+        }),
         new LodashModuleReplacementPlugin(),
         new CopyWebpackPlugin({
             patterns: [
