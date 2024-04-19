@@ -29,7 +29,7 @@ module.exports = () =>
             ],
         },
         plugins: [
-            new webpack.EnvironmentPlugin({
+            /*new webpack.EnvironmentPlugin({
                 API_RETRY_DELAY_MIN: '{{API_RETRY_DELAY_MIN}}',
                 API_RETRY_DELAY_MAX: '{{API_RETRY_DELAY_MAX}}',
                 API_RETRY_COUNT: '{{API_RETRY_COUNT}}',
@@ -42,7 +42,7 @@ module.exports = () =>
                 HOOVER_MAPS_ENABLED: '{{HOOVER_MAPS_ENABLED}}',
                 HOOVER_UPLOADS_ENABLED: '{{HOOVER_UPLOADS_ENABLED}}',
                 HOOVER_TRANSLATION_ENABLED: '{{HOOVER_TRANSLATION_ENABLED}}',
-            }),
+            }),*/
             new HtmlWebpackPlugin({
                 template: `src/index.ejs`,
             }),
