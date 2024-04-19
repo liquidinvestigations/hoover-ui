@@ -24,10 +24,10 @@ if (window && typeof process === 'undefined') {
     // @ts-ignore
     window.process = {}
 }
-const { API_RETRY_DELAY_MIN, API_RETRY_DELAY_MAX, API_RETRY_COUNT } = {
-    API_RETRY_DELAY_MIN: process.env?.API_RETRY_DELAY_MIN || '500',
-    API_RETRY_DELAY_MAX: process.env?.API_RETRY_DELAY_MAX || '10000',
-    API_RETRY_COUNT: process.env?.API_RETRY_COUNT || '4',
+const { retryDelayMin, retryDelayMax, retryCount } = {
+    retryDelayMin: process.env?.API_RETRY_DELAY_MIN || '500',
+    retryDelayMax: process.env?.API_RETRY_DELAY_MAX || '10000',
+    retryCount: process.env?.API_RETRY_COUNT || '4',
 }
 
 export const X_HOOVER_PDF_INFO = 'X-Hoover-PDF-Info'
@@ -65,9 +65,9 @@ export const fetchWithHeaders = (url: string, opts: FetchOptions = {}): Promise<
         },
     }
 
-    const min = parseInt(API_RETRY_DELAY_MIN)
-    const max = parseInt(API_RETRY_DELAY_MAX)
-    const maxRetryCount = opts.maxRetryCount ?? parseInt(API_RETRY_COUNT)
+    const min = parseInt(retryDelayMin)
+    const max = parseInt(retryDelayMax)
+    const maxRetryCount = opts.maxRetryCount ?? parseInt(retryCount)
 
     let retryCounter = 0
     const retryDelay = () => min + (retryCounter / (maxRetryCount - 1)) * (max - min)

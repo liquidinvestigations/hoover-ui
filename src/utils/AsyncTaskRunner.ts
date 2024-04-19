@@ -9,11 +9,11 @@ if (window && typeof process === 'undefined') {
     // @ts-ignore
     window.process = {}
 }
-const { ASYNC_SEARCH_POLL_SIZE, ASYNC_SEARCH_POLL_INTERVAL, ASYNC_SEARCH_ERROR_MULTIPLIER, ASYNC_SEARCH_ERROR_SUMMATION } = {
-    ASYNC_SEARCH_POLL_SIZE: process.env?.ASYNC_SEARCH_POLL_SIZE || '6',
-    ASYNC_SEARCH_POLL_INTERVAL: process.env?.ASYNC_SEARCH_POLL_INTERVAL || '45',
-    ASYNC_SEARCH_ERROR_MULTIPLIER: process.env?.ASYNC_SEARCH_ERROR_MULTIPLIER || '2',
-    ASYNC_SEARCH_ERROR_SUMMATION: process.env?.ASYNC_SEARCH_ERROR_SUMMATION || '60',
+const { pollSize, pollInterval, errorMultiplier, errorSummation } = {
+    pollSize: process.env?.ASYNC_SEARCH_POLL_SIZE || '6',
+    pollInterval: process.env?.ASYNC_SEARCH_POLL_INTERVAL || '45',
+    errorMultiplier: process.env?.ASYNC_SEARCH_ERROR_MULTIPLIER || '2',
+    errorSummation: process.env?.ASYNC_SEARCH_ERROR_SUMMATION || '60',
 }
 
 export class AsyncQueryTask extends EventTarget {
@@ -81,7 +81,7 @@ export class AsyncQueryTask extends EventTarget {
     async handleQueryResult() {
         if (!this.data || !this.initialEta) return
 
-        const wait = (this.data.eta.total_sec as number) < parseInt(ASYNC_SEARCH_POLL_INTERVAL)
+        const wait = (this.data.eta.total_sec as number) < parseInt(pollInterval)
 
         this.controller = new AbortController()
         const signal = this.controller.signal as AbortSignal
@@ -94,7 +94,7 @@ export class AsyncQueryTask extends EventTarget {
             AsyncQueryTaskRunner.runTaskQueue()
         } else {
             if (Date.now() - Date.parse(this.data.date_created) < this.timeoutMs) {
-                this.timeout = setTimeout(this.handleQueryResult, parseInt(ASYNC_SEARCH_POLL_INTERVAL) * 1000)
+                this.timeout = setTimeout(this.handleQueryResult, parseInt(pollInterval) * 1000)
             } else {
                 this.dispatchEvent(new events.ErrorEvent('error', { message: 'Results task ETA timeout' }))
             }
@@ -102,7 +102,7 @@ export class AsyncQueryTask extends EventTarget {
     }
 
     get timeoutMs() {
-        return (this.initialEta || 0) * parseInt(ASYNC_SEARCH_ERROR_MULTIPLIER) + parseInt(ASYNC_SEARCH_ERROR_SUMMATION) * 1000
+        return (this.initialEta || 0) * parseInt(errorMultiplier) + parseInt(errorSummation) * 1000
     }
 }
 
@@ -134,7 +134,7 @@ export class AsyncQueryTaskRunner {
         }
 
         for (const task of this.taskQueue) {
-            if (this.taskQueue.filter((task) => task.isRunning).length < parseInt(ASYNC_SEARCH_POLL_SIZE)) {
+            if (this.taskQueue.filter((task) => task.isRunning).length < parseInt(pollSize)) {
                 task.run().catch((error) => {
                     this.clearTask(task)
                     task.dispatchEvent(new events.ErrorEvent('error', { error }))

@@ -23,10 +23,10 @@ if (window && typeof process === 'undefined') {
     // @ts-ignore
     window.process = {}
 }
-const { HOOVER_MAPS_ENABLED, HOOVER_UPLOADS_ENABLED, HOOVER_TRANSLATION_ENABLED } = {
-    HOOVER_MAPS_ENABLED: process.env?.HOOVER_MAPS_ENABLED === 'false' || true,
-    HOOVER_UPLOADS_ENABLED: process.env?.HOOVER_UPLOADS_ENABLED === 'false' || true,
-    HOOVER_TRANSLATION_ENABLED: process.env?.HOOVER_TRANSLATION_ENABLED === 'false' || true,
+const { enableMaps, enableUploads, enableTranslations } = {
+    enableMaps: process.env?.HOOVER_MAPS_ENABLED === 'false' || true,
+    enableUploads: process.env?.HOOVER_UPLOADS_ENABLED === 'false' || true,
+    enableTranslations: process.env?.HOOVER_TRANSLATION_ENABLED === 'false' || true,
 }
 
 export const Menu = observer(() => {
@@ -59,7 +59,7 @@ export const Menu = observer(() => {
             },
         ]
 
-        if (HOOVER_UPLOADS_ENABLED) {
+        if (enableUploads) {
             links.push({
                 name: t('uploads', 'Uploads'),
                 url: '/uploads',
@@ -68,7 +68,7 @@ export const Menu = observer(() => {
             })
         }
 
-        if (HOOVER_MAPS_ENABLED) {
+        if (enableMaps) {
             links.push({
                 name: t('maps', 'Maps'),
                 url: '/maps',
@@ -77,7 +77,7 @@ export const Menu = observer(() => {
             })
         }
 
-        if (HOOVER_TRANSLATION_ENABLED) {
+        if (enableTranslations) {
             links.push({
                 name: t('translate', 'Translate'),
                 url: '/libre_translate',

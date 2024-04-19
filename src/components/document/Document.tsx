@@ -45,8 +45,8 @@ if (window && typeof process === 'undefined') {
     // @ts-ignore
     window.process = {}
 }
-const { HOOVER_UPLOADS_ENABLED } = {
-    HOOVER_UPLOADS_ENABLED: process.env?.HOOVER_UPLOADS_ENABLED === 'false' || true,
+const { enableUploads } = {
+    enableUploads: process.env?.HOOVER_UPLOADS_ENABLED === 'false' || true,
 }
 
 // Error: Arrow function has a complexity of 27. Maximum allowed is 10
@@ -367,7 +367,7 @@ export const Document = observer(() => {
                             }
                         />
                     ))}
-                {data.content.filetype === 'folder' && !data.content.path.includes('//') && HOOVER_UPLOADS_ENABLED && [...emptyTabs, uploadButton()]}
+                {data.content.filetype === 'folder' && !data.content.path.includes('//') && enableUploads && [...emptyTabs, uploadButton()]}
             </Tabs>
 
             {tabsData
