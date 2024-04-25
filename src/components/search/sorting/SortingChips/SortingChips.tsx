@@ -13,11 +13,11 @@ import { useStyles } from './SortingChips.styles'
 export const SortingChips: FC = observer(() => {
     const { t } = useTranslate()
     const { classes, cx } = useStyles()
-    const { query, search } = useSharedStore().searchStore
+    const { query, navigateSearch } = useSharedStore().searchStore
 
     const order = query?.order || []
     const changeOrder = (newOrder: string[][]) => {
-        search({ order: newOrder, page: defaultSearchParams.page })
+        navigateSearch({ order: newOrder, page: defaultSearchParams.page })
     }
 
     const handleClick = (field: string) => () => {

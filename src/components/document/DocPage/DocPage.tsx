@@ -21,7 +21,7 @@ export const DocPage: FC = observer(() => {
     const { collection, id } = useParams()
     const {
         setFullPage,
-        documentStore: { data, loading, error, digest, digestUrl, urlIsSha, setDocument },
+        documentStore: { data, loading, error, digest, urlIsSha, setDocument },
     } = useSharedStore()
 
     useEffect(() => {

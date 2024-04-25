@@ -19,13 +19,13 @@ export const ResultsTable: FC<ResultsTableProps> = observer(({ hits }) => {
     const { classes, cx } = useStyles()
     const {
         query,
-        search,
+        navigateSearch,
         searchViewStore: { resultsColumns, setResultsColumns },
     } = useSharedStore().searchStore
 
     const order = query?.order
     const changeOrder = (newOrder: string[][]) => {
-        search({ order: newOrder, page: defaultSearchParams.page })
+        navigateSearch({ order: newOrder, page: defaultSearchParams.page })
     }
 
     const handleClick = (field: string) => () => {

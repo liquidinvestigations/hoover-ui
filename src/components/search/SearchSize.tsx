@@ -21,14 +21,14 @@ interface SearchSizeProps {
 
 export const SearchSize: FC<SearchSizeProps> = ({ page, size }) => {
     const { classes } = useStyles()
-    const { search } = useSharedStore().searchStore
+    const { navigateSearch } = useSharedStore().searchStore
 
     const handleSizeChange = (event: SelectChangeEvent) => {
         const newSize = parseInt(event.target.value)
         if (newSize > size) {
-            search({ size: newSize, page: Math.ceil((page * size) / newSize) }, { searchType: SearchType.Results })
+            navigateSearch({ size: newSize, page: Math.ceil((page * size) / newSize) }, { searchType: SearchType.Results })
         } else {
-            search({ size: newSize, page: Math.floor(((page - 1) * size) / newSize) + 1 }, { searchType: SearchType.Results })
+            navigateSearch({ size: newSize, page: Math.floor(((page - 1) * size) / newSize) + 1 }, { searchType: SearchType.Results })
         }
     }
 

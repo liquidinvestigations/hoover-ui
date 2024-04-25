@@ -4,7 +4,7 @@ import { Box, List, ListItem, ListItemIcon, Typography } from '@mui/material'
 import { T } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import { memo } from 'react'
-import Link from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import { reactIcons } from '../../../constants/icons'
 import { Loading } from '../../common/Loading/Loading'

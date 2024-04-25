@@ -15,7 +15,7 @@ export const MoreButton: FC<{ field: SourceField }> = observer(({ field }) => {
     const {
         searchStore: {
             query,
-            search,
+            navigateSearch,
             searchAggregationsStore: { aggregations, aggregationsLoading },
         },
     } = useSharedStore()
@@ -24,7 +24,7 @@ export const MoreButton: FC<{ field: SourceField }> = observer(({ field }) => {
 
     const handleLoadMore = () => {
         const facets = query?.facets || {}
-        search(
+        navigateSearch(
             { facets: { ...facets, [field]: page + 1 }, page: defaultSearchParams.page },
             { searchType: SearchType.Aggregations, keepFromClearing: field, fieldList: [field] },
         )

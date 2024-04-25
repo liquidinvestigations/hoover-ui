@@ -28,6 +28,8 @@ interface SearchOptions {
 export class SearchStore {
     query: SearchQueryParams | undefined
 
+    options: SearchOptions | undefined
+
     filtersStore: FiltersStore
 
     searchViewStore: SearchViewStore
@@ -75,9 +77,11 @@ export class SearchStore {
         this.query = parsedQuery
     }
 
-    navigateSearch = (params: Partial<SearchQueryParams> = {}) => {
+    navigateSearch = (params: Partial<SearchQueryParams> = {}, options?: SearchOptions) => {
         const mergedParams = this.getMergedParams(params)
         const queryString = buildSearchQuerystring(mergedParams)
+
+        this.options = options
 
         void router.navigate('?' + queryString + window.location.hash)
     }
@@ -85,7 +89,7 @@ export class SearchStore {
     performSearch = (options?: SearchOptions) => {
         const { searchType, keepFromClearing, fieldList } = {
             ...{ searchType: SearchType.Aggregations | SearchType.Results },
-            ...options,
+            ...(options || this.options || {}),
         }
 
         if (searchType & SearchType.Results) {
