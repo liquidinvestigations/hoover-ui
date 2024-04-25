@@ -156,7 +156,7 @@ export class SearchViewStore {
             this.setSearchCollections(this.sharedStore.collectionsData.map((c) => c.name).filter((name) => selection.has(name)))
         }
 
-        this.searchStore.search()
+        this.searchStore.navigateSearch()
     }
 
     handleDeduplicateResults = () => {
@@ -178,7 +178,7 @@ export class SearchViewStore {
         } else if (this.sharedStore.collectionsData) {
             this.setSearchCollections(this.sharedStore.collectionsData.map((c) => c.name))
         }
-        this.searchStore.search()
+        this.searchStore.navigateSearch()
     }
 
     setSearchFieldsOpen = (searchFieldsOpen: boolean) => {

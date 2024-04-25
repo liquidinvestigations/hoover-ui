@@ -59,7 +59,6 @@
     "maplibre-gl": "2.1.7",
     "missing-dom-events": "^1.0.0",
     "mobx": "6.7.0",
-    "mobx-observable-history": "2.0.3",
     "mobx-react-lite": "3.4.0",
     "mui-nested-menu": "3.1.0",
     "node-fetch": "2.7.0",

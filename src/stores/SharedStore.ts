@@ -1,5 +1,4 @@
 import { makeAutoObservable, runInAction } from 'mobx'
-import { createObservableHistory, ObservableHistory } from 'mobx-observable-history'
 
 import { collections as collectionsAPI, limits as limitsAPI, searchFields, whoami } from '../backend/api'
 import { SearchFields } from '../backend/buildSearchQuery'
@@ -27,8 +26,6 @@ export class SharedStore {
 
     fullPage = false
 
-    navigation: ObservableHistory | undefined
-
     hashStore
 
     searchStore
@@ -42,7 +39,6 @@ export class SharedStore {
     mapsStore
 
     constructor() {
-        this.navigation = createObservableHistory()
         void this.loadData()
 
         this.hashStore = new HashStateStore(this)

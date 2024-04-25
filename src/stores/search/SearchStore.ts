@@ -20,7 +20,6 @@ export enum SearchType {
 }
 
 interface SearchOptions {
-    navigate?: boolean
     searchType?: number
     fieldList?: SourceField[] | '*'
     keepFromClearing?: AggregationsKey
@@ -59,7 +58,31 @@ export class SearchStore {
         }
     }
 
-    private updateStoresBasedOnSearchType(query: Partial<SearchQueryParams>, options: SearchOptions) {
+    parseSearchParams = (search: string) => {
+        const parsedQuery = fixLegacyQuery(unwindParams(qs.parse(search, { arrayLimit: 100 }))) as SearchQueryParams
+
+        parsedQuery.page = parseInt(parsedQuery.page as unknown as string)
+        parsedQuery.size = parseInt(parsedQuery.size as unknown as string)
+
+        this.searchViewStore.searchText = (parsedQuery.q as string) || ''
+        this.searchViewStore.searchCollections = (parsedQuery.collections as string[]) || []
+        this.sharedStore.excludedFields = (parsedQuery.excludedFields as string[]) || []
+
+        if (parsedQuery?.collections?.length) {
+            this.searchViewStore.searchCollections = parsedQuery.collections
+        }
+
+        this.query = parsedQuery
+    }
+
+    navigateSearch = (params: Partial<SearchQueryParams> = {}) => {
+        const mergedParams = this.getMergedParams(params)
+        const queryString = buildSearchQuerystring(mergedParams)
+
+        void router.navigate('?' + queryString + window.location.hash)
+    }
+
+    performSearch = (options?: SearchOptions) => {
         const { searchType, keepFromClearing, fieldList } = {
             ...{ searchType: SearchType.Aggregations | SearchType.Results },
             ...options,
@@ -69,8 +92,8 @@ export class SearchStore {
             this.searchResultsStore.clearResults()
         }
 
-        if (query.q && query.page && query.size && query.collections?.length) {
-            this.performQueriesBasedOnType(query as SearchQueryParams, searchType, keepFromClearing, fieldList as SourceField[])
+        if (this.query?.q && this.query.page && this.query.size && this.query.collections?.length) {
+            this.performQueriesBasedOnType(this.query as SearchQueryParams, searchType, keepFromClearing, fieldList as SourceField[])
         }
     }
 
@@ -86,37 +109,6 @@ export class SearchStore {
         }
     }
 
-    parseSearchParams = (search: string): Partial<SearchQueryParams> => {
-        const parsedQuery = fixLegacyQuery(unwindParams(qs.parse(search, { arrayLimit: 100 })))
-
-        parsedQuery.page = parseInt(parsedQuery.page as string)
-        parsedQuery.size = parseInt(parsedQuery.size as string)
-
-        this.searchViewStore.searchText = (parsedQuery.q as string) || ''
-        this.searchViewStore.searchCollections = (parsedQuery.collections as string[]) || []
-        this.sharedStore.excludedFields = (parsedQuery.excludedFields as string[]) || []
-
-        return parsedQuery
-    }
-
-    search = (params: Partial<SearchQueryParams> = {}, options: SearchOptions = {}) => {
-        const mergedParams = this.getMergedParams(params)
-        const queryString = buildSearchQuerystring(mergedParams)
-        const query = this.parseSearchParams(queryString)
-
-        this.updateStoresBasedOnSearchType(query, options)
-
-        if (query?.collections?.length) {
-            this.searchViewStore.searchCollections = query.collections
-        }
-
-        this.query = query as SearchQueryParams
-
-        if (options.navigate !== false) {
-            void router.navigate('?' + queryString + window.location.hash)
-        }
-    }
-
     onFieldInclusionChange = (field: string) => () => {
         if (this.sharedStore.excludedFields.includes(field)) {
             runInAction(() => {
@@ -128,7 +120,7 @@ export class SearchStore {
             })
         }
         if (this.query?.q) {
-            this.search()
+            this.navigateSearch()
         }
     }
 }

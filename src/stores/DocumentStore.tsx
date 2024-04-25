@@ -326,16 +326,16 @@ export class DocumentStore {
 
     handleTabChange = (_event: SyntheticEvent, tab: number) => {
         this.tab = tab
-        this.hashStore.setHashState({ tab: tab.toString() }, false)
+        this.hashStore.setHashState({ tab: tab.toString() }, true)
     }
 
     handleSubTabChange = (_event: SyntheticEvent, subTab: number) => {
         this.subTab = subTab
-        this.hashStore.setHashState({ subTab: subTab.toString() }, false)
+        this.hashStore.setHashState({ subTab: subTab.toString() }, true)
     }
 
     handleChunkSubTabChange = (_event: SyntheticEvent, chunkTab: number) => {
         this.chunkTab = chunkTab
-        this.hashStore.setHashState({ chunkTab: chunkTab.toString() }, false)
+        this.hashStore.setHashState({ chunkTab: chunkTab.toString() }, true)
     }
 }

@@ -29,7 +29,8 @@ export const Search: FC = observer(() => {
         excludedFields,
         searchStore: {
             query,
-            search,
+            navigateSearch,
+            performSearch,
             parseSearchParams,
             searchViewStore: {
                 setInputRef,
@@ -74,16 +75,19 @@ export const Search: FC = observer(() => {
     useEffect(() => {
         const pathQuery = location.search.slice(1)
         if (pathQuery !== '') {
-            const parsedQuery = parseSearchParams(pathQuery)
-            if (fields !== undefined && user !== undefined && query === undefined) {
-                search(parsedQuery, { navigate: false })
-            }
+            parseSearchParams(pathQuery)
         }
-    }, [fields, user, query, search])
+    }, [JSON.stringify(location.search)])
+
+    useEffect(() => {
+        if (fields !== undefined && user !== undefined && query !== undefined && clearResults !== undefined) {
+            performSearch()
+        }
+    }, [fields, user, query, performSearch, clearResults])
 
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault()
-        search()
+        navigateSearch()
     }
 
     const handleInputKey = (event: KeyboardEvent) => {
@@ -190,7 +194,7 @@ export const Search: FC = observer(() => {
                         startIcon={reactIcons.refresh}
                         onClick={() => {
                             handleSnackbarClose()
-                            search()
+                            navigateSearch()
                         }}>
                         {snackbarMessage}
                     </Button>

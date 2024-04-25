@@ -1,12 +1,22 @@
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import { Helmet } from 'react-helmet'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 
 import { Header } from './common/Header/Header'
 import { ProgressIndicator } from './common/ProgressIndicator/ProgressIndicator'
 import { ErrorBoundary } from './ErrorBoundary'
+import { useSharedStore } from './SharedStoreProvider'
 
 export const Layout: FC = () => {
+    const {
+        hashStore: { parseHashState },
+    } = useSharedStore()
+    const location = useLocation()
+
+    useEffect(() => {
+        parseHashState(location.hash)
+    }, [location.hash])
+
     return (
         <>
             <Helmet>
