@@ -30,7 +30,7 @@ module.exports = () =>
         },
         plugins: [
             new HtmlWebpackPlugin({
-                template: `src/index.ejs`,
+                template: `src/index-prod.ejs`,
             }),
             new MiniCssExtractPlugin({
                 ignoreOrder: true,

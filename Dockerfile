@@ -20,4 +20,4 @@ ADD postinstall-fixes.js ./
 RUN npm --max-old-space-size=1000 install --unsafe-perm
 
 ADD . /opt/hoover/ui/
-RUN npm run build
+RUN npm run build && npm run env
