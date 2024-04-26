@@ -46,7 +46,7 @@ const rebuildTree = (parent: AST | Node, node: AST | Node): AST | Node | null =>
 export const QueryChips: FC = observer(() => {
     const { t } = useTranslate()
     const { classes } = useStyles()
-    const { query, search } = useSharedStore().searchStore
+    const { query, navigateSearch } = useSharedStore().searchStore
     const [parsedQuery, setParsedQuery] = useState<AST>()
 
     useEffect(() => {
@@ -59,9 +59,9 @@ export const QueryChips: FC = observer(() => {
 
     const handleDelete = useCallback(
         (node: AST | Node) => {
-            parsedQuery && search({ q: lucene.toString(rebuildTree(parsedQuery, node) as AST), page: defaultSearchParams.page })
+            parsedQuery && navigateSearch({ q: lucene.toString(rebuildTree(parsedQuery, node) as AST), page: defaultSearchParams.page })
         },
-        [parsedQuery, search],
+        [parsedQuery, navigateSearch],
     )
 
     const getChipLabel = (q: Partial<ExtendedNodeTerm>, prefix?: string | null) => {

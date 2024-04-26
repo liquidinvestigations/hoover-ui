@@ -15,6 +15,10 @@ export const useStyles = makeStyles()((theme) => ({
         height: 'auto',
     },
 
+    right: {
+        overflow: 'hidden',
+    },
+
     container: {
         overflow: 'hidden',
         height: 'calc(100vh - 48px)',

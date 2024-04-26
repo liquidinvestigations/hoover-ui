@@ -41,9 +41,9 @@ export const Viewer: FC<ViewerProps> = ({ url, cMapUrl = '/build/static/cmaps', 
 
     const onPageIndexChange = debounce((index: number) => {
         if (index > 0) {
-            setHashState({ previewPage: index + 1 }, false)
+            setHashState({ previewPage: index + 1 }, true)
         } else {
-            setHashState({ previewPage: undefined }, false)
+            setHashState({ previewPage: undefined }, true)
         }
     }, 300)
 

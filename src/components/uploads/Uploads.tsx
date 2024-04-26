@@ -1,13 +1,13 @@
 import { Grid, Paper, Typography } from '@mui/material'
 import { T } from '@tolgee/react'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { FC, useEffect, useRef, useState } from 'react'
 
 import { getUploads } from '../../backend/api'
 import { UploadsState } from '../../Types'
 
 import { useStyles } from './Uploads.styles'
 
-export default function Uploads() {
+export const Uploads: FC = () => {
     const { classes } = useStyles()
 
     const [uploadsState, setUploadsState] = useState<UploadsState[]>([])

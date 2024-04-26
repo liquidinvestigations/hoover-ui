@@ -1,8 +1,6 @@
 FROM node:18
 ARG BUILD_EXTRA_LIBS_ARM64
 
-ENV NEXT_TELEMETRY_DISABLED=1
-
 RUN mkdir -p /opt/hoover/ui
 WORKDIR /opt/hoover/ui
 

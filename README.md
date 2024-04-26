@@ -97,14 +97,15 @@ Any additional library with icons in SVG format can be added, for example [Boots
 
 ## Environment variables
 
-- **API_URL (required)** - URL of the backend server
-- **REWRITE_API (boolean default unset)** - controls setting up proxy to backend API (for local development)
-- **AGGREGATIONS_SPLIT (default 1)** - divider number for queuing concurrent requests to aggregations search API endpoint (1 - all requsts are concurrent, 2 - requests are divided into two concurrent packs running one after another, 3 - three packs, etc.)
-- **MAX_SEARCH_RETRIES (default 1)** - number of search retries in synchronous search mode
-- **SEARCH_RETRY_DELAY (default 3000)** - search retry delay in synchronous mode in milliseconds
+- **API_RETRY_DELAY_MIN (default 500)** - api retry min delay in milliseconds
+- **API_RETRY_DELAY_MAX (default 10000)** - api retry max delay in milliseconds
+- **API_RETRY_COUNT (default 4)** - api max retries
+- 
+- **ASYNC_SEARCH_POLL_SIZE (default 6)** - max concurrent async search
 - **ASYNC_SEARCH_POLL_INTERVAL (default 45)** - interval between search requests in asynchronous mode
-- **ASYNC_SEARCH_MAX_FINAL_RETRIES (default 3)** - max numbers of requests retries when async search task is about to complete (ETA < pool interval)
 - **ASYNC_SEARCH_ERROR_MULTIPLIER (default 2)** - async task initial ETA multiplier after which search request fails
 - **ASYNC_SEARCH_ERROR_SUMMATION (default 60)** - async task initial ETA summation seconds after which search request fails
-- **HOOVER_MAPS_ENABLED (boolean default unset)** - show maps link in top menu
-- **HOOVER_TRANSLATION_ENABLED (boolean default unset)** - shows translation link in top menu
+- 
+- **HOOVER_MAPS_ENABLED (boolean default true)** - show maps link in top menu
+- **HOOVER_UPLOADS_ENABLED (boolean default true)** - show uploads link in top menu
+- **HOOVER_TRANSLATION_ENABLED (boolean default true)** - shows translation link in top menu

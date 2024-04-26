@@ -20,19 +20,19 @@ export const Insights: FC = observer(() => {
 
     const { collectionsData, fields, user } = useSharedStore()
 
-    const { query, search } = useSharedStore().searchStore
+    const { query, navigateSearch } = useSharedStore().searchStore
 
     useEffect(() => {
         if (query?.collections) {
             setCurrentCollection(collectionsData?.find((collection) => collection.name === query.collections[0]) as CollectionData)
         } else if (collectionsData && fields && user) {
-            search({ collections: [collectionsData[0].name], q: '*' })
+            navigateSearch({ collections: [collectionsData[0].name], q: '*' })
         }
-    }, [query?.collections, collectionsData, fields, user, search])
+    }, [query?.collections, collectionsData, fields, user, navigateSearch])
 
     const [currentCollection, setCurrentCollection] = useState(collectionsData?.[0])
     const handleMenuClick = (collection: CollectionData) => () => {
-        search({ collections: [collection.name], q: '*' })
+        navigateSearch({ collections: [collection.name], q: '*' })
     }
 
     return (

@@ -1,7 +1,7 @@
-import { makeAutoObservable, reaction, runInAction } from 'mobx'
-import Router from 'next/router'
+import { makeAutoObservable, runInAction } from 'mobx'
 import qs from 'qs'
 
+import { router } from '../index'
 import { rollupParams, unwindParams } from '../utils/queryUtils'
 
 import { SharedStore } from './SharedStore'
@@ -32,29 +32,15 @@ export class HashStateStore {
         this.sharedStore = sharedStore
 
         makeAutoObservable(this)
-
-        const location = this.sharedStore.navigation?.location
-
-        if (!location) return
-
-        const { hash } = location
-        if (hash) {
-            setTimeout(() => {
-                runInAction(() => {
-                    this.hashState = unwindParams(qs.parse(hash.substring(1)))
-                })
-            })
-        }
-
-        reaction(
-            () => this.sharedStore.navigation?.location.hash,
-            (hashString) => {
-                this.hashState = unwindParams(qs.parse(hashString.substring(1)))
-            },
-        )
     }
 
-    setHashState = (params: Record<string, unknown>, pushHistory = true) => {
+    parseHashState = (hashString: string) => {
+        runInAction(() => {
+            this.hashState = unwindParams(qs.parse(hashString.substring(1)))
+        })
+    }
+
+    setHashState = (params: Record<string, unknown>, replace = false) => {
         runInAction(() => {
             this.hashState = { ...this.hashState, ...params }
         })
@@ -62,9 +48,7 @@ export class HashStateStore {
         const search = window.location.search
         const hash = qs.stringify(rollupParams(this.hashState))
 
-        this.sharedStore.navigation?.merge({ pathname: window.location.pathname, hash }, !pushHistory)
-
         const path = search + '#' + hash
-        void Router.router?.changeState('replaceState', path, path, { shallow: true })
+        void router.navigate(path, { replace })
     }
 }

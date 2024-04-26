@@ -1,3 +1,3 @@
-import dynamic from 'next/dynamic'
+import { lazy } from 'react'
 
-export default dynamic(() => import('./Map/Map'), { ssr: false })
+export default lazy(() => import('./Map/Map'))

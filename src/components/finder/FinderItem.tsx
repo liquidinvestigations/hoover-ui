@@ -1,6 +1,6 @@
 import { ListItemButton, ListItemIcon, ListItemText, Theme } from '@mui/material'
-import { useRouter } from 'next/router'
 import { FC, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { makeStyles } from 'tss-react/mui'
 
 import { ChildDocument, DocumentData } from '../../Types'
@@ -52,7 +52,7 @@ export const FinderItem: FC<FinderItemProps> = ({ pathname, item, active, select
     const { fullPage } = useSharedStore()
     const { classes, cx } = useStyles()
     const ref = useRef<HTMLDivElement>(null)
-    const router = useRouter()
+    const navigate = useNavigate()
     const isActive = item.id === active?.id || item.digest === active?.id
     const isSelected = item.id === selected?.id
 
@@ -67,7 +67,7 @@ export const FinderItem: FC<FinderItemProps> = ({ pathname, item, active, select
         if (!fullPage) {
             window.open(path, '_blank')
         } else {
-            router.push(path, undefined, { shallow: true })
+            navigate(path)
         }
     }
 

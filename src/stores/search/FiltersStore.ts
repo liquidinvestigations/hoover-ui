@@ -236,7 +236,7 @@ export class FiltersStore {
         })
 
     triggerSearch = (params: Partial<SearchQueryParams>, keepFromClearing?: AggregationsKey) => {
-        this.searchStore.search({ ...params, page: defaultSearchParams.page }, { keepFromClearing })
+        this.searchStore.navigateSearch({ ...params, page: defaultSearchParams.page }, { keepFromClearing })
     }
 
     handleChange = (key: SourceField, value: Terms, resetPage: boolean = false) => {
@@ -328,7 +328,7 @@ export class FiltersStore {
     }
 
     handleFilterChipDelete = (node: AST | Node) => {
-        this.searchStore.search({ filters: this.deleteFilterOperands({ ...this.searchStore.query?.filters }, node) })
+        this.searchStore.navigateSearch({ filters: this.deleteFilterOperands({ ...this.searchStore.query?.filters }, node) })
     }
 
     handleReset = (field: SourceField) => () => {
@@ -340,7 +340,7 @@ export class FiltersStore {
 
     loadMissing = (field: SourceField) => {
         if (!this.searchStore.searchMissingStore.missing[`${field}-missing`]) {
-            this.searchStore.search(undefined, { searchType: SearchType.Missing, fieldList: [field] })
+            this.searchStore.navigateSearch(undefined, { searchType: SearchType.Missing, fieldList: [field] })
         }
     }
 }

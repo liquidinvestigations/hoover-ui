@@ -1,7 +1,7 @@
-import { NextPage } from 'next'
-import Head from 'next/head'
+import { FC } from 'react'
+import { Helmet } from 'react-helmet'
 
-import { useStyles } from '../styles/error'
+import { useStyles } from '../../styles/error'
 
 const statusCodes = {
     400: 'Bad Request',
@@ -12,12 +12,12 @@ const statusCodes = {
 }
 
 type ErrorProps = {
-    statusCode: number
+    statusCode?: number
     title?: string
     message?: string
 }
 
-const Error: NextPage<ErrorProps> = ({ statusCode, title, message }) => {
+const ErrorPage: FC<ErrorProps> = ({ statusCode, title, message }) => {
     const { classes } = useStyles()
 
     const headTitle = title || statusCodes[statusCode as keyof typeof statusCodes] || 'An unexpected error has occurred'
@@ -26,9 +26,9 @@ const Error: NextPage<ErrorProps> = ({ statusCode, title, message }) => {
 
     return (
         <div className={classes.error}>
-            <Head>
+            <Helmet>
                 <title>{`${statusCode}: ${headTitle}`}</title>
-            </Head>
+            </Helmet>
             <div>
                 {statusCode ? <h1 className={classes.h1}>{statusCode}</h1> : null}
                 <div className={classes.desc}>
@@ -39,9 +39,4 @@ const Error: NextPage<ErrorProps> = ({ statusCode, title, message }) => {
     )
 }
 
-Error.getInitialProps = ({ res, err }) => {
-    const statusCode = res ? res.statusCode : err && err.statusCode ? err.statusCode : 404
-    return { statusCode } as ErrorProps
-}
-
-export default Error
+export default ErrorPage

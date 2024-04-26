@@ -28,7 +28,7 @@ interface LinkMenuProps {
 
 export const LinkMenu: FC<LinkMenuProps> = observer(({ link, anchorPosition, onClose }) => {
     const { t } = useTranslate()
-    const { query, search } = useSharedStore().searchStore
+    const { query, navigateSearch } = useSharedStore().searchStore
     const {
         hashStore: { hashState },
         documentStore: { collection, digest },
@@ -60,7 +60,7 @@ export const LinkMenu: FC<LinkMenuProps> = observer(({ link, anchorPosition, onC
             mergedParams.collections = getCollections()
             window.open(`/?${buildSearchQuerystring(mergedParams)}${hashParams}`)
         } else {
-            search(mergedParams)
+            navigateSearch(mergedParams)
         }
     }
 

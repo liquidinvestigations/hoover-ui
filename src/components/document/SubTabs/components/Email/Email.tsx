@@ -1,8 +1,8 @@
 import { Table, TableBody, TableCell, TableRow } from '@mui/material'
 import { T, useTolgee } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
-import Link from 'next/link'
 import { useState, MouseEvent, ReactElement } from 'react'
+import { Link } from 'react-router-dom'
 import { Entry } from 'type-fest'
 
 import { Category, DocumentContent, SourceField } from '../../../../../Types'
@@ -114,8 +114,7 @@ export const Email = observer(() => {
                             <TableRow key={index}>
                                 <TableCell colSpan={2}>
                                     <Link
-                                        href={createSearchUrl(messageId as string, collection as Category, 'in-reply-to' as SourceField, hash)}
-                                        shallow
+                                        to={createSearchUrl(messageId as string, collection as Category, 'in-reply-to' as SourceField, hash)}
                                         target="_blank">
                                         <T keyName="search_replying_emails">search e-mails replying to this one</T>
                                     </Link>
@@ -127,10 +126,7 @@ export const Email = observer(() => {
                         ensureArray(data.content['thread-index']).map((threadIndex, index) => (
                             <TableRow key={index}>
                                 <TableCell colSpan={2}>
-                                    <Link
-                                        href={createSearchUrl(threadIndex as string, collection as Category, 'thread-index', hash)}
-                                        shallow
-                                        target="_blank">
+                                    <Link to={createSearchUrl(threadIndex as string, collection as Category, 'thread-index', hash)} target="_blank">
                                         <T keyName="search_thread_emails">search e-mails in this thread</T>
                                     </Link>
                                 </TableCell>

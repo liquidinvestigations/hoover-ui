@@ -12,7 +12,7 @@ import { useSharedStore } from '../../../SharedStoreProvider'
 
 export const SortingMenu: FC = observer(() => {
     const { t } = useTranslate()
-    const { query, search } = useSharedStore().searchStore
+    const { query, navigateSearch } = useSharedStore().searchStore
     const order = query?.order || []
 
     const sortOptions = (Object.entries(SORTABLE_FIELDS) as Entries<typeof SORTABLE_FIELDS>).filter(
@@ -24,7 +24,7 @@ export const SortingMenu: FC = observer(() => {
     const handleSortingClick = (field: string) => () => {
         const index = order.findIndex(([v]) => v === field)
         if (!index || index < 0) {
-            search({ order: [[field, 'desc'], ...order], page: defaultSearchParams.page }, { searchType: SearchType.Results })
+            navigateSearch({ order: [[field, 'desc'], ...order], page: defaultSearchParams.page }, { searchType: SearchType.Results })
         }
     }
 

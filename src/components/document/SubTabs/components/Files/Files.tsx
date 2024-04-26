@@ -1,7 +1,7 @@
 import { Box, Table, TableBody, TableCell, TableRow } from '@mui/material'
 import { observer } from 'mobx-react-lite'
-import Link from 'next/link'
 import { SyntheticEvent, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import { createDownloadUrl, doc as docAPI } from '../../../../../backend/api'
 import { reactIcons } from '../../../../../constants/icons'
@@ -43,7 +43,7 @@ export const Files = observer(() => {
     const filesRows = files?.map(({ id, digest, file, filename, content_type, size }, index) => (
         <TableRow key={index}>
             <TableCell className={classes.cell}>
-                {id ? <Link href={`${collectionBaseUrl}/${file || id}`}>{filename?.[0]}</Link> : <span>{filename?.[0]}</span>}
+                {id ? <Link to={`${collectionBaseUrl}/${file || id}`}>{filename?.[0]}</Link> : <span>{filename?.[0]}</span>}
             </TableCell>
             <TableCell className={classes.cell}>
                 {digest && (

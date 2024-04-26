@@ -1,6 +1,6 @@
 import { Box, Tab, Tabs } from '@mui/material'
 import { observer } from 'mobx-react-lite'
-import { ReactElement } from 'react'
+import { Fragment, ReactElement } from 'react'
 
 import { createOcrUrl } from '../../../../../backend/api'
 import { Loading } from '../../../../common/Loading/Loading'
@@ -60,8 +60,8 @@ export const PdfTab = observer(() => {
                     if (subTab === index && !tag?.startsWith('translated_')) {
                         if (chunks?.length > 1) {
                             return (
-                                <>
-                                    <Box key={tag} className={classes.chunkTabsContainer}>
+                                <Fragment key={index}>
+                                    <Box className={classes.chunkTabsContainer}>
                                         <Tabs value={chunkTab} onChange={handleChunkSubTabChange} variant="scrollable" scrollButtons="auto">
                                             {chunks.map((chunk: string) => {
                                                 const chunkResultsCount = pdfSearchStore.getChunkSearchResultsCount(chunk)
@@ -83,12 +83,14 @@ export const PdfTab = observer(() => {
                                             return <Preview key={chunk} />
                                         })}
                                     </Box>
-                                </>
+                                </Fragment>
                             )
                         } else {
-                            if (index && digestUrl && data.content['content-type'] === 'application/pdf')
-                                return <PDFViewer key={tag} url={createOcrUrl(digestUrl, tag)} />
-                            return <Preview key={tag} />
+                            if (index && digestUrl && data.content['content-type'] === 'application/pdf') {
+                                return <PDFViewer key={index} url={createOcrUrl(digestUrl, tag)} />
+                            }
+
+                            return <Preview key={index} />
                         }
                     }
                 })}

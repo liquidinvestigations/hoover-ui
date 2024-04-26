@@ -5,6 +5,17 @@ import { buildUrl, fetchJson } from '../backend/api'
 import buildSearchQuery, { SearchFields } from '../backend/buildSearchQuery'
 import { AsyncTaskData, SearchQueryParams, SearchQueryType, SourceField } from '../Types'
 
+if (window && typeof process === 'undefined') {
+    // @ts-ignore
+    window.process = {}
+}
+const { pollSize, pollInterval, errorMultiplier, errorSummation } = {
+    pollSize: process.env?.ASYNC_SEARCH_POLL_SIZE,
+    pollInterval: process.env?.ASYNC_SEARCH_POLL_INTERVAL,
+    errorMultiplier: process.env?.ASYNC_SEARCH_ERROR_MULTIPLIER,
+    errorSummation: process.env?.ASYNC_SEARCH_ERROR_SUMMATION,
+}
+
 export class AsyncQueryTask extends EventTarget {
     isRunning: boolean = false
     initialEta?: number
@@ -70,7 +81,7 @@ export class AsyncQueryTask extends EventTarget {
     async handleQueryResult() {
         if (!this.data || !this.initialEta) return
 
-        const wait = (this.data.eta.total_sec as number) < parseInt(process.env.ASYNC_SEARCH_POLL_INTERVAL as string)
+        const wait = (this.data.eta.total_sec as number) < parseInt(pollInterval || '45')
 
         this.controller = new AbortController()
         const signal = this.controller.signal as AbortSignal
@@ -83,7 +94,7 @@ export class AsyncQueryTask extends EventTarget {
             AsyncQueryTaskRunner.runTaskQueue()
         } else {
             if (Date.now() - Date.parse(this.data.date_created) < this.timeoutMs) {
-                this.timeout = setTimeout(this.handleQueryResult, parseInt(process.env.ASYNC_SEARCH_POLL_INTERVAL as string) * 1000)
+                this.timeout = setTimeout(this.handleQueryResult, parseInt(pollInterval || '45') * 1000)
             } else {
                 this.dispatchEvent(new events.ErrorEvent('error', { message: 'Results task ETA timeout' }))
             }
@@ -91,10 +102,7 @@ export class AsyncQueryTask extends EventTarget {
     }
 
     get timeoutMs() {
-        return (
-            (this.initialEta || 0) * parseInt(process.env.ASYNC_SEARCH_ERROR_MULTIPLIER as string) +
-            parseInt(process.env.ASYNC_SEARCH_ERROR_SUMMATION as string) * 1000
-        )
+        return (this.initialEta || 0) * parseInt(errorMultiplier || '2') + parseInt(errorSummation || '60') * 1000
     }
 }
 
@@ -126,7 +134,7 @@ export class AsyncQueryTaskRunner {
         }
 
         for (const task of this.taskQueue) {
-            if (this.taskQueue.filter((task) => task.isRunning).length < (process.env.ASYNC_SEARCH_POLL_SIZE as unknown as number)) {
+            if (this.taskQueue.filter((task) => task.isRunning).length < parseInt(pollSize || '6')) {
                 task.run().catch((error) => {
                     this.clearTask(task)
                     task.dispatchEvent(new events.ErrorEvent('error', { error }))

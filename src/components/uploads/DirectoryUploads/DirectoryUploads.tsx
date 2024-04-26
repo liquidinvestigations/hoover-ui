@@ -8,20 +8,17 @@ import Uppy from '@uppy/core'
 import { FileInput, StatusBar } from '@uppy/react'
 import Tus from '@uppy/tus'
 import React, { useEffect, useRef, useState, memo, FC } from 'react'
+import { useParams } from 'react-router-dom'
 
 import { getDirectoryUploads, createUploadUrl } from '../../../backend/api'
 import { DirectoryUploadsState } from '../../../Types'
 
 import { useStyles } from './DirectoryUploads.styles'
 
-interface DirectoryUploadsProps {
-    collection?: string | string[]
-    directoryId?: string | string[]
-}
-
-export const DirectoryUploads: FC<DirectoryUploadsProps> = ({ collection, directoryId }) => {
+export const DirectoryUploads: FC = () => {
     const { t } = useTranslate()
     const { classes } = useStyles()
+    const { collection, id: directoryId } = useParams()
 
     const [uploadsState, setUploadsState] = useState<DirectoryUploadsState>({ uploads: [] })
     const intervalRef = useRef<ReturnType<typeof setInterval>>()

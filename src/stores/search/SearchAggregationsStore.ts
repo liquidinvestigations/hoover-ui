@@ -13,6 +13,8 @@ export class SearchAggregationsStore {
 
     aggregations: Aggregations = {}
 
+    private static initialAggregationsLoading = (value: number) => Object.fromEntries(Object.keys(aggregationFields).map((field) => [field, value]))
+
     aggregationsLoading: Partial<Record<SourceField, number>> = SearchAggregationsStore.initialAggregationsLoading(0)
 
     aggregationsLoadingETA: Partial<Record<SourceField, number>> = SearchAggregationsStore.initialAggregationsLoading(0)
@@ -153,6 +155,4 @@ export class SearchAggregationsStore {
             }
         })
     }
-
-    private static initialAggregationsLoading = (value: number) => Object.fromEntries(Object.keys(aggregationFields).map((field) => [field, value]))
 }

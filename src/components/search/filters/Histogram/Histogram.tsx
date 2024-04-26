@@ -30,7 +30,7 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
     const { classes } = useStyles()
     const {
         query,
-        search,
+        navigateSearch,
         searchAggregationsStore: { aggregations, aggregationsLoading },
     } = useSharedStore().searchStore
 
@@ -54,12 +54,12 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
             const { intervals: _intervals, ...restParams } = prevFilter || {}
 
             if (include.length) {
-                search({ filters: { [field]: { intervals: { include }, ...restParams }, ...restFilters }, page: defaultSearchParams.page })
+                navigateSearch({ filters: { [field]: { intervals: { include }, ...restParams }, ...restFilters }, page: defaultSearchParams.page })
             } else {
-                search({ filters: { [field]: restParams, ...restFilters }, page: defaultSearchParams.page })
+                navigateSearch({ filters: { [field]: restParams, ...restFilters }, page: defaultSearchParams.page })
             }
         },
-        [field, query?.filters, search],
+        [field, query?.filters, navigateSearch],
     )
 
     const handleIntervalsAdd = useCallback(() => {
@@ -115,12 +115,12 @@ export const Histogram: FC<HistogramProps> = observer(({ title, field }) => {
         const { [field]: _prevFilter, ...restFilters } = query?.filters || {}
         const { [field]: _prevFacet, ...restFacets } = query?.facets || {}
 
-        search({
+        navigateSearch({
             filters: { [field]: { ...range, interval: getClosestInterval(range) }, ...restFilters },
             facets: { ...restFacets },
             page: defaultSearchParams.page,
         })
-    }, [field, interval, query?.facets, query?.filters, search, selectedBars])
+    }, [field, interval, query?.facets, query?.filters, navigateSearch, selectedBars])
 
     const buckets = aggregations?.[field]?.values.buckets
     const data = useMemo(() => {

@@ -131,7 +131,7 @@ export class SearchResultsStore {
         if (!Object.keys(this.resultsLoadingETA).length && hits && (page - 1) * size + currentIndex < this.hitsTotal - 1) {
             if (currentIndex === hits.length - 1) {
                 this.setPreviewOnLoad('first')
-                this.searchStore.search({ page: page + 1 })
+                this.searchStore.navigateSearch({ page: page + 1 })
             } else {
                 this.openPreview(hits[currentIndex + 1])
             }
@@ -146,7 +146,7 @@ export class SearchResultsStore {
         if ((!Object.keys(this.resultsLoadingETA).length && hits && page > 1) || currentIndex >= 1) {
             if (currentIndex === 0 && page > 1) {
                 this.setPreviewOnLoad('last')
-                this.searchStore.search({ page: page - 1 })
+                this.searchStore.navigateSearch({ page: page - 1 })
             } else {
                 this.openPreview(hits[currentIndex - 1])
             }

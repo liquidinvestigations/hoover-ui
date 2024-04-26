@@ -102,7 +102,7 @@ export const mockHits = [
     },
 ]
 
-export const resultsColumnMocks = [
+export const mockResultsColumns = [
     [
         [
             'filetype',

@@ -18,7 +18,7 @@ export const Pagination: FC = observer(() => {
         collectionsData,
         searchStore: {
             query,
-            search,
+            navigateSearch,
             searchResultsStore: { results },
         },
     } = useSharedStore()
@@ -33,9 +33,9 @@ export const Pagination: FC = observer(() => {
     const pageCount = getPageCount(total, maxCount, size)
     const pages = getPages(page, pageCount)
 
-    const handleNext = () => search({ page: page + 1 }, { searchType: SearchType.Results })
-    const handlePrev = () => search({ page: page - 1 }, { searchType: SearchType.Results })
-    const handleSet = (pageE: number) => () => search({ page: pageE }, { searchType: SearchType.Results })
+    const handleNext = () => navigateSearch({ page: page + 1 }, { searchType: SearchType.Results })
+    const handlePrev = () => navigateSearch({ page: page - 1 }, { searchType: SearchType.Results })
+    const handleSet = (pageE: number) => () => navigateSearch({ page: pageE }, { searchType: SearchType.Results })
 
     const from = total === 0 ? 0 : page * size - (size - 1)
     const to = Math.min(total, page * size, maxCount)
