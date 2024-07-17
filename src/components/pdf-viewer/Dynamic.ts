@@ -1,5 +1,3 @@
-import dynamic from 'next/dynamic'
+import { lazy } from 'react'
 
-const Dynamic = dynamic(() => import('./Viewer'), { ssr: false })
-
-export default Dynamic
+export default lazy(() => import('./Viewer'))

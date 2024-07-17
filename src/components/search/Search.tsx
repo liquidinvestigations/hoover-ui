@@ -1,8 +1,8 @@
 import { Button, FormControl, Grid, IconButton, InputAdornment, Snackbar, TextField, Tooltip, Typography } from '@mui/material'
 import { T, useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
-import Router from 'next/router'
 import { cloneElement, FC, FormEvent, KeyboardEvent, useEffect, useRef } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import { tooltips } from '../../constants/help'
 import { reactIcons } from '../../constants/icons'
@@ -29,9 +29,9 @@ export const Search: FC = observer(() => {
         excludedFields,
         searchStore: {
             query,
-            queuedQuery,
-            clearQueued,
-            search,
+            navigateSearch,
+            performSearch,
+            parseSearchParams,
             searchViewStore: {
                 setInputRef,
                 setDrawerRef,
@@ -52,40 +52,42 @@ export const Search: FC = observer(() => {
         },
     } = useSharedStore()
 
+    const location = useLocation()
+
     const clearInput = () => {
         clearSearchText()
         inputRef?.current?.focus()
     }
 
-    const clearSearchResults = (url: string) => {
-        if (url === '/') {
-            clearInput()
+    useEffect(() => {
+        if (location.pathname === '/' && location.search === '') {
+            inputRef?.current?.focus()
+            clearSearchText()
             clearResults()
             setOpenCategory('collections')
         }
-    }
-
-    useEffect(() => {
-        Router.events.on('routeChangeStart', clearSearchResults)
-        return () => {
-            Router.events.off('routeChangeStart', clearSearchResults)
-        }
-    })
+    }, [clearResults, clearSearchText, location, setOpenCategory])
 
     useEffect(() => {
         setInputRef(inputRef)
     }, [inputRef, setInputRef])
 
     useEffect(() => {
-        if (fields !== undefined && user !== undefined && queuedQuery !== undefined && JSON.stringify(queuedQuery) !== JSON.stringify(query)) {
-            search(queuedQuery, { queued: true })
-            clearQueued()
+        const pathQuery = location.search.slice(1)
+        if (pathQuery !== '') {
+            parseSearchParams(pathQuery)
         }
-    }, [fields, user, query, queuedQuery, search, clearQueued])
+    }, [JSON.stringify(location.search)])
+
+    useEffect(() => {
+        if (fields !== undefined && user !== undefined && query !== undefined && clearResults !== undefined) {
+            performSearch()
+        }
+    }, [fields, user, query, performSearch, clearResults])
 
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault()
-        search()
+        navigateSearch()
     }
 
     const handleInputKey = (event: KeyboardEvent) => {
@@ -192,7 +194,7 @@ export const Search: FC = observer(() => {
                         startIcon={reactIcons.refresh}
                         onClick={() => {
                             handleSnackbarClose()
-                            search()
+                            navigateSearch()
                         }}>
                         {snackbarMessage}
                     </Button>

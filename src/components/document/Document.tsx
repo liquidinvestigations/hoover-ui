@@ -41,6 +41,14 @@ export interface TabData {
     searchStore?: PdfSearchStore | TextSearchStore | MetaSearchStore
 }
 
+if (window && typeof process === 'undefined') {
+    // @ts-ignore
+    window.process = {}
+}
+const { enableUploads } = {
+    enableUploads: process.env?.HOOVER_UPLOADS_ENABLED,
+}
+
 // Error: Arrow function has a complexity of 27. Maximum allowed is 10
 // Reduce complexity of Document component
 // eslint-disable-next-line complexity
@@ -203,6 +211,7 @@ export const Document = observer(() => {
             name: t('location', 'Location'),
             icon: reactIcons.location,
             visible: !fullPage,
+            padding: 0,
             content: (
                 <>
                     <Finder />
@@ -332,7 +341,6 @@ export const Document = observer(() => {
                 {data.content['has-thumbnails'] && (
                     <Grid item>
                         <Box className={classes.thumbnail}>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img className={classes.thumbnailImg} srcSet={thumbnailSrcSet} alt="thumbnail" />
                         </Box>
                     </Grid>
@@ -359,9 +367,7 @@ export const Document = observer(() => {
                             }
                         />
                     ))}
-                {data.content.filetype === 'folder' &&
-                    !data.content.path.includes('//') &&
-                    process.env.HOOVER_UPLOADS_ENABLED && [...emptyTabs, uploadButton()]}
+                {data.content.filetype === 'folder' && !data.content.path.includes('//') && enableUploads !== 'false' && [...emptyTabs, uploadButton()]}
             </Tabs>
 
             {tabsData

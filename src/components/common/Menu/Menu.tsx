@@ -2,9 +2,9 @@ import { Button, IconButton, MenuItem, Menu as MenuMui, Typography, Divider, Box
 import { T, useTolgee, useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import { NestedMenuItem } from 'mui-nested-menu'
-import NextLink from 'next/link'
-import { useRouter } from 'next/router'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
 import { reactIcons } from '../../../constants/icons'
 import { useSharedStore } from '../../SharedStoreProvider'
@@ -14,16 +14,26 @@ import { useStyles } from './Menu.styles'
 interface Link {
     name: string
     url: string
-    next?: boolean
+    shallow?: boolean
     type?: 'admin' | 'logged-in' | 'not-logged-in'
     active?: boolean
+}
+
+if (window && typeof process === 'undefined') {
+    // @ts-ignore
+    window.process = {}
+}
+const { enableMaps, enableUploads, enableTranslations } = {
+    enableMaps: process.env?.HOOVER_MAPS_ENABLED,
+    enableUploads: process.env?.HOOVER_UPLOADS_ENABLED,
+    enableTranslations: process.env?.HOOVER_TRANSLATION_ENABLED,
 }
 
 export const Menu = observer(() => {
     const { t } = useTranslate()
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
     const { classes } = useStyles()
-    const router = useRouter()
+    const location = useLocation()
     const { user } = useSharedStore()
     const tolgee = useTolgee(['language'])
 
@@ -32,46 +42,46 @@ export const Menu = observer(() => {
             {
                 name: t('search', 'Search'),
                 url: '/',
-                next: true,
-                active: router.asPath === '/',
+                shallow: true,
+                active: location.pathname === '/',
             },
             {
                 name: t('batch', 'Batch'),
                 url: '/batch-search',
-                next: true,
-                active: router.asPath === '/batch-search',
+                shallow: true,
+                active: location.pathname === '/batch-search',
             },
             {
                 name: t('insights', 'Insights'),
                 url: '/insights',
-                next: true,
-                active: router.asPath === '/insights',
+                shallow: true,
+                active: location.pathname === '/insights',
             },
         ]
 
-        if (process.env.HOOVER_UPLOADS_ENABLED) {
+        if (enableUploads !== 'false') {
             links.push({
                 name: t('uploads', 'Uploads'),
                 url: '/uploads',
-                next: true,
-                active: router.asPath === '/uploads',
+                shallow: true,
+                active: location.pathname === '/uploads',
             })
         }
 
-        if (process.env.HOOVER_MAPS_ENABLED) {
+        if (enableMaps !== 'false') {
             links.push({
                 name: t('maps', 'Maps'),
                 url: '/maps',
-                next: true,
-                active: router.asPath === '/maps',
+                shallow: true,
+                active: location.pathname === '/maps',
             })
         }
 
-        if (process.env.HOOVER_TRANSLATION_ENABLED) {
+        if (enableTranslations !== 'false') {
             links.push({
                 name: t('translate', 'Translate'),
                 url: '/libre_translate',
-                active: router.asPath === '/libre_translate',
+                active: location.pathname === '/libre_translate',
             })
         }
 
@@ -84,7 +94,7 @@ export const Menu = observer(() => {
             links.push({
                 name: t('admin', 'Admin'),
                 url: user.urls.admin,
-                active: router.asPath === user.urls.admin,
+                active: location.pathname === user.urls.admin,
             })
         }
 
@@ -129,16 +139,16 @@ export const Menu = observer(() => {
     return (
         <>
             {getNavLinks().map((link) =>
-                !link.next ? (
-                    <Button key={link.name} variant="text" href={link.url} color="inherit">
-                        {link.name}
-                    </Button>
-                ) : (
-                    <NextLink key={link.name} href={link.url} shallow className={classes.link}>
+                link.shallow ? (
+                    <Link key={link.name} to={link.url} className={classes.link}>
                         <Button variant="text" href={link.url} color="inherit" component="span">
                             {link.name}
                         </Button>
-                    </NextLink>
+                    </Link>
+                ) : (
+                    <Button key={link.name} variant="text" href={link.url} color="inherit">
+                        {link.name}
+                    </Button>
                 ),
             )}
             <IconButton edge="end" color="inherit" onClick={handleUserMenuClick}>
@@ -192,9 +202,9 @@ export const Menu = observer(() => {
                     </NestedMenuItem>
                     {getMenuLinks().map((link) => (
                         <MenuItem key={link.name}>
-                            <NextLink href={link.url} shallow className={classes.menuItem}>
+                            <Link to={link.url} className={classes.menuItem}>
                                 {link.name}
-                            </NextLink>
+                            </Link>
                         </MenuItem>
                     ))}
                 </MenuList>

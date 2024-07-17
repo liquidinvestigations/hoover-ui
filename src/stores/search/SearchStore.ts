@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx'
-import Router from 'next/router'
 import qs from 'qs'
 
+import { router } from '../../index'
 import { AggregationsKey, SearchQueryParams, SourceField } from '../../Types'
 import fixLegacyQuery from '../../utils/fixLegacyQuery'
 import { buildSearchQuerystring, defaultSearchParams, unwindParams } from '../../utils/queryUtils'
@@ -20,7 +20,6 @@ export enum SearchType {
 }
 
 interface SearchOptions {
-    queued?: boolean
     searchType?: number
     fieldList?: SourceField[] | '*'
     keepFromClearing?: AggregationsKey
@@ -28,6 +27,8 @@ interface SearchOptions {
 
 export class SearchStore {
     query: SearchQueryParams | undefined
+
+    options: SearchOptions | undefined
 
     filtersStore: FiltersStore
 
@@ -38,8 +39,6 @@ export class SearchStore {
     searchMissingStore: SearchMissingStore
 
     searchResultsStore: SearchResultsStore
-
-    queuedQuery: Partial<SearchQueryParams> | undefined
 
     constructor(private readonly sharedStore: SharedStore) {
         this.searchViewStore = new SearchViewStore(sharedStore, this)
@@ -61,18 +60,44 @@ export class SearchStore {
         }
     }
 
-    private updateStoresBasedOnSearchType(query: Partial<SearchQueryParams>, options: SearchOptions) {
+    parseSearchParams = (search: string) => {
+        const parsedQuery = fixLegacyQuery(unwindParams(qs.parse(search, { arrayLimit: 100 }))) as SearchQueryParams
+
+        parsedQuery.page = parseInt(parsedQuery.page as unknown as string)
+        parsedQuery.size = parseInt(parsedQuery.size as unknown as string)
+
+        this.searchViewStore.searchText = (parsedQuery.q as string) || ''
+        this.searchViewStore.searchCollections = (parsedQuery.collections as string[]) || []
+        this.sharedStore.excludedFields = (parsedQuery.excludedFields as string[]) || []
+
+        if (parsedQuery?.collections?.length) {
+            this.searchViewStore.searchCollections = parsedQuery.collections
+        }
+
+        this.query = parsedQuery
+    }
+
+    navigateSearch = (params: Partial<SearchQueryParams> = {}, options?: SearchOptions) => {
+        const mergedParams = this.getMergedParams(params)
+        const queryString = buildSearchQuerystring(mergedParams)
+
+        this.options = options
+
+        void router.navigate('?' + queryString + window.location.hash)
+    }
+
+    performSearch = (options?: SearchOptions) => {
         const { searchType, keepFromClearing, fieldList } = {
             ...{ searchType: SearchType.Aggregations | SearchType.Results },
-            ...options,
+            ...(options || this.options || {}),
         }
 
         if (searchType & SearchType.Results) {
             this.searchResultsStore.clearResults()
         }
 
-        if (query.q && query.page && query.size && query.collections?.length) {
-            this.performQueriesBasedOnType(query as SearchQueryParams, searchType, keepFromClearing, fieldList as SourceField[])
+        if (this.query?.q && this.query.page && this.query.size && this.query.collections?.length) {
+            this.performQueriesBasedOnType(this.query as SearchQueryParams, searchType, keepFromClearing, fieldList as SourceField[])
         }
     }
 
@@ -88,48 +113,6 @@ export class SearchStore {
         }
     }
 
-    queueSearch = (query: string): void => {
-        this.queuedQuery = this.parseSearchParams(query)
-    }
-
-    clearQueued = (): void => {
-        runInAction(() => {
-            this.queuedQuery = undefined
-        })
-    }
-
-    parseSearchParams = (search: string): Partial<SearchQueryParams> => {
-        const parsedQuery = fixLegacyQuery(unwindParams(qs.parse(search, { arrayLimit: 100 })))
-
-        parsedQuery.page = parseInt(parsedQuery.page as string)
-        parsedQuery.size = parseInt(parsedQuery.size as string)
-
-        this.searchViewStore.searchText = (parsedQuery.q as string) || ''
-        this.searchViewStore.searchCollections = (parsedQuery.collections as string[]) || []
-        this.sharedStore.excludedFields = (parsedQuery.excludedFields as string[]) || []
-
-        return parsedQuery
-    }
-
-    search = (params: Partial<SearchQueryParams> = {}, options: SearchOptions = {}) => {
-        const mergedParams = this.getMergedParams(params)
-        const queryString = buildSearchQuerystring(mergedParams)
-        const query = this.parseSearchParams(queryString)
-
-        this.updateStoresBasedOnSearchType(query, options)
-
-        if (query?.collections?.length) {
-            this.searchViewStore.searchCollections = query.collections
-        }
-
-        if (!options.queued) {
-            const path = '?' + queryString + window.location.hash
-            void Router.router?.changeState('pushState', path, path, { shallow: true })
-        }
-
-        this.query = query as SearchQueryParams
-    }
-
     onFieldInclusionChange = (field: string) => () => {
         if (this.sharedStore.excludedFields.includes(field)) {
             runInAction(() => {
@@ -141,7 +124,7 @@ export class SearchStore {
             })
         }
         if (this.query?.q) {
-            this.search()
+            this.navigateSearch()
         }
     }
 }

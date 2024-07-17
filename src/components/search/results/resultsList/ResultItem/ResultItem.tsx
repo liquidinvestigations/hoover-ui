@@ -176,7 +176,6 @@ export const ResultItem: FC<ResultItemProps> = observer(({ hit, url, index }) =>
                         <Grid item component="span">
                             {hit._source['has-thumbnails'] && (
                                 <Box className={classes.thumbnail}>
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                         alt="thumbnail image"
                                         ref={thumbRef as unknown as RefObject<HTMLImageElement>}

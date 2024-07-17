@@ -1,6 +1,6 @@
 import { AppBar, Toolbar, Typography } from '@mui/material'
 import { observer } from 'mobx-react-lite'
-import Link from 'next/link'
+import { Link } from 'react-router-dom'
 
 import { useSharedStore } from '../../SharedStoreProvider'
 import { Menu } from '../Menu/Menu'
@@ -16,7 +16,7 @@ export const Header = observer(() => {
             <AppBar position="sticky">
                 <Toolbar variant="dense">
                     <Typography variant="h6" color="inherit" className={classes.flex}>
-                        <Link href="/" className={classes.noLink}>
+                        <Link to="/" className={classes.noLink}>
                             {user?.title}
                         </Link>
                         {' ⟶ '}

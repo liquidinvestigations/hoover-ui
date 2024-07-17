@@ -156,19 +156,19 @@ export class SearchViewStore {
             this.setSearchCollections(this.sharedStore.collectionsData.map((c) => c.name).filter((name) => selection.has(name)))
         }
 
-        this.searchStore.search()
+        this.searchStore.navigateSearch()
     }
 
     handleDeduplicateResults = () => {
-        const { query, search } = this.searchStore
+        const { query, navigateSearch } = this.searchStore
 
-        search({
+        navigateSearch({
             dedup_results:
                 typeof query?.dedup_results === 'undefined'
                     ? DEDUPLICATE_OPTIONS.hide
                     : query?.dedup_results === DEDUPLICATE_OPTIONS.mark
-                      ? DEDUPLICATE_OPTIONS.show
-                      : query?.dedup_results + 1,
+                    ? DEDUPLICATE_OPTIONS.show
+                    : query?.dedup_results + 1,
         })
     }
 
@@ -178,7 +178,7 @@ export class SearchViewStore {
         } else if (this.sharedStore.collectionsData) {
             this.setSearchCollections(this.sharedStore.collectionsData.map((c) => c.name))
         }
-        this.searchStore.search()
+        this.searchStore.navigateSearch()
     }
 
     setSearchFieldsOpen = (searchFieldsOpen: boolean) => {

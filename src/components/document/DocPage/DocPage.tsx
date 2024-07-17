@@ -1,8 +1,9 @@
 import { CircularProgress, Typography } from '@mui/material'
 import { useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
-import Head from 'next/head'
-import { FC, ReactElement } from 'react'
+import { FC, ReactElement, useEffect } from 'react'
+import { Helmet } from 'react-helmet'
+import { useParams } from 'react-router-dom'
 import SplitPane from 'react-split-pane'
 
 import { copyMetadata, shortenName, extractStringFromField } from '../../../utils/utils'
@@ -17,9 +18,18 @@ import { InfoPane } from './InfoPane'
 export const DocPage: FC = observer(() => {
     const { t } = useTranslate()
     const { classes } = useStyles()
+    const { collection, id } = useParams()
     const {
-        documentStore: { data, loading, error, digest, urlIsSha },
+        setFullPage,
+        documentStore: { data, loading, error, digest, urlIsSha, setDocument },
     } = useSharedStore()
+
+    useEffect(() => {
+        if (collection && id) {
+            setFullPage(true)
+            setDocument(collection, id)
+        }
+    })
 
     const fileName = extractStringFromField(data?.content?.filename)
 
@@ -76,9 +86,9 @@ export const DocPage: FC = observer(() => {
 
     return (
         <>
-            <Head>
+            <Helmet>
                 <title>{`Hoover ${data && `- ${fileName}`}`}</title>
-            </Head>
+            </Helmet>
             <HotKeysWithHelp keys={keys}>
                 <div tabIndex={-1}>{content}</div>
             </HotKeysWithHelp>

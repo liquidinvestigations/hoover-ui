@@ -16,7 +16,7 @@ export const Pagination: FC<{ field: SourceField }> = observer(({ field }) => {
     const {
         searchStore: {
             query,
-            search,
+            navigateSearch,
             searchAggregationsStore: { aggregations, aggregationsLoading },
         },
     } = useSharedStore()
@@ -24,12 +24,12 @@ export const Pagination: FC<{ field: SourceField }> = observer(({ field }) => {
     const handlePagination = (newPage: number) => {
         const { [field]: _prevFacet, ...restFacets } = query?.facets || {}
         if (newPage > 1) {
-            search(
+            navigateSearch(
                 { facets: { [field]: newPage, ...restFacets, page: defaultSearchParams.page } },
                 { searchType: SearchType.Aggregations, fieldList: [field] },
             )
         } else {
-            search({ facets: { ...restFacets }, page: defaultSearchParams.page }, { searchType: SearchType.Aggregations, fieldList: [field] })
+            navigateSearch({ facets: { ...restFacets }, page: defaultSearchParams.page }, { searchType: SearchType.Aggregations, fieldList: [field] })
         }
     }
 

@@ -10,7 +10,7 @@ import { defaultSearchParams } from '../../../utils/queryUtils'
 import { useSharedStore } from '../../SharedStoreProvider'
 
 export const IntervalSelect: FC<{ field: SourceField }> = observer(({ field }) => {
-    const { query, search } = useSharedStore().searchStore
+    const { query, navigateSearch } = useSharedStore().searchStore
 
     const onIntervalChange = (event: SelectChangeEvent) => {
         const { [field]: _prevFilter, ...restFilters } = query?.filters ?? {}
@@ -20,9 +20,9 @@ export const IntervalSelect: FC<{ field: SourceField }> = observer(({ field }) =
         const newFilter = { interval: event.target.value as Interval, ...rest }
 
         if (event.target.value !== DEFAULT_INTERVAL) {
-            search({ filters: { [field]: newFilter, ...restFilters }, facets: { ...restFacets }, page: defaultSearchParams.page })
+            navigateSearch({ filters: { [field]: newFilter, ...restFilters }, facets: { ...restFacets }, page: defaultSearchParams.page })
         } else {
-            search({ filters: { ...restFilters }, facets: { ...restFacets }, page: defaultSearchParams.page })
+            navigateSearch({ filters: { ...restFilters }, facets: { ...restFacets }, page: defaultSearchParams.page })
         }
     }
 

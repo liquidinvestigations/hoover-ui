@@ -2,7 +2,6 @@
 *.yml
 *.html
 .coverage
-.next
 static
 styles
 *.json
