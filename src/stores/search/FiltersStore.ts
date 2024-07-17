@@ -1,5 +1,5 @@
 import lucene, { AST, BinaryAST, Node, NodeRangedTerm, NodeTerm } from 'lucene'
-import { makeAutoObservable, reaction, runInAction } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx'
 import { ReactElement } from 'react'
 import { Entries } from 'type-fest'
 
@@ -52,21 +52,6 @@ export class FiltersStore {
 
     constructor(private readonly searchStore: SearchStore) {
         makeAutoObservable(this)
-
-        reaction(
-            () => searchStore.query?.filters,
-            (filters) => {
-                if (filters) {
-                    const filtersArray = Object.entries(filters)
-                        .map(([key, values]) => this.processFilter(key as SourceField, values))
-                        .filter((filter) => filter !== '')
-
-                    this.parsedFilters = filtersArray.length ? lucene.parse(filtersArray.join(' AND ')) : undefined
-                } else {
-                    this.parsedFilters = undefined
-                }
-            },
-        )
 
         this.expandedFilters = this.initExpandedFilters()
     }
@@ -171,6 +156,18 @@ export class FiltersStore {
         const excludeArray = values.exclude.map((value) => `(${key}:-"${clearQuotedParam(value)}")`)
 
         return excludeArray.length > 1 ? `(${excludeArray.join(' AND ')})` : `${excludeArray[0]}`
+    }
+
+    handleFilters = (filters?: Record<string, Terms>) => {
+        if (filters) {
+            const filtersArray = Object.entries(filters)
+                .map(([key, values]) => this.processFilter(key as SourceField, values))
+                .filter((filter) => filter !== '')
+
+            this.parsedFilters = filtersArray.length ? lucene.parse(filtersArray.join(' AND ')) : undefined
+        } else {
+            this.parsedFilters = undefined
+        }
     }
 
     processFilter = (key: SourceField, values: Terms): string => {
