@@ -30,6 +30,10 @@ export const useStyles = makeStyles()((theme) => ({
 
     checkbox: {
         padding: 5,
+
+        '&.MuiCheckbox-indeterminate': {
+            color: 'red',
+        },
     },
 
     label: {

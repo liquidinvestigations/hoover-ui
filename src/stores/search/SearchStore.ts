@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from 'mobx'
+import { makeAutoObservable, runInAction, reaction } from 'mobx'
 import qs from 'qs'
 
 import { router } from '../../index'
@@ -48,6 +48,8 @@ export class SearchStore {
         this.filtersStore = new FiltersStore(this)
 
         makeAutoObservable(this)
+
+        reaction(() => this.query?.filters, this.filtersStore.handleFilters)
     }
 
     private getMergedParams(params: Partial<SearchQueryParams>) {

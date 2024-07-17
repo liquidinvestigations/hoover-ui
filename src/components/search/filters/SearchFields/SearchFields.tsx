@@ -1,4 +1,4 @@
-import { Box, Checkbox, Fab, Grid, ListItem, ListItemText, Popover, Typography } from '@mui/material'
+import { Box, Checkbox, Fab, ListItem, ListItemText, Popover, Typography } from '@mui/material'
 import { observer } from 'mobx-react-lite'
 import { FC, useRef } from 'react'
 
@@ -33,38 +33,38 @@ export const SearchFields: FC = observer(() => {
                 anchorEl={anchorEl.current}
                 open={searchFieldsOpen}
                 onBlur={toggleSearchFields}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-                <Grid container padding={2} flexDirection="column" maxHeight={450}>
-                    {searchFields.map(({ label, icon, filters }) =>
-                        filters.map((field, index) => (
-                            <Grid item key={field}>
-                                {!index && (
-                                    <Box alignItems="center" display="flex" gap={0.5} mt={1}>
-                                        {reactIcons[icon]}
-                                        <Typography>{label}</Typography>
-                                    </Box>
-                                )}
-                                <ListItem key={field} role={undefined} dense button onClick={onFieldInclusionChange(field)}>
-                                    <Checkbox
-                                        size="small"
-                                        tabIndex={-1}
-                                        disableRipple
-                                        value={field}
-                                        checked
-                                        indeterminate={excludedFields.includes(field)}
-                                        classes={{ root: classes.checkbox }}
-                                    />
-                                    <ListItemText
-                                        primary={field.replace(`.${user?.uuid}`, '')}
-                                        primaryTypographyProps={{
-                                            className: classes.label,
-                                        }}
-                                    />
-                                </ListItem>
-                            </Grid>
-                        )),
-                    )}
-                </Grid>
+                disableEnforceFocus
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                PaperProps={{ style: { height: '50vh', padding: 8 } }}>
+                {searchFields.map(({ label, icon, filters }) =>
+                    filters.map((field, index) => (
+                        <Box key={field}>
+                            {!index && (
+                                <Box alignItems="center" display="flex" gap={0.5} mt={1}>
+                                    {reactIcons[icon]}
+                                    <Typography>{label}</Typography>
+                                </Box>
+                            )}
+                            <ListItem key={field} role={undefined} dense button onClick={onFieldInclusionChange(field)}>
+                                <Checkbox
+                                    size="small"
+                                    tabIndex={-1}
+                                    disableRipple
+                                    value={field}
+                                    checked
+                                    indeterminate={excludedFields.includes(field)}
+                                    classes={{ root: classes.checkbox }}
+                                />
+                                <ListItemText
+                                    primary={field.replace(`.${user?.uuid}`, '')}
+                                    primaryTypographyProps={{
+                                        className: classes.label,
+                                    }}
+                                />
+                            </ListItem>
+                        </Box>
+                    )),
+                )}
             </Popover>
         </>
     )
