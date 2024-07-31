@@ -13,9 +13,11 @@ import { ResultsTable } from '../resultsTable/ResultsTable/ResultsTable'
 interface ResultsProps {
     collection: string
     hits?: Hits
+    loading?: boolean
+    loadingETA?: number
 }
 
-export const ResultsGroup: FC<ResultsProps> = observer(({ collection, hits }) => {
+export const ResultsGroup: FC<ResultsProps> = observer(({ collection, hits, loading, loadingETA }) => {
     const {
         searchViewStore: { resultsViewType },
         searchResultsStore: { resultsLoadingETA },
@@ -36,8 +38,8 @@ export const ResultsGroup: FC<ResultsProps> = observer(({ collection, hits }) =>
                     )}
                 </Typography>
             }
-            loading={!!resultsLoadingETA[collection]}
-            loadingETA={resultsLoadingETA[collection]}
+            loading={loading ?? !!resultsLoadingETA[collection]}
+            loadingETA={loadingETA ?? resultsLoadingETA[collection]}
             loadingHeight={3}>
             {resultsViewType === 'list' ? <ResultsList hits={hits} /> : <ResultsTable hits={hits} />}
         </Expandable>

@@ -9,8 +9,9 @@ import { ResultsGroup } from '../ResultsGroup/ResultsGroup'
 
 export const Results: FC = observer(() => {
     const {
+        query,
         searchViewStore: { searchCollections },
-        searchResultsStore: { results, resultsLoadingETA },
+        searchResultsStore: { results, resultsLoadingETA, unifiedResults },
     } = useSharedStore().searchStore
 
     const sortedResults = [...results].sort((a, b) => {
@@ -31,9 +32,17 @@ export const Results: FC = observer(() => {
                 </i>
             ) : (
                 <>
-                    {sortedResults.map(({ collection, hits }) => (
-                        <ResultsGroup key={collection} collection={collection} hits={hits} />
-                    ))}
+                    {!!query?.unify_results ? (
+                        <ResultsGroup
+                            key={unifiedResults.collection}
+                            collection={unifiedResults.collection}
+                            hits={unifiedResults.hits}
+                            loading={!!Object.values(resultsLoadingETA).length}
+                        />
+                    ) : (
+                        sortedResults.map(({ collection, hits }) => <ResultsGroup key={collection} collection={collection} hits={hits} />)
+                    )}
+
                     {!Object.keys(resultsLoadingETA).length && <Pagination />}
                 </>
             )}

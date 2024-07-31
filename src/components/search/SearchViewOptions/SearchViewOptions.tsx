@@ -18,7 +18,7 @@ export const SearchViewOptions = observer(() => {
         fields,
         searchStore: {
             query,
-            searchViewStore: { resultsViewType, setResultsViewType, toggleDateDetails, showDateInsights, handleDeduplicateResults },
+            searchViewStore: { resultsViewType, setResultsViewType, toggleDateDetails, showDateInsights, handleDeduplicateResults, handleUnifyResults },
         },
     } = useSharedStore()
 
@@ -60,6 +60,12 @@ export const SearchViewOptions = observer(() => {
                             />
                         }
                         label={t('dedup_results', 'Deduplicate results')}
+                    />
+                </Grid>
+                <Grid item>
+                    <FormControlLabel
+                        control={<Checkbox size="small" tabIndex={-1} disableRipple checked={!!query?.unify_results} onClick={handleUnifyResults} />}
+                        label={t('unify_results', 'Unify results')}
                     />
                 </Grid>
                 <Grid item>

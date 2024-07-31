@@ -3,7 +3,7 @@ import { makeAutoObservable, reaction, runInAction } from 'mobx'
 import { DEDUPLICATE_OPTIONS } from '../../consts'
 import { AsyncTaskData, Category, Hit, Hits, SearchQueryParams } from '../../Types'
 import { AsyncQueryTaskRunner } from '../../utils/AsyncTaskRunner'
-import { getPreviewParams } from '../../utils/utils'
+import { getPreviewParams, mergeSort } from '../../utils/utils'
 import { SharedStore } from '../SharedStore'
 
 import { SearchStore } from './SearchStore'
@@ -90,11 +90,10 @@ export class SearchResultsStore {
 
                     this.resultsCounts[collection] = data.result?.count_by_index?.[collection as Category] as number
 
-                    this.hits = this.results.reduce((accHits, { hits }) => {
-                        accHits.push(...(hits?.hits || []))
-
-                        return accHits
-                    }, [] as Hit[])
+                    this.hits = mergeSort(
+                        this.results.map((result) => result.hits?.hits || []),
+                        (left, right) => left._score >= right._score,
+                    )
 
                     delete this.resultsLoadingETA[collection]
                 })
@@ -170,6 +169,16 @@ export class SearchResultsStore {
 
     get hitsTotal() {
         return this.results.reduce((total, { hits }) => Math.max(hits?.total || 0, total), 0)
+    }
+
+    get unifiedResults(): Result {
+        return {
+            collection: this.results
+                .map(({ collection }) => collection)
+                .sort()
+                .join(', '),
+            hits: { hits: this.hits, max_score: this.hits?.[0]?._score, total: this.hits.length },
+        }
     }
 
     setPreviewOnLoad = (previewOnLoad: PreviewOnLoad): void => {

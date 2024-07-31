@@ -172,6 +172,14 @@ export class SearchViewStore {
         })
     }
 
+    handleUnifyResults = () => {
+        const { query, navigateSearch } = this.searchStore
+
+        navigateSearch({
+            unify_results: !query?.unify_results ? 1 : 0,
+        })
+    }
+
     handleAllSearchCollectionsToggle = () => {
         if (this.sharedStore.collectionsData?.length === this.searchCollections.length) {
             this.setSearchCollections([])

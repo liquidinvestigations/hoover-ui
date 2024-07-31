@@ -266,5 +266,6 @@
   "zoom_in" : "Zoom in",
   "zoom_out" : "Zoom out",
   "dedup_results" : "Deduplicate results",
-  "duplicates" : "Duplicates"
+  "duplicates" : "Duplicates",
+  "unify_results": "Unify results"
 }
