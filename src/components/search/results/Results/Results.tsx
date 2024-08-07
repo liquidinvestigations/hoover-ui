@@ -2,6 +2,7 @@ import { T } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 import { FC } from 'react'
 
+import { UNIFY_RESULTS } from '../../../../consts'
 import { useSharedStore } from '../../../SharedStoreProvider'
 import { SearchViewOptions } from '../../SearchViewOptions/SearchViewOptions'
 import { Pagination } from '../Pagination/Pagination'
@@ -32,7 +33,7 @@ export const Results: FC = observer(() => {
                 </i>
             ) : (
                 <>
-                    {!!query?.unify_results ? (
+                    {query?.unify_results === UNIFY_RESULTS.active ? (
                         <ResultsGroup
                             key={unifiedResults.collection}
                             collection={unifiedResults.collection}

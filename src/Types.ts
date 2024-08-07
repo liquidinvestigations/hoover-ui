@@ -95,9 +95,9 @@ export interface SearchQueryParams {
     order?: string[][]
     facets?: Record<string, number>
     filters?: Record<string, Terms>
-    dedup_results?: number
+    dedup_results?: string
     dedup_collections?: string[]
-    unify_results?: number
+    unify_results?: string
 }
 
 export interface BatchSearchQueryParams {

@@ -3,7 +3,7 @@ import { ChangeEvent, ReactNode, RefObject } from 'react'
 import { Entry } from 'type-fest'
 
 import { availableColumns } from '../../constants/availableColumns'
-import { DEDUPLICATE_OPTIONS } from '../../consts'
+import { DEDUPLICATE_OPTIONS, UNIFY_RESULTS } from '../../consts'
 import { Category } from '../../Types'
 import { SharedStore } from '../SharedStore'
 
@@ -164,11 +164,11 @@ export class SearchViewStore {
 
         navigateSearch({
             dedup_results:
-                typeof query?.dedup_results === 'undefined'
+                !query?.dedup_results || query?.dedup_results === DEDUPLICATE_OPTIONS.show
                     ? DEDUPLICATE_OPTIONS.hide
                     : query?.dedup_results === DEDUPLICATE_OPTIONS.mark
                     ? DEDUPLICATE_OPTIONS.show
-                    : query?.dedup_results + 1,
+                    : DEDUPLICATE_OPTIONS.mark,
         })
     }
 
@@ -176,7 +176,7 @@ export class SearchViewStore {
         const { query, navigateSearch } = this.searchStore
 
         navigateSearch({
-            unify_results: !query?.unify_results ? 1 : 0,
+            unify_results: !query?.unify_results || query?.unify_results === UNIFY_RESULTS.inactive ? UNIFY_RESULTS.active : UNIFY_RESULTS.inactive,
         })
     }
 

@@ -20,8 +20,8 @@ export interface HashState {
     findIndex?: string
     date?: boolean
     collections?: string
-    dedup_results?: number
-    unify_results?: number
+    dedup_results?: string
+    unify_results?: string
 }
 
 export class HashStateStore {

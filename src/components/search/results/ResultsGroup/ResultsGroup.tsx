@@ -38,7 +38,7 @@ export const ResultsGroup: FC<ResultsProps> = observer(({ collection, hits, load
                     )}
                 </Typography>
             }
-            loading={loading ?? !!resultsLoadingETA[collection]}
+            loading={loading ?? resultsLoadingETA[collection] >= 0}
             loadingETA={loadingETA ?? resultsLoadingETA[collection]}
             loadingHeight={3}>
             {resultsViewType === 'list' ? <ResultsList hits={hits} /> : <ResultsTable hits={hits} />}

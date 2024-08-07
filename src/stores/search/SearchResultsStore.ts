@@ -1,6 +1,6 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx'
 
-import { DEDUPLICATE_OPTIONS } from '../../consts'
+import { DEDUPLICATE_OPTIONS, UNIFY_RESULTS } from '../../consts'
 import { AsyncTaskData, Category, Hit, Hits, SearchQueryParams } from '../../Types'
 import { AsyncQueryTaskRunner } from '../../utils/AsyncTaskRunner'
 import { getPreviewParams, mergeSort } from '../../utils/utils'
@@ -46,14 +46,14 @@ export class SearchResultsStore {
         )
     }
 
-    performQuery = (query: SearchQueryParams) => {
+    performQuery = async (query: SearchQueryParams) => {
         if (!this.sharedStore.user) return
         runInAction(() => {
             this.error = {}
         })
 
-        for (const collection of query.collections) {
-            const { excludedFields, dedup_results = 0, ...queryParams } = query
+        const promises = query.collections.map((collection: string) => {
+            const { excludedFields, dedup_results = DEDUPLICATE_OPTIONS.show, ...queryParams } = query
             const singleCollectionQuery = {
                 ...queryParams,
                 collections: [collection],
@@ -70,55 +70,105 @@ export class SearchResultsStore {
                 '*',
                 this.sharedStore.fields!,
                 excludedFields || [],
-                this.sharedStore.user.uuid!,
+                this.sharedStore.user?.uuid!,
             )
 
-            task.addEventListener('done', (event) => {
-                const { detail: data } = event as CustomEvent<AsyncTaskData>
+            return new Promise<{ collection: string; data: AsyncTaskData }>((resolve, reject) => {
+                task.addEventListener('done', (event) => {
+                    const { detail: data } = event as CustomEvent<AsyncTaskData>
 
-                runInAction(() => {
-                    const initResult = this.results.find(({ collection: initCollection }) => collection === initCollection)
-                    if (initResult && data.result?.hits) {
-                        const { hits, ...rest } = data.result.hits
-                        initResult.hits = {
-                            ...rest,
-                            hits: dedup_results === DEDUPLICATE_OPTIONS.hide ? hits.filter(({ _dedup_hide_result }) => !_dedup_hide_result) : hits,
+                    if (!query?.unify_results || query.unify_results === UNIFY_RESULTS.inactive) {
+                        runInAction(() => {
+                            const { result, resultsCount } = this.handleAsyncTaskResult(collection, data, query.dedup_results)
+
+                            const resultTmp = this.results.find((res) => res.collection === collection)
+                            if (resultTmp) {
+                                resultTmp.hits = result.hits
+                                this.resultsCounts[collection] = resultsCount
+                            }
+
+                            delete this.resultsLoadingETA[collection]
+                        })
+                    }
+
+                    resolve({ collection, data })
+                })
+
+                task.addEventListener('eta', (event) => {
+                    const { detail: eta } = event as CustomEvent<number>
+
+                    runInAction(() => {
+                        this.resultsLoadingETA[collection] = eta ?? 0
+                    })
+                })
+
+                task.addEventListener('error', (event) => {
+                    const { error } = event as ErrorEvent
+
+                    runInAction(() => {
+                        delete this.resultsLoadingETA[collection]
+
+                        if (error.name !== 'AbortError') {
+                            this.error[collection] = error
                         }
-                    }
+                    })
 
-                    this.results.sort(this.resultsSortCompareFn)
+                    reject()
+                })
+            })
+        })
 
-                    this.resultsCounts[collection] = data.result?.count_by_index?.[collection as Category] as number
-
-                    this.hits = mergeSort(
-                        this.results.map((result) => result.hits?.hits || []),
-                        (left, right) => left._score >= right._score,
+        if (query.unify_results || query.unify_results === UNIFY_RESULTS.active) {
+            await Promise.all(promises)
+                .then((response) => {
+                    const [resultsData, resultsCountsData] = response.reduce(
+                        (prev: any, { collection, data }) => {
+                            const [prevResult, prevResultCount] = prev
+                            const { result, resultsCount } = this.handleAsyncTaskResult(collection, data, query.dedup_results)
+                            return [
+                                [...prevResult, result],
+                                [...prevResultCount, { [collection]: resultsCount }],
+                            ]
+                        },
+                        [[], []],
                     )
-
-                    delete this.resultsLoadingETA[collection]
+                    runInAction(() => {
+                        this.results = resultsData
+                        this.resultsCounts = resultsCountsData
+                    })
                 })
-            })
-
-            task.addEventListener('eta', (event) => {
-                const { detail: eta } = event as CustomEvent<number>
-
-                runInAction(() => {
-                    this.resultsLoadingETA[collection] = eta
+                .finally(() => {
+                    runInAction(() => {
+                        this.results.forEach(({ collection }) => {
+                            delete this.resultsLoadingETA[collection]
+                        })
+                    })
                 })
-            })
-
-            task.addEventListener('error', (event) => {
-                const { error } = event as ErrorEvent
-
-                runInAction(() => {
-                    delete this.resultsLoadingETA[collection]
-
-                    if (error.name !== 'AbortError') {
-                        this.error[collection] = error
-                    }
-                })
-            })
         }
+
+        Promise.all(promises).finally(() => {
+            runInAction(() => {
+                this.hits = mergeSort(
+                    this.results.map((result) => result.hits?.hits || []),
+                    (left, right) => left._score >= right._score,
+                )
+            })
+        })
+    }
+
+    handleAsyncTaskResult = (collection: string, data: AsyncTaskData, dedup_results?: string) => {
+        const result = { ...this.results.find(({ collection: initCollection }) => collection === initCollection) }
+        if (result && data.result?.hits) {
+            const { hits, ...rest } = data.result.hits
+            result.hits = {
+                ...rest,
+                hits: dedup_results === DEDUPLICATE_OPTIONS.hide ? hits.filter(({ _dedup_hide_result }) => !_dedup_hide_result) : hits,
+            }
+        }
+
+        const resultsCount = data.result?.count_by_index?.[collection as Category] as number
+
+        return { result, resultsCount }
     }
 
     previewNextDoc = () => {

@@ -100,16 +100,24 @@ export const Expandable: FC<ExpandableProps> = ({
                 </Fade>
 
                 <Grid container alignItems="center" justifyContent="space-between">
-                    <Grid item>
+                    <Grid item maxWidth="70%">
                         <Typography
+                            textOverflow="ellipsis"
+                            whiteSpace="nowrap"
+                            overflow="hidden"
                             variant="body2"
                             component="div"
                             className={classes.title}
                             color={greyed ? 'textSecondary' : highlight ? 'secondary' : 'initial'}>
                             {title}
-                            {loading && <CircularProgress size={16} thickness={4} className={classes.loading} />}
                         </Typography>
                     </Grid>
+
+                    {loading && (
+                        <Grid item>
+                            <CircularProgress size={16} thickness={4} className={classes.loading} />
+                        </Grid>
+                    )}
 
                     {summary && (
                         <Grid item flex="1" textAlign="right">
