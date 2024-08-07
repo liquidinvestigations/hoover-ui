@@ -3,7 +3,7 @@ import { useTranslate } from '@tolgee/react'
 import { observer } from 'mobx-react-lite'
 
 import { reactIcons } from '../../../constants/icons'
-import { DEDUPLICATE_OPTIONS } from '../../../consts'
+import { DEDUPLICATE_OPTIONS, UNIFY_RESULTS } from '../../../consts'
 import { useSharedStore } from '../../SharedStoreProvider'
 import { SearchFields } from '../filters/SearchFields/SearchFields'
 import { SortingChips } from '../sorting/SortingChips/SortingChips'
@@ -18,7 +18,7 @@ export const SearchViewOptions = observer(() => {
         fields,
         searchStore: {
             query,
-            searchViewStore: { resultsViewType, setResultsViewType, toggleDateDetails, showDateInsights, handleDeduplicateResults },
+            searchViewStore: { resultsViewType, setResultsViewType, toggleDateDetails, showDateInsights, handleDeduplicateResults, handleUnifyResults },
         },
     } = useSharedStore()
 
@@ -60,6 +60,20 @@ export const SearchViewOptions = observer(() => {
                             />
                         }
                         label={t('dedup_results', 'Deduplicate results')}
+                    />
+                </Grid>
+                <Grid item>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                size="small"
+                                tabIndex={-1}
+                                disableRipple
+                                checked={query?.unify_results === UNIFY_RESULTS.active}
+                                onClick={handleUnifyResults}
+                            />
+                        }
+                        label={t('unify_results', 'Unify results')}
                     />
                 </Grid>
                 <Grid item>

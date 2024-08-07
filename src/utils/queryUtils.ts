@@ -30,6 +30,7 @@ const PARAMS_MAP: Record<string, string> = {
     fq: 'findQuery',
     fi: 'findIndex',
     ddr: 'dedup_results',
+    ur: 'unify_results',
 }
 
 const LEGACY_PARAMS: Record<string, string> = {

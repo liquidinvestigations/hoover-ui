@@ -283,3 +283,32 @@ export function formatETATime(milliseconds: number) {
         return `${hours}h ${remainingMinutes}m `
     }
 }
+
+export const mergeSort = <T,>(arrays: T[][], callback: (left: T, right: T) => boolean): T[] => {
+    if (arrays.length === 0) return []
+    if (arrays.length === 1) return arrays[0]
+
+    const mid = Math.floor(arrays.length / 2)
+    const left = mergeSort(arrays.slice(0, mid), callback)
+    const right = mergeSort(arrays.slice(mid), callback)
+
+    return merge(left, right, callback)
+}
+
+const merge = <T,>(left: T[], right: T[], callback: (left: T, right: T) => boolean): T[] => {
+    const result: T[] = []
+    let i = 0
+    let j = 0
+
+    while (i < left.length && j < right.length) {
+        if (callback(left[i], right[j])) {
+            result.push(left[i])
+            i++
+        } else {
+            result.push(right[j])
+            j++
+        }
+    }
+
+    return result.concat(left.slice(i)).concat(right.slice(j))
+}
